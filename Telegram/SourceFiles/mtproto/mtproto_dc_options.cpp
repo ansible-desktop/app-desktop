@@ -29,23 +29,23 @@ struct BuiltInDc {
 };
 
 // BeHappy bootstrap — single DC only (server-1 migration to new IP
-// 2026-05-17). The previous srv3-dev DC2 is decommissioned for the
+// 2026-05-20). The previous srv3-dev DC2 is decommissioned for the
 // rebrand; clients will still pick up extra DCs dynamically via
 // dcOptions once help.getConfig advertises them.
 const BuiltInDc kBuiltInDcs[] = {
-	{ 1, "144.31.223.88" , 10443 },
+	{ 1, "5.129.243.207" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsIPv6[] = {
-	{ 1, "144.31.223.88" , 10443 },
+	{ 1, "5.129.243.207" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsTest[] = {
-	{ 1, "144.31.223.88" , 10443 },
+	{ 1, "5.129.243.207" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsIPv6Test[] = {
-	{ 1, "144.31.223.88" , 10443 },
+	{ 1, "5.129.243.207" , 10443 },
 };
 
 const char *kTestPublicRSAKeys[] = { "\
