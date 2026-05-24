@@ -1,0 +1,224 @@
+name: Release Windows.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to use for release (e.g. v0.1.2). Required if running manually.'
+        required: true
+        type: string
+
+jobs:
+
+  release-win:
+    name: Release Windows x64
+    runs-on: windows-2022
+
+    env:
+      PREPARE_PATH: "Telegram/build/prepare/prepare.py"
+
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - name: Resolve tag.
+        shell: bash
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Invalid tag format: '$TAG' (expected v<major>.<minor>.<patch>)"
+            exit 1
+          fi
+          VER="${TAG#v}"
+          echo "TAG=$TAG"     >> $GITHUB_ENV
+          echo "VERSION=$VER" >> $GITHUB_ENV
+          echo "Resolved: TAG=$TAG VERSION=$VER"
+
+      - name: Prepare directories.
+        run: |
+          mkdir %userprofile%\TBuild\Libraries
+          mklink /d %GITHUB_WORKSPACE%\TBuild %userprofile%\TBuild
+          echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
+          echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
+
+      - name: Get repository name.
+        shell: bash
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+
+      - name: Clone.
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          ref: ${{ env.TAG }}
+          path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
+
+      - name: First set up.
+        shell: bash
+        run: |
+          DOCPATH=$TBUILD/$REPO_NAME/docs/building-win.md
+          SDK="$(grep "SDK version" $DOCPATH | sed -r 's/.*\*\*(.*)\*\* SDK version.*/\1/')"
+          echo "SDK=$SDK" >> $GITHUB_ENV
+
+          sed -i '/CMAKE_${lang}_FLAGS_DEBUG_INIT/s/${_Zi}//' "$PROGRAMFILES"/CMake/share/cmake*/Modules/Platform/Windows-MSVC.cmake
+
+          echo "$(sha256sum $TBUILD/$REPO_NAME/$PREPARE_PATH | awk '{ print $1 }')" >> CACHE_KEY.txt
+          echo "$SDK" >> CACHE_KEY.txt
+          echo "CACHE_KEY=$(sha256sum CACHE_KEY.txt | awk '{ print $1 }')" >> $GITHUB_ENV
+
+          git config --global user.email "you@example.com"
+          git config --global user.name "Sample"
+
+      - uses: ilammy/msvc-dev-cmd@v1.13.0
+        name: Native Tools Command Prompt.
+        with:
+          arch: x64
+          sdk: ${{ env.SDK }}
+
+      - name: NuGet sources.
+        run: |
+          nuget sources Disable -Name "Microsoft Visual Studio Offline Packages"
+          nuget sources Add -Source https://api.nuget.org/v3/index.json & exit 0
+
+      - name: ThirdParty cache.
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.TBUILD }}\ThirdParty
+          key: Windows-X64-third-party-${{ env.CACHE_KEY }}
+          restore-keys: Windows-X64-third-party-
+
+      - name: Libraries cache.
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ env.LibrariesPath }}\*
+            !${{ env.LibrariesPath }}\cache_keys
+            !${{ env.LibrariesPath }}\[qQ]t[_-]*
+            ${{ env.LibrariesPath }}\cache_keys\*
+            !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
+          key: Windows-x64-libs-${{ env.CACHE_KEY }}
+          restore-keys: Windows-x64-libs-
+
+      - name: Qt cache.
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ env.LibrariesPath }}\[qQ]t[_-]*
+            ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
+          key: Windows-x64-qt6-${{ env.CACHE_KEY }}
+          restore-keys: Windows-x64-qt6-
+
+      - name: Libraries.
+        env:
+          GYP_MSVS_OVERRIDE_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\'
+          GYP_MSVS_VERSION: 2022
+        run: |
+          %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent qt6
+
+      - name: Free up some disk space.
+        shell: bash
+        run: find $LibrariesPath '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.dll' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' ')' -type f ')' -o -empty ')' -delete
+
+      - name: Configure + Build Release.
+        run: |
+          cd %TBUILD%\%REPO_NAME%\Telegram
+
+          call configure.bat ^
+          -G "Ninja Multi-Config" ^
+          qt6 ^
+          -D TDESKTOP_API_TEST=ON ^
+          -D CMAKE_CONFIGURATION_TYPES=Release ^
+          -D CMAKE_COMPILE_WARNING_AS_ERROR=ON ^
+          -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
+          -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF
+
+          cmake --build ..\out --config Release --parallel
+
+      - name: Deploy Qt + bundle runtime.
+        shell: bash
+        run: |
+          set -e
+          cd "$TBUILD/$REPO_NAME"
+          OUT="out/Release"
+          PKG_DIR="Ansible-Desktop-${VERSION}-win-x64"
+          PKG="package/$PKG_DIR"
+          mkdir -p "$PKG"
+
+          # main binaries
+          cp "$OUT/Ansible.exe" "$PKG/Ansible.exe"
+          cp "$OUT/Updater.exe" "$PKG/Updater.exe"
+
+          # locate Qt bin dir (windeployqt) — handles qt_6_*/qt-6_*/Qt_6_*/etc.
+          QT_BIN=""
+          for d in "$LibrariesPath"/[qQ]t[_-]6*/bin "$LibrariesPath"/[qQ]t6*/bin; do
+            if [ -x "$d/windeployqt.exe" ] || [ -x "$d/windeployqt6.exe" ]; then
+              QT_BIN="$d"
+              break
+            fi
+          done
+          if [ -z "$QT_BIN" ]; then
+            echo "ERROR: windeployqt not found under $LibrariesPath" >&2
+            ls -la "$LibrariesPath"
+            exit 1
+          fi
+          echo "QT_BIN=$QT_BIN"
+          WDQ="$QT_BIN/windeployqt6.exe"
+          [ -x "$WDQ" ] || WDQ="$QT_BIN/windeployqt.exe"
+
+          "$WDQ" --release --no-translations --no-system-d3d-compiler --no-virtualkeyboard --no-opengl-sw "$PKG/Ansible.exe"
+          "$WDQ" --release --no-translations --no-system-d3d-compiler --no-virtualkeyboard --no-opengl-sw "$PKG/Updater.exe"
+
+          # OpenSSL DLLs — names vary (libcrypto-3-x64.dll / libssl-3-x64.dll for OpenSSL 3)
+          for pat in 'libcrypto-3*.dll' 'libssl-3*.dll' 'libcrypto-1_1*.dll' 'libssl-1_1*.dll'; do
+            find "$LibrariesPath" -name "$pat" -path '*/openssl*' -type f -exec cp -v {} "$PKG/" \; 2>/dev/null || true
+          done
+
+          # d3dcompiler from Windows SDK (some Qt versions need it)
+          for src in "$WINDIR/System32/d3dcompiler_47.dll" "C:/Program Files (x86)/Windows Kits/10/Redist/D3D/x64/d3dcompiler_47.dll"; do
+            if [ -f "$src" ]; then
+              cp -v "$src" "$PKG/"
+              break
+            fi
+          done
+
+          # show what we're shipping
+          echo "=== package contents (sizes in bytes) ==="
+          find "$PKG" -type f -printf '%s\t%p\n' | sort -rn | head -40
+          echo "=== total size ==="
+          du -sh "$PKG"
+
+          # zip it
+          cd package
+          7z a -tzip -mx=5 "${PKG_DIR}.zip" "$PKG_DIR" > /dev/null
+          ls -lh "${PKG_DIR}.zip"
+
+      - name: Upload artifact (debug aid).
+        uses: actions/upload-artifact@v7
+        with:
+          name: Ansible-Desktop-${{ env.VERSION }}-win-x64
+          path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}\package\Ansible-Desktop-${{ env.VERSION }}-win-x64.zip
+
+      - name: Create draft GitHub release.
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: Ansible Desktop ${{ env.TAG }}
+          draft: true
+          fail_on_unmatched_files: true
+          files: ${{ env.TBUILD }}\${{ env.REPO_NAME }}\package\Ansible-Desktop-${{ env.VERSION }}-win-x64.zip
+          body: |
+            **Ansible Desktop ${{ env.TAG }}** — Windows x64
+
+            Portable zip. Распакуйте куда удобно и запустите `Ansible.exe`. Никакой инсталлятор не нужен.
+
+            Release notes см. [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/${{ env.TAG }}/CHANGELOG.md).
+
+            ---
+            *Эта draft-сборка автоматически создана CI после push тега `${{ env.TAG }}`. Опубликуйте её через GitHub UI когда готовы.*
