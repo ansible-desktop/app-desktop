@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- TODO(rebrand): replace Publisher CN GUID with the real Microsoft Partner Center
+     publisher identity once Ansible has an MS Store account. The current GUID
+     D91460C6-1A45-4BA7-9C3B-77CAC5B9DFBB is a placeholder and will fail Store
+     submission as-is; it works for sideloading with a self-signed cert. -->
 <Package
    xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
@@ -7,14 +11,14 @@
    xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
    xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
    IgnorableNamespaces="uap uap2 uap3 desktop rescap">
-  <Identity Name="TelegramMessengerLLP.TelegramDesktop"
+  <Identity Name="Ansible.Desktop"
     ProcessorArchitecture="ARCHITECTURE"
-    Publisher="CN=536BC709-8EE1-4478-AF22-F0F0F26FF64A"
+    Publisher="CN=D91460C6-1A45-4BA7-9C3B-77CAC5B9DFBB"
     Version="6.7.8.0" />
   <Properties>
-    <DisplayName>Telegram Desktop</DisplayName>
-    <PublisherDisplayName>Telegram Messenger LLP</PublisherDisplayName>
-    <Description>Telegram Desktop official messenger</Description>
+    <DisplayName>Ansible Desktop</DisplayName>
+    <PublisherDisplayName>Ansible</PublisherDisplayName>
+    <Description>Ansible Desktop messenger</Description>
     <Logo>Assets\logo\logo.png</Logo>
   </Properties>
   <Resources>
@@ -27,28 +31,25 @@
     <rescap:Capability Name="runFullTrust"/>
   </Capabilities>
   <Applications>
-    <Application Id="Telegram.TelegramDesktop.Store" Executable="Telegram.exe" EntryPoint="Windows.FullTrustApplication">
+    <Application Id="Ansible.Desktop.Store" Executable="Ansible.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
        BackgroundColor="#1e94d0"
-       DisplayName="Telegram Desktop"
+       DisplayName="Ansible Desktop"
        Square150x150Logo="Assets\logo150\logo150.png"
        Square44x44Logo="Assets\logo44\logo44.png"
-       Description="Telegram Desktop official messenger" />
+       Description="Ansible Desktop messenger" />
       <Extensions>
         <uap3:Extension Category="windows.protocol">
-          <uap3:Protocol Name="tg" Parameters="-- &quot;%1&quot;" />
-        </uap3:Extension>
-        <uap3:Extension Category="windows.protocol">
-          <uap3:Protocol Name="tonsite" Parameters="-- &quot;%1&quot;" />
+          <uap3:Protocol Name="ansible" Parameters="-- &quot;%1&quot;" />
         </uap3:Extension>
         <desktop:Extension
           Category="windows.startupTask"
           Executable="StartupTask.exe"
           EntryPoint="Windows.FullTrustApplication">
           <desktop:StartupTask
-            TaskId="TelegramStartupTask"
+            TaskId="AnsibleStartupTask"
             Enabled="false"
-            DisplayName="Telegram Desktop" />
+            DisplayName="Ansible Desktop" />
         </desktop:Extension>
       </Extensions>
     </Application>

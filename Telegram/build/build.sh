@@ -326,13 +326,18 @@ if [ "$BuildTarget" == "mac" ] || [ "$BuildTarget" == "macstore" ]; then
     echo "Done!"
 
     echo "Signing the application.."
+    # Codesign identities come from the Ansible Apple Developer account.
+    # Set these env vars before running:
+    #   MAC_DEV_ID_APPLICATION       e.g. "Developer ID Application: Ansible Inc (XXXXXXXXXX)"
+    #   MAC_STORE_APP_IDENTITY       e.g. "3rd Party Mac Developer Application: Ansible Inc (XXXXXXXXXX)"
+    #   MAC_STORE_INSTALLER_IDENTITY e.g. "3rd Party Mac Developer Installer: Ansible Inc (XXXXXXXXXX)"
     if [ "$BuildTarget" == "mac" ]; then
-      codesign --force --deep --timestamp --options runtime --sign "Developer ID Application: Telegram FZ-LLC (C67CF9S4VU)" "$ReleasePath/$BundleName" --entitlements "$HomePath/Telegram/Telegram.entitlements"
+      codesign --force --deep --timestamp --options runtime --sign "${MAC_DEV_ID_APPLICATION:?set MAC_DEV_ID_APPLICATION to your Apple Developer ID Application identity}" "$ReleasePath/$BundleName" --entitlements "$HomePath/Telegram/Telegram.entitlements"
     elif [ "$BuildTarget" == "macstore" ]; then
-      codesign --force --timestamp --options runtime --sign "3rd Party Mac Developer Application: Telegram FZ-LLC (C67CF9S4VU)" "$ReleasePath/$BundleName/Contents/Frameworks/Breakpad.framework/Versions/A/Resources/breakpadUtilities.dylib" --entitlements "$HomePath/Telegram/Breakpad.entitlements"
-      codesign --force --deep --timestamp --options runtime --sign "3rd Party Mac Developer Application: Telegram FZ-LLC (C67CF9S4VU)" "$ReleasePath/$BundleName" --entitlements "$HomePath/Telegram/Telegram Lite.entitlements"
+      codesign --force --timestamp --options runtime --sign "${MAC_STORE_APP_IDENTITY:?set MAC_STORE_APP_IDENTITY to your 3rd Party Mac Developer Application identity}" "$ReleasePath/$BundleName/Contents/Frameworks/Breakpad.framework/Versions/A/Resources/breakpadUtilities.dylib" --entitlements "$HomePath/Telegram/Breakpad.entitlements"
+      codesign --force --deep --timestamp --options runtime --sign "${MAC_STORE_APP_IDENTITY:?set MAC_STORE_APP_IDENTITY to your 3rd Party Mac Developer Application identity}" "$ReleasePath/$BundleName" --entitlements "$HomePath/Telegram/Telegram Lite.entitlements"
       echo "Making an installer.."
-      productbuild --sign "3rd Party Mac Developer Installer: Telegram FZ-LLC (C67CF9S4VU)" --component "$ReleasePath/$BundleName" /Applications "$ReleasePath/$BinaryName.pkg"
+      productbuild --sign "${MAC_STORE_INSTALLER_IDENTITY:?set MAC_STORE_INSTALLER_IDENTITY to your 3rd Party Mac Developer Installer identity}" --component "$ReleasePath/$BundleName" /Applications "$ReleasePath/$BinaryName.pkg"
     fi
     echo "Done!"
 

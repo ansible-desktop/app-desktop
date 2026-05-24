@@ -1,0 +1,21 @@
+[Desktop Entry]
+Name=Ansible
+Comment=Ansible messenger
+TryExec=Ansible
+Exec=Ansible -- %U
+Icon=com.ansible.desktop
+Terminal=false
+StartupWMClass=AnsibleDesktop
+Type=Application
+Categories=Chat;Network;InstantMessaging;Qt;
+Keywords=chat;im;messaging;messenger;ansible;
+Actions=quit;
+DBusActivatable=true
+SingleMainWindow=true
+X-GNOME-UsesNotifications=true
+X-GNOME-SingleWindow=true
+
+[Desktop Action quit]
+Exec=Ansible -quit
+Name=Quit Ansible
+Icon=application-exit
