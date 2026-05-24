@@ -5892,7 +5892,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 
 	auto prepareTopicCreate = [&](const MTPDmessageActionTopicCreate &action) {
 		auto result = PreparedServiceText();
-		const auto topicUrl = u"internal:url:https://t.me/c/%1/%2"_q
+		const auto topicUrl = u"internal:url:https://ansible.rest/c/%1/%2"_q
 			.arg(peerToChannel(_history->peer->id).bare)
 			.arg(id.bare);
 		result.text = tr::lng_action_topic_created(

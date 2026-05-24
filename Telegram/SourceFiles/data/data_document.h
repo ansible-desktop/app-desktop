@@ -376,7 +376,7 @@ private:
 	const not_null<Data::Session*> _owner;
 
 	int _videoPreloadPrefix = 0;
-	// Two types of location: from MTProto by dc+access or from web by url
+	// Two types of location: from MVSy by dc+access or from web by url
 	int32 _dc = 0;
 	uint64 _access = 0;
 	QByteArray _fileReference;

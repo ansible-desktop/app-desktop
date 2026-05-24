@@ -442,7 +442,7 @@ QString GenerateInviteLinkText(const MTPExportedChatInvite &data) {
 		u"https://"_q,
 		QString()
 	).replace(
-		u"t.me/joinchat/"_q,
+		u"ansible.rest/joinchat/"_q,
 		QString()
 	) : label;
 }
@@ -748,7 +748,7 @@ TextWithEntities GenerateDefaultBannedRightsChangeText(
 				data.vid().v,
 				data.vicon_emoji_id().value_or_empty(),
 				qs(data.vtitle())),
-			u"internal:url:https://t.me/c/%1/%2"_q.arg(
+			u"internal:url:https://ansible.rest/c/%1/%2"_q.arg(
 				peerToChannel(channel->id).bare).arg(
 					data.vid().v));
 	}, [](const MTPDforumTopicDeleted &) {

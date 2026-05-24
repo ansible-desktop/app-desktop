@@ -296,10 +296,10 @@ QString Row::generateName() {
 		u"https://"_q,
 		QString()
 	).replace(
-		u"t.me/+"_q,
+		u"ansible.rest/+"_q,
 		QString()
 	).replace(
-		u"t.me/joinchat/"_q,
+		u"ansible.rest/joinchat/"_q,
 		QString()
 	);
 }

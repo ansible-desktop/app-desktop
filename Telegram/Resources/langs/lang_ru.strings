@@ -3423,10 +3423,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_premium_double_limits_about_pins#other" = "Закрепление до {count} чата в основном списке";
 
 "lng_premium_double_limits_subtitle_links" = "Публичные ссылки";
-"lng_premium_double_limits_about_links#one" = "Использование до {count} ссылки вида t.me/username";
-"lng_premium_double_limits_about_links#few" = "Использование до {count} ссылок вида t.me/username";
-"lng_premium_double_limits_about_links#many" = "Использование до {count} ссылок вида t.me/username";
-"lng_premium_double_limits_about_links#other" = "Использование до {count} ссылки вида t.me/username";
+"lng_premium_double_limits_about_links#one" = "Использование до {count} ссылки вида ansible.rest/username";
+"lng_premium_double_limits_about_links#few" = "Использование до {count} ссылок вида ansible.rest/username";
+"lng_premium_double_limits_about_links#many" = "Использование до {count} ссылок вида ansible.rest/username";
+"lng_premium_double_limits_about_links#other" = "Использование до {count} ссылки вида ansible.rest/username";
 
 "lng_premium_double_limits_subtitle_gifs" = "Сохранённые GIF";
 "lng_premium_double_limits_about_gifs#one" = "Сохранение в избранных до {count} GIF";
@@ -5133,7 +5133,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_group_about_text" = "Возможности групп:";
 "lng_group_about1" = "До 200 000 участников";
 "lng_group_about2" = "Общая история переписки";
-"lng_group_about3" = "Публичные ссылки вида t.me/title";
+"lng_group_about3" = "Публичные ссылки вида ansible.rest/title";
 "lng_group_about4" = "Разный уровень прав";
 
 "lng_switch_stickers" = "Стикеры";
@@ -5933,7 +5933,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_factcheck_edit_done" = "Разъяснение изменено.";
 "lng_factcheck_remove_done" = "Разъяснение удалено.";
 "lng_factcheck_bottom" = "Это разъяснение предоставлено агентством по проверке фактов, назначенным ведомством правительства вашей страны ({country}), ответственным за борьбу с дезинформацией.";
-"lng_factcheck_links" = "Разрешены только ссылки **t.me/**";
+"lng_factcheck_links" = "Разрешены только ссылки **ansible.rest/**";
 
 "lng_paid_title" = "Платный контент";
 "lng_paid_enter_cost" = "Стоимость доступа";
@@ -6024,7 +6024,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_translate_cocoon_everyone_text" = "Любой разработчик может использовать Cocoon для решения задач ИИ. Подробнее на {domain}.";
 "lng_translate_cocoon_everyone_domain" = "cocoon.org";
 "lng_translate_cocoon_text" = "Хотите интегрировать Cocoon в свои проекты?Напишите в {link}";
-"lng_translate_cocoon_text_link" = "t.me/cocoon?direct";
+"lng_translate_cocoon_text_link" = "ansible.rest/translate?direct";
 "lng_translate_cocoon_done" = "ОК";
 
 "lng_downloads_section" = "Загрузки";
@@ -8235,7 +8235,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_sponsored_revenued_footer_search_description" = "Любой пользователь может создать рекламное сообщение для показа по любому поисковому запросу. Чтобы узнать больше, перейдите на **Рекламную платформу Ansible**. {link}";
 "lng_sponsored_top_bar_hide" = "скрыть";
 
-"lng_telegram_features_url" = "https://t.me/AnsibleTips";
+"lng_telegram_features_url" = "https://ansible.rest/tips";
 
 "lng_mini_apps_disclaimer_title" = "Внимание";
 "lng_mini_apps_disclaimer_text" = "Вы собираетесь воспользоваться мини-приложением, которое поддерживается сторонним разработчиком, **не имеющим отношения к Ansible**. Чтобы продолжить, необходимо принять Условия использования мини-приложений.";
