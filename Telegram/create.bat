@@ -127,11 +127,11 @@ exit /b %errorlevel%
   set "Path=%1"
   (
     echo /*
-    echo This file is part of Telegram Desktop,
+    echo This file is part of Ansible Desktop, a fork of Telegram Desktop,
     echo the official desktop application for the Telegram messaging service.
     echo.
     echo For license and copyright information please follow this link:
-    echo https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+    echo https://github.com/behappy-desktop/app-desktop/blob/master/LEGAL
     echo */
   )> "SourceFiles\!Path!"
   exit /b

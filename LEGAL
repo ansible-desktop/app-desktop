@@ -1,13 +1,13 @@
-This file is part of BeHappy Desktop,
-a desktop client for the BeHappy messaging service.
+This file is part of Ansible Desktop,
+a desktop client for the Ansible messaging service.
 
-BeHappy Desktop is a derivative work based on Telegram Desktop,
+Ansible Desktop is a derivative work based on Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 Copyright (c) 2014-2026 The Telegram Desktop Authors.
-Copyright (c) 2026      The BeHappy Desktop Authors.
+Copyright (c) 2026      The Ansible Desktop Authors.
 
-BeHappy Desktop is free software: you can redistribute it and/or modify
+Ansible Desktop is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
@@ -22,9 +22,9 @@ to link the code of portions of this program with the OpenSSL library.
 
 Trademark notice: "Telegram" is a trademark of Telegram FZ-LLC.
 This project is not affiliated with, endorsed by, or sponsored by
-Telegram FZ-LLC. The BeHappy name and branding are independent.
+Telegram FZ-LLC. The Ansible name and branding are independent.
 
 Original project: https://github.com/telegramdesktop/tdesktop
-This fork:        https://github.com/behappy-desktop/tdesktop
+This fork:        https://github.com/behappy-desktop/app-desktop
 
-Full license: https://github.com/behappy-desktop/tdesktop/blob/master/LICENSE
+Full license: https://github.com/behappy-desktop/app-desktop/blob/master/LICENSE
