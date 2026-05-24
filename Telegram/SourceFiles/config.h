@@ -47,9 +47,25 @@ inline const char *cGUIDStr() {
 	return gGuidStr;
 }
 
-// BeHappy: autoupdates disabled, keys unused
-static const char *UpdatesPublicKey = "";
-static const char *UpdatesPublicBetaKey = "";
+// Ansible Desktop update verification key (RSA 1024-bit, PKCS#1).
+// Pair: private key kept off-tree at updates_keys/updates_private.pem
+// (and in Vault under secret/ansible/desktop/updates_private). Same key
+// used for stable + beta -- can be split later if separate cadences are needed.
+// SHA256(public PEM) = f94337c1d2bfb4093c8653f186a18756822b933c8a40dd15a7f505b985331d29
+static const char *UpdatesPublicKey = "\
+-----BEGIN RSA PUBLIC KEY-----\n\
+MIGJAoGBAMLHY3bK+69SEDUqu3gM9JNqVxH+jvezWLFw0SYAdIoFOd7qC8KFWdBO\n\
+pF3oMULzag4n91f6b1w9gjRkjBsCgmgK/zdXyrd3DA0pJg4A3mRtYMpDRvE6LJ8N\n\
+V50dC2K65CO+8rXSZpbF4egU6Yz+PpPNt9T8eOpsnEOplqEO+u3JAgMBAAE=\n\
+-----END RSA PUBLIC KEY-----\n\
+";
+static const char *UpdatesPublicBetaKey = "\
+-----BEGIN RSA PUBLIC KEY-----\n\
+MIGJAoGBAMLHY3bK+69SEDUqu3gM9JNqVxH+jvezWLFw0SYAdIoFOd7qC8KFWdBO\n\
+pF3oMULzag4n91f6b1w9gjRkjBsCgmgK/zdXyrd3DA0pJg4A3mRtYMpDRvE6LJ8N\n\
+V50dC2K65CO+8rXSZpbF4egU6Yz+PpPNt9T8eOpsnEOplqEO+u3JAgMBAAE=\n\
+-----END RSA PUBLIC KEY-----\n\
+";
 
 // BeHappy: server doesn't validate API credentials
 #if defined TDESKTOP_API_ID && defined TDESKTOP_API_HASH
