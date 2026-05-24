@@ -1,6 +1,6 @@
-# Agent Guide for Telegram Desktop
+# Agent Guide for Ansible Desktop (Telegram Desktop fork)
 
-This guide defines repository-wide instructions for coding agents working with the Telegram Desktop codebase.
+This guide defines repository-wide instructions for coding agents working with the Ansible Desktop codebase (forked from Telegram Desktop).
 
 ## Build System Structure
 
@@ -26,7 +26,7 @@ Dependencies are located relative to the repository: `../Libraries`, `../win64/L
 cmake --build out --config Debug --target Telegram
 ```
 
-That's it. The `out/` directory is already configured. The executable will be at `out/Debug/Telegram.exe`.
+That's it. The `out/` directory is already configured. The executable will be at `out/Debug/Ansible.exe` (the CMake target is still named `Telegram` but the OUTPUT_NAME is `Ansible`).
 
 **Important:** When running cmake from a shell that doesn't support `cd`, use quoted absolute paths:
 ```bash
@@ -73,11 +73,11 @@ On Windows, use the correct Visual Studio Native Tools Command Prompt matching y
 
 If the build fails with ANY of these errors:
 - `fatal error C1041: cannot open program database`
-- `cannot open output file 'Telegram.exe'`
+- `cannot open output file 'Ansible.exe'`
 - `LNK1104: cannot open file`
 - Any "access denied" or "file in use" error
 
-**STOP IMMEDIATELY.** These errors mean files are locked by a running process (Telegram.exe or debugger).
+**STOP IMMEDIATELY.** These errors mean files are locked by a running process (Ansible.exe or debugger).
 
 **What to do:**
 1. Do NOT attempt another build - it will fail the same way
@@ -85,7 +85,7 @@ If the build fails with ANY of these errors:
 3. Do NOT try any workarounds or fixes
 4. IMMEDIATELY inform the user:
 
-> "Build failed - files are locked. Please close Telegram.exe (and any debugger) so I can rebuild."
+> "Build failed - files are locked. Please close Ansible.exe (and any debugger) so I can rebuild."
 
 **Then WAIT for user confirmation before attempting any build.**
 

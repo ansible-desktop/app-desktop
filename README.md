@@ -1,36 +1,36 @@
-# BeHappy Desktop
+# Ansible Desktop
 
-Desktop client for the [BeHappy][behappy] messaging service.
+Desktop client for the [Ansible][behappy] messaging service.
 
 > **This project is a fork of [Telegram Desktop][tdesktop].** It is
 > licensed under [GPL v3 with OpenSSL exception][license], the same
 > terms as the upstream project. We are grateful to the Telegram Desktop
 > Authors for their work — without it this fork would not exist.
 >
-> BeHappy Desktop is **not affiliated with, endorsed by, or sponsored
-> by Telegram FZ-LLC**. It connects to BeHappy servers, not Telegram
+> Ansible Desktop is **not affiliated with, endorsed by, or sponsored
+> by Telegram FZ-LLC**. It connects to Ansible servers, not Telegram
 > servers, and cannot be used to access Telegram accounts.
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/behappy-desktop/tdesktop/blob/master/LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/behappy-desktop/app-desktop/blob/master/LICENSE)
 [![Upstream](https://img.shields.io/badge/forked%20from-tdesktop-orange.svg)][tdesktop]
 
 ---
 
 ## What this is
 
-BeHappy Desktop is the official desktop client for the BeHappy
+Ansible Desktop is the official desktop client for the Ansible
 messenger. It is built on top of the Telegram Desktop codebase
 ([tdesktop][tdesktop]) under GPL v3, with the following high-level
 modifications:
 
 - Networking layer rewritten to use the **MVSy 1.0** protocol and
-  connect to BeHappy backend servers (instead of MTProto 2.0 / Telegram
+  connect to Ansible backend servers (instead of MTProto 2.0 / Telegram
   DCs).
 - Branding, visual identity, and product naming replaced throughout.
-- Telegram-specific features removed where not applicable to BeHappy
+- Telegram-specific features removed where not applicable to Ansible
   (e.g., Telegram Premium subscriptions, Telegram Stars, Fragment
   integration, sponsored messages).
-- Additional features added that are unique to BeHappy.
+- Additional features added that are unique to Ansible.
 
 The complete list of changes from upstream is tracked in
 [`CHANGELOG.md`](CHANGELOG.md). The upstream changelog is preserved in
@@ -38,24 +38,24 @@ The complete list of changes from upstream is tracked in
 
 ## Relationship to upstream
 
-| | Telegram Desktop | BeHappy Desktop |
+| | Telegram Desktop | Ansible Desktop |
 |---|---|---|
 | License | GPL v3 + OpenSSL exception | GPL v3 + OpenSSL exception (same) |
-| Backend | Telegram DCs | BeHappy servers (`mvsy.behappy.rest`) |
+| Backend | Telegram DCs | Ansible servers (`mvsy.ansible.rest`) |
 | Protocol | MTProto 2.0 | MVSy 1.0 |
-| Trademarks | Telegram, MTProto | BeHappy |
-| Account compatibility | Telegram accounts | BeHappy accounts (separate system) |
-| Source repository | [telegramdesktop/tdesktop][tdesktop] | [behappy-desktop/tdesktop](https://github.com/behappy-desktop/tdesktop) |
+| Trademarks | Telegram, MTProto | Ansible |
+| Account compatibility | Telegram accounts | Ansible accounts (separate system) |
+| Source repository | [telegramdesktop/tdesktop][tdesktop] | [behappy-desktop/app-desktop](https://github.com/behappy-desktop/app-desktop) |
 
 We do **not** merge updates from upstream automatically. The fork is
 independently maintained.
 
 ## Downloads
 
-The latest BeHappy Desktop builds are available at:
+The latest Ansible Desktop builds are available at:
 
-- Windows / macOS / Linux: <https://behappy.rest/desktop>
-- Source release archives: <https://github.com/behappy-desktop/tdesktop/releases>
+- Windows / macOS / Linux: <https://ansible.rest/desktop>
+- Source release archives: <https://github.com/behappy-desktop/app-desktop/releases>
 
 For Telegram Desktop (the upstream project) please visit
 <https://desktop.telegram.org/>.
@@ -90,7 +90,7 @@ Desktop. The full list is preserved here for transparency:
 
 ## License
 
-BeHappy Desktop is free software: you can redistribute it and/or modify
+Ansible Desktop is free software: you can redistribute it and/or modify
 it under the terms of the **GNU General Public License v3** as published
 by the Free Software Foundation, with the OpenSSL linking exception
 inherited from upstream.
@@ -110,14 +110,14 @@ identify the upstream project from which this fork is derived, as
 required by GPL §5(a). They are **not** used as trademarks of this
 product.
 
-"BeHappy" is a trademark of the BeHappy Desktop Authors.
+"Ansible" is a trademark of the Ansible Desktop Authors.
 
 ## Contact
 
-- General: <https://behappy.rest>
+- General: <https://ansible.rest>
 - Source code questions: open an issue on this repository
-- License compliance / DMCA: <legal@behappy.rest>
+- License compliance / DMCA: <legal@ansible.rest>
 
-[behappy]: https://behappy.rest
+[behappy]: https://ansible.rest
 [tdesktop]: https://github.com/telegramdesktop/tdesktop
-[license]: https://github.com/behappy-desktop/tdesktop/blob/master/LICENSE
+[license]: https://github.com/behappy-desktop/app-desktop/blob/master/LICENSE

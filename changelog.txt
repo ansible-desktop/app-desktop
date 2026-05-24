@@ -1,11 +1,11 @@
 0.1.1 (17.05.26)
 
-- Обновлены адреса серверов BeHappy
+- Обновлены адреса серверов Ansible
 - Внутренние улучшения подключения
 
 0.1.0 (08.05.26)
 
-- First BeHappy Desktop release on the new tdesktop fork
-- Connects to BeHappy backend (DC1, DC2)
-- BeHappy branding (icons, app name)
+- First Ansible Desktop release on the new tdesktop fork
+- Connects to Ansible backend (DC1, DC2)
+- Ansible branding (icons, app name)
 - Russian translations

@@ -1,4 +1,4 @@
-BeHappy Desktop
+Ansible Desktop
 ================
 
 This product is a derivative work of Telegram Desktop
@@ -15,11 +15,11 @@ Copyright Notices
 Original Telegram Desktop:
     Copyright (c) 2014-2026 The Telegram Desktop Authors
 
-BeHappy Desktop modifications:
-    Copyright (c) 2026 The BeHappy Desktop Authors
+Ansible Desktop modifications:
+    Copyright (c) 2026 The Ansible Desktop Authors
 
 Both copyrights apply to this software. Modifications made by the
-BeHappy Desktop Authors are also licensed under GPL v3 with OpenSSL
+Ansible Desktop Authors are also licensed under GPL v3 with OpenSSL
 exception, as required by the upstream license.
 
 ------------------------------------------------------------------------
@@ -27,15 +27,15 @@ Source Code Availability (GPL §6 compliance)
 ------------------------------------------------------------------------
 
 The complete corresponding source code of this software, including any
-modifications made by the BeHappy Desktop Authors, is publicly available
+modifications made by the Ansible Desktop Authors, is publicly available
 at:
 
-    https://github.com/behappy-desktop/tdesktop
+    https://github.com/behappy-desktop/app-desktop
 
-If you received a binary distribution of BeHappy Desktop and the source
+If you received a binary distribution of Ansible Desktop and the source
 code is no longer available at the URL above, please contact:
 
-    legal@behappy.rest
+    legal@ansible.rest
 
 You are entitled to receive the full source code corresponding to the
 binary you received, at no additional charge beyond the cost of physical
@@ -52,17 +52,17 @@ This project:
   - Is NOT affiliated with, endorsed by, or sponsored by Telegram FZ-LLC.
   - Does NOT use the Telegram name, logo, or other Telegram trademarks
     in its branding, user-visible interface, or marketing.
-  - Connects to BeHappy backend servers (mvsy.behappy.rest), NOT to
+  - Connects to Ansible backend servers (mvsy.ansible.rest), NOT to
     Telegram servers. It cannot be used to access Telegram accounts.
 
-"BeHappy" name, logo, and visual identity are the property of the
-BeHappy Desktop Authors.
+"Ansible" name, logo, and visual identity are the property of the
+Ansible Desktop Authors.
 
 ------------------------------------------------------------------------
 Protocol
 ------------------------------------------------------------------------
 
-BeHappy Desktop communicates using the MVSy 1.0 protocol, an
+Ansible Desktop communicates using the MVSy 1.0 protocol, an
 independently developed protocol that shares some structural similarity
 with MTProto 2.0 but is not interoperable with Telegram servers.
 
