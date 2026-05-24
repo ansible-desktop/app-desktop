@@ -1,3 +1,10 @@
+0.1.2 (25.05.26)
+
+- Полный rebrand в Ansible Desktop (иконки заменим в следующем релизе)
+- Все ссылки серверов / API / deep links → ansible.rest, прежние t.me / telegram.org удалены
+- Бинарь переименован в Ansible.exe, AppUserModelID/snap/UWP/D-Bus переехали на com.ansible.desktop
+- Внутренние улучшения совместимости
+
 0.1.1 (17.05.26)
 
 - Обновлены адреса серверов Ansible
