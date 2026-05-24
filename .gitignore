@@ -70,3 +70,7 @@ settings.local.json
 
 # Generated changelog page (built by CI, deployed to GitHub Pages)
 /docs/changelog/
+
+# Ansible: never commit update-signing keys
+updates_keys/
+updates_private*.pem
