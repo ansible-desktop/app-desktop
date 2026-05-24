@@ -2,7 +2,7 @@
 # the official desktop application for the Telegram messaging service.
 #
 # For license and copyright information please follow this link:
-# https://github.com/behappy-desktop/app-desktop/blob/master/LEGAL
+# https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 cmake_minimum_required(VERSION 3.25...3.31)
 

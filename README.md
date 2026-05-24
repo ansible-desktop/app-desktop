@@ -11,7 +11,7 @@ Desktop client for the [Ansible][behappy] messaging service.
 > by Telegram FZ-LLC**. It connects to Ansible servers, not Telegram
 > servers, and cannot be used to access Telegram accounts.
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/behappy-desktop/app-desktop/blob/master/LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/ansible-desktop/app-desktop/blob/master/LICENSE)
 [![Upstream](https://img.shields.io/badge/forked%20from-tdesktop-orange.svg)][tdesktop]
 
 ---
@@ -45,7 +45,7 @@ The complete list of changes from upstream is tracked in
 | Protocol | MTProto 2.0 | MVSy 1.0 |
 | Trademarks | Telegram, MTProto | Ansible |
 | Account compatibility | Telegram accounts | Ansible accounts (separate system) |
-| Source repository | [telegramdesktop/tdesktop][tdesktop] | [behappy-desktop/app-desktop](https://github.com/behappy-desktop/app-desktop) |
+| Source repository | [telegramdesktop/tdesktop][tdesktop] | [ansible-desktop/app-desktop](https://github.com/ansible-desktop/app-desktop) |
 
 We do **not** merge updates from upstream automatically. The fork is
 independently maintained.
@@ -55,7 +55,7 @@ independently maintained.
 The latest Ansible Desktop builds are available at:
 
 - Windows / macOS / Linux: <https://ansible.rest/desktop>
-- Source release archives: <https://github.com/behappy-desktop/app-desktop/releases>
+- Source release archives: <https://github.com/ansible-desktop/app-desktop/releases>
 
 For Telegram Desktop (the upstream project) please visit
 <https://desktop.telegram.org/>.
@@ -120,4 +120,4 @@ product.
 
 [behappy]: https://ansible.rest
 [tdesktop]: https://github.com/telegramdesktop/tdesktop
-[license]: https://github.com/behappy-desktop/app-desktop/blob/master/LICENSE
+[license]: https://github.com/ansible-desktop/app-desktop/blob/master/LICENSE

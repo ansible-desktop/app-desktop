@@ -131,7 +131,7 @@ exit /b %errorlevel%
     echo the official desktop application for the Telegram messaging service.
     echo.
     echo For license and copyright information please follow this link:
-    echo https://github.com/behappy-desktop/app-desktop/blob/master/LEGAL
+    echo https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
     echo */
   )> "SourceFiles\!Path!"
   exit /b

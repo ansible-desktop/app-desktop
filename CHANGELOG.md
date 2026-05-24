@@ -31,4 +31,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Update channel uses Ansible update server.
 - Help and support links point to Ansible resources.
 
-[Unreleased]: https://github.com/behappy-desktop/app-desktop/compare/v0.0.0...HEAD
+[Unreleased]: https://github.com/ansible-desktop/app-desktop/compare/v0.0.0...HEAD

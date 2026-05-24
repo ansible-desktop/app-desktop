@@ -1,7 +1,7 @@
 # Аудит остаточного Telegram-брендинга в BeHappy Desktop
 
 **Дата:** 2026-05-23
-**Скоуп:** `F:\test_cl\split\behappy-desktop\app-desktop\` (= `behappy-desktop/app-desktop`, форк `tdesktop`)
+**Скоуп:** `F:\test_cl\split\ansible-desktop\app-desktop\` (= `ansible-desktop/app-desktop`, форк `tdesktop`)
 **HEAD:** `a560f6d feat(mtproto): swap built-in DC1 RSA public key`
 **Тип:** Read-only — никаких изменений в исходниках, только этот отчёт.
 
@@ -34,7 +34,7 @@
 
 ### 3.1. `lang.strings` (EN, источник)
 
-Файл: `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/langs/lang.strings`
+Файл: `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/langs/lang.strings`
 **Всего ключей:** 7496. **Содержат "Telegram":** 320 уникальных ключей, 322 матча.
 
 #### 🔴 Самые видимые (rendered в окне приложения)
@@ -182,7 +182,7 @@ lng_verification_codes_about
 
 ### 3.2. `lang_ru.strings` (RU)
 
-Файл: `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/langs/lang_ru.strings`
+Файл: `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/langs/lang_ru.strings`
 **Всего:** 8984 строк. **Содержит "Telegram":** 373 матча.
 
 Аналогично EN: `lng_intro_about` (`lang_ru.strings:479`) = "Добро пожаловать в **Telegram для ПК**…" — заменить. RU-лангпак был ПОЛНОСТЬЮ скопирован коммитом `a591ec9` из официального Telegram-перевода без замены трейдмарка (см. сообщение коммита: "lang.strings branding renames will be ported as targeted edits later" — но **edits так и не сделаны**).
@@ -193,21 +193,21 @@ lng_verification_codes_about
 
 | Файл:строка | Что | Severity | Действие |
 |-------------|-----|----------|----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:66` | `box->setTitle(u"Telegram Desktop"_q);` — заголовок диалога About | 🔴 | `u"BeHappy Desktop"_q` или `AppName.utf16()` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/intro/intro_start.cpp:27` | `setTitleText(rpl::single(u"Telegram Desktop"_q));` — заголовок intro-экрана | 🔴 | Тот же fix |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/window/main_window.cpp:850` | `setTitle((user.isEmpty() ? u"Telegram"_q : user) + added);` — заголовок главного окна Windows когда нет активного чата | 🔴 | `AppName.utf16()` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/window/notifications_manager_default.cpp:1006` | `TextWithEntities{ u"Telegram Desktop"_q }` — fallback title для notification c hide-name-and-photo | 🔴 | `TextWithEntities{ AppName.utf16() }` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/settings/sections/settings_notifications.cpp:495` | `auto notifyTitle = st::msgNameFont->elided(u"Telegram Desktop"_q, …)` — превью уведомления в Settings → Notifications | 🔴 | `AppName.utf16()` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/window/window_main_menu.cpp:387-388` | `u"Telegram Desktop"_q,` + `u"https://desktop.telegram.org"_q` — Burger menu → "Telegram Desktop" link | 🔴 | Заменить на behappy |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp:310,314,494` | `wsprintf(nameStr, L"Telegram Desktop"); wsprintf(icongroupStr, L"Telegram Desktop"); …static const WCHAR *_programName = L"Telegram Desktop";` — апдейтер пишет ярлык в Start Menu как "Telegram Desktop" | 🔴 | `L"BeHappy Desktop"` (но апдейтер всё равно отключён через `TDESKTOP_DISABLE_AUTOUPDATE`) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp:312` | `wsprintf(publisherStr, L"Telegram FZ-LLC");` | 🔴 | Заменить |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp:319` | `const WCHAR *appURL = L"https://desktop.telegram.org";` | 🔴 | Заменить |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/click_handler_types.cpp:137` | `"PRODID:-//Telegram Desktop//EN\r\n"` — vCard PRODID при экспорте контактов | 🟡 | `AppName` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/export/output/export_output_abstract.cpp:170` | `session.applicationName = "Telegram Desktop";` — имя приложения в JSON/HTML экспорте чатов | 🟡 | `AppName.utf8()` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/crash_report_window.cpp:440,458` | `QDesktopServices::openUrl(u"https://desktop.telegram.org"_q);` + dialog title `u"Telegram Crash Report"_q` + file extension `.telegramcrash` | 🟡 | Заменить URL+extension (`telegramcrash` встречается ещё в файловых ассоциациях ОС) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/sandbox.cpp:320` | `LOG(("This is the only instance of Telegram, starting server and app..."));` | 🟢 | Косметика |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:416,424` | `DEBUG_LOG(("Telegram finished, result: %1"))`, `DEBUG_LOG(("Sandbox Info: executing Telegram because of restart."))` | 🟢 | Косметика |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/api/api_updates.cpp:516` | `LOG(("API Error: updates.differenceTooLong is not supported by Telegram Desktop!"));` | 🟢 | Косметика |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:66` | `box->setTitle(u"Telegram Desktop"_q);` — заголовок диалога About | 🔴 | `u"BeHappy Desktop"_q` или `AppName.utf16()` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/intro/intro_start.cpp:27` | `setTitleText(rpl::single(u"Telegram Desktop"_q));` — заголовок intro-экрана | 🔴 | Тот же fix |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/window/main_window.cpp:850` | `setTitle((user.isEmpty() ? u"Telegram"_q : user) + added);` — заголовок главного окна Windows когда нет активного чата | 🔴 | `AppName.utf16()` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/window/notifications_manager_default.cpp:1006` | `TextWithEntities{ u"Telegram Desktop"_q }` — fallback title для notification c hide-name-and-photo | 🔴 | `TextWithEntities{ AppName.utf16() }` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/settings/sections/settings_notifications.cpp:495` | `auto notifyTitle = st::msgNameFont->elided(u"Telegram Desktop"_q, …)` — превью уведомления в Settings → Notifications | 🔴 | `AppName.utf16()` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/window/window_main_menu.cpp:387-388` | `u"Telegram Desktop"_q,` + `u"https://desktop.telegram.org"_q` — Burger menu → "Telegram Desktop" link | 🔴 | Заменить на behappy |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp:310,314,494` | `wsprintf(nameStr, L"Telegram Desktop"); wsprintf(icongroupStr, L"Telegram Desktop"); …static const WCHAR *_programName = L"Telegram Desktop";` — апдейтер пишет ярлык в Start Menu как "Telegram Desktop" | 🔴 | `L"BeHappy Desktop"` (но апдейтер всё равно отключён через `TDESKTOP_DISABLE_AUTOUPDATE`) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp:312` | `wsprintf(publisherStr, L"Telegram FZ-LLC");` | 🔴 | Заменить |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp:319` | `const WCHAR *appURL = L"https://desktop.telegram.org";` | 🔴 | Заменить |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/click_handler_types.cpp:137` | `"PRODID:-//Telegram Desktop//EN\r\n"` — vCard PRODID при экспорте контактов | 🟡 | `AppName` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/export/output/export_output_abstract.cpp:170` | `session.applicationName = "Telegram Desktop";` — имя приложения в JSON/HTML экспорте чатов | 🟡 | `AppName.utf8()` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/crash_report_window.cpp:440,458` | `QDesktopServices::openUrl(u"https://desktop.telegram.org"_q);` + dialog title `u"Telegram Crash Report"_q` + file extension `.telegramcrash` | 🟡 | Заменить URL+extension (`telegramcrash` встречается ещё в файловых ассоциациях ОС) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/sandbox.cpp:320` | `LOG(("This is the only instance of Telegram, starting server and app..."));` | 🟢 | Косметика |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:416,424` | `DEBUG_LOG(("Telegram finished, result: %1"))`, `DEBUG_LOG(("Sandbox Info: executing Telegram because of restart."))` | 🟢 | Косметика |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/api/api_updates.cpp:516` | `LOG(("API Error: updates.differenceTooLong is not supported by Telegram Desktop!"));` | 🟢 | Косметика |
 
 `AppName` / `AppFile` уже определены как BeHappy в `core/version.h:23-24`, так что замена везде = одинаковое поведение и поддержка ребрендинга в одном месте.
 
@@ -221,11 +221,11 @@ lng_verification_codes_about
 
 | Файл:строка | Текущее значение | Что это |
 |-------------|------------------|---------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp:29` | `const WCHAR AppUserModelIdBase[] = L"Telegram.TelegramDesktop.Store";` (UWP) | Базовое имя для group id |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp:31` | `const WCHAR AppUserModelIdBase[] = L"Telegram.TelegramDesktop";` (non-store) | Это значение ЛОГгируется на старте: `LOG(("AppUserModelID: %1"))` (`specific_win.cpp:378`) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp:348-349` | `const auto installed = u"Telegram Desktop/Telegram.lnk"_q;` + `const auto old = u"Telegram Win (Unofficial)/Telegram.lnk"_q;` | Поиск ярлыка по фиксированному имени |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp:216,348,361,370` | `Telegram.lnk`, `TelegramAlpha.lnk` | Имена .lnk файлов в Start Menu |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:323,326` | `userDesktopLnk = ... + "\\Telegram.lnk";` `commonDesktopLnk = ... + "\\Telegram.lnk";` | Desktop shortcut path |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp:29` | `const WCHAR AppUserModelIdBase[] = L"Telegram.TelegramDesktop.Store";` (UWP) | Базовое имя для group id |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp:31` | `const WCHAR AppUserModelIdBase[] = L"Telegram.TelegramDesktop";` (non-store) | Это значение ЛОГгируется на старте: `LOG(("AppUserModelID: %1"))` (`specific_win.cpp:378`) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp:348-349` | `const auto installed = u"Telegram Desktop/Telegram.lnk"_q;` + `const auto old = u"Telegram Win (Unofficial)/Telegram.lnk"_q;` | Поиск ярлыка по фиксированному имени |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp:216,348,361,370` | `Telegram.lnk`, `TelegramAlpha.lnk` | Имена .lnk файлов в Start Menu |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:323,326` | `userDesktopLnk = ... + "\\Telegram.lnk";` `commonDesktopLnk = ... + "\\Telegram.lnk";` | Desktop shortcut path |
 
 🔴 **Severity:** Critical. AppUserModelID использует Windows для: (a) group icons in taskbar, (b) jump lists, (c) toast notifications, (d) pin-to-start. Сейчас BeHappy будет группироваться с настоящим Telegram'ом если они оба установлены. Менять на `L"BeHappy.BeHappyDesktop"` и пересобирать.
 
@@ -233,7 +233,7 @@ lng_verification_codes_about
 
 ### 4.2. Windows — MSIX / UWP (Microsoft Store)
 
-Файл `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/uwp/AppX/AppxManifest.xml`:
+Файл `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/uwp/AppX/AppxManifest.xml`:
 
 ```xml
 <Identity Name="TelegramMessengerLLP.TelegramDesktop"
@@ -270,19 +270,19 @@ lng_verification_codes_about
 
 | Файл:строка | Что | Severity |
 |-------------|-----|----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:63` | `VALUE "CompanyName", "Telegram FZ-LLC"` | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:64` | `VALUE "FileDescription", "Telegram Desktop"` | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:65` | `VALUE "FileVersion", "6.7.8.0"` — UPSTREAM version, не 0.1.1! | 🟡 (auto-fill из `Telegram/build/version` — нужно проверить, реально ли это пересобирается) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:66` | `VALUE "LegalCopyright", "Copyright (C) 2014-2026"` | 🟡 — добавить BeHappy copyright |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:67` | `VALUE "ProductName", "Telegram Desktop"` | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Updater.rc:54,55,58` | то же самое для Updater.exe | 🔴 (хотя апдейтер отключён) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Telegram.manifest` | Только windowsSettings (DPI). Без бренда. | ✅ ok |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:63` | `VALUE "CompanyName", "Telegram FZ-LLC"` | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:64` | `VALUE "FileDescription", "Telegram Desktop"` | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:65` | `VALUE "FileVersion", "6.7.8.0"` — UPSTREAM version, не 0.1.1! | 🟡 (auto-fill из `Telegram/build/version` — нужно проверить, реально ли это пересобирается) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:66` | `VALUE "LegalCopyright", "Copyright (C) 2014-2026"` | 🟡 — добавить BeHappy copyright |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc:67` | `VALUE "ProductName", "Telegram Desktop"` | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Updater.rc:54,55,58` | то же самое для Updater.exe | 🔴 (хотя апдейтер отключён) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Telegram.manifest` | Только windowsSettings (DPI). Без бренда. | ✅ ok |
 
 **Эти поля попадают в свойства exe-файла** — пользователь видит их в Properties → Details в Explorer'е, а Windows SmartScreen + AV сравнивают `CompanyName` с подписью.
 
 ### 4.4. macOS — Info.plist + bundle id
 
-Файл `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Telegram.plist`:
+Файл `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Telegram.plist`:
 
 | Строка | Поле | Текущее | Действие |
 |--------|------|---------|----------|
@@ -291,7 +291,7 @@ lng_verification_codes_about
 | `40-41` | `CFBundleURLSchemes` | `tg`, `tonsite` | 🟡 решить: оставить `tg` для обратной совместимости deep-links / сменить |
 | `72-74` | NSMicrophoneUsageDescription, NSCameraUsageDescription, NSLocationUsageDescription | "We need access to your microphone…" | 🟢 нейтральные, можно оставить, но желательно `BeHappy needs access…` |
 
-Файл `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/CMakeLists.txt`:
+Файл `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/CMakeLists.txt`:
 
 | Строка | Что | Severity |
 |--------|-----|----------|
@@ -309,7 +309,7 @@ lng_verification_codes_about
 
 Файлы `lib/xdg/org.telegram.desktop.*`:
 
-`F:/test_cl/split/behappy-desktop/app-desktop/lib/xdg/org.telegram.desktop.desktop`:
+`F:/test_cl/split/ansible-desktop/app-desktop/lib/xdg/org.telegram.desktop.desktop`:
 ```ini
 Name=Telegram                                  # 🔴 строка 2
 Comment=New era of messaging                   # 🔴 (нейтрально, но переписать)
@@ -322,7 +322,7 @@ Keywords=tg;chat;im;messaging;messenger;sms;tdesktop;  # 🔴 строка 12
 Exec=Telegram -quit                            # 🔴 строка 20 (Quit action)
 ```
 
-`F:/test_cl/split/behappy-desktop/app-desktop/lib/xdg/org.telegram.desktop.metainfo.xml` — **полный telegram-описательный XML на 116 строк**, включая:
+`F:/test_cl/split/ansible-desktop/app-desktop/lib/xdg/org.telegram.desktop.metainfo.xml` — **полный telegram-описательный XML на 116 строк**, включая:
 - `<id>org.telegram.desktop</id>` (строка 3)
 - `<name>Telegram</name>` (строка 6)
 - 10+ параграфов `<description>` рассказывающих про Telegram FZ-LLC, MTProto, "world's top 10 most downloaded apps" и т.д.
@@ -333,7 +333,7 @@ Exec=Telegram -quit                            # 🔴 строка 20 (Quit acti
 
 🔴 **Severity:** Critical. Это файл, который GNOME Software / KDE Discover / Flathub / Snap Store используют для отображения карточки приложения. Сейчас он на 100% Telegram-овский. **Все три файла надо переписать с нуля + переименовать (`org.behappy.desktop.*`).**
 
-`F:/test_cl/split/behappy-desktop/app-desktop/lib/xdg/org.telegram.desktop.service`:
+`F:/test_cl/split/ansible-desktop/app-desktop/lib/xdg/org.telegram.desktop.service`:
 ```ini
 Name=org.telegram.desktop                                       # 🔴
 Exec=@CMAKE_INSTALL_FULL_BINDIR@/Telegram                       # 🔴
@@ -345,12 +345,12 @@ Exec=@CMAKE_INSTALL_FULL_BINDIR@/Telegram                       # 🔴
 
 | Файл:строка | Что | Severity |
 |-------------|-----|----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/application.cpp:1889-1898` | Регистрация URL-scheme `tg` с описанием `"Telegram Link"`, `shortAppName = u"tdesktop"_q` | 🟡 решить |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/application.cpp:1900-1909` | Регистрация URL-scheme `tonsite` с описанием `"TonSite Link"` | 🟡 не нужна BeHappy (TON выпилили) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/local_url_handlers.cpp` | 12+ мест с `u"tg://resolve"`, `u"tg://join"`, и т.д. | 🟡 в продукт-плане есть выбор: оставить `tg://` для совместимости с экспортированными ссылками OR перейти на `bh://` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/api/api_single_message_search.cpp:41,225` | `if (check.startsWith(u"tg://resolve"_q, Qt::CaseInsensitive))` | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/inline_bots/bot_attach_web_view.cpp:971` | `const auto prefix = u"tg://resolve?"_q;` | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/local_url_handlers.cpp:575,2033` | `if (domain == u"telegrampassport"_q)` — Telegram Passport flow | 🟡 (passport удалён из BeHappy, но обработчик остался) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/application.cpp:1889-1898` | Регистрация URL-scheme `tg` с описанием `"Telegram Link"`, `shortAppName = u"tdesktop"_q` | 🟡 решить |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/application.cpp:1900-1909` | Регистрация URL-scheme `tonsite` с описанием `"TonSite Link"` | 🟡 не нужна BeHappy (TON выпилили) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/local_url_handlers.cpp` | 12+ мест с `u"tg://resolve"`, `u"tg://join"`, и т.д. | 🟡 в продукт-плане есть выбор: оставить `tg://` для совместимости с экспортированными ссылками OR перейти на `bh://` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/api/api_single_message_search.cpp:41,225` | `if (check.startsWith(u"tg://resolve"_q, Qt::CaseInsensitive))` | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/inline_bots/bot_attach_web_view.cpp:971` | `const auto prefix = u"tg://resolve?"_q;` | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/local_url_handlers.cpp:575,2033` | `if (domain == u"telegrampassport"_q)` — Telegram Passport flow | 🟡 (passport удалён из BeHappy, но обработчик остался) |
 
 **Рекомендация:** оставить `tg://` как working URL scheme (60+ мест), но переименовать `protocolName = u"Telegram Link"_q` (`core/application.cpp:1893,1894`) → `u"BeHappy Link"_q` + `shortAppName = u"tdesktop"_q` → `u"behappydesktop"_q`. Это поменяет только описание в Windows-registry / Linux-mimeapps, но не сломает уже-существующие `tg://`-ссылки.
 
@@ -374,12 +374,12 @@ Exec=@CMAKE_INSTALL_FULL_BINDIR@/Telegram                       # 🔴
 
 | Файл:строка | Уточнение | Действие |
 |-------------|-----------|----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/version.h:22` | `constexpr auto AppNameOld = "BeHappy Desktop"_cs;` | 🟡 поменять на `"Telegram Desktop"` для миграции; либо явно ввести `AppNameMigrateFrom` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:338` | `QApplication::setApplicationName(u"TelegramDesktop"_q);` | 🟡 поменять на `u"BeHappyDesktop"_q`. Qt-uses for `QStandardPaths`, `QSettings`, и крах-логи. **На Windows реально влияет:** если код где-то вызывает `QStandardPaths::writableLocation(AppLocalDataLocation)`, оно ВКЛЮЧАЕТ `applicationName` в путь (по умолчанию `%LOCALAPPDATA%/<orgName>/<appName>/`) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:216` | `cExeDir() + u"TelegramForcePortable"_q;` — маркер portable-режима | 🟡 переименовать, но **сломает обратную совместимость** для existing portable-installs (если они есть) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:237-238` | `MoveLegacyAlphaFolder(u"TelegramAlpha_data"_q, u"alpha"_q)` + `MoveLegacyAlphaFolder(u"TelegramBeta_data"_q, u"beta"_q)` | 🟢 legacy migration, можно оставить как есть |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:242` | `return appData.absolutePath() + u"/Telegram Desktop UWP/"_q;` (только OS_WIN_STORE) | 🔴 для UWP-builds менять на `"BeHappy Desktop UWP"` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/linux/specific_linux.cpp:689-700` | Linux ищет `~/.TelegramDesktop/` для миграции legacy data | 🟢 можно оставить (миграция со старого Linux-tdesktop) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/version.h:22` | `constexpr auto AppNameOld = "BeHappy Desktop"_cs;` | 🟡 поменять на `"Telegram Desktop"` для миграции; либо явно ввести `AppNameMigrateFrom` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:338` | `QApplication::setApplicationName(u"TelegramDesktop"_q);` | 🟡 поменять на `u"BeHappyDesktop"_q`. Qt-uses for `QStandardPaths`, `QSettings`, и крах-логи. **На Windows реально влияет:** если код где-то вызывает `QStandardPaths::writableLocation(AppLocalDataLocation)`, оно ВКЛЮЧАЕТ `applicationName` в путь (по умолчанию `%LOCALAPPDATA%/<orgName>/<appName>/`) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:216` | `cExeDir() + u"TelegramForcePortable"_q;` — маркер portable-режима | 🟡 переименовать, но **сломает обратную совместимость** для existing portable-installs (если они есть) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:237-238` | `MoveLegacyAlphaFolder(u"TelegramAlpha_data"_q, u"alpha"_q)` + `MoveLegacyAlphaFolder(u"TelegramBeta_data"_q, u"beta"_q)` | 🟢 legacy migration, можно оставить как есть |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:242` | `return appData.absolutePath() + u"/Telegram Desktop UWP/"_q;` (только OS_WIN_STORE) | 🔴 для UWP-builds менять на `"BeHappy Desktop UWP"` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/linux/specific_linux.cpp:689-700` | Linux ищет `~/.TelegramDesktop/` для миграции legacy data | 🟢 можно оставить (миграция со старого Linux-tdesktop) |
 
 **Миграционный план для existing BeHappy users (если такие были):** написать спец-логику в `Application::start()`, которая проверит наличие `%APPDATA%\Telegram Desktop\tdata\settings*` и `%APPDATA%\BeHappy Desktop\tdata\settings*`, и если ТОЛЬКО первая существует — скопирует/переедет. Без этого юзеры будут "потерять" свои чаты при upgrade.
 
@@ -403,16 +403,16 @@ Exec=@CMAKE_INSTALL_FULL_BINDIR@/Telegram                       # 🔴
 
 | Файл | Где используется | Действие |
 |------|------------------|----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/icons/intro_plane_inner.png` (+ `@2x`, `@3x`) | Welcome-экран при первом запуске, анимация bubble с самолётиком | 🔴 заменить (intro animation) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/icons/intro_plane_outer.png` (+ `@2x`, `@3x`) | Тот же экран | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/icons/intro_plane_top.png` (+ `@2x`, `@3x`) | Тот же экран | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/icons/intro_plane_trace.png` (+ `@2x`, `@3x`) | Тот же экран (след самолёта) | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/icons/intro_qr_plane.png` (+ `@2x`, `@3x`) | QR-login экран — самолётик в углу | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/icons/plane_white.svg` | **Подтверждено по содержимому:** classic Telegram paper-plane SVG (см. path coordinates). Используется в `Telegram/SourceFiles/ui/boxes/peer_qr_box.cpp:887` — на QR-коде для chat link | 🔴 заменить или удалить из QR-генератора |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/icons/folders/folders_airplane.png` (+ `@2x`, `@3x`) | Иконка папки "Travel" | 🟡 нейтральная (просто самолёт, не Telegram-logo). Можно оставить. |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/art/affiliate_logo.png` | Affiliate program promo | 🟡 проверить визуально — название "affiliate_logo" подозрительное |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/art/business_logo.png` | "Telegram Business" promo | 🟡 Business feature выпилен → проверить |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/art/logo_256.png`, `logo_256_no_margin.png` | Splash / Welcome cover (большие хедер-логотипы) | 🟡 имя `logo_*` подозрительное, проверить визуально (МОЖЕТ быть BeHappy-логотип ИЛИ исходный Telegram-логотип) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/icons/intro_plane_inner.png` (+ `@2x`, `@3x`) | Welcome-экран при первом запуске, анимация bubble с самолётиком | 🔴 заменить (intro animation) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/icons/intro_plane_outer.png` (+ `@2x`, `@3x`) | Тот же экран | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/icons/intro_plane_top.png` (+ `@2x`, `@3x`) | Тот же экран | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/icons/intro_plane_trace.png` (+ `@2x`, `@3x`) | Тот же экран (след самолёта) | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/icons/intro_qr_plane.png` (+ `@2x`, `@3x`) | QR-login экран — самолётик в углу | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/icons/plane_white.svg` | **Подтверждено по содержимому:** classic Telegram paper-plane SVG (см. path coordinates). Используется в `Telegram/SourceFiles/ui/boxes/peer_qr_box.cpp:887` — на QR-коде для chat link | 🔴 заменить или удалить из QR-генератора |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/icons/folders/folders_airplane.png` (+ `@2x`, `@3x`) | Иконка папки "Travel" | 🟡 нейтральная (просто самолёт, не Telegram-logo). Можно оставить. |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/art/affiliate_logo.png` | Affiliate program promo | 🟡 проверить визуально — название "affiliate_logo" подозрительное |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/art/business_logo.png` | "Telegram Business" promo | 🟡 Business feature выпилен → проверить |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/art/logo_256.png`, `logo_256_no_margin.png` | Splash / Welcome cover (большие хедер-логотипы) | 🟡 имя `logo_*` подозрительное, проверить визуально (МОЖЕТ быть BeHappy-логотип ИЛИ исходный Telegram-логотип) |
 
 **📋 Список ALL PNG/SVG/TIFF файлов в `Telegram/Resources/art/`** (на случай ручной визуальной инспекции):
 ```
@@ -461,35 +461,35 @@ background.tgv
 
 | Файл:строка | URL | Severity | Действие |
 |-------------|-----|----------|----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:39` | `https://core.telegram.org/api` | 🔴 в About-диалоге | заменить или удалить ссылку |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:48` | `https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE` | 🔴 в About | `https://github.com/behappy-desktop/tdesktop/blob/master/LICENSE` (или указать оба) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:52` | `https://github.com/telegramdesktop/tdesktop` | 🔴 в About | `https://github.com/behappy-desktop/tdesktop` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:85` | `https://tdesktop.com/` (Alpha-download URL) | 🟡 alpha disabled — но строка остаётся в бинаре |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:135` | `https://telegram.org/faq` (returned by `telegramFaqLink()`) | 🔴 — FAQ ссылка |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/application.cpp:1185` | `https://telegramdesktop.github.io/tdesktop/changelog/` — changelog URL | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/update_checker.cpp:1647` | `https://desktop.telegram.org` | 🟡 update checker disabled, но строка остаётся |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/crash_report_window.cpp:440` | `https://desktop.telegram.org` (в crash dialog) | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/window/window_main_menu.cpp:388` | `https://desktop.telegram.org` (Burger menu link) | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp:319` | `https://desktop.telegram.org` (updater) | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/iv/iv_prepare.cpp:765` | `https://t.me/` + username (для генерации share-ссылок на чужого юзера) | 🟡 это logical link, должен указывать на behappy.chat |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/dialogs/ui/dialogs_suggestions.cpp:2962` | `https://t.me/botfather` | 🟡 BotFather только в Telegram'е, в BeHappy свой |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/dialogs/dialogs_top_bar_suggestion.cpp:342` | `https://t.me/premiumbot?start=status` | 🟡 (Premium не используется) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/settings/sections/settings_premium.cpp:1871` | `https://t.me/$" + slug` | 🟡 (Premium удалён) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/sticker_set_box.cpp:887` | `https://t.me/stickers` | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/peers/create_managed_bot_box.cpp:354` | `https://t.me/botfather?start=deletebot` | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/peers/edit_peer_reactions.cpp:943` | `https://telegram.org/tos/stars` | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/choose_filter_box.cpp:492` | `text.startsWith(u"https://t.me/"_q)` (validation) | 🟡 — должна быть `behappy.chat` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/language_box.cpp:515` | `https://t.me/setlanguage/` + lang.id | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/chat_helpers/message_field.cpp:543` | `url.startsWith(u"t.me/"_q) \|\| url.startsWith(u"https://t.me/"_q)` (link-detection regex) | 🟡 internalLinksDomain в `mtproto_config.h` стоит `behappy.chat`, но это hard-coded check не использует config |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/chat_helpers/message_field.cpp:1553` | `tr::link(u"@SpamBot"_q, info.appealUrl)` — антиспам Telegram'а | 🟡 (если BeHappy свой SpamBot — заменить) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/history/history_item.cpp:5895` | `u"internal:url:https://t.me/c/%1/%2"_q` (deep-link на topic) | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/history/view/history_view_element.cpp:1667` | то же | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/history/admin_log/history_admin_log_item.cpp:751` | то же | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/history/history_item_helpers.cpp:1310,1329` | `u"https://desktop.telegram.org"_q` + `QByteArray("https://desktop.telegram.org")` | 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/main/main_session.cpp:74` | `// Like 'https://telegram.me/' or 'https://t.me/'.` (комментарий) | 🟢 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/export/output/export_output_html.cpp:171` | `const auto domain = QByteArray("https://telegram.org/");` (в HTML-export шапке) | 🟡 экспорт чатов |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/data/data_passkey_deserialize.cpp:26` | `obj["origin"] = "https://telegram.org";` — origin для passkey/webauthn | 🔴 (passkey будет работать только для telegram.org) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/ui/boxes/about_cocoon_box.cpp:188` | `u"tg://resolve?domain="_q + username` | 🟡 (cocoon — Telegram-feature, в BeHappy не используется) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:39` | `https://core.telegram.org/api` | 🔴 в About-диалоге | заменить или удалить ссылку |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:48` | `https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE` | 🔴 в About | `https://github.com/ansible-desktop/tdesktop/blob/master/LICENSE` (или указать оба) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:52` | `https://github.com/telegramdesktop/tdesktop` | 🔴 в About | `https://github.com/ansible-desktop/tdesktop` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:85` | `https://tdesktop.com/` (Alpha-download URL) | 🟡 alpha disabled — но строка остаётся в бинаре |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp:135` | `https://telegram.org/faq` (returned by `telegramFaqLink()`) | 🔴 — FAQ ссылка |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/application.cpp:1185` | `https://telegramdesktop.github.io/tdesktop/changelog/` — changelog URL | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/update_checker.cpp:1647` | `https://desktop.telegram.org` | 🟡 update checker disabled, но строка остаётся |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/crash_report_window.cpp:440` | `https://desktop.telegram.org` (в crash dialog) | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/window/window_main_menu.cpp:388` | `https://desktop.telegram.org` (Burger menu link) | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp:319` | `https://desktop.telegram.org` (updater) | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/iv/iv_prepare.cpp:765` | `https://t.me/` + username (для генерации share-ссылок на чужого юзера) | 🟡 это logical link, должен указывать на behappy.chat |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/dialogs/ui/dialogs_suggestions.cpp:2962` | `https://t.me/botfather` | 🟡 BotFather только в Telegram'е, в BeHappy свой |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/dialogs/dialogs_top_bar_suggestion.cpp:342` | `https://t.me/premiumbot?start=status` | 🟡 (Premium не используется) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/settings/sections/settings_premium.cpp:1871` | `https://t.me/$" + slug` | 🟡 (Premium удалён) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/sticker_set_box.cpp:887` | `https://t.me/stickers` | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/peers/create_managed_bot_box.cpp:354` | `https://t.me/botfather?start=deletebot` | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/peers/edit_peer_reactions.cpp:943` | `https://telegram.org/tos/stars` | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/choose_filter_box.cpp:492` | `text.startsWith(u"https://t.me/"_q)` (validation) | 🟡 — должна быть `behappy.chat` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/language_box.cpp:515` | `https://t.me/setlanguage/` + lang.id | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/chat_helpers/message_field.cpp:543` | `url.startsWith(u"t.me/"_q) \|\| url.startsWith(u"https://t.me/"_q)` (link-detection regex) | 🟡 internalLinksDomain в `mtproto_config.h` стоит `behappy.chat`, но это hard-coded check не использует config |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/chat_helpers/message_field.cpp:1553` | `tr::link(u"@SpamBot"_q, info.appealUrl)` — антиспам Telegram'а | 🟡 (если BeHappy свой SpamBot — заменить) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/history/history_item.cpp:5895` | `u"internal:url:https://t.me/c/%1/%2"_q` (deep-link на topic) | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/history/view/history_view_element.cpp:1667` | то же | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/history/admin_log/history_admin_log_item.cpp:751` | то же | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/history/history_item_helpers.cpp:1310,1329` | `u"https://desktop.telegram.org"_q` + `QByteArray("https://desktop.telegram.org")` | 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/main/main_session.cpp:74` | `// Like 'https://telegram.me/' or 'https://t.me/'.` (комментарий) | 🟢 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/export/output/export_output_html.cpp:171` | `const auto domain = QByteArray("https://telegram.org/");` (в HTML-export шапке) | 🟡 экспорт чатов |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/data/data_passkey_deserialize.cpp:26` | `obj["origin"] = "https://telegram.org";` — origin для passkey/webauthn | 🔴 (passkey будет работать только для telegram.org) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/ui/boxes/about_cocoon_box.cpp:188` | `u"tg://resolve?domain="_q + username` | 🟡 (cocoon — Telegram-feature, в BeHappy не используется) |
 
 **Best practice:** хардкод `https://t.me/` в 8+ местах надо вытащить в `Telegram/SourceFiles/mtproto/mtproto_config.h` через тот же механизм `internalLinksDomain` (уже = `https://behappy.chat/`). Сейчас config есть, но не везде используется.
 
@@ -503,33 +503,33 @@ background.tgv
 
 | Файл | Что | Severity |
 |------|-----|----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/winget.yml:10,12,16,18` | `uses: telegramdesktop/winget-releaser@main` + `identifier: Telegram.TelegramDesktop` (Beta тоже) | 🔴 публикует BeHappy под Telegram-identifier в winget. Удалить файл или поменять identifier |
-| `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/win.yml:156,166,170,177,188,192` | `ARTIFACT_NAME="Telegram"` + suffixes (`Telegram x64`, `Telegram x64 6.7`, и т.д.) | 🟡 артефакты в Actions UI будут называться "Telegram x64" |
-| `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/win.yml:205,208,229` | Build step name = "Telegram Desktop build.", `cd ...\Telegram`, `move Telegram.exe artifact/` | 🟡 — но это идёт из CMake (`add_executable(Telegram ...)`), см. ниже |
-| `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/linux.yml:59` | `IMAGE_TAG: tdesktop:centos_env` | 🟢 build-internal |
-| `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/linux.yml:106,113,115` | `name: Telegram Desktop build.` + `ARTIFACT_NAME=Telegram` | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/linux.yml:120,123` | `-v $PWD:/usr/src/tdesktop` + `/usr/src/tdesktop/Telegram/build/docker/centos_env/build.sh` | 🟢 (mount path, internal) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/mac.yml:96,105,107` | `name: Telegram Desktop build.` + `ARTIFACT_NAME=Telegram` | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/mac_packaged.yml:153` | `name: Telegram Desktop build.` | 🟡 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/snap.yml:71,77` | `name: Telegram Desktop snap build.` + `artifact_name=$(echo telegram-desktop_*.snap)` | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/winget.yml:10,12,16,18` | `uses: telegramdesktop/winget-releaser@main` + `identifier: Telegram.TelegramDesktop` (Beta тоже) | 🔴 публикует BeHappy под Telegram-identifier в winget. Удалить файл или поменять identifier |
+| `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/win.yml:156,166,170,177,188,192` | `ARTIFACT_NAME="Telegram"` + suffixes (`Telegram x64`, `Telegram x64 6.7`, и т.д.) | 🟡 артефакты в Actions UI будут называться "Telegram x64" |
+| `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/win.yml:205,208,229` | Build step name = "Telegram Desktop build.", `cd ...\Telegram`, `move Telegram.exe artifact/` | 🟡 — но это идёт из CMake (`add_executable(Telegram ...)`), см. ниже |
+| `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/linux.yml:59` | `IMAGE_TAG: tdesktop:centos_env` | 🟢 build-internal |
+| `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/linux.yml:106,113,115` | `name: Telegram Desktop build.` + `ARTIFACT_NAME=Telegram` | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/linux.yml:120,123` | `-v $PWD:/usr/src/tdesktop` + `/usr/src/tdesktop/Telegram/build/docker/centos_env/build.sh` | 🟢 (mount path, internal) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/mac.yml:96,105,107` | `name: Telegram Desktop build.` + `ARTIFACT_NAME=Telegram` | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/mac_packaged.yml:153` | `name: Telegram Desktop build.` | 🟡 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/snap.yml:71,77` | `name: Telegram Desktop snap build.` + `artifact_name=$(echo telegram-desktop_*.snap)` | 🟡 |
 
 ### 8.2. CMake (где зашит target name "Telegram")
 
 | Файл:строка | Что |
 |-------------|-----|
-| `F:/test_cl/split/behappy-desktop/app-desktop/CMakeLists.txt:19` | `project(Telegram ...)` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/CMakeLists.txt:22` | `DESCRIPTION "Official Telegram Desktop messenger"` 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/CMakeLists.txt:23` | `HOMEPAGE_URL "https://desktop.telegram.org"` 🔴 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/CMakeLists.txt:36` | `VS_STARTUP_PROJECT Telegram` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/CMakeLists.txt:66` | `add_subdirectory(Telegram)` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/CMakeLists.txt:7` | `add_executable(Telegram WIN32 MACOSX_BUNDLE)` 🔴 **это даёт `Telegram.exe`** |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/CMakeLists.txt:2100` | `set(output_name "Telegram")` (non-MAS macOS) 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/CMakeLists.txt:19` | `project(Telegram ...)` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/CMakeLists.txt:22` | `DESCRIPTION "Official Telegram Desktop messenger"` 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/CMakeLists.txt:23` | `HOMEPAGE_URL "https://desktop.telegram.org"` 🔴 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/CMakeLists.txt:36` | `VS_STARTUP_PROJECT Telegram` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/CMakeLists.txt:66` | `add_subdirectory(Telegram)` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/CMakeLists.txt:7` | `add_executable(Telegram WIN32 MACOSX_BUNDLE)` 🔴 **это даёт `Telegram.exe`** |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/CMakeLists.txt:2100` | `set(output_name "Telegram")` (non-MAS macOS) 🔴 |
 
 **Action:** Менять `add_executable(Telegram ...)` → `add_executable(BeHappy ...)`, и `output_name "Telegram"` → `"BeHappy"`. **Это каскадно поменяет** все ссылки в CI (`Telegram.exe` → `BeHappy.exe`, `Telegram.app` → `BeHappy.app`). Но `cmake target name` "Telegram" встречается в 30+ местах внутри `Telegram/CMakeLists.txt` (`target_link_libraries(Telegram ...)`, `set_target_properties(Telegram ...)`) — это RENAME operation, не одну строчку.
 
 ### 8.3. Inno Setup installer (Windows)
 
-Файл `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/build/setup.iss`:
+Файл `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/build/setup.iss`:
 
 ```
 1:  #define MyAppShortName "Telegram"            🔴 → "BeHappy"
@@ -557,7 +557,7 @@ productbuild --sign "3rd Party Mac Developer Installer: Telegram FZ-LLC (C67CF9S
 
 ### 8.5. Snap
 
-Файл `F:/test_cl/split/behappy-desktop/app-desktop/snap/snapcraft.yaml`:
+Файл `F:/test_cl/split/ansible-desktop/app-desktop/snap/snapcraft.yaml`:
 ```yaml
 1:  name: telegram-desktop                              🔴
 2:  adopt-info: telegram                                🔴
@@ -581,15 +581,15 @@ productbuild --sign "3rd Party Mac Developer Installer: Telegram FZ-LLC (C67CF9S
 
 ### 8.6. Docker
 
-`F:/test_cl/split/behappy-desktop/app-desktop/Telegram/build/docker/centos_env/Dockerfile` (используется в CI Linux build): тег по умолчанию `tdesktop:centos_env`. 🟢 internal build, можно оставить, но удобнее переименовать в `behappy:centos_env`.
+`F:/test_cl/split/ansible-desktop/app-desktop/Telegram/build/docker/centos_env/Dockerfile` (используется в CI Linux build): тег по умолчанию `tdesktop:centos_env`. 🟢 internal build, можно оставить, но удобнее переименовать в `behappy:centos_env`.
 
 ### 8.7. Scripts (other)
 
 | Файл:строка | Что | Severity |
 |-------------|-----|----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/build/release.py:252,284,301,310` | `requests.get(url + 'repos/telegramdesktop/tdesktop/releases/...')` — публикует GitHub releases в репозиторий `telegramdesktop/tdesktop`. **НЕ работает для BeHappy** (нет доступа к чужому репо) | 🔴 — но release.py явно не используется в текущей CI (есть свой `master_updater.yml`); рекомендуется удалить или переписать |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/build/build.sh:16`, `deploy.sh:12`, `mac_store_upload.sh:12`, `release.sh:17`, `updates.sh:12` | `echo "https://github.com/telegramdesktop/tdesktop/#build-instructions"` (usage error message) | 🟢 |
-| `F:/test_cl/split/behappy-desktop/app-desktop/scripts/merge_translations.py:13-26` | BEHAPPY_EN_OVERRIDES + BEHAPPY_RU_OVERRIDES — текущий перевод только 4 ключа (`lng_open_from_tray`, `lng_quit_from_tray`, `lng_tray_icon_text`, `lng_intro_qr_step1`) | 🔴 этот скрипт **должен** покрыть все 322 EN/373 RU Telegram-mentioning ключа — сейчас покрывает 4 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/build/release.py:252,284,301,310` | `requests.get(url + 'repos/telegramdesktop/tdesktop/releases/...')` — публикует GitHub releases в репозиторий `telegramdesktop/tdesktop`. **НЕ работает для BeHappy** (нет доступа к чужому репо) | 🔴 — но release.py явно не используется в текущей CI (есть свой `master_updater.yml`); рекомендуется удалить или переписать |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/build/build.sh:16`, `deploy.sh:12`, `mac_store_upload.sh:12`, `release.sh:17`, `updates.sh:12` | `echo "https://github.com/telegramdesktop/tdesktop/#build-instructions"` (usage error message) | 🟢 |
+| `F:/test_cl/split/ansible-desktop/app-desktop/scripts/merge_translations.py:13-26` | BEHAPPY_EN_OVERRIDES + BEHAPPY_RU_OVERRIDES — текущий перевод только 4 ключа (`lng_open_from_tray`, `lng_quit_from_tray`, `lng_tray_icon_text`, `lng_intro_qr_step1`) | 🔴 этот скрипт **должен** покрыть все 322 EN/373 RU Telegram-mentioning ключа — сейчас покрывает 4 |
 
 ---
 
@@ -599,12 +599,12 @@ productbuild --sign "3rd Party Mac Developer Installer: Telegram FZ-LLC (C67CF9S
 
 | Файл | Состояние |
 |------|-----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/LEGAL` | ✅ полный фрак-attribution: "BeHappy Desktop is a derivative work based on Telegram Desktop", copyrights обоих, trademark notice. **GPL §6 compliant.** |
-| `F:/test_cl/split/behappy-desktop/app-desktop/NOTICE` | ✅ 79 строк full attribution, GPL §6 source availability, trademark notice |
-| `F:/test_cl/split/behappy-desktop/app-desktop/README.md` | ✅ перерасписан как fork-of-tdesktop |
-| `F:/test_cl/split/behappy-desktop/app-desktop/CHANGELOG.md` | ✅ упоминает fork и инициальные изменения |
-| `F:/test_cl/split/behappy-desktop/app-desktop/UPSTREAM_CHANGELOG.txt` | ✅ preserved (был `changelog.txt`) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/LICENSE` | ✅ unchanged (GPL v3 + OpenSSL exception, как и упомянуто в commit `fd85f3b`) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/LEGAL` | ✅ полный фрак-attribution: "BeHappy Desktop is a derivative work based on Telegram Desktop", copyrights обоих, trademark notice. **GPL §6 compliant.** |
+| `F:/test_cl/split/ansible-desktop/app-desktop/NOTICE` | ✅ 79 строк full attribution, GPL §6 source availability, trademark notice |
+| `F:/test_cl/split/ansible-desktop/app-desktop/README.md` | ✅ перерасписан как fork-of-tdesktop |
+| `F:/test_cl/split/ansible-desktop/app-desktop/CHANGELOG.md` | ✅ упоминает fork и инициальные изменения |
+| `F:/test_cl/split/ansible-desktop/app-desktop/UPSTREAM_CHANGELOG.txt` | ✅ preserved (был `changelog.txt`) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/LICENSE` | ✅ unchanged (GPL v3 + OpenSSL exception, как и упомянуто в commit `fd85f3b`) |
 
 ### 9.2. Per-source-file copyright headers (🟡 не сделано)
 
@@ -632,7 +632,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 This file is part of BeHappy Desktop, a fork of Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/behappy-desktop/tdesktop/blob/master/LEGAL
+https://github.com/ansible-desktop/tdesktop/blob/master/LEGAL
 */
 ```
 
@@ -642,11 +642,11 @@ https://github.com/behappy-desktop/tdesktop/blob/master/LEGAL
 
 | Файл | Состояние |
 |------|-----------|
-| `F:/test_cl/split/behappy-desktop/app-desktop/AGENTS.md` | 🟡 строка 1: `# Agent Guide for Telegram Desktop` — переписать на BeHappy. Строки 26-29, 65 ссылаются на "Telegram Desktop" |
-| `F:/test_cl/split/behappy-desktop/app-desktop/CLAUDE.md` | ✅ просто pointer на AGENTS.md |
-| `F:/test_cl/split/behappy-desktop/app-desktop/REVIEW.md` | 🟡 проверить |
-| `F:/test_cl/split/behappy-desktop/app-desktop/docs/building-{linux,mac,win}.md` | 🟡 содержит ссылки на upstream tdesktop |
-| `F:/test_cl/split/behappy-desktop/app-desktop/docs/api_credentials.md` | 🟡 проверить, нужен ли для BeHappy (API stubbed) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/AGENTS.md` | 🟡 строка 1: `# Agent Guide for Telegram Desktop` — переписать на BeHappy. Строки 26-29, 65 ссылаются на "Telegram Desktop" |
+| `F:/test_cl/split/ansible-desktop/app-desktop/CLAUDE.md` | ✅ просто pointer на AGENTS.md |
+| `F:/test_cl/split/ansible-desktop/app-desktop/REVIEW.md` | 🟡 проверить |
+| `F:/test_cl/split/ansible-desktop/app-desktop/docs/building-{linux,mac,win}.md` | 🟡 содержит ссылки на upstream tdesktop |
+| `F:/test_cl/split/ansible-desktop/app-desktop/docs/api_credentials.md` | 🟡 проверить, нужен ли для BeHappy (API stubbed) |
 
 ---
 
@@ -658,14 +658,14 @@ https://github.com/behappy-desktop/tdesktop/blob/master/LEGAL
 
 | Файл:строка | Что |
 |-------------|-----|
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:378` | `LOG(("AppUserModelID: %1").arg(appUserModelId));` — **именно эта строка** ловится в логе юзера = `Telegram.TelegramDesktop.<hash>` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/api/api_updates.cpp:516` | `LOG(("API Error: updates.differenceTooLong is not supported by Telegram Desktop!"));` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/sandbox.cpp:320` | `LOG(("This is the only instance of Telegram, starting server and app..."));` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:416` | `DEBUG_LOG(("Telegram finished, result: %1"))` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:424` | `DEBUG_LOG(("Sandbox Info: executing Telegram because of restart."))` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/mtproto/mtproto_dc_options.cpp:759,795` | `LOG(("MTP Error: in .tdesktop-endpoints expected ...")) ` |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:477-478` | `L"Telegram autorun link.\n" "You can disable autorun in Telegram settings.")` — описание .lnk shortcut в autorun (видно в MSConfig) |
-| `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:711-712` | `L"Telegram send to link.\n" "You can disable send to menu item in Telegram settings.")` — описание ярлыка в SendTo |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:378` | `LOG(("AppUserModelID: %1").arg(appUserModelId));` — **именно эта строка** ловится в логе юзера = `Telegram.TelegramDesktop.<hash>` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/api/api_updates.cpp:516` | `LOG(("API Error: updates.differenceTooLong is not supported by Telegram Desktop!"));` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/sandbox.cpp:320` | `LOG(("This is the only instance of Telegram, starting server and app..."));` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:416` | `DEBUG_LOG(("Telegram finished, result: %1"))` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp:424` | `DEBUG_LOG(("Sandbox Info: executing Telegram because of restart."))` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/mtproto/mtproto_dc_options.cpp:759,795` | `LOG(("MTP Error: in .tdesktop-endpoints expected ...")) ` |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:477-478` | `L"Telegram autorun link.\n" "You can disable autorun in Telegram settings.")` — описание .lnk shortcut в autorun (видно в MSConfig) |
+| `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp:711-712` | `L"Telegram send to link.\n" "You can disable send to menu item in Telegram settings.")` — описание ярлыка в SendTo |
 
 ### 10.2. Внутренние символы (только developer-facing)
 
@@ -690,7 +690,7 @@ https://github.com/behappy-desktop/tdesktop/blob/master/LEGAL
 | Commit | Что сделал |
 |--------|-----------|
 | **`7da05ed`** (Initial: BeHappy Desktop Client, 7da05ed) | Точка отсчёта — копия tdesktop. |
-| **`9220392`** + **`d728017`** | Переключили git submodules на `behappy-desktop` org (32/32). |
+| **`9220392`** + **`d728017`** | Переключили git submodules на `ansible-desktop` org (32/32). |
 | **`fd85f3b`** chore(legal): GPL v3 compliance | ✅ LEGAL + NOTICE + README + CHANGELOG переписаны. Per-file headers ОСТАВЛЕНЫ TODO. |
 | **`0e616d6`** Replace app icons with BeHappy logo | ✅ 26 PNG/.ico/.iconset файлов (art/icon*, AppIcon.appiconset, Icon.iconset). |
 | **`b7c0f99`** feat: replace Telegram icons with BeHappy branding | ✅ 18 файлов: tray SVG, mac tray PNGs, green icon variants, AppIcon.appiconset (повторно). |
@@ -750,7 +750,7 @@ https://github.com/behappy-desktop/tdesktop/blob/master/LEGAL
 | B4 | Lang strings все остальные ~150 Telegram-ссылок | Bulk replace: `Telegram` → `BeHappy`, `Telegram Desktop` → `BeHappy Desktop`, `telegram.org/*` → `behappy.rest/*` (или удалить ссылку). Visual review каждой. Sync RU. | 6-10 ч |
 | B5 | URL'ы в lang.strings (27) | Удалить ссылки на `telegram.org/tos`, `telegram.org/privacy`, `telegram.org/blog`, `ads.telegram.org` (нет BeHappy-аналогов). Заменить `telegram.org/faq` → `behappy.rest/faq`. | 1-2 ч |
 | B6 | CI workflow renames | `.github/workflows/{win,mac,linux,snap,mac_packaged}.yml` — заменить `ARTIFACT_NAME="Telegram"` → `"BeHappy"`, build-step names, и `IMAGE_TAG: tdesktop:centos_env` → `behappy:centos_env`. | 1-2 ч |
-| B7 | Snap snapcraft.yaml | `snap/snapcraft.yaml` — переименовать `name: telegram-desktop` → `behappy-desktop`, `APP_ID=org.telegram.desktop` → `org.behappy.desktop`, удалить hardcoded `TDESKTOP_API_ID=611335`/`TDESKTOP_API_HASH=...` (это Telegram's API key — НЕЛЬЗЯ публиковать в snap под чужим брендом). | 1-2 ч |
+| B7 | Snap snapcraft.yaml | `snap/snapcraft.yaml` — переименовать `name: telegram-desktop` → `ansible-desktop`, `APP_ID=org.telegram.desktop` → `org.behappy.desktop`, удалить hardcoded `TDESKTOP_API_ID=611335`/`TDESKTOP_API_HASH=...` (это Telegram's API key — НЕЛЬЗЯ публиковать в snap под чужим брендом). | 1-2 ч |
 | B8 | mac DMG background (`mac_setup.tiff`) + любые `affiliate_logo`/`business_logo`/`logo_256*` если на них Telegram-логотип | Manual visual inspection → пересоздать. | 2-4 ч (без дизайна) |
 | B9 | Log messages | 8 строк (раздел 10.1) — заменить `"Telegram"` → `"BeHappy"` в LOG()/DEBUG_LOG()/wsprintf() | 1 ч |
 | B10 | `data_passkey_deserialize.cpp:26` (passkey origin = telegram.org) | 🔴 если passkey-фича работает — заменить на `behappy.chat`. | 0.5 ч |
@@ -762,7 +762,7 @@ https://github.com/behappy-desktop/tdesktop/blob/master/LEGAL
 
 | # | Кластер | Действие | Эстимейт |
 |---|---------|----------|----------|
-| C1 | Per-file copyright headers (2459 файлов) | Один скриптовый sed-replace: `This file is part of Telegram Desktop, the official desktop application for the Telegram messaging service.` → `This file is part of BeHappy Desktop, a fork of Telegram Desktop.` + URL `github.com/telegramdesktop/tdesktop` → `github.com/behappy-desktop/tdesktop`. **Одна команда:** `find Telegram/ -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.mm" -o -name "*.style" -o -name "*.cmake" \) -exec sed -i ...`. | 1-2 ч |
+| C1 | Per-file copyright headers (2459 файлов) | Один скриптовый sed-replace: `This file is part of Telegram Desktop, the official desktop application for the Telegram messaging service.` → `This file is part of BeHappy Desktop, a fork of Telegram Desktop.` + URL `github.com/telegramdesktop/tdesktop` → `github.com/ansible-desktop/tdesktop`. **Одна команда:** `find Telegram/ -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.mm" -o -name "*.style" -o -name "*.cmake" \) -exec sed -i ...`. | 1-2 ч |
 | C2 | `Telegram` folder rename | Структура папок (`Telegram/SourceFiles/`, `Telegram/Resources/`, `Telegram/CMakeLists.txt`) — оставить как есть (переименование сломает thousands of include paths, не оправдано). | 0 ч (do nothing) |
 | C3 | `AGENTS.md`, `REVIEW.md`, `docs/building-*.md` rebrand | Заменить "Telegram Desktop" → "BeHappy Desktop" в текстах документации, актуализировать build-instructions URL'ы. | 2-3 ч |
 | C4 | Cleanup `tonsite` scheme (TON не используется в BeHappy) | `core/application.cpp:1900-1909`, `Telegram.plist:41` — удалить tonsite registration. | 1 ч |
@@ -784,65 +784,65 @@ https://github.com/behappy-desktop/tdesktop/blob/master/LEGAL
 
 ### Файлы, цитированные в отчёте
 
-- `F:/test_cl/split/behappy-desktop/app-desktop/AGENTS.md`
-- `F:/test_cl/split/behappy-desktop/app-desktop/CHANGELOG.md`
-- `F:/test_cl/split/behappy-desktop/app-desktop/CLAUDE.md`
-- `F:/test_cl/split/behappy-desktop/app-desktop/CMakeLists.txt`
-- `F:/test_cl/split/behappy-desktop/app-desktop/LEGAL`
-- `F:/test_cl/split/behappy-desktop/app-desktop/NOTICE`
-- `F:/test_cl/split/behappy-desktop/app-desktop/README.md`
-- `F:/test_cl/split/behappy-desktop/app-desktop/lib/xdg/org.telegram.desktop.desktop`
-- `F:/test_cl/split/behappy-desktop/app-desktop/lib/xdg/org.telegram.desktop.metainfo.xml`
-- `F:/test_cl/split/behappy-desktop/app-desktop/lib/xdg/org.telegram.desktop.service`
-- `F:/test_cl/split/behappy-desktop/app-desktop/snap/snapcraft.yaml`
-- `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/winget.yml`
-- `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/win.yml`
-- `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/linux.yml`
-- `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/mac.yml`
-- `F:/test_cl/split/behappy-desktop/app-desktop/.github/workflows/snap.yml`
-- `F:/test_cl/split/behappy-desktop/app-desktop/scripts/merge_translations.py`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Telegram.plist`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/CMakeLists.txt`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Updater.rc`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/winrc/Telegram.manifest`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/uwp/AppX/AppxManifest.xml`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/langs/lang.strings`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/langs/lang_ru.strings`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/icons/plane_white.svg`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/icons/tray_monochrome.svg`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Resources/qrc/telegram/telegram.qrc`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/version.h`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/config.h`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/application.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/local_url_handlers.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/sandbox.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/click_handler_types.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/core/crash_report_window.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/intro/intro_start.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/intro/intro.style`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/window/main_window.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/window/window_main_menu.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/window/notifications_manager_default.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/settings/sections/settings_notifications.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/export/output/export_output_abstract.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/export/output/export_output_html.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/data/data_passkey_deserialize.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/api/api_updates.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/mtproto/mtproto_dc_options.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/mtproto/mtproto_config.h`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/SourceFiles/platform/linux/specific_linux.cpp`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/cmake/telegram_options.cmake`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/build/setup.iss`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/build/build.sh`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/build/release.py`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/build/version`
-- `F:/test_cl/split/behappy-desktop/app-desktop/Telegram/Telegram/{Telegram,Telegram Lite,Breakpad}.entitlements`
+- `F:/test_cl/split/ansible-desktop/app-desktop/AGENTS.md`
+- `F:/test_cl/split/ansible-desktop/app-desktop/CHANGELOG.md`
+- `F:/test_cl/split/ansible-desktop/app-desktop/CLAUDE.md`
+- `F:/test_cl/split/ansible-desktop/app-desktop/CMakeLists.txt`
+- `F:/test_cl/split/ansible-desktop/app-desktop/LEGAL`
+- `F:/test_cl/split/ansible-desktop/app-desktop/NOTICE`
+- `F:/test_cl/split/ansible-desktop/app-desktop/README.md`
+- `F:/test_cl/split/ansible-desktop/app-desktop/lib/xdg/org.telegram.desktop.desktop`
+- `F:/test_cl/split/ansible-desktop/app-desktop/lib/xdg/org.telegram.desktop.metainfo.xml`
+- `F:/test_cl/split/ansible-desktop/app-desktop/lib/xdg/org.telegram.desktop.service`
+- `F:/test_cl/split/ansible-desktop/app-desktop/snap/snapcraft.yaml`
+- `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/winget.yml`
+- `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/win.yml`
+- `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/linux.yml`
+- `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/mac.yml`
+- `F:/test_cl/split/ansible-desktop/app-desktop/.github/workflows/snap.yml`
+- `F:/test_cl/split/ansible-desktop/app-desktop/scripts/merge_translations.py`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Telegram.plist`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/CMakeLists.txt`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Telegram.rc`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Updater.rc`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/winrc/Telegram.manifest`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/uwp/AppX/AppxManifest.xml`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/langs/lang.strings`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/langs/lang_ru.strings`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/icons/plane_white.svg`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/icons/tray_monochrome.svg`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Resources/qrc/telegram/telegram.qrc`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/version.h`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/config.h`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/launcher.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/application.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/local_url_handlers.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/sandbox.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/click_handler_types.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/core/crash_report_window.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/boxes/about_box.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/intro/intro_start.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/intro/intro.style`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/window/main_window.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/window/window_main_menu.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/window/notifications_manager_default.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/settings/sections/settings_notifications.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/export/output/export_output_abstract.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/export/output/export_output_html.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/data/data_passkey_deserialize.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/_other/updater_win.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/api/api_updates.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/mtproto/mtproto_dc_options.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/mtproto/mtproto_config.h`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/windows_app_user_model_id.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/win/specific_win.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/SourceFiles/platform/linux/specific_linux.cpp`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/cmake/telegram_options.cmake`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/build/setup.iss`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/build/build.sh`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/build/release.py`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/build/version`
+- `F:/test_cl/split/ansible-desktop/app-desktop/Telegram/Telegram/{Telegram,Telegram Lite,Breakpad}.entitlements`
 
 ### Связанные коммиты (для cross-reference)
 
