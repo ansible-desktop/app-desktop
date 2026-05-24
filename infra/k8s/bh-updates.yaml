@@ -1,0 +1,143 @@
+# Ansible Desktop auto-update server (Step 1: static manifest + nginx).
+# Serves https://ansible.rest/td/current2 (and future /td/<platform>/<file>)
+# from nginx. Initial state: declares current version 1002 for all
+# platforms, so connected clients see "you are up to date".
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bh-updates-manifest
+  namespace: behappy-infra
+  labels:
+    app: bh-updates
+data:
+  current2: |
+    {
+      "win64": {
+        "stable": {
+          "link": "/td/win64/tx64upd{version}",
+          "version": 1002
+        }
+      },
+      "win": {
+        "stable": {
+          "link": "/td/win/tsetup{version}",
+          "version": 1002
+        }
+      },
+      "winarm": {
+        "stable": {
+          "link": "/td/winarm/twinarm-upd{version}",
+          "version": 1002
+        }
+      },
+      "mac": {
+        "stable": {
+          "link": "/td/mac/tmacupd{version}",
+          "version": 1002
+        }
+      },
+      "linux": {
+        "stable": {
+          "link": "/td/linux/tlinuxupd{version}",
+          "version": 1002
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bh-updates
+  namespace: behappy-infra
+  labels:
+    app: bh-updates
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bh-updates
+  template:
+    metadata:
+      labels:
+        app: bh-updates
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: manifest
+              mountPath: /usr/share/nginx/html/td
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /td/current2
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /td/current2
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 30
+      volumes:
+        - name: manifest
+          configMap:
+            name: bh-updates-manifest
+            items:
+              - key: current2
+                path: current2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bh-updates
+  namespace: behappy-infra
+  labels:
+    app: bh-updates
+spec:
+  type: ClusterIP
+  selector:
+    app: bh-updates
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: updates
+  namespace: behappy-infra
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - ansible.rest
+      secretName: ansible-rest-tls
+  rules:
+    - host: ansible.rest
+      http:
+        paths:
+          - path: /td
+            pathType: Prefix
+            backend:
+              service:
+                name: bh-updates
+                port:
+                  number: 80
