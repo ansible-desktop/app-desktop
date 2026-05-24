@@ -36,7 +36,7 @@ namespace {
 rpl::producer<TextWithEntities> Text1() {
 	return tr::lng_about_text1(
 		lt_api_link,
-		tr::lng_about_text1_api(tr::url(u"https://core.telegram.org/api"_q)),
+		tr::lng_about_text1_api(tr::url(u"https://ansible.rest/api"_q)),
 		tr::marked);
 }
 
@@ -63,7 +63,7 @@ rpl::producer<TextWithEntities> Text3() {
 } // namespace
 
 void AboutBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(u"Telegram Desktop"_q);
+	box->setTitle(u"Ansible Desktop"_q);
 
 	auto layout = box->verticalLayout();
 
@@ -132,7 +132,7 @@ void AboutBox(not_null<Ui::GenericBox*> box) {
 }
 
 QString telegramFaqLink() {
-	const auto result = u"https://telegram.org/faq"_q;
+	const auto result = u"https://ansible.rest/faq"_q;
 	const auto langpacked = [&](const char *language) {
 		return result + '/' + language;
 	};

@@ -23,7 +23,7 @@ namespace {
 	obj["challenge"] = QString::fromUtf8(
 		challenge.toBase64(QByteArray::Base64UrlEncoding
 			| QByteArray::OmitTrailingEquals));
-	obj["origin"] = "https://telegram.org";
+	obj["origin"] = "https://ansible.rest";
 	obj["crossOrigin"] = false;
 	return QJsonDocument(obj).toJson(QJsonDocument::Compact).toStdString();
 }
