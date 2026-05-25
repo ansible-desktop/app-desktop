@@ -127,7 +127,7 @@ using ProxyData = MTP::ProxyData;
 
 [[nodiscard]] QString ProxyDataToLocalLink(const ProxyData &proxy) {
 	const auto queryPath = ProxyDataToQueryPath(proxy);
-	return queryPath.isEmpty() ? QString() : (u"tg://"_q + queryPath);
+	return queryPath.isEmpty() ? QString() : (u"as://"_q + queryPath);
 }
 
 [[nodiscard]] QString ProxyDataToPublicLink(
@@ -288,7 +288,7 @@ void AddProxyFromClipboard(
 		std::shared_ptr<Ui::Show> show) {
 	const auto proxyString = u"proxy"_q;
 	const auto socksString = u"socks"_q;
-	const auto protocol = u"tg://"_q;
+	const auto protocol = u"as://"_q;
 
 	const auto maybeUrls = ExtractLinkCandidates(
 		QGuiApplication::clipboard()->text());

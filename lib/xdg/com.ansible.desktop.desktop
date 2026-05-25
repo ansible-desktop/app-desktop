@@ -9,6 +9,7 @@ StartupWMClass=AnsibleDesktop
 Type=Application
 Categories=Chat;Network;InstantMessaging;Qt;
 Keywords=chat;im;messaging;messenger;ansible;
+MimeType=x-scheme-handler/as;
 Actions=quit;
 DBusActivatable=true
 SingleMainWindow=true

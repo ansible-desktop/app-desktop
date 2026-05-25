@@ -40,7 +40,7 @@
        Description="Ansible Desktop messenger" />
       <Extensions>
         <uap3:Extension Category="windows.protocol">
-          <uap3:Protocol Name="ansible" Parameters="-- &quot;%1&quot;" />
+          <uap3:Protocol Name="as" Parameters="-- &quot;%1&quot;" />
         </uap3:Extension>
         <desktop:Extension
           Category="windows.startupTask"

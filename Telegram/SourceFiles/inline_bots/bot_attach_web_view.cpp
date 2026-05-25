@@ -968,7 +968,7 @@ void WebViewInstance::resolve() {
 bool WebViewInstance::openAppFromBotMenuLink() {
 	const auto url = QString::fromUtf8(_button.url);
 	const auto local = Core::TryConvertUrlToLocal(url);
-	const auto prefix = u"tg://resolve?"_q;
+	const auto prefix = u"as://resolve?"_q;
 	if (!local.startsWith(prefix)) {
 		return false;
 	}
@@ -1505,7 +1505,7 @@ bool WebViewInstance::botHandleLocalUri(QString uri, bool keepOpen) {
 	const auto local = Core::TryConvertUrlToLocal(uri);
 	if (Core::InternalPassportOrOAuthLink(local)) {
 		return true;
-	} else if (!local.startsWith(u"tg://"_q, Qt::CaseInsensitive)
+	} else if (!local.startsWith(u"as://"_q, Qt::CaseInsensitive)
 		&& !local.startsWith(u"tonsite://"_q, Qt::CaseInsensitive)
 		&& !local.startsWith(u"ton://"_q, Qt::CaseInsensitive)) {
 		return false;
