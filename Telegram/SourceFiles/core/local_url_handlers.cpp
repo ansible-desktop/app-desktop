@@ -1849,21 +1849,13 @@ QString TryConvertUrlToLocal(QString url) {
 		const auto protocol = tonsiteMatch->captured(1);
 		return u"tonsite://"_q + url.mid(protocol.size());
 	}
-	auto subdomainMatch = regex_match(u"^(https?://)?([a-zA-Z0-9\\_]+)\\.ansible\\.rest(/\\d+)?/?(\\?.+)?"_q, url, matchOptions);
-	if (subdomainMatch) {
-		const auto name = subdomainMatch->captured(2);
-		if (name.size() > 1 && name != "www") {
-			const auto result = TryConvertUrlToLocal(
-				subdomainMatch->captured(1)
-				+ "ansible.rest/"
-				+ name
-				+ subdomainMatch->captured(3)
-				+ subdomainMatch->captured(4));
-			return result.startsWith("tg://resolve?domain=")
-				? result
-				: url;
-		}
-	}
+	// NOTE: Subdomain deep-link redirect was upstream (`<lang>.t.me/<id>`
+	// converted to `t.me/<lang>/<id>`). Ansible subdomains are webapp
+	// hosts (wallet.ansible.rest, web.ansible.rest, core.ansible.rest,
+	// api.ansible.rest, etc.) and MUST navigate normally inside webviews,
+	// not be redirected as deep links. Removing the subdomain rule kills
+	// the mini-app crash where wallet.ansible.rest was rewritten to
+	// tg://resolve?domain=wallet and the webview was force-closed.
 	auto ansibleRestMatch = regex_match(u"^(https?://)?(www\\.)?ansible\\.rest/(.+)$"_q, url, matchOptions);
 	if (ansibleRestMatch) {
 		const auto query = ansibleRestMatch->capturedView(3);
