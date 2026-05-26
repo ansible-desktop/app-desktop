@@ -440,12 +440,13 @@ QImage *PeerData::userpicCloudImage(Ui::PeerUserpicView &view) const {
 	if (const auto image = view.cloud.get(); image && !image->isNull()) {
 		_userpicEmpty = nullptr;
 		return image;
-	} else if (isNotificationsUser()) {
-		static auto result = Window::LogoNoMargin().scaledToWidth(
-			kUserpicSize,
-			Qt::SmoothTransformation);
-		return &result;
 	}
+	// NOTE: upstream tdesktop returned the app logo (LogoNoMargin) as avatar
+	// for the notifications user 777000 when no cloud avatar was set. We
+	// dropped that override -- the backend serves a real avatar for that
+	// account, and when it isn't loaded yet we want the regular EmptyUserpic
+	// letter fallback (first letter of name 'Ansible' = 'A') rather than the
+	// hardcoded app icon.
 	return nullptr;
 }
 
