@@ -913,7 +913,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 "lng_settings_suggestion_phone_number_title" = "Is {phone} still your number?";
 "lng_settings_suggestion_phone_number_about" = "Keep your number up to date to ensure you can always log into Ansible. {link}";
-"lng_settings_suggestion_phone_number_about_link" = "https://ansible.rest/faq#q-i-have-a-new-phone-number-what-do-i-do";
+"lng_settings_suggestion_phone_number_about_link" = "https://core.ansible.rest/faq#q-i-have-a-new-phone-number-what-do-i-do";
 "lng_settings_suggestion_phone_number_change" = "Please change your phone number in the official Ansible app on your phone as soon as possible. {emoji}";
 "lng_settings_suggestion_password_title" = "Your password";
 "lng_settings_suggestion_password_about" = "Your account is protected by 2-Step Veritifaction. Do you still remember your password?";
@@ -1295,7 +1295,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_settings_ask_ok" = "Ask a Volunteer";
 "lng_settings_faq" = "Ansible FAQ";
 "lng_settings_faq_subtitle" = "FAQ";
-"lng_settings_faq_link" = "https://ansible.rest/faq#general-questions";
+"lng_settings_faq_link" = "https://core.ansible.rest/faq#general-questions";
 "lng_settings_features" = "Ansible Features";
 "lng_settings_credits" = "My Stars";
 "lng_settings_currency" = "My TON";

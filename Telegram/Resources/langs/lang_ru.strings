@@ -30,10 +30,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 "lng_disable_notifications_from_tray" = "Отключить уведомления";
 "lng_enable_notifications_from_tray" = "Включить уведомления";
-"lng_open_from_tray" = "Открыть BeHappy";
+"lng_open_from_tray" = "Открыть Ansible";
 "lng_minimize_to_tray" = "Свернуть";
-"lng_quit_from_tray" = "Закрыть BeHappy";
-"lng_tray_icon_text" = "BeHappy всё ещё работает,\nВы можете изменить это в настройках.\nЕсли значок исчезнет из трея,\nВы можете ��еретащить его обратно из скрытых значков.";
+"lng_quit_from_tray" = "Закрыть Ansible";
+"lng_tray_icon_text" = "Ansible всё ещё работает,\nВы можете изменить это в настройках.\nЕсли значок исчезнет из трея,\nВы можете ��еретащить его обратно из скрытых значков.";
 
 // For lng_month_year or plain month name.
 "lng_month1" = "Январь";
@@ -487,7 +487,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_photos_comment" = "Комментарий";
 
 "lng_intro_qr_title" = "Сканируйте с телефона";
-"lng_intro_qr_step1" = "Откройте BeHappy на телефоне";
+"lng_intro_qr_step1" = "Откройте Ansible на телефоне";
 "lng_intro_qr_step2" = "Перейдите в Настройки > Устройства > Подключить устройство";
 "lng_intro_qr_step3" = "Сканируйте этот код для авторизации";
 "lng_intro_qr_skip" = "Вход по номеру телефона";
@@ -783,7 +783,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_settings_title_total_count" = "Счётчик непрочитанных сообщений";
 "lng_settings_native_frame" = "Системная рамка окна";
 "lng_settings_qt_frame" = "Рамка окна Qt";
-"lng_settings_auto_start" = "Запускать BeHappy при запуске системы";
+"lng_settings_auto_start" = "Запускать Ansible при запуске системы";
 "lng_settings_start_min" = "Запускать в свёрнутом виде";
 "lng_settings_auto_start_disabled_uwp" = "Запуск вместе с системой отключён в настройках Windows.Вы можете включить его для Ansible Desktop в настройках запуска приложений.";
 "lng_settings_open_system_settings" = "Перейти в настройки";
@@ -1025,7 +1025,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 "lng_settings_suggestion_phone_number_title" = "{phone} всё ещё Ваш номер?";
 "lng_settings_suggestion_phone_number_about" = "Чтобы Вы всегда могли зайти в Ansible, важно указать актуальный номер телефона. {link}";
-"lng_settings_suggestion_phone_number_about_link" = "https://ansible.rest/faq#q-i-have-a-new-phone-number-what-do-i-do";
+"lng_settings_suggestion_phone_number_about_link" = "https://core.ansible.rest/faq#q-i-have-a-new-phone-number-what-do-i-do";
 "lng_settings_suggestion_phone_number_change" = "Как можно скорее измените номер телефона в официальном мобильном приложении Ansible. {emoji}";
 "lng_settings_suggestion_password_title" = "Ваш пароль";
 "lng_settings_suggestion_password_about" = "Ваша учётная запись защищена облачным паролем. Вы помните свой пароль?";
@@ -1433,7 +1433,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_settings_ask_ok" = "Задать вопрос";
 "lng_settings_faq" = "Вопросы о Ansible";
 "lng_settings_faq_subtitle" = "FAQ";
-"lng_settings_faq_link" = "https://ansible.rest/faq#general-questions";
+"lng_settings_faq_link" = "https://core.ansible.rest/faq#general-questions";
 "lng_settings_features" = "Возможности Ansible";
 "lng_settings_credits" = "Мои звёзды";
 "lng_settings_currency" = "Мои TON";
