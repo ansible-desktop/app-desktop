@@ -22,7 +22,17 @@ constexpr auto AppId = "{5DE84367-0BFF-4829-8074-A3C10556F2FB}"_cs;
 constexpr auto AppNameOld = "Ansible Desktop"_cs;
 constexpr auto AppName = "Ansible Desktop"_cs;
 constexpr auto AppFile = "Ansible"_cs;
-constexpr auto AppVersion = 1002;
+// AppVersion is the INTERNAL integer used by tdesktop for on-disk serialization
+// format gates and auto-update comparison. It MUST stay >= 2008007 — below that,
+// readPeer() takes legacy paths (skips flags/inlinePlaceholder) while writePeer()
+// always writes the modern format, corrupting the deserialized self user
+// (botInfoVersion reads the saved lastseen value -> self wrongly shown as a bot).
+// The fork's previous value 1002 fell into tdesktop's pre-0.9.x legacy range.
+//
+// Display version is AppVersionStr below (decoupled). Versioning scheme:
+//   displayed "0.<minor>.<patch>"  <->  AppVersion = 3000000 + minor*1000 + patch
+// Bump BOTH on each release, and keep the bh-updates manifest version in sync.
+constexpr auto AppVersion = 3001002;     // displayed as 0.1.2 (see AppVersionStr)
 constexpr auto AppVersionStr = "0.1.2";
 constexpr auto AppBetaVersion = false;
 constexpr auto AppAlphaVersion = TDESKTOP_ALPHA_VERSION;
