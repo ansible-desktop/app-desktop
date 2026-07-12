@@ -553,7 +553,7 @@ const QString &readAutoupdatePrefixRaw() {
 			return AutoupdatePrefix(value);
 		}
 	}
-	return AutoupdatePrefix("https://ansible.rest/td");
+	return AutoupdatePrefix("https://ansible.su/td");
 }
 
 void writeAutoupdatePrefix(const QString &prefix) {

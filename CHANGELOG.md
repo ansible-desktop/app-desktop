@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 - Initial fork from Telegram Desktop v6.6.4.
 - MVSy 1.0 protocol layer (replaces MTProto 2.0).
-- Connection to Ansible backend (`mvsy.ansible.rest`).
+- Connection to Ansible backend (`mvsy.ansible.su`).
 - Ansible branding: app name, icon, splash screen, color scheme.
 
 ### Removed

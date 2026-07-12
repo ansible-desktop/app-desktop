@@ -41,7 +41,7 @@ The complete list of changes from upstream is tracked in
 | | Telegram Desktop | Ansible Desktop |
 |---|---|---|
 | License | GPL v3 + OpenSSL exception | GPL v3 + OpenSSL exception (same) |
-| Backend | Telegram DCs | Ansible servers (`mvsy.ansible.rest`) |
+| Backend | Telegram DCs | Ansible servers (`mvsy.ansible.su`) |
 | Protocol | MTProto 2.0 | MVSy 1.0 |
 | Trademarks | Telegram, MTProto | Ansible |
 | Account compatibility | Telegram accounts | Ansible accounts (separate system) |
@@ -54,7 +54,7 @@ independently maintained.
 
 The latest Ansible Desktop builds are available at:
 
-- Windows / macOS / Linux: <https://ansible.rest/desktop>
+- Windows / macOS / Linux: <https://ansible.su/desktop>
 - Source release archives: <https://github.com/ansible-desktop/app-desktop/releases>
 
 For Telegram Desktop (the upstream project) please visit
@@ -114,10 +114,10 @@ product.
 
 ## Contact
 
-- General: <https://ansible.rest>
+- General: <https://ansible.su>
 - Source code questions: open an issue on this repository
-- License compliance / DMCA: <legal@ansible.rest>
+- License compliance / DMCA: <legal@ansible.su>
 
-[behappy]: https://ansible.rest
+[behappy]: https://ansible.su
 [tdesktop]: https://github.com/telegramdesktop/tdesktop
 [license]: https://github.com/ansible-desktop/app-desktop/blob/master/LICENSE

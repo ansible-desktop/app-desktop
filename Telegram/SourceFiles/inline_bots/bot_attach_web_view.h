@@ -97,7 +97,7 @@ struct WebViewSourceSwitch {
 		const WebViewSourceSwitch &) = default;
 };
 
-struct WebViewSourceLinkApp { // ansible.rest/botusername/appname
+struct WebViewSourceLinkApp { // ansible.su/botusername/appname
 	base::weak_ptr<WebViewInstance> from;
 	QString appname;
 	QString token;
@@ -118,7 +118,7 @@ struct WebViewSourceLinkAttachMenu { // ?startattach
 		const WebViewSourceLinkAttachMenu &) = default;
 };
 
-struct WebViewSourceLinkBotProfile { // ansible.rest/botusername?startapp
+struct WebViewSourceLinkBotProfile { // ansible.su/botusername?startapp
 	base::weak_ptr<WebViewInstance> from;
 	QString token;
 	bool compact = false;

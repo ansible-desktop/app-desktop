@@ -1307,7 +1307,7 @@ void CheckPollVoteNotificationSchedule(
 }
 
 [[nodiscard]] TextWithEntities UnsupportedMessageText() {
-	const auto siteLink = u"https://ansible.rest"_q;
+	const auto siteLink = u"https://ansible.su"_q;
 	auto result = TextWithEntities{
 		tr::lng_message_unsupported(tr::now, lt_link, siteLink)
 	};
@@ -1326,7 +1326,7 @@ HistoryMessageMarkupData UnsupportedMessageMarkup() {
 		Button::Type::Url,
 		tr::lng_update_telegram(tr::now),
 		Button::Visual(),
-		QByteArray("https://ansible.rest"));
+		QByteArray("https://ansible.su"));
 	markup.rows.push_back(std::move(row));
 	return markup;
 }

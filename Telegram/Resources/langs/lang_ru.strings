@@ -1025,7 +1025,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 "lng_settings_suggestion_phone_number_title" = "{phone} всё ещё Ваш номер?";
 "lng_settings_suggestion_phone_number_about" = "Чтобы Вы всегда могли зайти в Ansible, важно указать актуальный номер телефона. {link}";
-"lng_settings_suggestion_phone_number_about_link" = "https://core.ansible.rest/faq#q-i-have-a-new-phone-number-what-do-i-do";
+"lng_settings_suggestion_phone_number_about_link" = "https://core.ansible.su/faq#q-i-have-a-new-phone-number-what-do-i-do";
 "lng_settings_suggestion_phone_number_change" = "Как можно скорее измените номер телефона в официальном мобильном приложении Ansible. {emoji}";
 "lng_settings_suggestion_password_title" = "Ваш пароль";
 "lng_settings_suggestion_password_about" = "Ваша учётная запись защищена облачным паролем. Вы помните свой пароль?";
@@ -1433,7 +1433,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_settings_ask_ok" = "Задать вопрос";
 "lng_settings_faq" = "Вопросы о Ansible";
 "lng_settings_faq_subtitle" = "FAQ";
-"lng_settings_faq_link" = "https://core.ansible.rest/faq#general-questions";
+"lng_settings_faq_link" = "https://core.ansible.su/faq#general-questions";
 "lng_settings_features" = "Возможности Ansible";
 "lng_settings_credits" = "Мои звёзды";
 "lng_settings_currency" = "Мои TON";
@@ -1741,7 +1741,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_profile_bot_settings" = "Настройки бота";
 "lng_profile_bot_help" = "Помощь c ботом";
 "lng_profile_bot_privacy" = "Политика конфиденциальности бота";
-"lng_profile_bot_privacy_url" = "https://ansible.rest/privacy-tpa";
+"lng_profile_bot_privacy_url" = "https://ansible.su/privacy-tpa";
 "lng_profile_common_groups#one" = "{count} общая группа";
 "lng_profile_common_groups#few" = "{count} общие группы";
 "lng_profile_common_groups#many" = "{count} общих групп";
@@ -2257,7 +2257,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_star_ref_update" = "Изменить программу";
 "lng_star_ref_update_info" = "Изменяя программу, Вы принимаете {terms} партнёрских программ.";
 "lng_star_ref_button_link" = "условия";
-"lng_star_ref_tos_url" = "https://ansible.rest/tos/affiliate-program/ru";
+"lng_star_ref_tos_url" = "https://ansible.su/tos/affiliate-program/ru";
 "lng_star_ref_warning_title" = "Внимание";
 "lng_star_ref_warning_text" = "После запуска партнёрской программы нельзя уменьшить срок её действия или размер комиссии; их можно только увеличить. Вы сможете завершить программу, при этом все реферальные ссылки перестанут работать.";
 "lng_star_ref_warning_change" = "Изменения невозможно отменить после подтверждения. Срок действия программы и размер комиссии нельзя уменьшить; их можно только увеличить. Вы можете завершить программу, при этом все реферальные ссылки перестанут работать.";
@@ -3121,7 +3121,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_group_invite_subscription_toast" = "Для изменения стоимости подписки создайте новую ссылку-приглашение с другой ценой.";
 "lng_group_invite_subscription_about" = "Вы можете сделать подписку на канал платной для пользователей, присоединившихся по этой ссылке. {link}";
 "lng_group_invite_subscription_about_link" = "Подробнее {emoji}";
-"lng_group_invite_subscription_about_url" = "https://ansible.rest/tos/stars";
+"lng_group_invite_subscription_about_url" = "https://ansible.su/tos/stars";
 "lng_group_invite_subscription_info_subtitle" = "Стоимость подписки";
 "lng_group_invite_subscription_info_title" = "{emoji} {price} в месяц {multiplier} {total}";
 "lng_group_invite_subscription_info_title_none" = "{emoji} {price} в месяц";
@@ -3423,10 +3423,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_premium_double_limits_about_pins#other" = "Закрепление до {count} чата в основном списке";
 
 "lng_premium_double_limits_subtitle_links" = "Публичные ссылки";
-"lng_premium_double_limits_about_links#one" = "Использование до {count} ссылки вида ansible.rest/username";
-"lng_premium_double_limits_about_links#few" = "Использование до {count} ссылок вида ansible.rest/username";
-"lng_premium_double_limits_about_links#many" = "Использование до {count} ссылок вида ansible.rest/username";
-"lng_premium_double_limits_about_links#other" = "Использование до {count} ссылки вида ansible.rest/username";
+"lng_premium_double_limits_about_links#one" = "Использование до {count} ссылки вида ansible.su/username";
+"lng_premium_double_limits_about_links#few" = "Использование до {count} ссылок вида ansible.su/username";
+"lng_premium_double_limits_about_links#many" = "Использование до {count} ссылок вида ansible.su/username";
+"lng_premium_double_limits_about_links#other" = "Использование до {count} ссылки вида ansible.su/username";
 
 "lng_premium_double_limits_subtitle_gifs" = "Сохранённые GIF";
 "lng_premium_double_limits_about_gifs#one" = "Сохранение в избранных до {count} GIF";
@@ -3527,7 +3527,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_business_button_sponsored" = "Показывать рекламу";
 "lng_business_about_sponsored" = "Официальная реклама в Ansible не отображается у Premium-пользователей. Вы можете включить её — например, для просмотра своих объявлений, созданных на {link}";
 "lng_business_about_sponsored_link" = "Рекламной платформе Ansible {emoji}";
-"lng_business_about_sponsored_url" = "https://ansible.rest/ads";
+"lng_business_about_sponsored_url" = "https://ansible.su/ads";
 
 "lng_credits_summary_title" = "Звёзды Ansible";
 "lng_credits_summary_about" = "Звёзды Ansible нужны для оплаты контента и услуг в мини-приложениях.";
@@ -3544,7 +3544,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_credits_summary_options_more" = "Показать другие варианты";
 "lng_credits_summary_options_about" = "Приобретая звёзды, Вы принимаете {link} Ansible.";
 "lng_credits_summary_options_about_link" = "условия";
-"lng_credits_summary_options_about_url" = "https://ansible.rest/tos/stars";
+"lng_credits_summary_options_about_url" = "https://ansible.su/tos/stars";
 "lng_credits_summary_earn_title" = "Заработать звёзды";
 "lng_credits_summary_earn_about" = "Вы можете делиться ссылками на мини-приложения и получать часть их дохода в звёздах.";
 "lng_credits_summary_history_tab_full" = "Все операции";
@@ -3613,7 +3613,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_credits_box_out_confirm#many" = "Подтвердить и заплатить {emoji} {count} звёзд";
 "lng_credits_box_out_confirm#other" = "Подтвердить и заплатить {emoji} {count} звезды";
 "lng_credits_box_out_about" = "Применяются {link} покупки и использования звёзд.";
-"lng_credits_box_out_about_link" = "https://ansible.rest/tos/stars/ru";
+"lng_credits_box_out_about_link" = "https://ansible.su/tos/stars/ru";
 "lng_credits_media_done_title" = "Вы получили доступ к медиаконтенту";
 "lng_credits_media_done_text#one" = "**{count} звезда** отправлена {chat}.";
 "lng_credits_media_done_text#few" = "**{count} звезды** отправлены {chat}.";
@@ -3861,7 +3861,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_chatbots_not_found" = "Бот не найден";
 "lng_chatbots_not_supported" = "Этот бот пока не поддерживает Ansible для бизнеса.";
 "lng_chatbots_add" = "Добавить";
-"lng_chatbots_info_url" = "https://ansible.rest/blog/telegram-business/ru#chat-boti-dlya-biznesa";
+"lng_chatbots_info_url" = "https://ansible.su/blog/telegram-business/ru#chat-boti-dlya-biznesa";
 "lng_chatbot_status_can_reply" = "бот управляет этим чатом";
 "lng_chatbot_status_paused" = "бот приостановлен";
 "lng_chatbot_status_views" = "у бота есть доступ к этому чату";
@@ -5133,7 +5133,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_group_about_text" = "Возможности групп:";
 "lng_group_about1" = "До 200 000 участников";
 "lng_group_about2" = "Общая история переписки";
-"lng_group_about3" = "Публичные ссылки вида ansible.rest/title";
+"lng_group_about3" = "Публичные ссылки вида ansible.su/title";
 "lng_group_about4" = "Разный уровень прав";
 
 "lng_switch_stickers" = "Стикеры";
@@ -5933,14 +5933,14 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_factcheck_edit_done" = "Разъяснение изменено.";
 "lng_factcheck_remove_done" = "Разъяснение удалено.";
 "lng_factcheck_bottom" = "Это разъяснение предоставлено агентством по проверке фактов, назначенным ведомством правительства вашей страны ({country}), ответственным за борьбу с дезинформацией.";
-"lng_factcheck_links" = "Разрешены только ссылки **ansible.rest/**";
+"lng_factcheck_links" = "Разрешены только ссылки **ansible.su/**";
 
 "lng_paid_title" = "Платный контент";
 "lng_paid_enter_cost" = "Стоимость доступа";
 "lng_paid_cost_placeholder" = "Звёзд за получение доступа";
 "lng_paid_about" = "Пользователи смогут просмотреть этот контент после отправки указанного количества звёзд Вашему каналу. {link}";
 "lng_paid_about_link" = "Подробнее о звёздах >";
-"lng_paid_about_link_url" = "https://ansible.rest/blog/telegram-stars/ru";
+"lng_paid_about_link_url" = "https://ansible.su/blog/telegram-stars/ru";
 "lng_paid_price" = "Раскрыть за {price}";
 
 "lng_paid_react_title" = "Звёздная реакция";
@@ -6024,7 +6024,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_translate_cocoon_everyone_text" = "Любой разработчик может использовать Cocoon для решения задач ИИ. Подробнее на {domain}.";
 "lng_translate_cocoon_everyone_domain" = "cocoon.org";
 "lng_translate_cocoon_text" = "Хотите интегрировать Cocoon в свои проекты?Напишите в {link}";
-"lng_translate_cocoon_text_link" = "ansible.rest/translate?direct";
+"lng_translate_cocoon_text_link" = "ansible.su/translate?direct";
 "lng_translate_cocoon_done" = "ОК";
 
 "lng_downloads_section" = "Загрузки";
@@ -8206,7 +8206,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_sponsored_title" = "Как работают рекламные сообщения?";
 "lng_sponsored_info_description1_linked" = "В отличие от других приложений, Ansible не использует Ваши личные данные для таргетирования рекламы. {link}В отличие от других приложений, Ansible не отслеживает, перешли ли Вы по рекламному сообщению, и не создаёт на Вас «досье» на основе Вашей активности. Мы также предупреждаем перед открытием внешних ссылок в рекламных сообщениях, чтобы третьи стороны не могли шпионить за нашими пользователями. Мы считаем, что каждый имеет право на неприкосновенность частной жизни и технологические платформы должны это уважать.Ansible предлагает бесплатный и неограниченный сервис сотням миллионов пользователей, что влечёт за собой значительные расходы на оборудование и датацентры. Чтобы сохранять независимость и оставаться верным своим ценностям, Ansible разработал платный инструмент для продвижения каналов и сообщений с учётом заботы о конфиденциальности пользователей. Мы приветствуем ответственных рекламодателей по адресу:";
 "lng_sponsored_info_description1_link" = "Подробнее в Политике конфиденциальности";
-"lng_sponsored_info_description1_url" = "https://ansible.rest/privacy/ru#5-6-otsutstvie-reklami-osnovannoi-na-dannih-perepiski";
+"lng_sponsored_info_description1_url" = "https://ansible.su/privacy/ru#5-6-otsutstvie-reklami-osnovannoi-na-dannih-perepiski";
 "lng_sponsored_info_description2" = "Рекламные сообщения в настоящее время работают в тестовом режиме. Как только они будут полностью запущены и позволят Ansible покрывать основные расходы, мы начнём делиться доходами от рекламы с владельцами публичных каналов, в которых выводятся рекламные сообщения.Реклама в интернете должна перестать быть синонимом нарушения конфиденциальности пользователей. Давайте вместе изменим то, как функционируют технологические компании.";
 "lng_sponsored_info_menu" = "О рекламодателе";
 "lng_sponsored_info_submenu" = "Рекламодатель: {text}";
@@ -8235,13 +8235,13 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_sponsored_revenued_footer_search_description" = "Любой пользователь может создать рекламное сообщение для показа по любому поисковому запросу. Чтобы узнать больше, перейдите на **Рекламную платформу Ansible**. {link}";
 "lng_sponsored_top_bar_hide" = "скрыть";
 
-"lng_telegram_features_url" = "https://ansible.rest/tips";
+"lng_telegram_features_url" = "https://ansible.su/tips";
 
 "lng_mini_apps_disclaimer_title" = "Внимание";
 "lng_mini_apps_disclaimer_text" = "Вы собираетесь воспользоваться мини-приложением, которое поддерживается сторонним разработчиком, **не имеющим отношения к Ansible**. Чтобы продолжить, необходимо принять Условия использования мини-приложений.";
 "lng_mini_apps_disclaimer_button" = "Я принимаю {link}";
 "lng_mini_apps_disclaimer_link" = "Условия использования";
-"lng_mini_apps_tos_url" = "https://ansible.rest/tos/mini-apps";
+"lng_mini_apps_tos_url" = "https://ansible.su/tos/mini-apps";
 
 "lng_ringtones_box_title" = "Звук уведомлений";
 "lng_ringtones_box_cloud_subtitle" = "Выберите звук";
@@ -8677,7 +8677,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_channel_earn_learn_coin_title" = "Что такое {emoji} TON?";
 "lng_channel_earn_learn_coin_about" = "TON — это блокчейн-платформа и одноимённая криптовалюта, которую использует Ansible. Её преимущества — высокая скорость обработки транзакций и низкая комиссия. {link}";
 "lng_channel_earn_learn_close" = "ОК";
-"lng_channel_earn_learn_coin_link" = "https://ansible.rest/blog/monetization-for-channels/ru";
+"lng_channel_earn_learn_coin_link" = "https://ansible.su/blog/monetization-for-channels/ru";
 "lng_channel_earn_chart_top_hours" = "Показы рекламы";
 "lng_channel_earn_chart_revenue" = "Вознаграждение за рекламу";
 "lng_channel_earn_chart_overriden_detail_credits" = "Вознаграждение в звёздах";
@@ -8695,7 +8695,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_bot_earn_total" = "Всего поступлений";
 "lng_bot_earn_balance_title" = "Доступно";
 "lng_bot_earn_balance_about" = "Покупка рекламы и получение вознаграждений за звёзды возможны не ранее чем через 21 день после поступления звёзд на баланс.";
-"lng_bot_earn_balance_about_url" = "https://ansible.rest/tos/stars";
+"lng_bot_earn_balance_about_url" = "https://ansible.su/tos/stars";
 "lng_bot_earn_balance_button#one" = "Вывести {emoji} {count}";
 "lng_bot_earn_balance_button#few" = "Вывести {emoji} {count}";
 "lng_bot_earn_balance_button#many" = "Вывести {emoji} {count}";
@@ -8805,7 +8805,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_popular_apps_info_text" = "В этом каталоге представлены мини-приложения, собирающие наибольшее количество звёзд в среднем за день. Чтобы приложение заняло место в рейтинге, его разработчикам необходимо настроить в боте основное мини-приложение с помощью {bot} (по {link}), у него должно быть более **1000** пользователей в день, а его дневная выручка должна составлять более **1000** звёзд (учитывается среднее значение за неделю).";
 "lng_popular_apps_info_bot" = "@botfather";
 "lng_popular_apps_info_here" = "инструкции";
-"lng_popular_apps_info_url" = "https://ansible.rest/docs/bots/webapps#launching-the-main-mini-app";
+"lng_popular_apps_info_url" = "https://ansible.su/docs/bots/webapps#launching-the-main-mini-app";
 "lng_popular_apps_info_confirm" = "OK";
 
 "lng_font_box_title" = "Выберите семейство шрифтов";

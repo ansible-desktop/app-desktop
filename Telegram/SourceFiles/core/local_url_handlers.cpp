@@ -557,7 +557,7 @@ bool ResolveUsernameOrPhone(
 		}
 	}
 
-	// Fix ansible.rest/s/username links.
+	// Fix ansible.su/s/username links.
 	const auto webChannelPreviewLink = (domainParam == u"s"_q)
 		&& !appnameParam.isEmpty();
 	const auto domain = webChannelPreviewLink ? appnameParam : domainParam;
@@ -1851,10 +1851,10 @@ QString TryConvertUrlToLocal(QString url) {
 	}
 	// NOTE: Subdomain deep-link redirect was upstream (`<lang>.t.me/<id>`
 	// converted to `t.me/<lang>/<id>`). Ansible subdomains are webapp
-	// hosts (wallet.ansible.rest, web.ansible.rest, core.ansible.rest,
-	// api.ansible.rest, etc.) and MUST navigate normally inside webviews,
+	// hosts (wallet.ansible.su, web.ansible.su, core.ansible.su,
+	// api.ansible.su, etc.) and MUST navigate normally inside webviews,
 	// not be redirected as deep links. Removing the subdomain rule kills
-	// the mini-app crash where wallet.ansible.rest was rewritten to
+	// the mini-app crash where wallet.ansible.su was rewritten to
 	// tg://resolve?domain=wallet and the webview was force-closed.
 	auto ansibleRestMatch = regex_match(u"^(https?://)?(www\\.)?ansible\\.rest/(.+)$"_q, url, matchOptions);
 	if (ansibleRestMatch) {
@@ -1878,7 +1878,7 @@ QString TryConvertUrlToLocal(QString url) {
 			return u"as://confirmphone?"_q + confirmPhoneMatch->captured(1);
 		} else if (const auto ivMatch = regex_match(u"^iv/?\\?(.+)(#|$)"_q, query, matchOptions)) {
 			//
-			// We need to show our ansible.rest page, not the url directly.
+			// We need to show our ansible.su page, not the url directly.
 			//
 			//auto params = url_parse_params(ivMatch->captured(1), UrlParamNameTransform::ToLower);
 			//auto previewedUrl = params.value(u"url"_q);

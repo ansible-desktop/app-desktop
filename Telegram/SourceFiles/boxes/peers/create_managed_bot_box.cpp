@@ -213,7 +213,7 @@ void CreateManagedBotBox(
 		const auto text = tr::lng_create_bot_username_link(
 			tr::now,
 			lt_link,
-			u"ansible.rest/"_q + full);
+			u"ansible.su/"_q + full);
 		state->errorText = QString();
 		state->goodText = text;
 		statusLabel->setText(text);
@@ -351,7 +351,7 @@ void CreateManagedBotBox(
 				const auto current = premium ? premiumLimit : defaultLimit;
 				const auto bot = tr::link(
 					u"@BotFather"_q,
-					u"https://ansible.rest/bots?start=deletebot"_q);
+					u"https://ansible.su/bots?start=deletebot"_q);
 				if (premium || !premiumPossible) {
 					using WeakToast = base::weak_ptr<Ui::Toast::Instance>;
 					const auto toast = std::make_shared<WeakToast>();

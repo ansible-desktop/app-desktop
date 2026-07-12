@@ -1,5 +1,5 @@
 # Ansible Desktop auto-update server (Step 1: static manifest + nginx).
-# Serves https://ansible.rest/td/current2 (and future /td/<platform>/<file>)
+# Serves https://ansible.su/td/current2 (and future /td/<platform>/<file>)
 # from nginx. Initial state: declares current version 1002 for all
 # platforms, so connected clients see "you are up to date".
 ---
@@ -128,10 +128,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - ansible.rest
+        - ansible.su
       secretName: ansible-rest-tls
   rules:
-    - host: ansible.rest
+    - host: ansible.su
       http:
         paths:
           - path: /td

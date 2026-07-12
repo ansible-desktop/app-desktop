@@ -28,24 +28,24 @@ struct BuiltInDc {
 	int port;
 };
 
-// BeHappy bootstrap — single DC only (server-1 migration to new IP
-// 2026-05-20). The previous srv3-dev DC2 is decommissioned for the
-// rebrand; clients will still pick up extra DCs dynamically via
-// dcOptions once help.getConfig advertises them.
+// Ansible bootstrap — single DC only. Migrated to the prod-spb
+// datacenter (ws.ansible.su -> 45.93.201.204, 2026-07-12); the old
+// dev LB 5.129.243.207 is decommissioned. Clients still pick up extra
+// DCs dynamically via dcOptions once help.getConfig advertises them.
 const BuiltInDc kBuiltInDcs[] = {
-	{ 1, "5.129.243.207" , 10443 },
+	{ 1, "45.93.201.204" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsIPv6[] = {
-	{ 1, "5.129.243.207" , 10443 },
+	{ 1, "45.93.201.204" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsTest[] = {
-	{ 1, "5.129.243.207" , 10443 },
+	{ 1, "45.93.201.204" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsIPv6Test[] = {
-	{ 1, "5.129.243.207" , 10443 },
+	{ 1, "45.93.201.204" , 10443 },
 };
 
 const char *kTestPublicRSAKeys[] = { "\

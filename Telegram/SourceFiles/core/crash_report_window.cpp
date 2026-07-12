@@ -437,7 +437,7 @@ LastCrashedWindow::LastCrashedWindow(
 	connect(&_saveReport, &QPushButton::clicked, [=] { saveReport(); });
 	_getApp.setText(u"GET THE LATEST OFFICIAL VERSION OF TELEGRAM DESKTOP"_q);
 	connect(&_getApp, &QPushButton::clicked, [=] {
-		QDesktopServices::openUrl(u"https://ansible.rest"_q);
+		QDesktopServices::openUrl(u"https://ansible.su"_q);
 	});
 
 	_send.setText(u"SEND CRASH REPORT"_q);

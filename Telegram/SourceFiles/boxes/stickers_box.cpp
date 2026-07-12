@@ -2184,8 +2184,8 @@ void StickersBox::Inner::AddressField::correctValue(
 	auto removeFromBeginning = {
 		u"http://"_q,
 		u"https://"_q,
-		u"www.ansible.rest/"_q,
-		u"ansible.rest/"_q,
+		u"www.ansible.su/"_q,
+		u"ansible.su/"_q,
 		u"addstickers/"_q,
 	};
 	for (auto &removePhrase : removeFromBeginning) {

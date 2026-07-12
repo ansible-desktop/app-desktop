@@ -641,7 +641,7 @@ void SessionNavigation::showPeerByLinkResolved(
 		}
 	};
 
-	// ansible.rest/username/012345 - we thought it was a channel post link, but
+	// ansible.su/username/012345 - we thought it was a channel post link, but
 	// after resolving the username we found out it is a bot.
 	const auto resolveType = (bot
 		&& !info.botAppName.isEmpty()

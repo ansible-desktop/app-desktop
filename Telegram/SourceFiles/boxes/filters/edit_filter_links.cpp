@@ -263,10 +263,10 @@ QString LinkRow::generateName() {
 		u"https://"_q,
 		QString()
 	).replace(
-		u"ansible.rest/+"_q,
+		u"ansible.su/+"_q,
 		QString()
 	).replace(
-		u"ansible.rest/joinchat/"_q,
+		u"ansible.su/joinchat/"_q,
 		QString()
 	);
 }

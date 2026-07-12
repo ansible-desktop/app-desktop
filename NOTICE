@@ -35,7 +35,7 @@ at:
 If you received a binary distribution of Ansible Desktop and the source
 code is no longer available at the URL above, please contact:
 
-    legal@ansible.rest
+    legal@ansible.su
 
 You are entitled to receive the full source code corresponding to the
 binary you received, at no additional charge beyond the cost of physical
@@ -52,7 +52,7 @@ This project:
   - Is NOT affiliated with, endorsed by, or sponsored by Telegram FZ-LLC.
   - Does NOT use the Telegram name, logo, or other Telegram trademarks
     in its branding, user-visible interface, or marketing.
-  - Connects to Ansible backend servers (mvsy.ansible.rest), NOT to
+  - Connects to Ansible backend servers (mvsy.ansible.su), NOT to
     Telegram servers. It cannot be used to access Telegram accounts.
 
 "Ansible" name, logo, and visual identity are the property of the

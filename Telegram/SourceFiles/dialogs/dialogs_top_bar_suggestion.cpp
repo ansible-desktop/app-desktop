@@ -339,7 +339,7 @@ rpl::producer<Ui::SlideWrap<Ui::RpWidget>*> TopBarSuggestionValue(
 				content->setClickedCallback([=] {
 					const auto controller = FindSessionController(parent);
 					UrlClickHandler::Open(
-						u"https://ansible.rest/premium?start=status"_q,
+						u"https://ansible.su/premium?start=status"_q,
 						QVariant::fromValue(ClickHandlerContext{
 							.sessionWindow = base::make_weak(controller),
 						}));

@@ -134,7 +134,7 @@ void SetCrashAnnotationsGL() {
 base::options::toggle OptionSkipUrlSchemeRegister({
 	.id = kOptionSkipUrlSchemeRegister,
 	.name = "Skip URL scheme register",
-	.description = "Don't re-register tg:// URL scheme on autoupdate.",
+	.description = "Don't re-register as:// URL scheme on autoupdate.",
 });
 
 } // namespace
@@ -1182,7 +1182,7 @@ bool Application::openInternalUrl(const QString &url, QVariant context) {
 }
 
 QString Application::changelogLink() const {
-	return u"https://desktop.ansible.rest/desktop/changelog/"_q;
+	return u"https://desktop.ansible.su/desktop/changelog/"_q;
 }
 
 bool Application::openCustomUrl(

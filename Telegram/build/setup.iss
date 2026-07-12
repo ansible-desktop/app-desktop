@@ -1,7 +1,7 @@
 #define MyAppShortName "Ansible"
 #define MyAppName "Ansible Desktop"
 #define MyAppPublisher "Ansible"
-#define MyAppURL "https://ansible.rest"
+#define MyAppURL "https://ansible.su"
 #define MyAppExeName "Ansible.exe"
 #define MyAppId "5DE84367-0BFF-4829-8074-A3C10556F2FB"
 #define CurrentYear GetDateTimeString('yyyy','','')

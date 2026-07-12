@@ -19,7 +19,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace Ui {
 namespace {
 
-constexpr auto kUrl = "https://ansible.rest/ads"_cs;
+constexpr auto kUrl = "https://ansible.su/ads"_cs;
 
 } // namespace
 

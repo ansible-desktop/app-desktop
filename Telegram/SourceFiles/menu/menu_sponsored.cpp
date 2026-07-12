@@ -53,7 +53,7 @@ void AboutBox(
 		SponsoredPhrases phrases,
 		const Data::SponsoredMessages::Details &details,
 		Data::SponsoredReportAction report) {
-	constexpr auto kUrl = "https://ansible.rest/promote"_cs;
+	constexpr auto kUrl = "https://ansible.su/promote"_cs;
 
 	box->setWidth(st::boxWideWidth);
 	box->setNoContentMargin(true);
@@ -308,7 +308,7 @@ void ShowReportSponsoredBox(
 		Data::SponsoredReportAction report) {
 	const auto guideLink = tr::link(
 		tr::lng_report_sponsored_reported_link(tr::now),
-		u"https://ansible.rest/promote/guidelines"_q);
+		u"https://ansible.su/promote/guidelines"_q);
 
 	auto performRequest = [=](
 			const auto &repeatRequest,

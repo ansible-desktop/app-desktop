@@ -540,7 +540,7 @@ auto InitMessageFieldHandlers(MessageFieldHandlersArgs &&args)
 }
 
 [[nodiscard]] bool IsGoodFactcheckUrl(QStringView url) {
-	return url.startsWith(u"ansible.rest/"_q) || url.startsWith(u"https://ansible.rest/"_q);
+	return url.startsWith(u"ansible.su/"_q) || url.startsWith(u"https://ansible.su/"_q);
 }
 
 [[nodiscard]] Fn<bool(

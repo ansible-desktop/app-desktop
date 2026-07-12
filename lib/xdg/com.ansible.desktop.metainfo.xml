@@ -14,7 +14,7 @@
         <category>InstantMessaging</category>
     </categories>
     <developer id="rest.ansible"><name>Ansible</name></developer>
-    <url type="homepage">https://ansible.rest/</url>
+    <url type="homepage">https://ansible.su/</url>
     <url type="bugtracker">https://github.com/ansible-desktop/app-desktop/issues</url>
     <url type="vcs-browser">https://github.com/ansible-desktop/app-desktop</url>
     <branding>

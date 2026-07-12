@@ -385,7 +385,7 @@ MainMenu::MainMenu(
 
 	_telegram->setMarkedText(tr::link(
 		u"Ansible Desktop"_q,
-		u"https://ansible.rest"_q));
+		u"https://ansible.su"_q));
 	_telegram->setLinksTrusted();
 	_version->setMarkedText(
 		tr::link(
