@@ -68,7 +68,7 @@ struct DocumentAdditionalData {
 
 enum class StickerType : uchar {
 	Webp,
-	Tgs,
+	Ass,
 	Webm,
 };
 

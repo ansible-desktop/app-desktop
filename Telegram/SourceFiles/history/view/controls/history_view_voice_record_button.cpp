@@ -220,8 +220,8 @@ void VoiceRecordButton::initVoiceRoundIcon(int index) {
 
 	_voiceRoundIcons[index] = Lottie::MakeIcon({
 		.path = ((index == kVoiceIconIndex)
-			? u":/animations/chat/voice_to_video.tgs"_q
-			: u":/animations/chat/video_to_voice.tgs"_q),
+			? u":/animations/chat/voice_to_video.ass"_q
+			: u":/animations/chat/video_to_voice.ass"_q),
 		.sizeOverride = st::historySend.recordSize,
 		.colorizeUsingAlpha = true,
 	});

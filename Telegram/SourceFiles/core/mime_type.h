@@ -24,7 +24,7 @@ public:
 		TDesktopTheme,
 		TDesktopPalette,
 		WebP,
-		Tgs,
+		Ass,
 		Tgv,
 	};
 

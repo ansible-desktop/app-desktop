@@ -610,12 +610,12 @@ bool FileLoadTask::CheckForImage(
 		const QByteArray &content,
 		std::unique_ptr<Ui::PreparedFileInformation> &result) {
 	auto read = [&] {
-		if (filepath.endsWith(u".tgs"_q, Qt::CaseInsensitive)) {
+		if (filepath.endsWith(u".ass"_q, Qt::CaseInsensitive)) {
 			auto image = Lottie::ReadThumbnail(
 				Lottie::ReadContent(content, filepath));
 			const auto success = !image.isNull();
 			if (success) {
-				result->filemime = u"application/x-tgsticker"_q;
+				result->filemime = u"application/x-ansible-sticker"_q;
 			}
 			return Images::ReadResult{
 				.image = std::move(image),

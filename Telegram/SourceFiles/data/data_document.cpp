@@ -291,7 +291,7 @@ bool StickerData::isStatic() const {
 }
 
 bool StickerData::isLottie() const {
-	return (type == StickerType::Tgs);
+	return (type == StickerType::Ass);
 }
 
 bool StickerData::isAnimated() const {
@@ -686,10 +686,10 @@ not_null<DocumentData*> DocumentData::chooseQuality(
 
 void DocumentData::validateLottieSticker() {
 	if (type == FileDocument
-		&& hasMimeType(u"application/x-tgsticker"_q)) {
+		&& hasMimeType(u"application/x-ansible-sticker"_q)) {
 		type = StickerDocument;
 		_additional = std::make_unique<StickerData>();
-		sticker()->type = StickerType::Tgs;
+		sticker()->type = StickerType::Ass;
 		dimensions = kLottieStickerDimensions;
 	}
 }

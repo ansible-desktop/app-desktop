@@ -2263,7 +2263,7 @@ void Account::readStickerSets(
 			const auto thumbType = [&] {
 				switch (setThumbnailType) {
 				case qint32(StickerType::Webp): return StickerType::Webp;
-				case qint32(StickerType::Tgs): return StickerType::Tgs;
+				case qint32(StickerType::Ass): return StickerType::Ass;
 				case qint32(StickerType::Webm): return StickerType::Webm;
 				}
 				return StickerType::Webp;

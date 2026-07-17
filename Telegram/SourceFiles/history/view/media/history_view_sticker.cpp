@@ -454,7 +454,7 @@ QPixmap Sticker::paintedPixmap(const PaintContext &context) const {
 	const auto adjust = [&](int side) {
 		return (((side * ratio) / 8) * 8) / ratio;
 	};
-	const auto useSize = (sticker && sticker->type == StickerType::Tgs)
+	const auto useSize = (sticker && sticker->type == StickerType::Ass)
 		? QSize(adjust(_size.width()), adjust(_size.height()))
 		: _size;
 	const auto colored = (customEmojiPart() && _data->emojiUsesTextColor())

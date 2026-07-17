@@ -52,7 +52,7 @@ namespace HistoryView {
 			not_null<MediaGeneric*> media,
 			Fn<void(std::unique_ptr<MediaGenericPart>)> push) {
 		const auto session = &media->parent()->history()->session();
-		const auto document = ChatHelpers::GenerateLocalTgsSticker(
+		const auto document = ChatHelpers::GenerateLocalAssSticker(
 			session,
 			u"cake"_q);
 		const auto sticker = [=] {

@@ -621,7 +621,7 @@ void Reactions::fillPaidReactionAnimations() const {
 	const auto generate = [&](int index) {
 		const auto session = &_owner->session();
 		const auto name = u"star_reaction_effect%1"_q.arg(index + 1);
-		return ChatHelpers::GenerateLocalTgsSticker(session, name);
+		return ChatHelpers::GenerateLocalAssSticker(session, name);
 	};
 	const auto kCount = 3;
 	for (auto i = 0; i != kCount; ++i) {
@@ -1583,7 +1583,7 @@ not_null<Reaction*> Reactions::lookupPaid() {
 	if (!_paid) {
 		const auto generate = [&](const QString &name) {
 			const auto session = &_owner->session();
-			return ChatHelpers::GenerateLocalTgsSticker(session, name);
+			return ChatHelpers::GenerateLocalAssSticker(session, name);
 		};
 		const auto appear = generate(u"star_reaction_appear"_q);
 		const auto center = generate(u"star_reaction_center"_q);
@@ -1607,7 +1607,7 @@ not_null<Reaction*> Reactions::lookupPaid() {
 
 not_null<DocumentData*> Reactions::paidToastAnimation() {
 	if (!_paidToastAnimation) {
-		_paidToastAnimation = ChatHelpers::GenerateLocalTgsSticker(
+		_paidToastAnimation = ChatHelpers::GenerateLocalAssSticker(
 			&_owner->session(),
 			u"star_reaction_toast"_q);
 	}

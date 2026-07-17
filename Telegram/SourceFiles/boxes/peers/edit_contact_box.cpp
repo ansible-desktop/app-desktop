@@ -595,7 +595,7 @@ void Controller::setupPhotoButtons() {
 			return std::make_unique<Lottie::FrameGenerator>(
 				Lottie::ReadContent(
 					QByteArray(),
-					u":/animations/photo_suggest_icon.tgs"_q));
+					u":/animations/photo_suggest_icon.ass"_q));
 		},
 		.sizeOverride = iconPlaceholder,
 		.colorized = true,
@@ -606,7 +606,7 @@ void Controller::setupPhotoButtons() {
 			return std::make_unique<Lottie::FrameGenerator>(
 				Lottie::ReadContent(
 					QByteArray(),
-					u":/animations/camera_outline.tgs"_q));
+					u":/animations/camera_outline.ass"_q));
 		},
 		.sizeOverride = iconPlaceholder,
 		.colorized = true,

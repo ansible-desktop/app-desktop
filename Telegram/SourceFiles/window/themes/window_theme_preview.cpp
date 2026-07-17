@@ -568,7 +568,7 @@ void Generator::paintComposeArea() {
 	auto right = st::historySendRight + st::historySendSize.width();
 
 	const auto recordIcon = Lottie::MakeIcon({
-		.path = u":/animations/chat/voice_to_video.tgs"_q,
+		.path = u":/animations/chat/voice_to_video.ass"_q,
 		.sizeOverride = st::historySend.recordSize,
 		.colorizeUsingAlpha = true,
 	});

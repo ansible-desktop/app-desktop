@@ -91,7 +91,7 @@ void ConnectStarRef(
 	const auto outer = QSize(outerSide, outerSide + add);
 	const auto inner = QSize(innerSide, innerSide);
 	const auto state = raw->lifetime().make_state<State>(State{
-		.icon = ChatHelpers::GenerateLocalTgsSticker(
+		.icon = ChatHelpers::GenerateLocalAssSticker(
 			session,
 			u"starref_link"_q,
 			true),

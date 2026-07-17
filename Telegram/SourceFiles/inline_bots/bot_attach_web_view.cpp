@@ -498,7 +498,7 @@ void ConfirmEmojiStatusAccessBox(
 
 	AddSkip(box->verticalLayout(), 4 * st::defaultVerticalListSkip);
 
-	const auto statusIcon = ChatHelpers::GenerateLocalTgsSticker(
+	const auto statusIcon = ChatHelpers::GenerateLocalAssSticker(
 		&bot->session(),
 		u"hello_status"_q,
 		true);

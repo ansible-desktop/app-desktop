@@ -394,7 +394,7 @@ void CustomEmojiLoader::check() {
 	auto generator = [=, bytes = Lottie::ReadContent(data, filepath)]()
 	-> std::unique_ptr<Ui::FrameGenerator> {
 		switch (type) {
-		case StickerType::Tgs:
+		case StickerType::Ass:
 			return std::make_unique<Lottie::FrameGenerator>(bytes);
 		case StickerType::Webm:
 			return std::make_unique<FFmpeg::FrameGenerator>(bytes);

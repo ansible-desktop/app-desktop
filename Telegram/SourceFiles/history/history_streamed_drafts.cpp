@@ -47,7 +47,7 @@ HistoryStreamedDrafts::~HistoryStreamedDrafts() {
 TextWithEntities HistoryStreamedDrafts::loadingEmoji() {
 	if (_loadingEmoji.empty()) {
 		_loadingEmoji = Data::SingleCustomEmoji(
-			ChatHelpers::GenerateLocalTgsSticker(
+			ChatHelpers::GenerateLocalAssSticker(
 				&_history->session(),
 				u"transcribe_loading"_q,
 				true));

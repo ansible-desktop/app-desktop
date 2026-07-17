@@ -487,7 +487,7 @@ void TranslateBar::showMenu(base::unique_qptr<Ui::PopupMenu> menu) {
 		&st::menuIconCancel);
 	_menu->addSeparator();
 
-	const auto cocoon = ChatHelpers::GenerateLocalTgsSticker(
+	const auto cocoon = ChatHelpers::GenerateLocalAssSticker(
 		&_history->session(),
 		u"cocoon"_q,
 		true);

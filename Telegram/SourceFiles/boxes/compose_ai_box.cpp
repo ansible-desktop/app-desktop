@@ -235,7 +235,7 @@ enum class CardState {
 [[nodiscard]] std::vector<Ui::LabeledEmojiTab> ResolveTranslateStyleDescriptors(
 		not_null<Main::Session*> session,
 		const std::vector<Ui::LabeledEmojiTab> &styles) {
-	const auto neutral = ChatHelpers::GenerateLocalTgsSticker(
+	const auto neutral = ChatHelpers::GenerateLocalAssSticker(
 		session,
 		u"chat/white_flag_emoji"_q);
 	auto result = std::vector<Ui::LabeledEmojiTab>();
@@ -251,7 +251,7 @@ enum class CardState {
 
 [[nodiscard]] TextWithEntities LoadingTitleSparkle(
 		not_null<Main::Session*> session) {
-	const auto sparkles = ChatHelpers::GenerateLocalTgsSticker(
+	const auto sparkles = ChatHelpers::GenerateLocalAssSticker(
 		session,
 		u"chat/sparkles_emoji"_q);
 	return tr::marked(u" "_q)

@@ -54,7 +54,7 @@ MimeType::MimeType(Known type) : _type(type) {
 QStringList MimeType::globPatterns() const {
 	switch (_type) {
 	case Known::WebP: return QStringList(u"*.webp"_q);
-	case Known::Tgs: return QStringList(u"*.tgs"_q);
+	case Known::Ass: return QStringList(u"*.ass"_q);
 	case Known::Tgv: return QStringList(u"*.tgv"_q);
 	case Known::TDesktopTheme: return QStringList(u"*.tdesktop-theme"_q);
 	case Known::TDesktopPalette: return QStringList(u"*.tdesktop-palette"_q);
@@ -66,7 +66,7 @@ QStringList MimeType::globPatterns() const {
 QString MimeType::filterString() const {
 	switch (_type) {
 	case Known::WebP: return u"WebP image (*.webp)"_q;
-	case Known::Tgs: return u"Telegram sticker (*.tgs)"_q;
+	case Known::Ass: return u"Ansible sticker (*.ass)"_q;
 	case Known::Tgv: return u"Wallpaper pattern (*.tgv)"_q;
 	case Known::TDesktopTheme: return u"Theme files (*.tdesktop-theme)"_q;
 	case Known::TDesktopPalette: return u"Palette files (*.tdesktop-palette)"_q;
@@ -78,7 +78,7 @@ QString MimeType::filterString() const {
 QString MimeType::name() const {
 	switch (_type) {
 	case Known::WebP: return u"image/webp"_q;
-	case Known::Tgs: return u"application/x-tgsticker"_q;
+	case Known::Ass: return u"application/x-ansible-sticker"_q;
 	case Known::Tgv: return u"application/x-tgwallpattern"_q;
 	case Known::TDesktopTheme: return u"application/x-tdesktop-theme"_q;
 	case Known::TDesktopPalette: return u"application/x-tdesktop-palette"_q;
@@ -90,8 +90,8 @@ QString MimeType::name() const {
 MimeType MimeTypeForName(const QString &mime) {
 	if (mime == u"image/webp"_q) {
 		return MimeType(MimeType::Known::WebP);
-	} else if (mime == u"application/x-tgsticker"_q) {
-		return MimeType(MimeType::Known::Tgs);
+	} else if (mime == u"application/x-ansible-sticker"_q) {
+		return MimeType(MimeType::Known::Ass);
 	} else if (mime == u"application/x-tgwallpattern"_q) {
 		return MimeType(MimeType::Known::Tgv);
 	} else if (mime == u"application/x-tdesktop-theme"_q
@@ -109,8 +109,8 @@ MimeType MimeTypeForFile(const QFileInfo &file) {
 	QString path = file.absoluteFilePath();
 	if (path.endsWith(u".webp"_q, Qt::CaseInsensitive)) {
 		return MimeType(MimeType::Known::WebP);
-	} else if (path.endsWith(u".tgs"_q, Qt::CaseInsensitive)) {
-		return MimeType(MimeType::Known::Tgs);
+	} else if (path.endsWith(u".ass"_q, Qt::CaseInsensitive)) {
+		return MimeType(MimeType::Known::Ass);
 	} else if (path.endsWith(u".tgv"_q)) {
 		return MimeType(MimeType::Known::Tgv);
 	} else if (path.endsWith(u".tdesktop-theme"_q, Qt::CaseInsensitive)) {
@@ -144,7 +144,7 @@ MimeType MimeTypeForData(const QByteArray &data) {
 }
 
 bool IsMimeStickerLottie(const QString &mime) {
-	return (mime == u"application/x-tgsticker"_q);
+	return (mime == u"application/x-ansible-sticker"_q);
 }
 
 bool IsMimeStickerWebm(const QString &mime) {
@@ -152,7 +152,7 @@ bool IsMimeStickerWebm(const QString &mime) {
 }
 
 bool IsMimeStickerAnimated(const QString &mime) {
-	return (mime == u"application/x-tgsticker"_q);
+	return (mime == u"application/x-ansible-sticker"_q);
 }
 
 bool IsMimeSticker(const QString &mime) {
@@ -247,7 +247,7 @@ NameType DetectNameType(const QString &filepath) {
 afdesign ai avif bmp dng gif heic icns ico jfif jpeg jpg jpg-large jxl nef \
 png png-large psd qoi raw sketch svg tga tif tiff webp"_q);
 	static const auto kVideo = SplitExtensions(u"\
-3g2 3gp 3gpp aep avi flv h264 m4s m4v mkv mov mp4 mpeg mpg ogv srt tgs tgv \
+3g2 3gp 3gpp aep avi flv h264 m4s m4v mkv mov mp4 mpeg mpg ogv srt ass tgv \
 vob webm wmv"_q);
 	static const auto kAudio = SplitExtensions(u"\
 aac ac3 aif amr caf cda cue flac m4a m4b mid midi mp3 ogg opus wav wma"_q);

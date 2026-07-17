@@ -331,19 +331,19 @@ ColorPicker::ColorPicker(
 
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_pen.tgs"_q));
+		u":/animations/photo_editor_pen.ass"_q));
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_arrow.tgs"_q));
+		u":/animations/photo_editor_arrow.ass"_q));
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_marker.tgs"_q));
+		u":/animations/photo_editor_marker.ass"_q));
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_blur.tgs"_q));
+		u":/animations/photo_editor_blur.ass"_q));
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_eraser.tgs"_q));
+		u":/animations/photo_editor_eraser.ass"_q));
 	for (const auto &button : _toolButtons) {
 		button->resize(
 			st::photoEditorToolButtonSize,

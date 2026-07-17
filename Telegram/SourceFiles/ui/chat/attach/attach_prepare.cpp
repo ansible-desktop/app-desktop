@@ -322,7 +322,7 @@ bool PreparedList::canAddCaption(bool compress) const {
 		return false;
 	}
 	const auto &last = files.back();
-	const auto isSticker = last.path.endsWith(u".tgs"_q, Qt::CaseInsensitive)
+	const auto isSticker = last.path.endsWith(u".ass"_q, Qt::CaseInsensitive)
 		|| (!compress
 			&& last.information
 			&& Core::IsMimeSticker(last.information->filemime));

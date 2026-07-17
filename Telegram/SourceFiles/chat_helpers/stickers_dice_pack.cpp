@@ -106,7 +106,7 @@ void DicePack::tryGenerateLocalZero() {
 	const auto generateLocal = [&](int index, const QString &name) {
 		_map.emplace(
 			index,
-			ChatHelpers::GenerateLocalTgsSticker(_session, name));
+			ChatHelpers::GenerateLocalAssSticker(_session, name));
 	};
 	if (_emoji == DicePacks::kDiceString) {
 		generateLocal(0, u"dice_idle"_q);

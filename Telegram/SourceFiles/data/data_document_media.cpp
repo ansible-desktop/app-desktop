@@ -539,7 +539,7 @@ auto DocumentIconFrameGenerator(not_null<DocumentMedia*> media)
 			return nullptr;
 		}
 		switch (type) {
-		case Type::Tgs:
+		case Type::Ass:
 			return std::make_unique<Lottie::FrameGenerator>(bytes);
 		case Type::Webm:
 			return std::make_unique<FFmpeg::FrameGenerator>(bytes);
