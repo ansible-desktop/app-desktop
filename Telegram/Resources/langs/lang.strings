@@ -4034,7 +4034,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_gift_value_about_last" = "This is the price at which {gift} was last sold on {platform}.";
 "lng_gift_value_initial_sale" = "Initial Sale";
 "lng_gift_value_initial_price" = "Initial Price";
-"lng_gift_value_initial_price_value" = "{diamonds} ({amount})";
+"lng_gift_value_initial_price_value" = "{stars} ({amount})";
 "lng_gift_value_last_sale" = "Last Sale";
 "lng_gift_value_last_price" = "Last Price";
 "lng_gift_value_minimum_price" = "Minimum Price";
@@ -4363,8 +4363,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_auction_bid_your_outbid" = "You've been outbid";
 "lng_auction_bid_your_winning" = "You're winning";
 "lng_auction_bid_winners_title" = "Top winners";
-"lng_auction_bid_place" = "Place a {diamonds} Bid";
-"lng_auction_bid_increase" = "Add {diamonds} to Your Bid";
+"lng_auction_bid_place" = "Place a {stars} Bid";
+"lng_auction_bid_increase" = "Add {stars} to Your Bid";
 "lng_auction_bid_placed_title" = "Your bid has been placed";
 "lng_auction_bid_increased_title" = "Your bid has been increased";
 "lng_auction_bid_done_text#one" = "If you fall below the **top {count}**, your bid will roll over to the next round.";
@@ -4388,8 +4388,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_auction_bar_outbid_all" = "You've been outbid in all of them.";
 "lng_auction_bar_view" = "View";
 "lng_auction_bar_round" = "Round {n} of {amount}";
-"lng_auction_bar_bid_ranked" = "Your bid **{diamonds}** is ranked **#{n}**";
-"lng_auction_bar_bid_outbid" = "Your bid **{diamonds}** is outbid";
+"lng_auction_bar_bid_ranked" = "Your bid **{stars}** is ranked **#{n}**";
+"lng_auction_bar_bid_outbid" = "Your bid **{stars}** is outbid";
 "lng_auction_bar_raise_bid" = "Raise Bid";
 "lng_auction_bought_title#one" = "{count} Item Bought";
 "lng_auction_bought_title#other" = "{count} Items Bought";
@@ -5227,7 +5227,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 "lng_paid_comment_title" = "Highlight and Pin";
 "lng_paid_comment_about" = "Highlight and pin your message by adding Diamonds for {name}.";
-"lng_paid_comment_button" = "Add {diamonds}";
+"lng_paid_comment_button" = "Add {stars}";
 "lng_paid_comment_pin_about" = "pin in chat";
 "lng_paid_comment_limit_about#one" = "character";
 "lng_paid_comment_limit_about#other" = "characters";
@@ -5235,7 +5235,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_paid_comment_emoji_about#other" = "emoji";
 "lng_paid_reaction_title" = "React with Diamonds";
 "lng_paid_reaction_about" = "Highlight and pin your message by sending Diamonds to {name}.";
-"lng_paid_reaction_button" = "Send {diamonds}";
+"lng_paid_reaction_button" = "Send {stars}";
 "lng_paid_admin_title" = "Receive Diamonds from Viewers";
 "lng_paid_admin_about" = "Viewers can send you Diamond Reactions.";
 
