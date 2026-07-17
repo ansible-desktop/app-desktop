@@ -548,8 +548,8 @@ void BuildPremiumSection(SectionBuilder &builder) {
 			showOther(CurrencyId());
 		},
 		.keywords = { u"ton"_q, u"crypto"_q, u"wallet"_q },
-		.shown = session->credits().tonBalanceValue(
-		) | rpl::map([](CreditsAmount c) { return !c.empty(); }),
+		// TON entry hidden — we have no TON currency. Data still loaded above.
+		.shown = rpl::single(false),
 	});
 
 	builder.addButton({

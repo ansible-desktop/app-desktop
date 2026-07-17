@@ -49,7 +49,7 @@ private:
 	int _starSize = 0;
 	float _speed = 1.f;
 	float _visible = 1.f;
-	std::vector<QColor> _colors = { QColor(255, 200, 70) };
+	std::vector<QColor> _colors = { QColor(78, 170, 255) };
 	std::vector<QImage> _paintedCaches;
 	std::vector<Particle> _particles;
 	base::flat_map<QRgb, QImage> _starCache;

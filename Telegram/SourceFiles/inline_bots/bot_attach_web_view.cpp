@@ -1702,10 +1702,15 @@ void WebViewInstance::botSwitchInlineQuery(
 	const auto types = PeerTypesFromNames(chatTypes);
 	if (!_bot
 		|| !_bot->isBot()
-		|| _bot->botInfo->inlinePlaceholder.isEmpty()
 		|| !controller) {
 		return;
 	} else if (!types) {
+		// Inline-query in the current chat still needs a placeholder, but the
+		// choose-peer flow (chat_types set, e.g. wallet "Выбрать контакт")
+		// does not — a web-app bot has no inlinePlaceholder. #1082.
+		if (_bot->botInfo->inlinePlaceholder.isEmpty()) {
+			return;
+		}
 		if (_context.dialogsEntryState.key.owningHistory()) {
 			controller->switchInlineQuery(
 				_context.dialogsEntryState,

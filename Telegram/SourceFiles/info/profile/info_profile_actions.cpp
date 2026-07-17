@@ -1030,7 +1030,7 @@ template <typename Text, typename ToggleOn, typename Callback>
 	}
 }
 
-rpl::producer<CreditsAmount> AddCurrencyAction(
+[[maybe_unused]] rpl::producer<CreditsAmount> AddCurrencyAction(
 		not_null<UserData*> user,
 		not_null<Ui::VerticalLayout*> wrap,
 		not_null<Controller*> controller) {
@@ -2534,17 +2534,15 @@ void ActionsFiller::addBalanceActions(not_null<UserData*> user) {
 			object_ptr<Ui::VerticalLayout>(_wrap.data())));
 	const auto inner = wrap->entity();
 	Ui::AddSubsectionTitle(inner, tr::lng_manage_peer_bot_balance());
-	auto currencyBalance = AddCurrencyAction(user, inner, _controller);
+	// TON balance UI removed (we have no TON; diamonds only). Balance data is
+	// still parsed by the backend/data layer — we just never render the row.
 	auto creditsBalance = AddCreditsAction(user, inner, _controller);
 	Ui::AddSkip(inner);
 	Ui::AddDivider(inner);
 	Ui::AddSkip(inner);
 	wrap->toggleOn(
-		rpl::combine(
-			std::move(currencyBalance),
-			std::move(creditsBalance)
-		) | rpl::map((rpl::mappers::_1 > CreditsAmount(0))
-			|| (rpl::mappers::_2 > CreditsAmount(0))));
+		std::move(creditsBalance)
+		| rpl::map(rpl::mappers::_1 > CreditsAmount(0)));
 }
 
 void ActionsFiller::addInviteToGroupAction(not_null<UserData*> user) {

@@ -73,25 +73,18 @@ QImage StarParticles::generateStarCache(int size, QColor color) {
 	p.setBrush(color);
 	p.setPen(Qt::NoPen);
 
-	auto star = QPainterPath();
+	// Diamond (♦) particle: a vertical rhombus, narrower than tall, so it
+	// reads as a little gem rather than a star. Stars→diamonds rebrand.
+	auto diamond = QPainterPath();
 	const auto center = size / 2.;
-	const auto outerRadius = size / 2.;
-	const auto innerRadius = size / 5.;
-	const auto points = 4;
-
-	for (auto i = 0; i < points * 2; ++i) {
-		const auto angle = M_PI * i / points - M_PI / 2;
-		const auto radius = (i % 2 == 0) ? outerRadius : innerRadius;
-		const auto x = center + radius * std::cos(angle);
-		const auto y = center + radius * std::sin(angle);
-		if (i == 0) {
-			star.moveTo(x, y);
-		} else {
-			star.lineTo(x, y);
-		}
-	}
-	star.closeSubpath();
-	p.drawPath(star);
+	const auto halfHeight = size / 2.;
+	const auto halfWidth = size * 0.34;
+	diamond.moveTo(center, center - halfHeight);
+	diamond.lineTo(center + halfWidth, center);
+	diamond.lineTo(center, center + halfHeight);
+	diamond.lineTo(center - halfWidth, center);
+	diamond.closeSubpath();
+	p.drawPath(diamond);
 
 	return image;
 }

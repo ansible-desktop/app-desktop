@@ -1401,7 +1401,9 @@ void Controller::fillManageSection() {
 
 		::AddSkip(container, 0);
 		fillBotUsernamesButton();
-		fillBotCurrencyButton();
+		// TON currency balance button hidden — we have no TON currency.
+		// Diamonds (credits) balance below stays. #1080 / TON removal.
+		//fillBotCurrencyButton();
 		fillBotCreditsButton();
 		fillBotAffiliateProgram();
 		fillBotEditIntroButton();

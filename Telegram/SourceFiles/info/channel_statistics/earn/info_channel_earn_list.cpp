@@ -367,17 +367,10 @@ void InnerWidget::fill() {
 		? _peer->asUser()
 		: nullptr;
 	const auto channel = _peer->asChannel();
-	const auto canViewCurrencyEarn = [&] {
-		if (!channel) {
-			return true;
-		} else if (!(channel->flags() & ChannelDataFlag::CanViewRevenue)) {
-			return false;
-		} else if (channel->isMegagroup()) {
-			return _state.canViewCurrencyMegagroupEarn;
-		} else {
-			return true;
-		}
-	}();
+	// TON currency earn UI removed — we have no TON currency. The credits
+	// (diamonds) earn section below is unaffected; TON data is still parsed
+	// into _state.currencyEarn, we just never render it. TON removal.
+	const auto canViewCurrencyEarn = false;
 	const auto &data = canViewCurrencyEarn
 		? _state.currencyEarn
 		: Data::EarnStatistics();

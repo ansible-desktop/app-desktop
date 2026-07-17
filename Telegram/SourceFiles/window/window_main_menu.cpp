@@ -8,6 +8,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "window/window_main_menu.h"
 
 #include "apiwrap.h"
+#include "api/api_common.h"
+#include "inline_bots/bot_attach_web_view.h"
 #include "base/event_filter.h"
 #include "base/qt_signal_producer.h"
 #include "boxes/about_box.h"
@@ -23,6 +25,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "data/data_folder.h"
 #include "data/data_group_call.h"
 #include "data/data_session.h"
+#include "history/history.h"
 #include "data/data_stories.h"
 #include "data/data_user.h"
 #include "info/info_memento.h"
@@ -712,6 +715,19 @@ void MainMenu::setupMenu() {
 			{ &st::menuIconSavedMessages }
 		)->setClickedCallback([=] {
 			controller->showPeerHistory(controller->session().user());
+		});
+		addAction(
+			rpl::single(u"Кошелёк"_q),
+			{ &st::menuIconPayment }
+		)->setClickedCallback([=] {
+			const auto self = controller->session().user();
+			const auto history = controller->session().data().history(self);
+			controller->session().attachWebView().openByUsername(
+				controller,
+				Api::SendAction(history),
+				u"wallet"_q,
+				QString(),
+				false);
 		});
 	} else {
 		addAction(
