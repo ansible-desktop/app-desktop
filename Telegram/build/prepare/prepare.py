@@ -473,6 +473,17 @@ win:
         mingw-w64-x86_64-nasm ^
         mingw-w64-x86_64-perl ^
         mingw-w64-x86_64-pkgconf
+
+    rem The latest msys2 nasm (3.02) emits COFF objects that MSVC's linker
+    rem rejects as "invalid or corrupt file" (LNK1136) when building libvpx —
+    rem on both x86 and x64 (the *_asm.obj files). libjpeg-turbo's asm (nasm via
+    rem CMake -f win32/win64) is fine, so this is a libvpx + nasm-3.x interaction.
+    rem Pin the known-good nasm 2.16.03 over the msys2 binary so libvpx's own
+    rem configure/build produces linkable objects.
+    powershell -Command "iwr -OutFile ./nasm-pin.zip https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/win64/nasm-2.16.03-win64.zip"
+    powershell -Command "Expand-Archive -Force -Path ./nasm-pin.zip -DestinationPath ./nasm-pin"
+    copy /Y nasm-pin\\nasm-2.16.03\\nasm.exe msys64\\mingw64\\bin\\nasm.exe
+    del nasm-pin.zip
 """, 'ThirdParty')
 
 stage('python', """
