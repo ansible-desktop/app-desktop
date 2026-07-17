@@ -1,0 +1,174 @@
+name: Dev Windows (fast).
+
+# Fast iteration build — NOT a release. Windows x64 Debug only, with sccache so
+# repeated builds recompile only the changed translation units (~minutes on a warm
+# cache). Reuses the SAME dependency caches as win.yml (ThirdParty/Libraries/Qt),
+# so it never rebuilds Qt/OpenSSL/etc. once win.yml or release_win.yml warmed them.
+#
+# The production release (release_win.yml, on v* tags) is intentionally left
+# untouched — it stays a full, proper Release build with PDB crash reports.
+#
+# Trigger it by pushing a `dev-*` tag, or manually via "Run workflow" (pick a ref).
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch / tag / SHA to build (default: ref this is launched from).'
+        required: false
+        type: string
+  push:
+    tags:
+      - 'dev-*'
+
+concurrency:
+  group: dev-win-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  dev-windows:
+    name: Dev Windows x64 (Debug, sccache)
+    runs-on: windows-2022
+
+    env:
+      PREPARE_PATH: "Telegram/build/prepare/prepare.py"
+      SCCACHE_GHA_ENABLED: "true"
+
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - name: Resolve ref.
+        shell: bash
+        run: |
+          REF="${{ inputs.ref }}"
+          [ -z "$REF" ] && REF="${GITHUB_REF#refs/*/}"
+          echo "BUILD_REF=$REF" >> $GITHUB_ENV
+          echo "Building ref: $REF"
+
+      - name: Prepare directories.
+        run: |
+          mkdir %userprofile%\TBuild\Libraries
+          mklink /d %GITHUB_WORKSPACE%\TBuild %userprofile%\TBuild
+          echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
+          echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
+
+      - name: Get repository name.
+        shell: bash
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+
+      - name: Clone.
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          ref: ${{ env.BUILD_REF }}
+          path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
+
+      - name: First set up.
+        shell: bash
+        run: |
+          DOCPATH=$TBUILD/$REPO_NAME/docs/building-win.md
+          SDK="$(grep "SDK version" $DOCPATH | sed -r 's/.*\*\*(.*)\*\* SDK version.*/\1/')"
+          echo "SDK=$SDK" >> $GITHUB_ENV
+
+          sed -i '/CMAKE_${lang}_FLAGS_DEBUG_INIT/s/${_Zi}//' "$PROGRAMFILES"/CMake/share/cmake*/Modules/Platform/Windows-MSVC.cmake
+
+          echo "$(sha256sum $TBUILD/$REPO_NAME/$PREPARE_PATH | awk '{ print $1 }')" >> CACHE_KEY.txt
+          echo "$SDK" >> CACHE_KEY.txt
+          echo "CACHE_KEY=$(sha256sum CACHE_KEY.txt | awk '{ print $1 }')" >> $GITHUB_ENV
+
+          git config --global user.email "you@example.com"
+          git config --global user.name "Sample"
+
+      - uses: ilammy/msvc-dev-cmd@v1.13.0
+        name: Native Tools Command Prompt.
+        with:
+          arch: x64
+          sdk: ${{ env.SDK }}
+
+      - name: Set up sccache.
+        uses: mozilla-actions/sccache-action@v0.0.6
+
+      - name: NuGet sources.
+        run: |
+          nuget sources Disable -Name "Microsoft Visual Studio Offline Packages"
+          nuget sources Add -Source https://api.nuget.org/v3/index.json & exit 0
+
+      # Same cache keys as win.yml's x64 job → shares the warm dependency caches.
+      - name: ThirdParty cache.
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.TBUILD }}\ThirdParty
+          key: ${{ runner.OS }}-${{ runner.arch }}-third-party-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-${{ runner.arch }}-third-party-
+
+      - name: Libraries cache.
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ env.LibrariesPath }}\*
+            !${{ env.LibrariesPath }}\cache_keys
+            !${{ env.LibrariesPath }}\[qQ]t[_-]*
+            ${{ env.LibrariesPath }}\cache_keys\*
+            !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
+          key: ${{ runner.OS }}-x64-libs-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-libs-
+
+      - name: Qt cache.
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ env.LibrariesPath }}\[qQ]t[_-]*
+            ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
+          key: ${{ runner.OS }}-x64-qt6-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-qt6-
+
+      - name: Libraries.
+        env:
+          GYP_MSVS_OVERRIDE_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\'
+          GYP_MSVS_VERSION: 2022
+        run: |
+          %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent qt6
+
+      - name: Free up some disk space.
+        shell: bash
+        run: find $LibrariesPath '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' ')' -type f ')' -o -empty ')' -delete
+
+      - name: Build (Debug + sccache).
+        run: |
+          cd %TBUILD%\%REPO_NAME%\Telegram
+
+          call configure.bat ^
+          -G "Ninja Multi-Config" ^
+          qt6 ^
+          -D TDESKTOP_API_TEST=ON ^
+          -D CMAKE_CONFIGURATION_TYPES=Debug ^
+          -D CMAKE_COMPILE_WARNING_AS_ERROR=ON ^
+          -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded ^
+          -D CMAKE_C_COMPILER_LAUNCHER=sccache ^
+          -D CMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+          -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
+          -D DESKTOP_APP_DISABLE_CRASH_REPORTS=ON
+
+          cmake --build ..\out --config Debug --parallel
+
+      - name: sccache stats.
+        shell: bash
+        run: sccache --show-stats || true
+
+      - name: Move artifact.
+        run: |
+          set OUT=%TBUILD%\%REPO_NAME%\out\Debug
+          mkdir artifact
+          move %OUT%\Ansible.exe artifact/
+          move %OUT%\Updater.exe artifact/
+
+      - uses: actions/upload-artifact@v7
+        name: Upload artifact.
+        with:
+          name: Ansible-dev-x64-${{ github.run_number }}
+          path: artifact\
+          if-no-files-found: error
+          retention-days: 14
