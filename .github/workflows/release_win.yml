@@ -193,17 +193,24 @@ jobs:
             fi
           done
 
-          # Assert the essential Qt runtime actually landed — this is the real
-          # success criterion (windeployqt's translations probe exit is not).
-          for dll in Qt6Core.dll Qt6Gui.dll Qt6Widgets.dll; do
-            if ! find "$PKG" -maxdepth 1 -iname "$dll" -type f | grep -q .; then
-              echo "ERROR: essential runtime $dll missing from package — windeployqt did not deploy Qt." >&2
+          # tdesktop links Qt STATICALLY on Windows — Ansible.exe is self-contained,
+          # there are NO Qt6*.dll to deploy (windeployqt exits 1 with nothing to do,
+          # which we tolerated above). The real success criterion is that both
+          # executables built and Ansible.exe is large (static Qt linked in).
+          for exe in Ansible.exe Updater.exe; do
+            if [ ! -f "$PKG/$exe" ]; then
+              echo "ERROR: $exe missing from package." >&2
               echo "--- package contents ---" >&2
               find "$PKG" -maxdepth 1 -type f -printf '%f\n' | sort >&2
               exit 1
             fi
           done
-          echo "Qt runtime DLLs present — package OK."
+          ASZ=$(stat -c%s "$PKG/Ansible.exe")
+          if [ "$ASZ" -lt 40000000 ]; then
+            echo "ERROR: Ansible.exe is only $ASZ bytes — expected a large static build (>40MB); Qt may not be statically linked." >&2
+            exit 1
+          fi
+          echo "Package OK — Ansible.exe ($ASZ bytes, static) + Updater.exe present."
 
           # show what we're shipping
           echo "=== package contents (sizes in bytes) ==="
