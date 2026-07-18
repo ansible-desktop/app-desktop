@@ -8,7 +8,11 @@ name: Dev Windows (fast).
 # The production release (release_win.yml, on v* tags) is intentionally left
 # untouched — it stays a full, proper Release build with PDB crash reports.
 #
-# Trigger it by pushing a `dev-*` tag, or manually via "Run workflow" (pick a ref).
+# Branching model: do all desktop work on the `dev` branch — every push there runs
+# THIS fast build (and the heavy win/linux/mac/snap matrix is skipped on dev via
+# branches-ignore). When a build is stable, bring it to `master` and cut a `v*` tag
+# to produce the full release (release_win.yml). Also triggers on a `dev-*` tag or a
+# manual "Run workflow" (pick a ref).
 
 on:
   workflow_dispatch:
@@ -18,6 +22,8 @@ on:
         required: false
         type: string
   push:
+    branches:
+      - dev
     tags:
       - 'dev-*'
 

@@ -3,6 +3,8 @@ name: Linux.
 on:
   workflow_dispatch:
   push:
+    branches-ignore:
+      - dev        # dev branch uses the fast dev_win.yml only
     paths-ignore:
       - 'docs/**'
       - '**.md'
