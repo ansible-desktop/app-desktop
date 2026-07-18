@@ -39,7 +39,13 @@ jobs:
 
     env:
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
-      SCCACHE_GHA_ENABLED: "true"
+      # sccache's GHA cache backend uses the DEPRECATED Actions Cache API which
+      # GitHub has shut down (permanent "services aren't available" error), so we
+      # back sccache with a LOCAL DISK cache persisted via actions/cache@v5 (the
+      # new API, proven working here). GHA backend explicitly disabled.
+      SCCACHE_GHA_ENABLED: "false"
+      SCCACHE_DIR: "C:\\sccache"
+      SCCACHE_CACHE_SIZE: "3G"
 
     defaults:
       run:
@@ -97,21 +103,32 @@ jobs:
       - name: Set up sccache.
         uses: mozilla-actions/sccache-action@v0.0.6
 
-      - name: Probe sccache (graceful fallback if cache backend is down).
+      # Persist sccache's LOCAL disk cache via the new Actions Cache API (proven
+      # working here), instead of sccache's broken legacy GHA backend. Unique key
+      # per run so the post-job save always writes; restore-keys pulls the newest
+      # previous snapshot → warm cache across dev pushes.
+      - name: Restore sccache disk cache.
+        uses: actions/cache@v5
+        with:
+          path: C:\sccache
+          key: sccache-dev-x64-${{ github.run_id }}
+          restore-keys: sccache-dev-x64-
+
+      - name: Configure sccache (local disk backend).
         shell: bash
         run: |
-          # sccache is a HARD compiler launcher: if its GHA cache backend is having
-          # an outage ("Our services aren't available right now"), the sccache server
-          # fails to start and every compile dies. Probe it once here; if it's not
-          # healthy, build WITHOUT the launcher (slower, but a valid build) instead
-          # of failing the whole job on a transient GitHub cache outage.
+          # sccache-action turns on the (dead) GHA backend; force it OFF for this
+          # step's sccache calls AND for the build step, then start the server on
+          # the disk cache. Fall back to no-launcher only if even that fails.
+          export SCCACHE_GHA_ENABLED=false
+          echo "SCCACHE_GHA_ENABLED=false" >> $GITHUB_ENV
           if sccache --start-server >/tmp/sccache_probe.log 2>&1 \
              && sccache --show-stats >>/tmp/sccache_probe.log 2>&1; then
             echo 'SCCACHE_LAUNCH=-D CMAKE_C_COMPILER_LAUNCHER=sccache -D CMAKE_CXX_COMPILER_LAUNCHER=sccache' >> $GITHUB_ENV
-            echo "sccache healthy — building with cache."
+            echo "sccache (disk) healthy — building with cache."
           else
             echo 'SCCACHE_LAUNCH=' >> $GITHUB_ENV
-            echo "::warning::sccache cache backend unavailable — building WITHOUT cache (slower, still valid)."
+            echo "::warning::sccache unavailable — building WITHOUT cache (slower, still valid)."
             cat /tmp/sccache_probe.log || true
           fi
 
