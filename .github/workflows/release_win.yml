@@ -172,8 +172,13 @@ jobs:
           WDQ="$QT_BIN/windeployqt6.exe"
           [ -x "$WDQ" ] || WDQ="$QT_BIN/windeployqt.exe"
 
-          "$WDQ" --release --no-translations --no-system-d3d-compiler --no-virtualkeyboard --no-opengl-sw "$PKG/Ansible.exe"
-          "$WDQ" --release --no-translations --no-system-d3d-compiler --no-virtualkeyboard --no-opengl-sw "$PKG/Updater.exe"
+          # windeployqt can exit 1 on a translations/qconfig probe even with
+          # --no-translations, when the restored Qt cache was pruned of
+          # mkspecs/qconfig.pri + translations/catalogs.json by the disk-cleanup
+          # step. That probe is irrelevant to us (we ship no translations), so
+          # tolerate its exit here and assert the essential runtime DLLs below.
+          "$WDQ" --release --no-translations --no-system-d3d-compiler --no-virtualkeyboard --no-opengl-sw "$PKG/Ansible.exe" || echo "windeployqt(Ansible) exit $? — will verify DLLs"
+          "$WDQ" --release --no-translations --no-system-d3d-compiler --no-virtualkeyboard --no-opengl-sw "$PKG/Updater.exe" || echo "windeployqt(Updater) exit $? — will verify DLLs"
 
           # OpenSSL DLLs — names vary (libcrypto-3-x64.dll / libssl-3-x64.dll for OpenSSL 3)
           for pat in 'libcrypto-3*.dll' 'libssl-3*.dll' 'libcrypto-1_1*.dll' 'libssl-1_1*.dll'; do
@@ -187,6 +192,18 @@ jobs:
               break
             fi
           done
+
+          # Assert the essential Qt runtime actually landed — this is the real
+          # success criterion (windeployqt's translations probe exit is not).
+          for dll in Qt6Core.dll Qt6Gui.dll Qt6Widgets.dll; do
+            if ! find "$PKG" -maxdepth 1 -iname "$dll" -type f | grep -q .; then
+              echo "ERROR: essential runtime $dll missing from package — windeployqt did not deploy Qt." >&2
+              echo "--- package contents ---" >&2
+              find "$PKG" -maxdepth 1 -type f -printf '%f\n' | sort >&2
+              exit 1
+            fi
+          done
+          echo "Qt runtime DLLs present — package OK."
 
           # show what we're shipping
           echo "=== package contents (sizes in bytes) ==="

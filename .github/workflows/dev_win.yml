@@ -91,6 +91,24 @@ jobs:
       - name: Set up sccache.
         uses: mozilla-actions/sccache-action@v0.0.6
 
+      - name: Probe sccache (graceful fallback if cache backend is down).
+        shell: bash
+        run: |
+          # sccache is a HARD compiler launcher: if its GHA cache backend is having
+          # an outage ("Our services aren't available right now"), the sccache server
+          # fails to start and every compile dies. Probe it once here; if it's not
+          # healthy, build WITHOUT the launcher (slower, but a valid build) instead
+          # of failing the whole job on a transient GitHub cache outage.
+          if sccache --start-server >/tmp/sccache_probe.log 2>&1 \
+             && sccache --show-stats >>/tmp/sccache_probe.log 2>&1; then
+            echo 'SCCACHE_LAUNCH=-D CMAKE_C_COMPILER_LAUNCHER=sccache -D CMAKE_CXX_COMPILER_LAUNCHER=sccache' >> $GITHUB_ENV
+            echo "sccache healthy — building with cache."
+          else
+            echo 'SCCACHE_LAUNCH=' >> $GITHUB_ENV
+            echo "::warning::sccache cache backend unavailable — building WITHOUT cache (slower, still valid)."
+            cat /tmp/sccache_probe.log || true
+          fi
+
       - name: NuGet sources.
         run: |
           nuget sources Disable -Name "Microsoft Visual Studio Offline Packages"
@@ -147,8 +165,7 @@ jobs:
           -D CMAKE_CONFIGURATION_TYPES=Debug ^
           -D CMAKE_COMPILE_WARNING_AS_ERROR=ON ^
           -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded ^
-          -D CMAKE_C_COMPILER_LAUNCHER=sccache ^
-          -D CMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+          %SCCACHE_LAUNCH% ^
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=ON
 
