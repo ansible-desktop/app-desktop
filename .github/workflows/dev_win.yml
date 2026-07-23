@@ -89,7 +89,7 @@ jobs:
           sdk: ${{ env.SDK }}
 
       - name: Set up sccache.
-        uses: mozilla-actions/sccache-action@v0.0.6
+        uses: mozilla-actions/sccache-action@v0.0.10
 
       - name: Probe sccache (graceful fallback if cache backend is down).
         shell: bash
