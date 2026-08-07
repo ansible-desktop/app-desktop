@@ -1856,7 +1856,7 @@ QString TryConvertUrlToLocal(QString url) {
 	// not be redirected as deep links. Removing the subdomain rule kills
 	// the mini-app crash where wallet.ansible.su was rewritten to
 	// tg://resolve?domain=wallet and the webview was force-closed.
-	auto ansibleRestMatch = regex_match(u"^(https?://)?(www\\.)?ansible\\.(?:rest|su)/(.+)$"_q, url, matchOptions);
+	auto ansibleRestMatch = regex_match(u"^(https?://)?(www\\.)?asme\\.su/(.+)$"_q, url, matchOptions);
 	if (ansibleRestMatch) {
 		const auto query = ansibleRestMatch->capturedView(3);
 		if (const auto phoneMatch = regex_match(u"^\\+([0-9]+)(\\?|$)"_q, query, matchOptions)) {

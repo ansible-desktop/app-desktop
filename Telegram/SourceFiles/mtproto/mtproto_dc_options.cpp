@@ -29,23 +29,23 @@ struct BuiltInDc {
 };
 
 // Ansible bootstrap — single DC only. Migrated to the prod-spb
-// datacenter (ws.ansible.su -> 45.93.201.204, 2026-07-12); the old
-// dev LB 5.129.243.207 is decommissioned. Clients still pick up extra
+// datacenter (ws.ansible.su -> 85.193.80.91, SPB LB, 2026-08-08); the old
+// MSK LB 45.93.201.204 is being decommissioned. Clients still pick up extra
 // DCs dynamically via dcOptions once help.getConfig advertises them.
 const BuiltInDc kBuiltInDcs[] = {
-	{ 1, "45.93.201.204" , 10443 },
+	{ 1, "85.193.80.91" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsIPv6[] = {
-	{ 1, "45.93.201.204" , 10443 },
+	{ 1, "85.193.80.91" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsTest[] = {
-	{ 1, "45.93.201.204" , 10443 },
+	{ 1, "85.193.80.91" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsIPv6Test[] = {
-	{ 1, "45.93.201.204" , 10443 },
+	{ 1, "85.193.80.91" , 10443 },
 };
 
 const char *kTestPublicRSAKeys[] = { "\

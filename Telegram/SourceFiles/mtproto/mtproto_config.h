@@ -29,7 +29,7 @@ struct ConfigFields {
 	int revokePrivateTimeLimit = 172800;
 	bool revokePrivateInbox = false;
 	int stickersRecentLimit = 30;
-	QString internalLinksDomain = u"https://ansible.su/"_q;
+	QString internalLinksDomain = u"https://asme.su/"_q;
 	int channelsReadMediaPeriod = 86400 * 7;
 	int callReceiveTimeoutMs = 20000;
 	int callRingTimeoutMs = 90000;

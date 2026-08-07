@@ -3067,8 +3067,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_premium_double_limits_about_pins#other" = "Pin up to {count} chats in your main chat list";
 
 "lng_premium_double_limits_subtitle_links" = "Public Links";
-"lng_premium_double_limits_about_links#one" = "Reserve up to {count} ansible.su/username link";
-"lng_premium_double_limits_about_links#other" = "Reserve up to {count} ansible.su/username links";
+"lng_premium_double_limits_about_links#one" = "Reserve up to {count} asme.su/username link";
+"lng_premium_double_limits_about_links#other" = "Reserve up to {count} asme.su/username links";
 
 "lng_premium_double_limits_subtitle_gifs" = "Saved GIFs";
 "lng_premium_double_limits_about_gifs#one" = "Save up to {count} GIF in your Favorite GIFs";
@@ -4441,7 +4441,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_group_about_text" = "Groups can have:";
 "lng_group_about1" = "Up to 200,000 members";
 "lng_group_about2" = "Persistent chat history";
-"lng_group_about3" = "Public links such as ansible.su/title";
+"lng_group_about3" = "Public links such as asme.su/title";
 "lng_group_about4" = "Admins with different rights";
 
 "lng_switch_stickers" = "Stickers";
@@ -5196,7 +5196,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_factcheck_edit_done" = "Fact check edited.";
 "lng_factcheck_remove_done" = "Fact check removed.";
 "lng_factcheck_bottom" = "This clarification was provided by a fact checking agency assigned by the department of the government of your country ({country}) responsible for combatting misinformation.";
-"lng_factcheck_links" = "Only **ansible.su/** links are allowed.";
+"lng_factcheck_links" = "Only **asme.su/** links are allowed.";
 
 "lng_paid_title" = "Paid Content";
 "lng_paid_enter_cost" = "Enter Unlock Cost";

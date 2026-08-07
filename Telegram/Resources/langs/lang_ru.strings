@@ -3423,10 +3423,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_premium_double_limits_about_pins#other" = "Закрепление до {count} чата в основном списке";
 
 "lng_premium_double_limits_subtitle_links" = "Публичные ссылки";
-"lng_premium_double_limits_about_links#one" = "Использование до {count} ссылки вида ansible.su/username";
-"lng_premium_double_limits_about_links#few" = "Использование до {count} ссылок вида ansible.su/username";
-"lng_premium_double_limits_about_links#many" = "Использование до {count} ссылок вида ansible.su/username";
-"lng_premium_double_limits_about_links#other" = "Использование до {count} ссылки вида ansible.su/username";
+"lng_premium_double_limits_about_links#one" = "Использование до {count} ссылки вида asme.su/username";
+"lng_premium_double_limits_about_links#few" = "Использование до {count} ссылок вида asme.su/username";
+"lng_premium_double_limits_about_links#many" = "Использование до {count} ссылок вида asme.su/username";
+"lng_premium_double_limits_about_links#other" = "Использование до {count} ссылки вида asme.su/username";
 
 "lng_premium_double_limits_subtitle_gifs" = "Сохранённые GIF";
 "lng_premium_double_limits_about_gifs#one" = "Сохранение в избранных до {count} GIF";
@@ -5133,7 +5133,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_group_about_text" = "Возможности групп:";
 "lng_group_about1" = "До 200 000 участников";
 "lng_group_about2" = "Общая история переписки";
-"lng_group_about3" = "Публичные ссылки вида ansible.su/title";
+"lng_group_about3" = "Публичные ссылки вида asme.su/title";
 "lng_group_about4" = "Разный уровень прав";
 
 "lng_switch_stickers" = "Стикеры";
@@ -5933,7 +5933,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_factcheck_edit_done" = "Разъяснение изменено.";
 "lng_factcheck_remove_done" = "Разъяснение удалено.";
 "lng_factcheck_bottom" = "Это разъяснение предоставлено агентством по проверке фактов, назначенным ведомством правительства вашей страны ({country}), ответственным за борьбу с дезинформацией.";
-"lng_factcheck_links" = "Разрешены только ссылки **ansible.su/**";
+"lng_factcheck_links" = "Разрешены только ссылки **asme.su/**";
 
 "lng_paid_title" = "Платный контент";
 "lng_paid_enter_cost" = "Стоимость доступа";

@@ -32,7 +32,7 @@ constexpr auto AppFile = "Ansible"_cs;
 // Display version is AppVersionStr below (decoupled). Versioning scheme:
 //   displayed "0.<minor>.<patch>"  <->  AppVersion = 3000000 + minor*1000 + patch
 // Bump BOTH on each release, and keep the bh-updates manifest version in sync.
-constexpr auto AppVersion = 3001003;     // displayed as 0.1.3 (see AppVersionStr)
-constexpr auto AppVersionStr = "0.1.3";
+constexpr auto AppVersion = 3001004;     // displayed as 0.1.4 (see AppVersionStr)
+constexpr auto AppVersionStr = "0.1.4";
 constexpr auto AppBetaVersion = false;
 constexpr auto AppAlphaVersion = TDESKTOP_ALPHA_VERSION;

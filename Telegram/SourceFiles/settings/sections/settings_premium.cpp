@@ -1868,7 +1868,7 @@ void StartPremiumPayment(
 			.startAutoSubmit = true,
 		});
 	} else if (!slug.isEmpty()) {
-		UrlClickHandler::Open("https://ansible.su/$" + slug);
+		UrlClickHandler::Open("https://asme.su/$" + slug);
 	}
 }
 

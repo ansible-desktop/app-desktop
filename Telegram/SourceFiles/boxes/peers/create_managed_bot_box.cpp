@@ -213,7 +213,7 @@ void CreateManagedBotBox(
 		const auto text = tr::lng_create_bot_username_link(
 			tr::now,
 			lt_link,
-			u"ansible.su/"_q + full);
+			u"asme.su/"_q + full);
 		state->errorText = QString();
 		state->goodText = text;
 		statusLabel->setText(text);

@@ -542,7 +542,7 @@ void SetupRows(
 		tr::lng_settings_username_label(),
 		std::move(empty)
 	) | rpl::map([](const QString &label, bool empty) {
-		return empty ? "ansible.su/username" : label;
+		return empty ? "asme.su/username" : label;
 	});
 	auto usernameValue = rpl::combine(
 		std::move(username),
@@ -1131,7 +1131,7 @@ void BuildInformationSection(SectionBuilder &builder) {
 		return SearchEntry{
 			.id = u"edit/username"_q,
 			.title = tr::lng_settings_username_label(tr::now),
-			.keywords = { u"username"_q, u"link"_q, u"ansible.su"_q },
+			.keywords = { u"username"_q, u"link"_q, u"asme.su"_q },
 		};
 	});
 	builder.add(nullptr, [] {
