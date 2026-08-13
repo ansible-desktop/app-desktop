@@ -195,8 +195,13 @@ jobs:
 
           API="-D TDESKTOP_API_TEST=ON"
           if [ $GITHUB_REF == 'refs/heads/nightly' ]; then
-            echo "Use the open credentials."
-            API="-D TDESKTOP_API_ID=611335 -D TDESKTOP_API_HASH=d524b414d21f4d37f08684c1df41ac9c"
+            # Ansible Desktop, выдано порталом my.ansible.su 2026-08-14.
+            # Было 611335 / d524b414… — креды СНАПА ТЕЛЕГРАМА из upstream:
+            # собственный клиент ходил на собственный сервер под чужой личностью.
+            # Секрет репозитория, если задан, побеждает — так пару можно
+            # ротировать без публичного коммита; иначе берётся значение ниже
+            # (оно всё равно уезжает в бинарь и секретом не является).
+            API="-D TDESKTOP_API_ID=${{ secrets.ANSIBLE_API_ID || '21000002' }} -D TDESKTOP_API_HASH=${{ secrets.ANSIBLE_API_HASH || '316a4ba0755f7ca055e5f55e5f15ebbc' }}"
           fi
           echo "TDESKTOP_BUILD_API=$API" >> $GITHUB_ENV
 

@@ -52,11 +52,17 @@ parts:
     cmake-parameters:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/usr
-      # TODO(rebrand): these are Telegram-issued API credentials shipped under
-      # the Ansible brand — replace with Ansible's own API_ID/HASH (the backend
-      # doesn't validate them against Telegram, but it's a TOS/legal concern).
-      - -DTDESKTOP_API_ID=611335
-      - -DTDESKTOP_API_HASH=d524b414d21f4d37f08684c1df41ac9c
+      # Ansible Desktop, выдано порталом my.ansible.su 2026-08-14.
+      # Раньше здесь стояли 611335 / d524b414… — это креды СНАПА ТЕЛЕГРАМА,
+      # унаследованные от upstream: мы собирались и ходили на свой сервер под
+      # чужой личностью. Помечено 🔴 ещё в AUDIT_BRANDING_20260523.md.
+      #
+      # Пара НЕ секрет: у upstream она лежит здесь же открытым текстом, у
+      # Android — в BuildVars.java, у iOS — в appstore-configuration.json.
+      # Прятать то, что уезжает в бинарь, бессмысленно; защита серверная —
+      # бан и троттлинг по api_id. Реестр: workflow/APP_CREDENTIALS.md.
+      - -DTDESKTOP_API_ID=21000002
+      - -DTDESKTOP_API_HASH=316a4ba0755f7ca055e5f55e5f15ebbc
     override-pull: |
       craftctl default
 
