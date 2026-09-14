@@ -35,7 +35,7 @@ struct ConfigFields {
 	int callRingTimeoutMs = 90000;
 	int callConnectTimeoutMs = 30000;
 	int callPacketTimeoutMs = 10000;
-	int webFileDcId = 4;
+	int webFileDcId = 1;
 	QString txtDomainString;
 	bool blockedMode = false;
 	int captionLengthMax = 1024;

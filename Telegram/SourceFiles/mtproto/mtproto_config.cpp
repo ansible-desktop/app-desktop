@@ -24,10 +24,12 @@ constexpr auto kVersion = 1;
 } // namespace
 
 ConfigFields::ConfigFields(Environment environment)
-: webFileDcId(environment == Environment::Test ? 2 : 4)
-, txtDomainString(environment == Environment::Test
-	? u"tapv3.stel.com"_q
-	: u"apv3.stel.com"_q)
+// 🚨 Встроенный DC у нас ровно один, поэтому webFileDcId = 1 (у апстрима
+// 4 в бою и 2 в тесте). txtDomainString пуст осознанно: это домен
+// TXT-записи, из которой апстрим вытягивает запасной конфиг, — у нас
+// такого механизма нет, см. special_config_request.cpp.
+: webFileDcId(1)
+, txtDomainString(QString())
 , reactionDefaultEmoji(ConfigDefaultReactionEmoji())
 , gifSearchUsername(environment == Environment::Test
 	? u"izgifbot"_q
