@@ -4,6 +4,9 @@ on:
   push:
     # Pushes to the canary branches run only canary.yml, see there.
     branches-ignore:
+      # Ветка переноса форка на 7.2.8: тяжёлая матрица здесь не нужна,
+      # проверяем быстрой dev_win.yml по workflow_dispatch.
+      - '7.2.8'
       - public-canary
       - private-canary
     paths-ignore:
