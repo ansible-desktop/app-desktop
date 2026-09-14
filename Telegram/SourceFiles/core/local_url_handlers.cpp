@@ -617,7 +617,7 @@ bool ResolveUsernameOrPhone(
 		}
 	}
 
-	// Fix t.me/s/username links.
+	// Fix asme.su/s/username links.
 	const auto webChannelPreviewLink = (domainParam == u"s"_q)
 		&& !appnameParam.isEmpty();
 	const auto domain = webChannelPreviewLink ? appnameParam : domainParam;
@@ -1941,24 +1941,17 @@ QString TryConvertUrlToLocal(QString url) {
 		const auto protocol = tonsiteMatch->captured(1);
 		return u"tonsite://"_q + url.mid(protocol.size());
 	}
-	auto subdomainMatch = regex_match(u"^(https?://)?([a-zA-Z0-9\\_]+)\\.t\\.me(/\\d+)?/?(\\?.+)?"_q, url, matchOptions);
-	if (subdomainMatch) {
-		const auto name = subdomainMatch->captured(2);
-		if (name.size() > 1 && name != "www") {
-			const auto result = TryConvertUrlToLocal(
-				subdomainMatch->captured(1)
-				+ "t.me/"
-				+ name
-				+ subdomainMatch->captured(3)
-				+ subdomainMatch->captured(4));
-			return result.startsWith("tg://resolve?domain=")
-				? result
-				: url;
-		}
-	}
-	auto telegramMeMatch = regex_match(u"^(https?://)?(www\\.)?(telegram\\.(me|dog)|t\\.me)/(.+)$"_q, url, matchOptions);
-	if (telegramMeMatch) {
-		const auto query = telegramMeMatch->capturedView(5);
+	// 🚨 Апстримовское правило-шорткат "<sub>.t.me/<id> -> t.me/<sub>/<id>"
+	// здесь УДАЛЕНО, а не переименовано на наш домен. У Телеграма поддомен —
+	// внутреннее сокращение (news.t.me/123), у нас поддоменный слот занят
+	// хостами мини-аппов: wallet.ansible.su, web.ansible.su, core.ansible.su...
+	// Переименование привело бы к тому, что открытие кошелька превращается в
+	// as://resolve?domain=wallet, botHandleLocalUri зовёт botClose(), и
+	// WebView2 падает на каждом открытии мини-аппа. Проверено на форке:
+	// коммит cd3ec897 чинил ровно это.
+	auto asmeMatch = regex_match(u"^(https?://)?(www\\.)?asme\\.su/(.+)$"_q, url, matchOptions);
+	if (asmeMatch) {
+		const auto query = asmeMatch->capturedView(3);
 		if (const auto phoneMatch = regex_match(u"^\\+([0-9]+)(\\?|$)"_q, query, matchOptions)) {
 			const auto params = query.mid(phoneMatch->captured(0).size()).toString();
 			return u"tg://resolve?phone="_q + phoneMatch->captured(1) + (params.isEmpty() ? QString() : '&' + params);
@@ -1980,7 +1973,7 @@ QString TryConvertUrlToLocal(QString url) {
 			return u"tg://confirmphone?"_q + confirmPhoneMatch->captured(1);
 		} else if (const auto ivMatch = regex_match(u"^iv/?\\?(.+)(#|$)"_q, query, matchOptions)) {
 			//
-			// We need to show our t.me page, not the url directly.
+			// We need to show our asme.su page, not the url directly.
 			//
 			//auto params = url_parse_params(ivMatch->captured(1), UrlParamNameTransform::ToLower);
 			//auto previewedUrl = params.value(u"url"_q);

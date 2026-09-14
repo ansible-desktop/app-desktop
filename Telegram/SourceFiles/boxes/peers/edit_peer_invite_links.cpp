@@ -299,10 +299,10 @@ QString Row::generateName() {
 		u"https://"_q,
 		QString()
 	).replace(
-		u"t.me/+"_q,
+		u"asme.su/+"_q,
 		QString()
 	).replace(
-		u"t.me/joinchat/"_q,
+		u"asme.su/joinchat/"_q,
 		QString()
 	);
 }

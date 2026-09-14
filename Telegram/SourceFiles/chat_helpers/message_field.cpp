@@ -601,7 +601,7 @@ auto InitMessageFieldHandlers(MessageFieldHandlersArgs &&args)
 }
 
 [[nodiscard]] bool IsGoodFactcheckUrl(QStringView url) {
-	return url.startsWith(u"t.me/"_q) || url.startsWith(u"https://t.me/"_q);
+	return url.startsWith(u"asme.su/"_q) || url.startsWith(u"https://asme.su/"_q);
 }
 
 [[nodiscard]] Fn<bool(

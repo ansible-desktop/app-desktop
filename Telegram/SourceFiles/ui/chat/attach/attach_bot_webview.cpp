@@ -2830,7 +2830,7 @@ void Panel::openTgLink(const QJsonObject &args) {
 		requestClose();
 		return;
 	}
-	_delegate->botHandleLocalUri("https://t.me" + path, true);
+	_delegate->botHandleLocalUri("https://asme.su" + path, true);
 }
 
 void Panel::openExternalLink(const QJsonObject &args) {
