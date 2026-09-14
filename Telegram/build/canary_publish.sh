@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# This file is part of Telegram Desktop,
+# This file is part of Ansible Desktop, a fork of Telegram Desktop,
 # the official desktop application for the Telegram messaging service.
 #
 # For license and copyright information please follow this link:
-# https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+# https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #
 # Publishes ONE platform build of a canary lane: posts the update file(s)
 # and the portable archive to the lane's channel through the local Bot

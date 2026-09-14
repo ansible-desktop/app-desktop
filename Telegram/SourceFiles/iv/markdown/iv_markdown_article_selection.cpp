@@ -1,9 +1,9 @@
 /*
-This file is part of Telegram Desktop,
+This file is part of Ansible Desktop, a fork of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 */
 #include "iv/markdown/iv_markdown_article_selection.h"
 #include "iv/markdown/iv_markdown_prepare_links.h"
