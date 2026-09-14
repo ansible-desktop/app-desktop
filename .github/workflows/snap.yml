@@ -5,6 +5,8 @@ on:
   push:
     branches-ignore:
       - dev        # dev branch uses the fast dev_win.yml only
+      - layer229   # перенос форка на MTProto 229: сборка только быстрая,
+                   # по workflow_dispatch с ref (см. ROADMAP_DESKTOP_229)
     paths-ignore:
       - 'docs/**'
       - '**.md'
