@@ -90,8 +90,7 @@ QString MimeType::name() const {
 MimeType MimeTypeForName(const QString &mime) {
 	if (mime == u"image/webp"_q) {
 		return MimeType(MimeType::Known::WebP);
-	} else if (mime == u"application/x-ansible-sticker"_q
-		|| mime == u"application/x-tgsticker"_q) {
+	} else if (mime == u"application/x-ansible-sticker"_q) {
 		return MimeType(MimeType::Known::Ass);
 	} else if (mime == u"application/x-tgwallpattern"_q) {
 		return MimeType(MimeType::Known::Tgv);
@@ -110,8 +109,7 @@ MimeType MimeTypeForFile(const QFileInfo &file) {
 	QString path = file.absoluteFilePath();
 	if (path.endsWith(u".webp"_q, Qt::CaseInsensitive)) {
 		return MimeType(MimeType::Known::WebP);
-	} else if (path.endsWith(u".ass"_q, Qt::CaseInsensitive)
-		|| path.endsWith(u".tgs"_q, Qt::CaseInsensitive)) {
+	} else if (path.endsWith(u".ass"_q, Qt::CaseInsensitive)) {
 		return MimeType(MimeType::Known::Ass);
 	} else if (path.endsWith(u".tgv"_q)) {
 		return MimeType(MimeType::Known::Tgv);
@@ -146,10 +144,7 @@ MimeType MimeTypeForData(const QByteArray &data) {
 }
 
 bool IsMimeStickerLottie(const QString &mime) {
-	// Своё имя — основное, апстримовское принимаем ради уже сохранённых
-	// документов; бэкенд делает ровно то же (rpc_encode_media.erl:1378).
-	return (mime == u"application/x-ansible-sticker"_q)
-		|| (mime == u"application/x-tgsticker"_q);
+	return (mime == u"application/x-ansible-sticker"_q);
 }
 
 bool IsMimeStickerWebm(const QString &mime) {
@@ -157,8 +152,7 @@ bool IsMimeStickerWebm(const QString &mime) {
 }
 
 bool IsMimeStickerAnimated(const QString &mime) {
-	return (mime == u"application/x-ansible-sticker"_q)
-		|| (mime == u"application/x-tgsticker"_q);
+	return (mime == u"application/x-ansible-sticker"_q);
 }
 
 bool IsMimeSticker(const QString &mime) {
@@ -265,7 +259,7 @@ NameType DetectNameType(const QString &filepath) {
 afdesign ai avif bmp dng gif heic icns ico jfif jpeg jpg jpg-large jxl nef \
 png png-large psd qoi raw sketch svg tga tif tiff webp"_q);
 	static const auto kVideo = SplitExtensions(u"\
-3g2 3gp 3gpp aep ass avi flv h264 m4s m4v mkv mov mp4 mpeg mpg ogv srt tgs tgv \
+3g2 3gp 3gpp aep ass avi flv h264 m4s m4v mkv mov mp4 mpeg mpg ogv srt \
 vob webm wmv"_q);
 	static const auto kAudio = SplitExtensions(u"\
 aac ac3 aif amr caf cda cue flac m4a m4b mid midi mp3 ogg opus wav wma"_q);
