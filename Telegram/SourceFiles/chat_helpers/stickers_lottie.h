@@ -135,7 +135,7 @@ bool PaintStickerThumbnailPath(
 	not_null<Main::Session*> session,
 	const QString &path);
 
-[[nodiscard]] not_null<DocumentData*> GenerateLocalTgsSticker(
+[[nodiscard]] not_null<DocumentData*> GenerateLocalAssSticker(
 	not_null<Main::Session*> session,
 	const QString &name,
 	bool useTextColor = false);

@@ -153,7 +153,7 @@ bool HasLottieThumbnail(
 		Data::StickersSetThumbnailView *thumb,
 		Data::DocumentMedia *media) {
 	if (thumb) {
-		return (thumbType == StickerType::Tgs)
+		return (thumbType == StickerType::Ass)
 			&& !thumb->content().isEmpty();
 	} else if (!media) {
 		return false;
@@ -347,7 +347,7 @@ not_null<DocumentData*> GenerateLocalSticker(
 	return document;
 }
 
-not_null<DocumentData*> GenerateLocalTgsSticker(
+not_null<DocumentData*> GenerateLocalAssSticker(
 		not_null<Main::Session*> session,
 		const QString &name,
 		bool useTextColor) {
@@ -379,7 +379,7 @@ not_null<DocumentData*> GenerateLocalTgsSticker(
 
 	const auto result = GenerateLocalSticker(
 		session,
-		u":/animations/"_q + name + u".tgs"_q);
+		u":/animations/"_q + name + u".ass"_q);
 	if (useTextColor) {
 		result->overrideEmojiUsesTextColor(true);
 	}

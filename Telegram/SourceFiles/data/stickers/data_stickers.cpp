@@ -1854,7 +1854,7 @@ StickerType ThumbnailTypeFromPhotoSize(const MTPPhotoSize &size) {
 	const auto ch = type.isEmpty() ? char() : type[0];
 	switch (ch) {
 	case 's': return StickerType::Webp;
-	case 'a': return StickerType::Tgs;
+	case 'a': return StickerType::Ass;
 	case 'v': return StickerType::Webm;
 	}
 	return StickerType::Webp;

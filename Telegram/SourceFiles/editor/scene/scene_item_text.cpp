@@ -227,7 +227,7 @@ AlignAction::AlignAction(
 	TextAlignment alignment)
 : Ui::Menu::Action(parent, st, action, nullptr, nullptr)
 , _icon(Lottie::MakeIcon({
-	.path = u":/animations/photo_editor_text_align.tgs"_q,
+	.path = u":/animations/photo_editor_text_align.ass"_q,
 	.color = &st::mediaviewMenuFg,
 	.sizeOverride = QSize(
 		st::photoEditorAlignIconSize,
