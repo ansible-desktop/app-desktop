@@ -18,11 +18,21 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #endif // TDESKTOP_ALLOW_CLOSED_ALPHA
 
 // used in Updater.cpp and Setup.iss for Windows
-constexpr auto AppId = "{53F49750-6209-4FBF-9CA8-7A333C87D1ED}"_cs;
-constexpr auto AppNameOld = "Telegram Win (Unofficial)"_cs;
-constexpr auto AppName = "Telegram Desktop"_cs;
-constexpr auto AppFile = "Telegram"_cs;
-constexpr auto AppVersion = 7002008;
-constexpr auto AppVersionStr = "7.2.8";
+constexpr auto AppId = "{5DE84367-0BFF-4829-8074-A3C10556F2FB}"_cs;
+constexpr auto AppNameOld = "Ansible Desktop"_cs;
+constexpr auto AppName = "Ansible Desktop"_cs;
+constexpr auto AppFile = "Ansible"_cs;
+// 🚨 AppVersion — ВНУТРЕННЕЕ целое tdesktop: по нему выбирается формат
+// сериализации на диске и сравниваются версии при обновлении. Оно обязано
+// оставаться >= 2008007, иначе readPeer() идёт по legacy-ветке (без flags
+// и inlinePlaceholder), а writePeer() всегда пишет современный формат —
+// свой аккаунт после перезапуска показывается ботом.
+//
+// Отображаемая версия — AppVersionStr, она отвязана. Схема:
+//   "0.<minor>.<patch>"  <->  AppVersion = 3000000 + minor*1000 + patch
+// Поднимать ОБА при каждом релизе и синхронизировать с манифестом
+// bh-updates, Telegram.rc и AppxManifest.xml.
+constexpr auto AppVersion = 3002000;
+constexpr auto AppVersionStr = "0.2.0";
 constexpr auto AppBetaVersion = false;
 constexpr auto AppAlphaVersion = TDESKTOP_ALPHA_VERSION;
