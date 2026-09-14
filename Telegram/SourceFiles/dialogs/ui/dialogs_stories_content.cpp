@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/ui/dialogs_stories_content.h"
 
@@ -28,9 +28,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/dynamic_thumbnails.h"
 #include "ui/painter.h"
 #include "window/window_session_controller.h"
-#include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
-#include "styles/style_media_stories.h"
 
 namespace Dialogs::Stories {
 namespace {

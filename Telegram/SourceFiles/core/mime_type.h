@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -24,7 +24,7 @@ public:
 		TDesktopTheme,
 		TDesktopPalette,
 		WebP,
-		Ass,
+		Tgs,
 		Tgv,
 	};
 
@@ -46,6 +46,7 @@ private:
 
 [[nodiscard]] bool IsMimeStickerAnimated(const QString &mime);
 [[nodiscard]] bool IsMimeSticker(const QString &mime);
+[[nodiscard]] bool IsMimeSentAsVideo(const QString &mime);
 [[nodiscard]] bool IsMimeAcceptedForPhotoVideoAlbum(const QString &mime);
 
 [[nodiscard]] bool FileIsImage(const QString &name, const QString &mime);

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/stickers_dice_pack.h"
 
@@ -106,7 +106,7 @@ void DicePack::tryGenerateLocalZero() {
 	const auto generateLocal = [&](int index, const QString &name) {
 		_map.emplace(
 			index,
-			ChatHelpers::GenerateLocalAssSticker(_session, name));
+			ChatHelpers::GenerateLocalTgsSticker(_session, name));
 	};
 	if (_emoji == DicePacks::kDiceString) {
 		generateLocal(0, u"dice_idle"_q);

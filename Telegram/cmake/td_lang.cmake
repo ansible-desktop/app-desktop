@@ -1,8 +1,8 @@
-# This file is part of Ansible Desktop, a fork of Telegram Desktop,
+# This file is part of Telegram Desktop,
 # the official desktop application for the Telegram messaging service.
 #
 # For license and copyright information please follow this link:
-# https://github.com/behappy-desktop/app-desktop/blob/master/LEGAL
+# https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 add_library(td_lang OBJECT)
 init_non_host_target(td_lang)
@@ -10,7 +10,7 @@ add_library(tdesktop::td_lang ALIAS td_lang)
 
 include(cmake/generate_lang.cmake)
 
-generate_lang(td_lang ${res_loc}/langs/lang.strings)
+generate_lang(td_lang ${res_loc}/langs/lang.strings ${src_loc})
 
 target_precompile_headers(td_lang PRIVATE ${src_loc}/lang/lang_pch.h)
 nice_target_sources(td_lang ${src_loc}

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -44,6 +44,8 @@ public:
 	rpl::producer<QString> title() override;
 	rpl::producer<bool> desiredShadowVisibility() const override;
 	void showFinished() override;
+	void fillTopBarMenu(const Ui::Menu::MenuCallback &addAction) override;
+	[[nodiscard]] rpl::producer<> topBarMenuFilledChanges() const override;
 
 	void setInternalState(
 		const QRect &geometry,

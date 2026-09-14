@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_phone_menu.h"
 
@@ -12,12 +12,15 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "main/main_app_config.h"
 #include "main/main_app_config_values.h"
 #include "main/main_session.h"
+#include "main/main_session_settings.h"
+#include "menu/menu_checked_action.h"
 #include "ui/text/text_utilities.h"
 #include "ui/widgets/labels.h"
 #include "ui/widgets/menu/menu_action.h"
 #include "ui/widgets/popup_menu.h"
 #include "styles/style_chat.h" // expandedMenuSeparator.
 #include "styles/style_chat_helpers.h"
+#include "styles/style_menu_icons.h"
 
 namespace Info {
 namespace Profile {
@@ -140,6 +143,26 @@ void AddPhoneMenu(not_null<Ui::PopupMenu*> menu, not_null<UserData*> user) {
 				rpl::single(link),
 				tr::rich)));
 	}
+}
+
+void AddPhoneSpoilerMenu(
+		not_null<Ui::PopupMenu*> menu,
+		not_null<UserData*> user) {
+	if (!user->isSelf()) {
+		return;
+	}
+	const auto session = &user->session();
+	const auto toggle = [=] {
+		auto &settings = session->settings();
+		settings.setPhoneNumberHidden(!settings.phoneNumberHidden());
+		session->saveSettingsDelayed();
+	};
+	Menu::AddCheckedAction(
+		menu,
+		tr::lng_context_spoiler_effect(tr::now),
+		toggle,
+		&st::menuIconSpoiler,
+		session->settings().phoneNumberHidden());
 }
 
 } // namespace Profile

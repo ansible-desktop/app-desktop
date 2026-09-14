@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/statistics/info_statistics_widget.h"
 
@@ -119,6 +119,14 @@ rpl::producer<bool> Widget::desiredShadowVisibility() const {
 
 void Widget::showFinished() {
 	_inner->showFinished();
+}
+
+void Widget::fillTopBarMenu(const Ui::Menu::MenuCallback &addAction) {
+	_inner->fillMenu(addAction);
+}
+
+rpl::producer<> Widget::topBarMenuFilledChanges() const {
+	return _inner->menuFilledChanges();
 }
 
 std::shared_ptr<ContentMemento> Widget::doCreateMemento() {

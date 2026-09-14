@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/audio/media_audio_capture.h"
 
@@ -663,7 +663,7 @@ void Instance::Inner::process() {
 		auto levelindex = d->fullSamples + static_cast<int>(s / sizeof(short));
 		for (auto ptr = (const short*)(_captured.constData() + s), end = (const short*)(_captured.constData() + news); ptr < end; ++ptr, ++levelindex) {
 			if (levelindex > skipSamples) {
-				uint16 value = qAbs(*ptr);
+				uint16 value = qAbs(int(*ptr));
 				if (levelindex < skipSamples + fadeSamples) {
 					value = qRound(value * float64(levelindex - skipSamples) / fadeSamples);
 				}
@@ -731,7 +731,7 @@ bool Instance::Inner::processFrame(int32 offset, int32 framesize) {
 
 	d->waveform.reserve(d->waveform.size() + (samplesCnt / d->waveformEach) + 1);
 	for (short *ptr = srcSamplesDataChannel, *end = ptr + samplesCnt; ptr != end; ++ptr) {
-		uint16 value = qAbs(*ptr);
+		uint16 value = qAbs(int(*ptr));
 		if (d->waveformPeak < value) {
 			d->waveformPeak = value;
 		}

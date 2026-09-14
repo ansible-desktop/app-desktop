@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "editor/color_picker.h"
 
@@ -331,19 +331,19 @@ ColorPicker::ColorPicker(
 
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_pen.ass"_q));
+		u":/animations/photo_editor_pen.tgs"_q));
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_arrow.ass"_q));
+		u":/animations/photo_editor_arrow.tgs"_q));
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_marker.ass"_q));
+		u":/animations/photo_editor_marker.tgs"_q));
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_blur.ass"_q));
+		u":/animations/photo_editor_blur.tgs"_q));
 	_toolButtons.push_back(base::make_unique_q<ToolLottieButton>(
 		parent,
-		u":/animations/photo_editor_eraser.ass"_q));
+		u":/animations/photo_editor_eraser.tgs"_q));
 	for (const auto &button : _toolButtons) {
 		button->resize(
 			st::photoEditorToolButtonSize,

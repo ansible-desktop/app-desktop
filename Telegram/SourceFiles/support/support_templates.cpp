@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "support/support_templates.h"
 
@@ -573,7 +573,7 @@ void Templates::updateRequestFinished(QNetworkReply *reply) {
 			errors = std::move(result.errors),
 			index = std::move(index)
 		]() mutable {
-			auto &existing = _data.files.at(path);
+			const auto &existing = _data.files.at(path);
 			auto &parsed = one.files.at(path);
 			MoveKeys(parsed, existing);
 			ReplaceFileIndex(_index, ComputeIndex(one), path);

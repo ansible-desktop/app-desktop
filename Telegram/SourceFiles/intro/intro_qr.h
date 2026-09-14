@@ -1,15 +1,16 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "ui/countryinput.h"
 #include "intro/intro_step.h"
 #include "base/timer.h"
+#include "data/data_passkey_deserialize.h"
 
 namespace Ui {
 class LinkButton;
@@ -54,11 +55,16 @@ private:
 	void done(const MTPauth_Authorization &authorization);
 
 	rpl::event_stream<QByteArray> _qrCodes;
+	rpl::event_stream<bool> _qrActive;
 	Ui::LinkButton *_skip = nullptr;
 	Ui::LinkButton *_passkey = nullptr;
 	base::Timer _refreshTimer;
 	mtpRequestId _requestId = 0;
 	bool _forceRefresh = false;
+	bool _stopped = false;
+	std::optional<::Data::Passkey::LoginData> _passkeyLoginData;
+	crl::time _passkeyLoginTime = 0;
+	int _passkeyLoginDc = 0;
 
 };
 

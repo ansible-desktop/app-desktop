@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -27,6 +27,8 @@ inline bool SkipTaskbarSupported() {
 	return false;
 }
 
+[[nodiscard]] bool HasTouchBar();
+
 void ActivateThisProcess();
 
 inline uint64 ActivationWindowId(not_null<QWidget*> window) {
@@ -34,6 +36,10 @@ inline uint64 ActivationWindowId(not_null<QWidget*> window) {
 }
 
 inline void ActivateOtherProcess(uint64 processId, uint64 windowId) {
+}
+
+inline bool WaitForProcessExit(uint64 processId, crl::time timeout) {
+	return true;
 }
 
 inline QString ApplicationIconName() {

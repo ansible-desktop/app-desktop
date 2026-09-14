@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "mtproto/mtp_instance.h"
 
@@ -26,6 +26,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "base/call_delayed.h"
 #include "base/timer.h"
 #include "base/network_reachability.h"
+#include "test/test_rpc_retry.h"
 
 namespace MTP {
 namespace {
@@ -1337,7 +1338,7 @@ void Instance::Private::exportDone(
 		return;
 	}
 
-	auto &data = result.c_auth_exportedAuthorization();
+	const auto &data = result.c_auth_exportedAuthorization();
 	_instance->send(MTPauth_ImportAuthorization(
 		data.vid(),
 		data.vbytes()
@@ -1501,6 +1502,20 @@ bool Instance::Private::onErrorDefault(
 		auto secs = 1;
 		auto nonPremiumDelay = false;
 		if (code < 0 || code >= 500) {
+			auto body = mtpTypeId(0);
+			{
+				QReadLocker locker(&_requestMapLock);
+				const auto i = _requestMap.find(requestId);
+				if (i != _requestMap.cend()
+					&& i->second
+					&& (i->second->size()
+						> SerializedRequest::kMessageBodyPosition)) {
+					body = mtpTypeId((*i->second)[
+						SerializedRequest::kMessageBodyPosition]);
+				}
+			}
+			Test::RecordRpcRetry(code, type, body);
+
 			const auto it = _requestsDelays.find(requestId);
 			if (it != _requestsDelays.cend()) {
 				secs = (it->second > 60) ? it->second : (it->second *= 2);

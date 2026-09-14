@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -66,6 +66,8 @@ private:
 	base::unique_qptr<PhotoEditorControls> _controls;
 	std::array<Brush, 5> _brushes;
 	Brush::Tool _brushTool = Brush::Tool::Pen;
+	bool _shapesFilled = false;
+	TextPrefs _textPrefs;
 	const std::unique_ptr<ColorPicker> _colorPicker;
 
 	rpl::variable<PhotoEditorMode> _mode = PhotoEditorMode{
@@ -74,6 +76,7 @@ private:
 	};
 	bool _textItemSelected = false;
 	bool _textEditing = false;
+	bool _shapeItemSelected = false;
 	rpl::event_stream<PhotoModifications> _done;
 	rpl::event_stream<> _cancel;
 

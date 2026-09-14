@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -15,6 +15,8 @@ namespace File {
 inline QString UrlToLocal(const QUrl &url) {
 	return ::File::internal::UrlToLocalDefault(url);
 }
+
+namespace Unfused {
 
 inline void UnsafeOpenUrl(const QString &url) {
 	return ::File::internal::UnsafeOpenUrlDefault(url);
@@ -31,6 +33,8 @@ inline bool UnsafeShowOpenWithDropdown(const QString &filepath) {
 inline void UnsafeLaunch(const QString &filepath) {
 	return ::File::internal::UnsafeLaunchDefault(filepath);
 }
+
+} // namespace Unfused
 
 inline void PostprocessDownloaded(const QString &filepath) {
 }

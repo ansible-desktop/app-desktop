@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -26,9 +26,11 @@ struct Result {
 
 class SwitchableUserpicButton final : public Ui::RippleButton {
 public:
-	SwitchableUserpicButton(
-		not_null<Ui::RpWidget*> parent,
-		int size);
+	[[nodiscard]] static int Size();
+	[[nodiscard]] static int MaxWidth();
+	[[nodiscard]] static int Skip();
+
+	explicit SwitchableUserpicButton(not_null<Ui::RpWidget*> parent);
 
 	void setExpanded(bool expanded);
 	void setUserpic(not_null<Ui::RpWidget*>);

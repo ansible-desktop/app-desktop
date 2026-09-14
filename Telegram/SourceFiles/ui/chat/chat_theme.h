@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -83,8 +83,9 @@ struct CacheBackgroundRequest {
 	float64 gradientProgress = 1.;
 
 	explicit operator bool() const {
-		return !background.prepared.isNull()
-			|| !background.gradientForFill.isNull();
+		return !area.isEmpty()
+			&& (!background.prepared.isNull()
+				|| !background.gradientForFill.isNull());
 	}
 };
 
@@ -286,6 +287,8 @@ struct BackgroundImageFields {
 	int rotation);
 [[nodiscard]] ChatThemeBackground PrepareBackgroundImage(
 	const ChatThemeBackgroundData &data);
+[[nodiscard]] QImage PrepareBubblesBackground(
+	const ChatThemeBubblesData &data);
 [[nodiscard]] QImage PrepareGiftSymbol(
 	const std::unique_ptr<Text::CustomEmoji> &emoji);
 

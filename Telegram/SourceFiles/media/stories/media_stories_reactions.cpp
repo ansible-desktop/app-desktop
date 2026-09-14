@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/stories/media_stories_reactions.h"
 
@@ -952,7 +952,8 @@ void Reactions::Panel::create() {
 		[=](bool fast) { hide(mode); },
 		nullptr, // iconFactory
 		nullptr, // paused
-		true);
+		true,
+		_controller->wrap().get());
 
 	_selector->chosen(
 	) | rpl::on_next([=](

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "intro/intro_code.h"
 
@@ -56,10 +56,10 @@ CodeWidget::CodeWidget(
 			: tr::lng_intro_fragment_title();
 	}) | rpl::flatten_latest());
 
-	account->setHandleLoginCode([=](const QString &code) {
+	account->setHandleLoginCode(crl::guard(this, [=](const QString &code) {
 		_code->setCode(code);
 		_code->requestCode();
-	});
+	}));
 
 	_code->codeCollected(
 	) | rpl::on_next([=](const QString &code) {

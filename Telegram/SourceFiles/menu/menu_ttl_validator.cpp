@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "menu/menu_ttl_validator.h"
 
@@ -21,7 +21,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/text/text_utilities.h"
 #include "ui/toast/toast.h"
 #include "ui/text/format_values.h"
-#include "styles/style_chat.h"
 #include "styles/style_menu_icons.h"
 
 namespace TTLMenu {
@@ -96,7 +95,7 @@ Args TTLValidator::createArgs() const {
 		lt_link,
 		tr::lng_ttl_edit_about2_link(
 		) | rpl::map([=](const QString &s) {
-			return tr::link(s, "as://settings/auto_delete");
+			return tr::link(s, "tg://settings/auto_delete");
 		}),
 		tr::marked);
 	auto about = rpl::combine(

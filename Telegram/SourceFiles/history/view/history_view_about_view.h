@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -28,6 +28,8 @@ public:
 	[[nodiscard]] bool aboveHistory() const;
 
 	bool refresh();
+
+	void setDisplayedEmptyOverride(Fn<bool()> value);
 
 	void make(Data::ChatIntro data, bool preview = false);
 
@@ -62,8 +64,11 @@ private:
 
 	void loadCommonGroups();
 
+	[[nodiscard]] bool displayedEmpty() const;
+
 	const not_null<History*> _history;
 	const not_null<ElementDelegate*> _delegate;
+	Fn<bool()> _displayedEmptyOverride;
 	AdminLog::OwnedItem _item;
 
 	DocumentData *_helloChosen = nullptr;

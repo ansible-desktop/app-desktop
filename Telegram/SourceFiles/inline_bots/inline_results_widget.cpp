@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "inline_bots/inline_results_widget.h"
 
@@ -375,10 +375,10 @@ void Widget::inlineResultsDone(const MTPmessages_BotResults &result) {
 	auto it = _inlineCache.find(_inlineQuery);
 	auto adding = (it != _inlineCache.cend());
 	if (result.type() == mtpc_messages_botResults) {
-		auto &d = result.c_messages_botResults();
+		const auto &d = result.c_messages_botResults();
 		_controller->session().data().processUsers(d.vusers());
 
-		auto &v = d.vresults().v;
+		const auto &v = d.vresults().v;
 		auto queryId = d.vquery_id().v;
 
 		if (it == _inlineCache.cend()) {

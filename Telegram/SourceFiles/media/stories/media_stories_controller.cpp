@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/stories/media_stories_controller.h"
 
@@ -61,7 +61,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "window/window_session_controller.h"
 #include "styles/style_chat_helpers.h" // defaultReportBox
 #include "styles/style_media_view.h"
-#include "styles/style_boxes.h" // UserpicButton
+#include "styles/style_userpic_button.h"
 
 #include <QtGui/QWindow>
 
@@ -1426,7 +1426,7 @@ void Controller::checkWaitingFor() {
 	Expects(shown());
 
 	const auto peer = shownPeer();
-	auto &stories = peer->owner().stories();
+	const auto &stories = peer->owner().stories();
 	const auto maybe = stories.lookup(_waitingForId);
 	if (!maybe) {
 		if (maybe.error() == Data::NoStory::Deleted) {
@@ -1554,7 +1554,7 @@ Fn<void(Data::StoryViews)> Controller::viewsGotMoreCallback() {
 	return crl::guard(&_viewsLoadGuard, [=](Data::StoryViews result) {
 		if (_viewsSlice.list.empty()) {
 			const auto peer = shownPeer();
-			auto &stories = peer->owner().stories();
+			const auto &stories = peer->owner().stories();
 			if (const auto maybeStory = stories.lookup(_shown)) {
 				if (peer->isChannel()) {
 					_viewsSlice = (*maybeStory)->channelReactionsList();
@@ -1719,7 +1719,7 @@ void Controller::refreshViewsFromData() {
 	Expects(shown());
 
 	const auto peer = shownPeer();
-	auto &stories = peer->owner().stories();
+	const auto &stories = peer->owner().stories();
 	const auto maybeStory = stories.lookup(_shown);
 	const auto check = peer->isSelf()
 		|| CanViewReactionsFor(peer);
@@ -2045,6 +2045,10 @@ Ui::Toast::Config PrepareTogglePinToast(
 					tr::now,
 					lt_count,
 					count))) },
+		.iconLottie = pin
+			? u"toast/pin"_q
+			: u"toast/unpin"_q,
+		.iconLottieSize = st::toastLottieIconSize,
 		.st = &st::storiesActionToast,
 		.duration = (pin
 			? Data::Stories::kInProfileToastDuration
@@ -2111,7 +2115,7 @@ ClickHandlerPtr MakeUrlAreaHandler(
 		void onClick(ClickContext context) const override {
 			const auto raw = url();
 			const auto strong = _weak.get();
-			const auto prefix = u"as://nft?slug="_q;
+			const auto prefix = u"tg://nft?slug="_q;
 			if (raw.startsWith(prefix) && strong) {
 				const auto slug = raw.mid(
 					prefix.size()

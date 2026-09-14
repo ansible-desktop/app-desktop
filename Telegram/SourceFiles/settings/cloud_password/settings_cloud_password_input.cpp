@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/cloud_password/settings_cloud_password_input.h"
 
@@ -33,8 +33,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/labels.h"
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
-#include "styles/style_boxes.h"
 #include "styles/style_layers.h"
+#include "styles/style_passcode_box.h"
 #include "styles/style_settings.h"
 
 /*
@@ -281,8 +281,8 @@ void Input::setupContent() {
 			error->geometryValue(),
 			newInput->geometryValue()
 		) | rpl::on_next([=](QRect r, QRect input) {
-			hintInfo->setGeometry(
-				{ input.x(), r.y(), input.width(), r.height() });
+			hintInfo->resizeToWidth(input.width());
+			hintInfo->moveToLeft(input.x(), r.y());
 		}, hintInfo->lifetime());
 		error->shownValue(
 		) | rpl::on_next([=](bool shown) {

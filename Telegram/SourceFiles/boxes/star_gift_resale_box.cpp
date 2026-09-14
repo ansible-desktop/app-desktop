@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/star_gift_resale_box.h"
 
@@ -132,6 +132,18 @@ struct ResaleTabs {
 			ranges::remove_if(state->lists.models, isRare),
 			end(state->lists.models));
 	}
+	ranges::stable_sort(
+		state->lists.models,
+		ranges::greater(),
+		&Data::UniqueGiftModelCount::count);
+	ranges::stable_sort(
+		state->lists.backdrops,
+		ranges::greater(),
+		&Data::UniqueGiftBackdropCount::count);
+	ranges::stable_sort(
+		state->lists.patterns,
+		ranges::greater(),
+		&Data::UniqueGiftPatternCount::count);
 
 	const auto scroll = [=] {
 		return QPoint(int(base::SafeRound(state->scroll)), 0);

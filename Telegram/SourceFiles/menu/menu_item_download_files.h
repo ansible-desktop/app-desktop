@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -34,8 +34,7 @@ void AddDownloadFilesAction(
 void AddDownloadFilesAction(
 	not_null<Ui::PopupMenu*> menu,
 	not_null<Window::SessionController*> window,
-	// From the legacy history inner widget.
-	const base::flat_map<HistoryItem*, TextSelection, std::less<>> &items,
+	const std::vector<not_null<HistoryItem*>> &items,
 	not_null<HistoryInner*> list);
 
 } // namespace Menu

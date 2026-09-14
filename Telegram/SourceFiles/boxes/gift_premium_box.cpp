@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/gift_premium_box.h"
 
@@ -75,6 +75,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "window/window_peer_menu.h" // ShowChooseRecipientBox.
 #include "window/window_session_controller.h"
 #include "styles/style_boxes.h"
+#include "styles/style_chat_helpers.h"
 #include "styles/style_credits.h"
 #include "styles/style_giveaway.h"
 #include "styles/style_info.h"
@@ -1560,8 +1561,11 @@ void AddStarGiftTable(
 			label->setClickHandlerFilter([=](const auto &...) {
 				TextUtilities::SetClipboardText(
 					TextForMimeData::Simple(FixupTransactionId(address)));
-				show->showToast(
-					tr::lng_gift_unique_address_copied(tr::now));
+				show->showToast({
+					.text = { tr::lng_gift_unique_address_copied(tr::now) },
+					.iconLottie = u"toast/copy"_q,
+					.iconLottieSize = st::toastLottieIconSize,
+				});
 				return false;
 			});
 			AddTableRow(
@@ -2046,8 +2050,13 @@ void AddCreditsHistoryEntryTable(
 		label->setClickHandlerFilter([=](const auto &...) {
 			TextUtilities::SetClipboardText(
 				TextForMimeData::Simple(FixupTransactionId(entry.id)));
-			show->showToast(
-				tr::lng_credits_box_history_entry_id_copied(tr::now));
+			show->showToast({
+				.text = {
+					tr::lng_credits_box_history_entry_id_copied(tr::now),
+				},
+				.iconLottie = u"toast/copy"_q,
+				.iconLottieSize = st::toastLottieIconSize,
+			});
 			return false;
 		});
 		AddTableRow(
@@ -2247,8 +2256,13 @@ void AddChannelEarnTable(
 		label->setClickHandlerFilter([=](const auto &...) {
 			TextUtilities::SetClipboardText(
 				TextForMimeData::Simple(FixupTransactionId(entry.id)));
-			show->showToast(
-				tr::lng_credits_box_history_entry_id_copied(tr::now));
+			show->showToast({
+				.text = {
+					tr::lng_credits_box_history_entry_id_copied(tr::now),
+				},
+				.iconLottie = u"toast/copy"_q,
+				.iconLottieSize = st::toastLottieIconSize,
+			});
 			return false;
 		});
 		AddTableRow(

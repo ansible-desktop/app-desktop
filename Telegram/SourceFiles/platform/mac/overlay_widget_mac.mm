@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/mac/overlay_widget_mac.h"
 
@@ -20,6 +20,24 @@ namespace Platform {
 namespace {
 
 using namespace Media::View;
+
+class TitleButton final : public Ui::AbstractButton {
+public:
+	TitleButton(QWidget *parent, Fn<void()> overChanged)
+	: AbstractButton(parent)
+	, _overChanged(std::move(overChanged)) {
+	}
+
+private:
+	void onStateChanged(State was, StateChangeSource source) override {
+		if ((was & StateFlag::Over) != (state() & StateFlag::Over)) {
+			_overChanged();
+		}
+	}
+
+	const Fn<void()> _overChanged;
+
+};
 
 } // namespace
 
@@ -80,6 +98,25 @@ void MacOverlayWidgetHelper::resolveNative() {
 	}
 }
 
+bool MacOverlayWidgetHelper::skipTitleHitTest(QPoint position) {
+	const auto inside = [&](const object_ptr<Ui::AbstractButton> &button) {
+		return !button->isHidden() && button->geometry().contains(position);
+	};
+	return inside(_data->buttonClose)
+		|| inside(_data->buttonMinimize)
+		|| inside(_data->buttonMaximize);
+}
+
+void MacOverlayWidgetHelper::updateNativeMovable() {
+	const auto over = _data->buttonClose->isOver()
+		|| _data->buttonMinimize->isOver()
+		|| _data->buttonMaximize->isOver();
+	resolveNative();
+	if (_data->native) {
+		[_data->native setMovable:!over];
+	}
+}
+
 void MacOverlayWidgetHelper::updateStyles(bool fullscreen) {
 	_data->maximized = fullscreen;
 
@@ -109,6 +146,7 @@ void MacOverlayWidgetHelper::updateStyles(bool fullscreen) {
 	[window setTitleVisibility:NSWindowTitleHidden];
 	[window setTitlebarAppearsTransparent:YES];
 	[window setStyleMask:[window styleMask] | NSWindowStyleMaskFullSizeContentView];
+	[window setHasShadow:!fullscreen];
 	if (@available(macOS 12.0, *)) {
 		_data->topNotchSkip = [[window screen] safeAreaInsets].top;
 	}
@@ -135,6 +173,7 @@ void MacOverlayWidgetHelper::refreshButtons(bool fullscreen) {
 	_data->buttonMaximize->moveToLeft(_data->buttonClose->width() + _data->buttonMinimize->width(), 0);
 	_data->buttonMaximize->raise();
 	_data->buttonMaximize->show();
+	updateNativeMovable();
 }
 
 void MacOverlayWidgetHelper::notifyFileDialogShown(bool shown) {
@@ -176,7 +215,9 @@ rpl::producer<int> MacOverlayWidgetHelper::topNotchSkipValue() {
 object_ptr<Ui::AbstractButton> MacOverlayWidgetHelper::create(
 		not_null<QWidget*> parent,
 		Control control) {
-	auto result = object_ptr<Ui::AbstractButton>(parent);
+	auto result = object_ptr<TitleButton>(
+		parent,
+		[=] { updateNativeMovable(); });
 	const auto raw = result.data();
 
 	raw->setClickedCallback([=] { activate(control); });

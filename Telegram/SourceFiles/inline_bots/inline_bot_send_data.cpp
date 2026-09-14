@@ -1,15 +1,16 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "inline_bots/inline_bot_send_data.h"
 
 #include "api/api_text_entities.h"
 #include "data/data_document.h"
 #include "inline_bots/inline_bot_result.h"
+#include "iv/iv_rich_page.h"
 #include "storage/localstorage.h"
 #include "lang/lang_keys.h"
 #include "history/history.h"
@@ -51,6 +52,46 @@ Data::SendError SendDataCommon::getErrorOnSend(
 
 SendDataCommon::SentMessageFields SendText::getSentMessageFields() const {
 	return { .text = { _message, _entities } };
+}
+
+SendRichMessage::SendRichMessage(
+	not_null<Main::Session*> session,
+	const MTPRichMessage &message)
+: SendData(session)
+, _page(Iv::ParseRichPage(session, message))
+, _summary(Iv::FlattenRichPageSummary(_page)) {
+}
+
+bool SendRichMessage::isValid() const {
+	return _page && !_page->blocks.empty();
+}
+
+not_null<HistoryItem*> SendRichMessage::makeMessage(
+		const Result *owner,
+		not_null<History*> history,
+		HistoryItemCommonFields &&fields) const {
+	if (fields.replyTo) {
+		fields.flags |= MessageFlag::HasReplyInfo;
+	}
+	const auto item = history->makeMessage(
+		std::move(fields),
+		_summary,
+		MTP_messageMediaEmpty());
+	item->setRichPage(_page);
+	return item;
+}
+
+Data::SendError SendRichMessage::getErrorOnSend(
+		const Result *owner,
+		not_null<History*> history) const {
+	const auto type = ChatRestriction::SendOther;
+	return Data::RestrictionError(history->peer, type);
+}
+
+QString SendRichMessage::getLayoutDescription(const Result *owner) const {
+	return _summary.text.isEmpty()
+		? SendData::getLayoutDescription(owner)
+		: _summary.text;
 }
 
 SendDataCommon::SentMessageFields SendGeo::getSentMessageFields() const {

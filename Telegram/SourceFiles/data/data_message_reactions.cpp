@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_message_reactions.h"
 
@@ -16,10 +16,10 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/history_item.h"
 #include "history/history_item_components.h"
 #include "main/main_session.h"
+#include "main/main_session_settings.h"
 #include "main/main_app_config.h"
 #include "main/session/send_as_peers.h"
 #include "data/components/credits.h"
-#include "data/data_channel.h"
 #include "data/data_user.h"
 #include "data/data_session.h"
 #include "data/data_histories.h"
@@ -193,13 +193,6 @@ PossibleItemReactionsRef LookupPossibleReactions(
 		}
 	}
 	const auto session = &peer->session();
-	if (const auto channel = peer->asChannel()) {
-		if ((!channel->amCreator())
-			&& (channel->adminRights() & ChatAdminRight::Anonymous)
-			&& (session->sendAsPeers().resolveChosen(channel) == channel)) {
-			return {};
-		}
-	}
 	const auto reactions = &session->data().reactions();
 	const auto &full = reactions->list(Reactions::Type::Active);
 	const auto &top = reactions->list(Reactions::Type::Top);
@@ -308,6 +301,19 @@ PossibleItemReactionsRef LookupPossibleReactions(
 				std::rotate(begin(result.recent), i, i + 1);
 			}
 		};
+		if (!limited) {
+			const auto &extra = session->settings().extraFavoriteReactions();
+			for (const auto &id : extra | ranges::views::reverse) {
+				if (id.custom()
+					&& result.customAllowed
+					&& !ranges::contains(result.recent, id, &Reaction::id)) {
+					if (const auto temp = reactions->lookupTemporary(id)) {
+						result.recent.insert(begin(result.recent), temp);
+					}
+				}
+				toFront(id);
+			}
+		}
 		toFront(reactions->favoriteId());
 		if (paidInFront) {
 			toFront(ReactionId::Paid());
@@ -621,7 +627,7 @@ void Reactions::fillPaidReactionAnimations() const {
 	const auto generate = [&](int index) {
 		const auto session = &_owner->session();
 		const auto name = u"star_reaction_effect%1"_q.arg(index + 1);
-		return ChatHelpers::GenerateLocalAssSticker(session, name);
+		return ChatHelpers::GenerateLocalTgsSticker(session, name);
 	};
 	const auto kCount = 3;
 	for (auto i = 0; i != kCount; ++i) {
@@ -728,7 +734,7 @@ void Reactions::preloadImageFor(const ReactionId &id) {
 		loadImage(set, lookupPaid()->centerIcon, true);
 		return;
 	}
-	auto &list = set.effect ? _effects : _available;
+	const auto &list = set.effect ? _effects : _available;
 	const auto i = ranges::find(list, id, &Reaction::id);
 	const auto document = (i == end(list))
 		? nullptr
@@ -1583,14 +1589,14 @@ not_null<Reaction*> Reactions::lookupPaid() {
 	if (!_paid) {
 		const auto generate = [&](const QString &name) {
 			const auto session = &_owner->session();
-			return ChatHelpers::GenerateLocalAssSticker(session, name);
+			return ChatHelpers::GenerateLocalTgsSticker(session, name);
 		};
 		const auto appear = generate(u"star_reaction_appear"_q);
 		const auto center = generate(u"star_reaction_center"_q);
 		const auto select = generate(u"star_reaction_select"_q);
 		_paid.emplace(Reaction{
 			.id = ReactionId::Paid(),
-			.title = u"Star"_q,
+			.title = u"Telegram Star"_q,
 			.appearAnimation = appear,
 			.selectAnimation = select,
 			.centerIcon = center,
@@ -1607,7 +1613,7 @@ not_null<Reaction*> Reactions::lookupPaid() {
 
 not_null<DocumentData*> Reactions::paidToastAnimation() {
 	if (!_paidToastAnimation) {
-		_paidToastAnimation = ChatHelpers::GenerateLocalAssSticker(
+		_paidToastAnimation = ChatHelpers::GenerateLocalTgsSticker(
 			&_owner->session(),
 			u"star_reaction_toast"_q);
 	}
@@ -2042,6 +2048,71 @@ void MessageReactions::remove(const ReactionId &id) {
 	auto &owner = history->owner();
 	owner.reactions().send(_item, false);
 	owner.notifyItemDataChange(_item);
+}
+
+bool MessageReactions::removeFromParticipant(
+		not_null<PeerData*> participant,
+		const ReactionId &knownReaction) {
+	auto changed = false;
+	auto participantFound = false;
+	const auto decrementReactionCount = [&](const ReactionId &id, int count) {
+		const auto i = ranges::find(_list, id, &MessageReaction::id);
+		if (i == end(_list)) {
+			return false;
+		}
+		if (i->count <= count) {
+			_list.erase(i);
+		} else {
+			i->count -= count;
+		}
+		return true;
+	};
+	for (auto i = begin(_recent); i != end(_recent);) {
+		auto &list = i->second;
+		const auto was = int(list.size());
+		list.erase(
+			ranges::remove(list, participant, &RecentReaction::peer),
+			end(list));
+		if (const auto removed = was - int(list.size())) {
+			changed = true;
+			participantFound = true;
+			decrementReactionCount(i->first, removed);
+		}
+		if (list.empty()) {
+			i = _recent.erase(i);
+		} else {
+			++i;
+		}
+	}
+	if (_paid) {
+		auto removedCount = 0;
+		auto removedEntries = 0;
+		_paid->top.erase(
+			ranges::remove_if(_paid->top, [&](const TopPaid &entry) {
+				if (entry.peer != participant.get()) {
+					return false;
+				}
+				removedCount += int(entry.count);
+				++removedEntries;
+				return true;
+			}),
+			end(_paid->top));
+		if (removedEntries) {
+			changed = true;
+			const auto paid = ReactionId::Paid();
+			participantFound = true;
+			decrementReactionCount(paid, removedCount);
+			if (_paid->top.empty() && !localPaidData()) {
+				_paid = nullptr;
+			}
+		}
+	}
+	if (!knownReaction.empty()
+		&& !participantFound
+		&& decrementReactionCount(knownReaction, 1)) {
+		changed = true;
+	}
+	return changed;
 }
 
 bool MessageReactions::checkIfChanged(

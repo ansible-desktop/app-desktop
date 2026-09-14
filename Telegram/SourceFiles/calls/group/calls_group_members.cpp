@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "calls/group/calls_group_members.h"
 
@@ -82,6 +82,9 @@ public:
 	[[nodiscard]] rpl::producer<VolumeRequest> changeVolumeRequests() const;
 	[[nodiscard]] auto kickParticipantRequests() const
 		-> rpl::producer<not_null<PeerData*>>;
+	[[nodiscard]] rpl::producer<not_null<Row*>> rowRemoved() const {
+		return _rowRemoved.events();
+	}
 
 	Row *findRow(not_null<PeerData*> participantPeer) const;
 	void setMode(PanelMode mode);
@@ -189,6 +192,7 @@ private:
 	rpl::event_stream<MuteRequest> _toggleMuteRequests;
 	rpl::event_stream<VolumeRequest> _changeVolumeRequests;
 	rpl::event_stream<not_null<PeerData*>> _kickParticipantRequests;
+	rpl::event_stream<not_null<Row*>> _rowRemoved;
 	rpl::variable<int> _fullCount = 1;
 
 	not_null<QWidget*> _menuParent;
@@ -888,6 +892,7 @@ void Members::Controller::updateRowInSoundingMap(
 
 void Members::Controller::removeRow(not_null<Row*> row) {
 	removeRowFromSoundingMap(row);
+	_rowRemoved.fire_copy(row);
 	delegate()->peerListRemoveRow(row);
 }
 
@@ -1928,6 +1933,10 @@ not_null<MembersRow*> Members::rtmpFakeRow(not_null<PeerData*> peer) const {
 		_rtmpFakeRow = std::make_unique<Row>(_listController.get(), peer);
 	}
 	return _rtmpFakeRow.get();
+}
+
+rpl::producer<not_null<MembersRow*>> Members::rowRemoved() const {
+	return _listController->rowRemoved();
 }
 
 void Members::setMode(PanelMode mode) {

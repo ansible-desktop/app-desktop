@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/boxes/boost_box.h"
 
@@ -15,10 +15,12 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/effects/premium_graphics.h"
 #include "ui/layers/generic_box.h"
 #include "ui/text/text_utilities.h"
+#include "ui/toast/toast.h"
 #include "ui/widgets/buttons.h"
 #include "ui/wrap/fade_wrap.h"
 #include "ui/painter.h"
 #include "ui/rect.h"
+#include "styles/style_chat_helpers.h"
 #include "styles/style_giveaway.h"
 #include "styles/style_layers.h"
 #include "styles/style_premium.h"
@@ -648,7 +650,11 @@ object_ptr<Ui::RpWidget> MakeLinkLabel(
 	}
 	raw->setClickedCallback([=] {
 		QGuiApplication::clipboard()->setText(state->link.current());
-		show->showToast(tr::lng_username_copied(tr::now));
+		show->showToast({
+			.text = { tr::lng_username_copied(tr::now) },
+			.iconLottie = u"toast/voip_invite"_q,
+			.iconLottieSize = st::toastLottieIconSize,
+		});
 	});
 
 	return result;
@@ -834,7 +840,11 @@ void AskBoostBox(
 	auto submit = tr::lng_boost_channel_ask_button();
 	box->addButton(rpl::duplicate(submit), [=] {
 		QGuiApplication::clipboard()->setText(data.link);
-		box->uiShow()->showToast(tr::lng_username_copied(tr::now));
+		box->uiShow()->showToast({
+			.text = { tr::lng_username_copied(tr::now) },
+			.iconLottie = u"toast/voip_invite"_q,
+			.iconLottieSize = st::toastLottieIconSize,
+		});
 	});
 }
 

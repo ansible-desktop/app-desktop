@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_large_emoji.h"
 
@@ -136,7 +136,7 @@ void LargeEmoji::paintCustom(
 	const auto outer = Ui::Text::AdjustCustomEmojiSize(inner);
 	const auto skip = (inner - outer) / 2;
 	//const auto preview = context.imageStyle()->msgServiceBg->c;
-	auto &textst = context.st->messageStyle(false, false);
+	const auto &textst = context.st->messageStyle(false, false);
 	if (context.selected()) {
 		const auto factor = style::DevicePixelRatio();
 		const auto size = QSize(outer, outer) * factor;

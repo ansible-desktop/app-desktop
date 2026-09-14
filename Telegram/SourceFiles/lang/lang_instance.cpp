@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "lang/lang_instance.h"
 
@@ -15,6 +15,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "lang/lang_tag.h" // kTextCommandLangTag.
 #include "base/platform/base_platform_info.h"
 #include "base/qthelp_regex.h"
+
+#include "lang_auto_counts.h" // kKeysCount, kTagsCount.
 
 namespace Lang {
 namespace {

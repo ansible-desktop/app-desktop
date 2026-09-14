@@ -1,16 +1,18 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/about_box.h"
 
 #include "base/platform/base_platform_info.h"
 #include "core/application.h"
 #include "core/file_utilities.h"
+#include "core/update_channel.h"
 #include "core/update_checker.h"
+#include "core/version.h"
 #include "lang/lang_keys.h"
 #include "ui/boxes/confirm_box.h"
 #include "ui/painter.h"
@@ -36,7 +38,7 @@ namespace {
 rpl::producer<TextWithEntities> Text1() {
 	return tr::lng_about_text1(
 		lt_api_link,
-		tr::lng_about_text1_api(tr::url(u"https://core.ansible.su/api"_q)),
+		tr::lng_about_text1_api(tr::url(u"https://core.telegram.org/api"_q)),
 		tr::marked);
 }
 
@@ -45,11 +47,11 @@ rpl::producer<TextWithEntities> Text2() {
 		lt_gpl_link,
 		rpl::single(tr::link(
 			"GNU GPL",
-			"https://github.com/ansible-desktop/app-desktop?tab=License-1-ov-file")),
+			"https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE")),
 		lt_github_link,
 		rpl::single(tr::link(
 			"GitHub",
-			"https://github.com/ansible-desktop/app-desktop")),
+			"https://github.com/telegramdesktop/tdesktop")),
 		tr::marked);
 }
 
@@ -63,7 +65,7 @@ rpl::producer<TextWithEntities> Text3() {
 } // namespace
 
 void AboutBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(u"Ansible Desktop"_q);
+	box->setTitle(u"Telegram Desktop"_q);
 
 	auto layout = box->verticalLayout();
 
@@ -81,7 +83,35 @@ void AboutBox(not_null<Ui::GenericBox*> box) {
 			st::boxRowPadding.right(),
 			st::boxRowPadding.bottom()));
 	version->setClickedCallback([=] {
-		File::OpenUrl(Core::App().changelogLink());
+		if (cRealAlphaVersion()) {
+			auto url = u"https://tdesktop.com/"_q;
+			if (Platform::IsWindows32Bit()) {
+				url += u"win/%1.zip"_q;
+			} else if (Platform::IsWindows64Bit()) {
+				url += u"win64/%1.zip"_q;
+			} else if (Platform::IsWindowsARM64()) {
+				url += u"winarm/%1.zip"_q;
+			} else if (Platform::IsMac()) {
+				url += u"mac/%1.zip"_q;
+			} else if (Platform::IsLinux()) {
+				url += u"linux/%1.tar.xz"_q;
+			} else {
+				Unexpected("Platform value.");
+			}
+			url = url.arg(u"talpha%1_%2"_q
+				.arg(cRealAlphaVersion())
+				.arg(Core::countAlphaVersionSignature(cRealAlphaVersion())));
+
+			QGuiApplication::clipboard()->setText(url);
+
+			box->getDelegate()->show(
+				Ui::MakeInformBox(
+					"The link to the current private alpha "
+					"version of Telegram Desktop was copied "
+					"to the clipboard."));
+		} else {
+			File::OpenUrl(Core::App().changelogLink());
+		}
 	});
 
 	Ui::AddSkip(layout, st::aboutTopSkip);
@@ -104,7 +134,7 @@ void AboutBox(not_null<Ui::GenericBox*> box) {
 }
 
 QString telegramFaqLink() {
-	const auto result = u"https://core.ansible.su/faq"_q;
+	const auto result = u"https://telegram.org/faq"_q;
 	const auto langpacked = [&](const char *language) {
 		return result + '/' + language;
 	};
@@ -120,9 +150,13 @@ QString telegramFaqLink() {
 	return result;
 }
 
-QString currentVersionText() {
+namespace {
+
+[[nodiscard]] QString CurrentVersionText(bool withCommit) {
 	auto result = QString::fromLatin1(AppVersionStr);
-	if (cAlphaVersion()) {
+	if (Core::BuildIsCanary) {
+		result += Core::CanaryVersionSuffix();
+	} else if (cAlphaVersion()) {
 		result += u" alpha %1"_q.arg(cAlphaVersion() % 1000);
 	} else if (AppBetaVersion) {
 		result += " beta";
@@ -135,7 +169,22 @@ QString currentVersionText() {
 #ifdef _DEBUG
 	result += " DEBUG";
 #endif
+	if (withCommit
+		&& Core::BuildIsCanary
+		&& Core::CanaryCommitHash[0] != '\0') {
+		result += u" \u00B7 "_q + QLatin1String(Core::CanaryCommitHash);
+	}
 	return result;
+}
+
+} // namespace
+
+QString currentVersionText() {
+	return CurrentVersionText(true);
+}
+
+QString currentVersionShortText() {
+	return CurrentVersionText(false);
 }
 
 void ArchiveHintBox(

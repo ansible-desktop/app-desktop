@@ -1,13 +1,14 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "base/object_ptr.h"
+#include "styles/style_widgets.h"
 
 #include <rpl/producer.h>
 
@@ -37,7 +38,8 @@ TextWithLabel CreateTextWithLabel(
 	rpl::producer<TextWithEntities> &&text,
 	const style::FlatLabel &labelSt,
 	const style::FlatLabel &textSt,
-	const style::margins &padding);
+	const style::margins &padding,
+	const style::PopupMenu &stMenu = st::defaultPopupMenu);
 
 } // namespace Profile
 } // namespace Info

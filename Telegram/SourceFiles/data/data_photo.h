@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -58,6 +58,7 @@ public:
 	[[nodiscard]] bool loading() const;
 	[[nodiscard]] bool displayLoading() const;
 	void cancel();
+	void clearLocalCache();
 	[[nodiscard]] float64 progress() const;
 	[[nodiscard]] int32 loadOffset() const;
 	[[nodiscard]] bool uploading() const;

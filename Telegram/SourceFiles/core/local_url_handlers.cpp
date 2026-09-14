@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/local_url_handlers.h"
 
@@ -31,6 +31,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "boxes/gift_premium_box.h"
 #include "boxes/edit_privacy_box.h"
 #include "boxes/premium_preview_box.h"
+#include "boxes/preview_ai_tone_box.h"
 #include "boxes/sticker_set_box.h"
 #include "boxes/star_gift_box.h"
 #include "boxes/language_box.h"
@@ -40,6 +41,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/toast/toast.h"
 #include "ui/vertical_list.h"
 #include "data/components/credits.h"
+#include "data/data_ai_compose_tones.h"
 #include "data/data_birthday.h"
 #include "data/data_channel.h"
 #include "data/data_document.h"
@@ -71,7 +73,10 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "inline_bots/bot_attach_web_view.h"
 #include "history/history.h"
 #include "history/history_item.h"
+#include "iv/iv_instance.h"
 #include "apiwrap.h"
+
+#include "styles/style_chat_helpers.h"
 
 #include <QtGui/QGuiApplication>
 
@@ -294,6 +299,42 @@ bool ShowTheme(
 	return true;
 }
 
+bool ShowAiStyle(
+		Window::SessionController *controller,
+		const Match &match,
+		const QVariant &context) {
+	if (!controller) {
+		return false;
+	}
+	const auto slug = match->captured(1);
+	Core::App().hideMediaView();
+	const auto weak = base::make_weak(controller);
+	auto &tones = controller->session().data().aiComposeTones();
+	tones.resolve(slug, [=](Data::AiComposeTone tone) {
+		const auto strong = weak.get();
+		if (!strong) {
+			return;
+		}
+		strong->window().show(Box(
+			PreviewAiToneBox,
+			&strong->session(),
+			std::move(tone),
+			weak));
+	}, [=](const MTP::Error &error) {
+		const auto strong = weak.get();
+		if (!strong) {
+			return;
+		} else if (error.type() == u"AICOMPOSE_TONE_SLUG_INVALID"_q) {
+			strong->window().showToast(
+				tr::lng_ai_compose_tone_invalid(tr::now));
+		} else if (!MTP::IgnoreError(error)) {
+			strong->window().showToast(error.type());
+		}
+	});
+	controller->window().activate();
+	return true;
+}
+
 void ShowLanguagesBox(Window::SessionController *controller) {
 	static auto Guard = base::binary_guard();
 	Guard = LanguageBox::Show(controller);
@@ -400,6 +441,23 @@ bool ApplyMtprotoProxy(
 	return true;
 }
 
+bool ApplyWebProxy(
+		Window::SessionController *controller,
+		const Match &match,
+		const QVariant &context) {
+	auto params = url_parse_params(
+		match->captured(1),
+		qthelp::UrlParamNameTransform::ToLower);
+	ProxiesBoxController::ShowApplyConfirmation(
+		controller,
+		MTP::ProxyData::Type::Web,
+		params);
+	if (controller) {
+		controller->window().activate();
+	}
+	return true;
+}
+
 bool ShowPassportForm(
 		Window::SessionController *controller,
 		const QMap<QString, QString> &params) {
@@ -492,6 +550,8 @@ bool ShowWallPaper(
 			result |= ChatAdminRight::ManageCall;
 		} else if (element == u"manage_direct_messages"_q) {
 			result |= ChatAdminRight::ManageDirect;
+		} else if (element == u"manage_welcome_messages"_q) {
+			result |= ChatAdminRight::ManageWelcomeMessages;
 		} else if (element == u"anonymous"_q) {
 			result |= ChatAdminRight::Anonymous;
 		} else if (element == u"manage_chat"_q) {
@@ -550,14 +610,14 @@ bool ResolveUsernameOrPhone(
 			UrlAuthBox::ActivateUrl(
 				controller->uiShow(),
 				&controller->session(),
-				u"as://resolve?domain=oauth&startapp="_q
+				u"tg://resolve?domain=oauth&startapp="_q
 					+ qthelp::url_encode(token),
 				context);
 			return true;
 		}
 	}
 
-	// Fix ansible.su/s/username links.
+	// Fix t.me/s/username links.
 	const auto webChannelPreviewLink = (domainParam == u"s"_q)
 		&& !appnameParam.isEmpty();
 	const auto domain = webChannelPreviewLink ? appnameParam : domainParam;
@@ -827,7 +887,11 @@ bool ShowInviteLink(
 		return false;
 	}
 	QGuiApplication::clipboard()->setText(link);
-	controller->showToast(tr::lng_group_invite_copied(tr::now));
+	controller->showToast({
+		.text = { tr::lng_group_invite_copied(tr::now) },
+		.iconLottie = u"toast/voip_invite"_q,
+		.iconLottieSize = st::toastLottieIconSize,
+	});
 	return true;
 }
 
@@ -846,7 +910,11 @@ bool CopyPeerId(
 		const QVariant &context) {
 	TextUtilities::SetClipboardText({ match->captured(1) });
 	if (controller) {
-		controller->showToast(u"ID copied to clipboard."_q);
+		controller->showToast({
+			.text = { u"ID copied to clipboard."_q },
+			.iconLottie = u"toast/copy"_q,
+			.iconLottieSize = st::toastLottieIconSize,
+		});
 	}
 	return true;
 }
@@ -1119,7 +1187,11 @@ bool ShowCollectibleUsername(
 				TextUtilities::SetClipboardText({
 					strong->session().createInternalLinkFull(username)
 				});
-				strong->showToast(tr::lng_username_copied(tr::now));
+				strong->showToast({
+					.text = { tr::lng_username_copied(tr::now) },
+					.iconLottie = u"toast/voip_invite"_q,
+					.iconLottieSize = st::toastLottieIconSize,
+				});
 			}
 		}
 	});
@@ -1137,7 +1209,11 @@ bool CopyUsernameLink(
 	TextUtilities::SetClipboardText({
 		controller->session().createInternalLinkFull(username)
 	});
-	controller->showToast(tr::lng_username_copied(tr::now));
+	controller->showToast({
+		.text = { tr::lng_username_copied(tr::now) },
+		.iconLottie = u"toast/voip_invite"_q,
+		.iconLottieSize = st::toastLottieIconSize,
+	});
 	return true;
 }
 
@@ -1150,7 +1226,11 @@ bool CopyUsername(
 	}
 	const auto username = match->captured(1);
 	TextUtilities::SetClipboardText({ '@' + username });
-	controller->showToast(tr::lng_username_text_copied(tr::now));
+	controller->showToast({
+		.text = { tr::lng_username_text_copied(tr::now) },
+		.iconLottie = u"toast/copy"_q,
+		.iconLottieSize = st::toastLottieIconSize,
+	});
 	return true;
 }
 
@@ -1337,7 +1417,11 @@ void ExportTestChatTheme(
 		const auto slug = Data::CloudTheme::Parse(session, result, true).slug;
 		QGuiApplication::clipboard()->setText(
 			session->createInternalLinkFull("addtheme/" + slug));
-		show->showToast(tr::lng_background_link_copied(tr::now));
+		show->showToast({
+			.text = { tr::lng_background_link_copied(tr::now) },
+			.iconLottie = u"toast/voip_invite"_q,
+			.iconLottieSize = st::toastLottieIconSize,
+		});
 	}).fail([=](const MTP::Error &error) {
 		show->showToast(u"Error: "_q + error.type());
 	}).send();
@@ -1630,7 +1714,7 @@ bool ResolveOAuth(
 	UrlAuthBox::ActivateUrl(
 		controller->uiShow(),
 		&controller->session(),
-		u"as://oauth?token="_q + qthelp::url_encode(token),
+		u"tg://oauth?token="_q + qthelp::url_encode(token),
 		context);
 	return true;
 }
@@ -1662,6 +1746,10 @@ const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 			ShowTheme
 		},
 		{
+			u"^addstyle/?\\?slug=([a-zA-Z0-9\\.\\_]+)(&|$)"_q,
+			ShowAiStyle
+		},
+		{
 			u"^setlanguage/?(\\?lang=([a-zA-Z0-9\\.\\_\\-]+))?(&|$)"_q,
 			SetLanguage
 		},
@@ -1680,6 +1768,10 @@ const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 		{
 			u"^proxy/?\\?(.+)(#|$)"_q,
 			ApplyMtprotoProxy
+		},
+		{
+			u"^webproxy/?\\?(.+)(#|$)"_q,
+			ApplyWebProxy
 		},
 		{
 			u"^passport/?\\?(.+)(#|$)"_q,
@@ -1746,7 +1838,7 @@ const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 			ResolveStarsSettings
 		},
 		{
-			u"^ton/?(^\\?.*)?(#|$)"_q,
+			u"^(ton|grams)/?(^\\?.*)?(#|$)"_q,
 			ResolveTonSettings
 		},
 		{
@@ -1849,36 +1941,46 @@ QString TryConvertUrlToLocal(QString url) {
 		const auto protocol = tonsiteMatch->captured(1);
 		return u"tonsite://"_q + url.mid(protocol.size());
 	}
-	// NOTE: Subdomain deep-link redirect was upstream (`<lang>.t.me/<id>`
-	// converted to `t.me/<lang>/<id>`). Ansible subdomains are webapp
-	// hosts (wallet.ansible.su, web.ansible.su, core.ansible.su,
-	// api.ansible.su, etc.) and MUST navigate normally inside webviews,
-	// not be redirected as deep links. Removing the subdomain rule kills
-	// the mini-app crash where wallet.ansible.su was rewritten to
-	// tg://resolve?domain=wallet and the webview was force-closed.
-	auto ansibleRestMatch = regex_match(u"^(https?://)?(www\\.)?asme\\.su/(.+)$"_q, url, matchOptions);
-	if (ansibleRestMatch) {
-		const auto query = ansibleRestMatch->capturedView(3);
+	auto subdomainMatch = regex_match(u"^(https?://)?([a-zA-Z0-9\\_]+)\\.t\\.me(/\\d+)?/?(\\?.+)?"_q, url, matchOptions);
+	if (subdomainMatch) {
+		const auto name = subdomainMatch->captured(2);
+		if (name.size() > 1 && name != "www") {
+			const auto result = TryConvertUrlToLocal(
+				subdomainMatch->captured(1)
+				+ "t.me/"
+				+ name
+				+ subdomainMatch->captured(3)
+				+ subdomainMatch->captured(4));
+			return result.startsWith("tg://resolve?domain=")
+				? result
+				: url;
+		}
+	}
+	auto telegramMeMatch = regex_match(u"^(https?://)?(www\\.)?(telegram\\.(me|dog)|t\\.me)/(.+)$"_q, url, matchOptions);
+	if (telegramMeMatch) {
+		const auto query = telegramMeMatch->capturedView(5);
 		if (const auto phoneMatch = regex_match(u"^\\+([0-9]+)(\\?|$)"_q, query, matchOptions)) {
 			const auto params = query.mid(phoneMatch->captured(0).size()).toString();
-			return u"as://resolve?phone="_q + phoneMatch->captured(1) + (params.isEmpty() ? QString() : '&' + params);
+			return u"tg://resolve?phone="_q + phoneMatch->captured(1) + (params.isEmpty() ? QString() : '&' + params);
 		} else if (const auto joinChatMatch = regex_match(u"^(joinchat/|\\+|\\%20)([a-zA-Z0-9\\.\\_\\-]+)(\\?|$)"_q, query, matchOptions)) {
-			return u"as://join?invite="_q + url_encode(joinChatMatch->captured(2));
+			return u"tg://join?invite="_q + url_encode(joinChatMatch->captured(2));
 		} else if (const auto joinFilterMatch = regex_match(u"^(addlist/)([a-zA-Z0-9\\.\\_\\-]+)(\\?|$)"_q, query, matchOptions)) {
-			return u"as://addlist?slug="_q + url_encode(joinFilterMatch->captured(2));
+			return u"tg://addlist?slug="_q + url_encode(joinFilterMatch->captured(2));
 		} else if (const auto stickerSetMatch = regex_match(u"^(addstickers|addemoji)/([a-zA-Z0-9\\.\\_]+)(\\?|$)"_q, query, matchOptions)) {
-			return u"as://"_q + stickerSetMatch->captured(1) + "?set=" + url_encode(stickerSetMatch->captured(2));
+			return u"tg://"_q + stickerSetMatch->captured(1) + "?set=" + url_encode(stickerSetMatch->captured(2));
 		} else if (const auto themeMatch = regex_match(u"^addtheme/([a-zA-Z0-9\\.\\_]+)(\\?|$)"_q, query, matchOptions)) {
-			return u"as://addtheme?slug="_q + url_encode(themeMatch->captured(1));
+			return u"tg://addtheme?slug="_q + url_encode(themeMatch->captured(1));
+		} else if (const auto addStyleMatch = regex_match(u"^addstyle/([a-zA-Z0-9\\.\\_]+)(\\?|$)"_q, query, matchOptions)) {
+			return u"tg://addstyle?slug="_q + url_encode(addStyleMatch->captured(1));
 		} else if (const auto languageMatch = regex_match(u"^setlanguage/([a-zA-Z0-9\\.\\_\\-]+)(\\?|$)"_q, query, matchOptions)) {
-			return u"as://setlanguage?lang="_q + url_encode(languageMatch->captured(1));
+			return u"tg://setlanguage?lang="_q + url_encode(languageMatch->captured(1));
 		} else if (const auto shareUrlMatch = regex_match(u"^share/url/?\\?(.+)$"_q, query, matchOptions)) {
-			return u"as://msg_url?"_q + shareUrlMatch->captured(1);
+			return u"tg://msg_url?"_q + shareUrlMatch->captured(1);
 		} else if (const auto confirmPhoneMatch = regex_match(u"^confirmphone/?\\?(.+)"_q, query, matchOptions)) {
-			return u"as://confirmphone?"_q + confirmPhoneMatch->captured(1);
+			return u"tg://confirmphone?"_q + confirmPhoneMatch->captured(1);
 		} else if (const auto ivMatch = regex_match(u"^iv/?\\?(.+)(#|$)"_q, query, matchOptions)) {
 			//
-			// We need to show our ansible.su page, not the url directly.
+			// We need to show our t.me page, not the url directly.
 			//
 			//auto params = url_parse_params(ivMatch->captured(1), UrlParamNameTransform::ToLower);
 			//auto previewedUrl = params.value(u"url"_q);
@@ -1888,11 +1990,16 @@ QString TryConvertUrlToLocal(QString url) {
 			//}
 			return url;
 		} else if (const auto socksMatch = regex_match(u"^socks/?\\?(.+)(#|$)"_q, query, matchOptions)) {
-			return u"as://socks?"_q + socksMatch->captured(1);
+			return u"tg://socks?"_q + socksMatch->captured(1);
 		} else if (const auto proxyMatch = regex_match(u"^proxy/?\\?(.+)(#|$)"_q, query, matchOptions)) {
-			return u"as://proxy?"_q + proxyMatch->captured(1);
+			return u"tg://proxy?"_q + proxyMatch->captured(1);
+		} else if (const auto webproxyMatch = regex_match(
+				u"^webproxy/?\\?(.+)(#|$)"_q,
+				query,
+				matchOptions)) {
+			return u"tg://webproxy?"_q + webproxyMatch->captured(1);
 		} else if (const auto invoiceMatch = regex_match(u"^(invoice/|\\$)([a-zA-Z0-9_\\-]+)(\\?|#|$)"_q, query, matchOptions)) {
-			return u"as://invoice?slug="_q + invoiceMatch->captured(2);
+			return u"tg://invoice?slug="_q + invoiceMatch->captured(2);
 		} else if (const auto bgMatch = regex_match(u"^bg/([a-zA-Z0-9\\.\\_\\-\\~]+)(\\?(.+)?)?$"_q, query, matchOptions)) {
 			const auto params = bgMatch->captured(3);
 			const auto bg = bgMatch->captured(1);
@@ -1902,24 +2009,24 @@ QString TryConvertUrlToLocal(QString url) {
 					|| regex_match(u"^[a-fA-F0-9]{6}(\\~[a-fA-F0-9]{6}){1,3}$"_q, bg))
 				? "gradient"
 				: "slug";
-			return u"as://bg?"_q + type + '=' + bg + (params.isEmpty() ? QString() : '&' + params);
+			return u"tg://bg?"_q + type + '=' + bg + (params.isEmpty() ? QString() : '&' + params);
 		} else if (const auto chatlinkMatch = regex_match(u"^m/([a-zA-Z0-9\\.\\_\\-]+)(\\?|$)"_q, query, matchOptions)) {
 			const auto slug = chatlinkMatch->captured(1);
-			return u"as://message?slug="_q + slug;
+			return u"tg://message?slug="_q + slug;
 		} else if (const auto nftMatch = regex_match(u"^nft/([a-zA-Z0-9\\.\\_\\-]+)(\\?|$)"_q, query, matchOptions)) {
 			const auto slug = nftMatch->captured(1);
-			return u"as://nft?slug="_q + slug;
+			return u"tg://nft?slug="_q + slug;
 		} else if (const auto auctionMatch = regex_match(u"^auction/([a-zA-Z0-9\\.\\_\\-]+)(\\?|$)"_q, query, matchOptions)) {
 			const auto slug = auctionMatch->captured(1);
-			return u"as://stargift_auction?slug="_q + slug;
+			return u"tg://stargift_auction?slug="_q + slug;
 		} else if (const auto callMatch = regex_match(u"^call/([a-zA-Z0-9\\.\\_\\-]+)(\\?|$)"_q, query, matchOptions)) {
 			const auto slug = callMatch->captured(1);
-			return u"as://call?slug="_q + slug;
+			return u"tg://call?slug="_q + slug;
 		} else if (const auto newbotMatch = regex_match(u"^newbot/([a-zA-Z0-9\\.\\_]+)(/([a-zA-Z0-9\\.\\_]*))?(/?\\?(.+))?$"_q, query, matchOptions)) {
 			const auto manager = newbotMatch->captured(1);
 			const auto username = newbotMatch->captured(3);
 			const auto params = newbotMatch->captured(5);
-			auto result = u"as://newbot?manager="_q + url_encode(manager);
+			auto result = u"tg://newbot?manager="_q + url_encode(manager);
 			if (!username.isEmpty()) {
 				result += u"&username="_q + url_encode(username);
 			}
@@ -1939,9 +2046,9 @@ QString TryConvertUrlToLocal(QString url) {
 			const auto params = query.mid(privateMatch->captured(0).size()).toString();
 			if (params.indexOf("boost", 0, Qt::CaseInsensitive) >= 0
 				&& params.toLower().split('&').contains(u"boost"_q)) {
-				return u"as://boost?channel="_q + channel;
+				return u"tg://boost?channel="_q + channel;
 			}
-			const auto base = u"as://privatepost?channel="_q + channel;
+			const auto base = u"tg://privatepost?channel="_q + channel;
 			auto added = QString();
 			if (const auto threadPostMatch = regex_match(u"^/(\\d+)/(\\d+)(/?\\?|/?$)"_q, privateMatch->captured(2))) {
 				added = u"&topic=%1&post=%2"_q.arg(threadPostMatch->captured(1), threadPostMatch->captured(2));
@@ -1965,15 +2072,15 @@ QString TryConvertUrlToLocal(QString url) {
 			const auto params = query.mid(usernameMatch->captured(0).size()).toString();
 			if (params.indexOf("boost", 0, Qt::CaseInsensitive) >= 0
 				&& params.toLower().split('&').contains(u"boost"_q)) {
-				return u"as://boost?domain="_q + domain;
+				return u"tg://boost?domain="_q + domain;
 			} else if (domain == u"boost"_q) {
 				if (const auto domainMatch = regex_match(u"^/([a-zA-Z0-9\\.\\_]+)(/?\\?|/?$)"_q, usernameMatch->captured(2))) {
-					return u"as://boost?domain="_q + domainMatch->captured(1);
+					return u"tg://boost?domain="_q + domainMatch->captured(1);
 				} else if (params.indexOf("c=", 0, Qt::CaseInsensitive) >= 0) {
-					return u"as://boost?"_q + params;
+					return u"tg://boost?"_q + params;
 				}
 			}
-			const auto base = u"as://resolve?domain="_q + url_encode(usernameMatch->captured(1));
+			const auto base = u"tg://resolve?domain="_q + url_encode(usernameMatch->captured(1));
 			auto added = QString();
 			if (const auto threadPostMatch = regex_match(u"^/(\\d+)/(\\d+)(/?\\?|/?$)"_q, usernameMatch->captured(2))) {
 				added = u"&topic=%1&post=%2"_q.arg(threadPostMatch->captured(1), threadPostMatch->captured(2));
@@ -1994,46 +2101,78 @@ QString TryConvertUrlToLocal(QString url) {
 	return url;
 }
 
-bool InternalPassportOrOAuthLink(const QString &url) {
-	const auto urlTrimmed = url.trimmed();
-	if (!urlTrimmed.startsWith(u"as://"_q, Qt::CaseInsensitive)) {
+bool IsMiniAppUrl(const QString &url) {
+	const auto local = TryConvertUrlToLocal(url);
+	const auto prefix = u"tg://resolve?"_q;
+	if (!local.startsWith(prefix, Qt::CaseInsensitive)) {
 		return false;
 	}
-	const auto command = base::StringViewMid(urlTrimmed, u"as://"_q.size());
+	const auto params = qthelp::url_parse_params(
+		local.mid(prefix.size()),
+		qthelp::UrlParamNameTransform::ToLower);
+	return params.contains(u"appname"_q)
+		|| params.contains(u"startapp"_q)
+		|| params.contains(u"attach"_q);
+}
+
+struct InternalLinkCheckResult {
+	QString command;
+	QString username;
+};
+
+[[nodiscard]] InternalLinkCheckResult InternalLinkCheck(const QString &url) {
+	const auto urlTrimmed = url.trimmed();
+	if (!urlTrimmed.startsWith(u"tg://"_q, Qt::CaseInsensitive)) {
+		return {};
+	}
+	const auto command = base::StringViewMid(urlTrimmed, u"tg://"_q.size());
+
+	using namespace qthelp;
+	const auto matchOptions = RegExOption::CaseInsensitive;
+	const auto usernameMatch = regex_match(
+		u"^resolve/?\\?(.+)(#|$)"_q,
+		command,
+		matchOptions);
+	auto username = QString();
+	if (usernameMatch->hasMatch()) {
+		const auto params = url_parse_params(
+			usernameMatch->captured(1),
+			UrlParamNameTransform::ToLower);
+		username = params.value(u"domain"_q);
+	}
+	return { .command = command.toString(), .username = username };
+}
+
+bool InternalPassportLink(const QString &url) {
+	const auto result = InternalLinkCheck(url);
 
 	using namespace qthelp;
 	const auto matchOptions = RegExOption::CaseInsensitive;
 	const auto authMatch = regex_match(
 		u"^passport/?\\?(.+)(#|$)"_q,
-		command,
+		result.command,
 		matchOptions);
+	const auto authLegacy = (result.username == u"telegrampassport"_q);
+	return authMatch->hasMatch() || authLegacy;
+}
+
+bool InternalPassportOrOAuthLink(const QString &url) {
+	const auto result = InternalLinkCheck(url);
+
+	using namespace qthelp;
+	const auto matchOptions = RegExOption::CaseInsensitive;
 	const auto oauthMatch = regex_match(
 		u"^oauth/?\\?(.+)(#|$)"_q,
-		command,
+		result.command,
 		matchOptions);
-	const auto usernameMatch = regex_match(
-		u"^resolve/?\\?(.+)(#|$)"_q,
-		command,
-		matchOptions);
-	auto usernameValue = QString();
-	if (usernameMatch->hasMatch()) {
-		const auto params = url_parse_params(
-			usernameMatch->captured(1),
-			UrlParamNameTransform::ToLower);
-		usernameValue = params.value(u"domain"_q);
-	}
-	const auto authLegacy = (usernameValue == u"telegrampassport"_q);
-	const auto oauthLegacy = (usernameValue == u"oauth"_q);
-	return authMatch->hasMatch()
+	const auto oauthLegacy = (result.username == u"oauth"_q);
+	return InternalPassportLink(url)
 		|| oauthMatch->hasMatch()
-		|| authLegacy
 		|| oauthLegacy;
 }
 
 bool StartUrlRequiresActivate(const QString &url) {
-	return Core::App().passcodeLocked()
-		? true
-		: !InternalPassportOrOAuthLink(url);
+	return Core::App().passcodeLocked() || !InternalPassportLink(url);
 }
 
 void ResolveAndShowUniqueGift(

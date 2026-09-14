@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "countries/countries_instance.h"
 
@@ -302,7 +302,13 @@ QString CountriesInstance::validPhoneCode(QString fullCode) const {
 	return QString();
 }
 
-QString CountriesInstance::countryNameByISO2(const QString &iso) const {
+QString CountriesInstance::countryNameByISO2(
+		const QString &iso,
+		Naming naming) const {
+	if (naming == Naming::Polls
+		&& !iso.compare(u"FT"_q, Qt::CaseInsensitive)) {
+		return u"Fragment"_q;
+	}
 	const auto &listByISO2 = byISO2();
 	const auto i = listByISO2.constFind(iso);
 	return (i != listByISO2.cend()) ? (*i)->name : QString();

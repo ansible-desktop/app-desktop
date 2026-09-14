@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -117,14 +117,20 @@ struct SharedMediaAddSlice {
 struct SharedMediaRemoveOne {
 	SharedMediaRemoveOne(
 		PeerId peerId,
+		MsgId topicRootId,
+		PeerId monoforumPeerId,
 		SharedMediaTypesMask types,
 		MsgId messageId)
 	: peerId(peerId)
+	, topicRootId(topicRootId)
+	, monoforumPeerId(monoforumPeerId)
 	, messageId(messageId)
 	, types(types) {
 	}
 
 	PeerId peerId = 0;
+	MsgId topicRootId = 0;
+	PeerId monoforumPeerId = 0;
 	MsgId messageId = 0;
 	SharedMediaTypesMask types;
 

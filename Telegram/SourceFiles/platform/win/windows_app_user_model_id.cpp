@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/win/windows_app_user_model_id.h"
 
@@ -26,9 +26,9 @@ const PROPERTYKEY pkey_AppUserModel_StartPinOption = { { 0x9F4C2855, 0x9F79, 0x4
 const PROPERTYKEY pkey_AppUserModel_ToastActivator = { { 0x9F4C2855, 0x9F79, 0x4B39, { 0xA8, 0xD0, 0xE1, 0xD4, 0x2D, 0xE1, 0xD5, 0xF3 } }, 26 };
 
 #ifdef OS_WIN_STORE
-const WCHAR AppUserModelIdBase[] = L"Ansible.Desktop.Store";
+const WCHAR AppUserModelIdBase[] = L"Telegram.TelegramDesktop.Store";
 #else // OS_WIN_STORE
-const WCHAR AppUserModelIdBase[] = L"Ansible.Desktop";
+const WCHAR AppUserModelIdBase[] = L"Telegram.TelegramDesktop";
 #endif // OS_WIN_STORE
 
 [[nodiscard]] QString PinnedIconsPath() {
@@ -213,7 +213,7 @@ void CleanupShortcut() {
 		return;
 	}
 
-	QString path = systemShortcutPath() + u"Ansible.lnk"_q;
+	QString path = systemShortcutPath() + u"Telegram.lnk"_q;
 	std::wstring p = QDir::toNativeSeparators(path).toStdWString();
 
 	DWORD attributes = GetFileAttributes(p.c_str());
@@ -345,8 +345,10 @@ bool checkInstalled(QString path = {}) {
 		}
 	}
 
-	const auto installed = u"Ansible Desktop/Ansible.lnk"_q;
-	return validateShortcutAt(path + installed);
+	const auto installed = u"Telegram Desktop/Telegram.lnk"_q;
+	const auto old = u"Telegram Win (Unofficial)/Telegram.lnk"_q;
+	return validateShortcutAt(path + installed)
+		|| validateShortcutAt(path + old);
 }
 
 bool ValidateShortcut() {
@@ -356,7 +358,7 @@ bool ValidateShortcut() {
 	}
 
 	if (cAlphaVersion()) {
-		path += u"AnsibleAlpha.lnk"_q;
+		path += u"TelegramAlpha.lnk"_q;
 		if (validateShortcutAt(path)) {
 			return true;
 		}
@@ -365,7 +367,7 @@ bool ValidateShortcut() {
 			return true;
 		}
 
-		path += u"Ansible.lnk"_q;
+		path += u"Telegram.lnk"_q;
 		if (validateShortcutAt(path)) {
 			return true;
 		}

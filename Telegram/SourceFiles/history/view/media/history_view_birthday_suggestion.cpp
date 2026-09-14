@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_birthday_suggestion.h"
 
@@ -37,7 +37,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/rect.h"
 #include "window/window_session_controller.h"
 #include "styles/style_chat.h"
-#include "styles/style_credits.h"
 
 namespace HistoryView {
 
@@ -52,7 +51,7 @@ namespace HistoryView {
 			not_null<MediaGeneric*> media,
 			Fn<void(std::unique_ptr<MediaGenericPart>)> push) {
 		const auto session = &media->parent()->history()->session();
-		const auto document = ChatHelpers::GenerateLocalAssSticker(
+		const auto document = ChatHelpers::GenerateLocalTgsSticker(
 			session,
 			u"cake"_q);
 		const auto sticker = [=] {

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/background_box.h"
 
@@ -738,7 +738,7 @@ void BackgroundBox::Inner::mouseMoveEvent(QMouseEvent *e) {
 		} else if (result >= _papers.size()) {
 			return Selection();
 		}
-		auto &data = _papers[result].data;
+		const auto &data = _papers[result].data;
 		const auto deleteLeft = (column + 1) * (width + skip)
 			- st::stickerPanDeleteIconBg.width();
 		const auto deleteBottom = row * (height + skip) + skip

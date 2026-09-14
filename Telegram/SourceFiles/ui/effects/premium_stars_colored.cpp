@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/effects/premium_stars_colored.h"
 
@@ -12,6 +12,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/text/text_custom_emoji.h"
 #include "ui/painter.h"
 #include "ui/rp_widget.h"
+
+#include "styles/style_basic.h"
 
 namespace Ui::Premium {
 namespace {
@@ -145,7 +147,7 @@ void CollectibleEmoji::refill(
 }
 
 int CollectibleEmoji::width() {
-	return _inner->width();
+	return st::emojiSize + 2 * st::emojiPadding;
 }
 
 QString CollectibleEmoji::entityData() {
@@ -165,7 +167,10 @@ void CollectibleEmoji::prepareFrame() {
 	auto random = std::optional<base::BufferedRandom<uint32>>();
 	const auto now = crl::now();
 	for (auto &star : _stars) {
-		if (star.deathTime <= now) {
+		// crl::now() is not strictly monotonic everywhere: on Windows it is
+		// built on QueryPerformanceCounter, which steps backwards on some
+		// old machines. A star born "in the future" is restarted.
+		if (star.deathTime <= now || star.birthTime > now) {
 			if (!random) {
 				random.emplace(kStarsCount * 10);
 			}

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -17,6 +17,11 @@ namespace Ui {
 
 enum class FilterIcon : uchar;
 class PanelAnimation;
+
+struct FilterIconChosen {
+	FilterIcon icon = {};
+	QRect geometry;
+};
 
 class FilterIconPanel final : public Ui::RpWidget {
 public:
@@ -34,7 +39,7 @@ public:
 	void hideAnimated();
 	void toggleAnimated();
 
-	[[nodiscard]] rpl::producer<FilterIcon> chosen() const;
+	[[nodiscard]] rpl::producer<FilterIconChosen> chosen() const;
 
 private:
 	void enterEventHook(QEnterEvent *e) override;
@@ -70,7 +75,7 @@ private:
 	void mouseRelease(Qt::MouseButton button);
 
 	const not_null<Ui::RpWidget*> _inner;
-	rpl::event_stream<FilterIcon> _chosen;
+	rpl::event_stream<FilterIconChosen> _chosen;
 	Ui::RoundRect _innerBg;
 
 	int _selected = -1;

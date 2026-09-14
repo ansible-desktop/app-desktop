@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "editor/scene/scene_item_image.h"
 
@@ -14,6 +14,9 @@ ItemImage::ItemImage(
 	ItemBase::Data data)
 : ItemBase(std::move(data))
 , _pixmap(std::move(pixmap)) {
+	if (flipped()) {
+		performFlip();
+	}
 	setAspectRatio(_pixmap.isNull()
 		? 1.0
 		: (_pixmap.height() / float64(_pixmap.width())));

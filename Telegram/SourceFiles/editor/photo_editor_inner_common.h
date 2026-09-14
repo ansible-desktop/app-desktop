@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -36,6 +36,56 @@ struct Brush {
 	float64 sizeRatio = 0.;
 	QColor color;
 	Tool tool = Tool::Pen;
+};
+
+enum class TextStyle : uchar {
+	Framed,
+	SemiTransparent,
+	Plain,
+	Opaque,
+};
+
+enum class TextTypeface : uchar {
+	Default,
+	Italic,
+	Serif,
+	Condensed,
+	Monospace,
+};
+
+enum class TextAlignment : uchar {
+	Center,
+	Left,
+	Right,
+};
+
+struct TextPrefs {
+	TextStyle style = TextStyle::Plain;
+	TextTypeface typeface = TextTypeface::Default;
+	TextAlignment alignment = TextAlignment::Center;
+	float64 sizeRatio = 0.;
+
+	friend inline bool operator==(
+		const TextPrefs &,
+		const TextPrefs &) = default;
+};
+
+enum class ShapeType : uchar {
+	Circle,
+	Rectangle,
+	Star,
+	Bubble,
+	Arrow,
+};
+
+struct ShapeRequest {
+	enum class Action : uchar {
+		Arm,
+		Immediate,
+		Cancel,
+	};
+	ShapeType shape = ShapeType::Circle;
+	Action action = Action::Arm;
 };
 
 enum class SaveState {

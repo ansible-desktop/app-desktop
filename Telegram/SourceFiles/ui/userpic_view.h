@@ -1,21 +1,40 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "base/weak_ptr.h"
 
 #include <QtGui/QImage>
+#include <QtGui/QColor>
+
+class QPainter;
 
 namespace Ui {
 
 class EmptyUserpic;
 
 [[nodiscard]] float64 ForumUserpicRadiusMultiplier();
+
+struct CommunityUserpicEffect {
+	QImage image;
+	int size = 0;
+	QRgb color = 0;
+	int paletteVersion = 0;
+	int dpr = 0;
+};
+
+void PaintCommunityUserpicEffect(
+	QPainter &p,
+	CommunityUserpicEffect &cache,
+	int x,
+	int y,
+	int size,
+	QColor color);
 
 enum class PeerUserpicShape : uint8 {
 	Auto,

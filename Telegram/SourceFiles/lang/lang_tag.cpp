@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "lang/lang_tag.h"
 
@@ -934,7 +934,9 @@ ShortenedCount FormatCountToShort(int64 number, bool onlyK) {
 		result.number = rounded * divider;
 		result.shortened = true;
 	};
-	if (!onlyK && abs >= 1'000'000) {
+	if (!onlyK && abs >= 1'000'000'000) {
+		shorten(1'000'000'000, 'B');
+	} else if (!onlyK && abs >= 1'000'000) {
 		shorten(1'000'000, 'M');
 	} else if (abs >= 10'000) {
 		shorten(1'000, 'K');

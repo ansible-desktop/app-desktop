@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -75,6 +75,7 @@ public:
 	[[nodiscard]] bool sessionExists() const;
 	[[nodiscard]] Session &session() const;
 	[[nodiscard]] Session *maybeSession() const;
+	[[nodiscard]] bool destroyingSession() const;
 	[[nodiscard]] rpl::producer<Session*> sessionValue() const;
 	[[nodiscard]] rpl::producer<Session*> sessionChanges() const;
 
@@ -164,6 +165,7 @@ private:
 	MTP::Instance::Fields _mtpFields;
 	MTP::AuthKeysList _mtpKeysToDestroy;
 	bool _loggingOut = false;
+	bool _destroyingSession = false;
 
 	rpl::lifetime _lifetime;
 

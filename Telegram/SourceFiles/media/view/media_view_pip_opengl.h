@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -102,7 +102,8 @@ private:
 	Ui::GL::Textures<4> _textures;
 	QSize _rgbaSize;
 	QSize _lumaSize;
-	QSize _chromaSize;
+	QSize _chromaSize; // size of texture 2 (UV for NV12, U for YUV420)
+	QSize _chromaSizeV; // size of texture 3 (V for YUV420 only)
 	quint64 _cacheKey = 0;
 	int _trackFrameIndex = 0;
 	bool _chromaNV12 = false;

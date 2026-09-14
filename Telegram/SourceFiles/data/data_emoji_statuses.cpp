@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_emoji_statuses.h"
 
@@ -175,6 +175,11 @@ void EmojiStatuses::registerAutomaticClear(
 			}
 		}
 	}
+}
+
+TimeId EmojiStatuses::automaticClearAt(not_null<PeerData*> peer) const {
+	const auto i = _clearing.find(peer);
+	return (i != end(_clearing)) ? i->second : TimeId();
 }
 
 auto EmojiStatuses::emojiGroupsValue() const -> rpl::producer<Groups> {

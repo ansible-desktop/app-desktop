@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -25,8 +25,13 @@ namespace Dialogs {
 [[nodiscard]] auto TopBarSuggestionValue(
 	not_null<Ui::RpWidget*> parent,
 	not_null<Main::Session*>,
-	rpl::producer<bool> outerWrapToggleValue)
+	rpl::producer<bool> outerWrapToggleValue,
+	rpl::producer<float64> childListShown,
+	rpl::producer<> prepareCollapseSnapshot)
 -> rpl::producer<Ui::SlideWrap<Ui::RpWidget>*>;
+
+[[nodiscard]] Fn<void()> ExpandChatsListCallback(
+	not_null<Ui::RpWidget*> widget);
 
 } // namespace Dialogs
 

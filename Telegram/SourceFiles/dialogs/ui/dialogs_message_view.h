@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -71,6 +71,12 @@ public:
 		const QRect &geometry,
 		const PaintContext &context) const;
 
+	[[nodiscard]] bool hasAnimatedContent() const;
+	[[nodiscard]] QRect lastPaintGeometry() const {
+		return _lastPaintGeometry;
+	}
+	void resetLastPaintGeometry();
+
 	[[nodiscard]] bool isInTopicJump(int x, int y) const;
 	void addTopicJumpRipple(
 		QPoint origin,
@@ -98,6 +104,7 @@ private:
 	mutable std::unique_ptr<LoadingContext> _loadingContext;
 	mutable const style::DialogsMiniIcon *_leftIcon = nullptr;
 	mutable QImage _cornersCache;
+	mutable QRect _lastPaintGeometry;
 	mutable bool _hasPlainLinkAtBegin = false;
 	mutable bool _unreadMedia = false;
 

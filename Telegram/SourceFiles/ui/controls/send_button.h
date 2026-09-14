@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -32,6 +32,7 @@ public:
 
 	enum class Type {
 		Send,
+		Stop,
 		Schedule,
 		Save,
 		Record,
@@ -91,6 +92,7 @@ private:
 	void paintSave(QPainter &p, bool over);
 	void paintCancel(QPainter &p, bool over);
 	void paintSend(QPainter &p, bool over);
+	void paintStop(QPainter &p, bool over);
 	void paintSchedule(QPainter &p, bool over);
 	void paintSlowmode(QPainter &p);
 	void paintStarsToSend(QPainter &p, bool over);

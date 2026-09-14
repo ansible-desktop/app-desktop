@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_stories.h"
 
@@ -220,6 +220,13 @@ Stories::Stories(not_null<Session*> owner)
 Stories::~Stories() {
 	Expects(_pollingSettings.empty());
 	Expects(_pollingViews.empty());
+}
+
+void Stories::clear() {
+	_pollingSettings.clear();
+	_pollingViews.clear();
+	_stories.clear();
+	_deletingStories.clear();
 }
 
 Session &Stories::owner() const {
@@ -2222,7 +2229,7 @@ bool Stories::canTogglePinnedList(
 		return false;
 	}
 
-	auto &already = i->second.ids.pinnedToTop;
+	const auto &already = i->second.ids.pinnedToTop;
 	auto count = int(already.size());
 	for (const auto &id : ids) {
 		if (!ranges::contains(already, id.story)) {

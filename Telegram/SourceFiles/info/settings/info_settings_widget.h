@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -80,6 +80,8 @@ public:
 		not_null<Memento*> memento);
 
 	void saveChanges(FnMut<void()> done) override;
+	[[nodiscard]] SendMenu::Details sendMenuDetails() const override;
+	bool processChosenSticker(ChatHelpers::FileChosen &&chosen) override;
 
 	void showFinished() override;
 	void setInnerFocus() override;

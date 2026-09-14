@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "calls/group/calls_group_call.h"
 
@@ -2591,7 +2591,7 @@ void GroupCall::applySubChainUpdate(
 		int next) {
 	Expects(subchain >= 0 && subchain < kSubChainsCount);
 
-	auto &entry = _subchains[subchain];
+	const auto &entry = _subchains[subchain];
 	auto raw = std::vector<TdE2E::Block>();
 	raw.reserve(blocks.size());
 	for (const auto &block : blocks) {

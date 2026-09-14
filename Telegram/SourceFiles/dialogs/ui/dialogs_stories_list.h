@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -92,6 +92,7 @@ public:
 	[[nodiscard]] rpl::producer<bool> emptyValue() const {
 		return _empty.value();
 	}
+	void setShowTitle(bool shown);
 	[[nodiscard]] rpl::producer<uint64> clicks() const;
 	[[nodiscard]] rpl::producer<ShowMenuRequest> showMenuRequests() const;
 	[[nodiscard]] rpl::producer<bool> toggleExpandedRequests() const;
@@ -127,6 +128,7 @@ private:
 	};
 
 	void showContent(Content &&content);
+	void validateTitle();
 	//void enterEventHook(QEnterEvent *e) override;
 	void resizeEvent(QResizeEvent *e) override;
 	void paintEvent(QPaintEvent *e) override;
@@ -188,6 +190,9 @@ private:
 	QRect _changingGeometryFrom;
 	State _state = State::Small;
 	rpl::variable<bool> _empty = true;
+	QString _title;
+	int _titleWidth = 0;
+	bool _showTitle = false;
 
 	QPoint _lastMousePosition;
 	std::optional<QPoint> _mouseDownPosition;

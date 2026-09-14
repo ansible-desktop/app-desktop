@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_user_names.h"
 
@@ -71,6 +71,11 @@ rpl::producer<Data::Usernames> Usernames::loadUsernames(
 			_session->api().request(MTPusers_GetUsers(
 				MTP_vector<MTPInputUser>(1, data)
 			)).done([=](const MTPVector<MTPUser> &result) {
+				if (result.v.isEmpty()) {
+					consumer.put_next({});
+					consumer.put_done();
+					return;
+				}
 				result.v.front().match([&](const MTPDuser &data) {
 					push(data.vusernames(), data.vusername());
 					consumer.put_done();
@@ -85,6 +90,11 @@ rpl::producer<Data::Usernames> Usernames::loadUsernames(
 				MTP_vector<MTPInputChannel>(1, data)
 			)).done([=](const MTPmessages_Chats &result) {
 				result.match([&](const auto &data) {
+					if (data.vchats().v.isEmpty()) {
+						consumer.put_next({});
+						consumer.put_done();
+						return;
+					}
 					data.vchats().v.front().match([&](const MTPDchannel &c) {
 						push(c.vusernames(), c.vusername());
 						consumer.put_done();

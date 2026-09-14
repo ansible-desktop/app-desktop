@@ -1,15 +1,14 @@
-// This file is part of Ansible Desktop, a fork of Telegram Desktop,
+// This file is part of Telegram Desktop,
 // the official desktop application for the Telegram messaging service.
 //
 // For license and copyright information please follow this link:
-// https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+// https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 //
 #include "ui/controls/dynamic_images_strip.h"
 
 #include "ui/dynamic_image.h"
 #include "ui/painter.h"
 #include "styles/style_chat_helpers.h"
-#include "styles/style_widgets.h"
 
 namespace Ui {
 namespace {

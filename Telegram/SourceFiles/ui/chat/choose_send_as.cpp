@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/chat/choose_send_as.h"
 
@@ -22,7 +22,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "lang/lang_keys.h"
 #include "settings/sections/settings_premium.h"
 #include "styles/style_calls.h"
-#include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
 
 namespace Ui {

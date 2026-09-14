@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "passport/passport_panel_form.h"
 
@@ -26,8 +26,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/text/text_options.h"
 #include "ui/ui_utility.h"
 #include "styles/style_passport.h"
-#include "styles/style_layers.h"
-#include "styles/style_boxes.h"
 
 namespace Passport {
 

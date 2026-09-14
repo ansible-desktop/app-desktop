@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -135,7 +135,7 @@ bool PaintStickerThumbnailPath(
 	not_null<Main::Session*> session,
 	const QString &path);
 
-[[nodiscard]] not_null<DocumentData*> GenerateLocalAssSticker(
+[[nodiscard]] not_null<DocumentData*> GenerateLocalTgsSticker(
 	not_null<Main::Session*> session,
 	const QString &name,
 	bool useTextColor = false);

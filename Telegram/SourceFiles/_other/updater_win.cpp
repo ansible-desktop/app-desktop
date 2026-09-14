@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "updater.h"
 
@@ -148,6 +148,8 @@ bool update() {
 		} else {
 			if (versionNum == 0x7FFFFFFF) { // alpha version
 
+			} else if (versionNum == 0x7FFFFFFE) { // v2 canary version
+
 			} else if (!ReadFile(versionFile, &versionLen, sizeof(DWORD), &readLen, NULL) || readLen != sizeof(DWORD) || versionLen > 63) {
 				versionNum = 0;
 			} else if (!ReadFile(versionFile, versionStr, versionLen, &readLen, NULL) || readLen != versionLen) {
@@ -204,7 +206,7 @@ bool update() {
 					writeLog(L"Error: bad update, has Updater.exe! '" + tofname + L"' equal '" + updaterName + L"'");
 					delFolder();
 					return false;
-				} else if (equal(tofname, updateTo + L"Ansible.exe") && exeName != L"Ansible.exe") {
+				} else if (equal(tofname, updateTo + L"Telegram.exe") && exeName != L"Telegram.exe") {
 					wstring fullBinaryPath = updateTo + exeName;
 					writeLog(L"Target binary found: '" + tofname + L"', changing to '" + fullBinaryPath + L"'");
 					tofname = fullBinaryPath;
@@ -276,7 +278,7 @@ bool update() {
 }
 
 void updateRegistry() {
-	if (versionNum && versionNum != 0x7FFFFFFF) {
+	if (versionNum && versionNum != 0x7FFFFFFF && versionNum != 0x7FFFFFFE) {
 		writeLog(L"Updating registry..");
 		versionStr[versionLen / 2] = 0;
 		HKEY rkey;
@@ -307,16 +309,16 @@ void updateRegistry() {
 								SYSTEMTIME stLocalTime;
 								GetLocalTime(&stLocalTime);
 								RegSetValueEx(rkey, L"DisplayVersion", 0, REG_SZ, (const BYTE*)versionStr, ((versionLen / 2) + 1) * sizeof(WCHAR));
-								wsprintf(nameStr, L"Ansible Desktop");
+								wsprintf(nameStr, L"Telegram Desktop");
 								RegSetValueEx(rkey, L"DisplayName", 0, REG_SZ, (const BYTE*)nameStr, (wcslen(nameStr) + 1) * sizeof(WCHAR));
-								wsprintf(publisherStr, L"Ansible Inc.");
+								wsprintf(publisherStr, L"Telegram FZ-LLC");
 								RegSetValueEx(rkey, L"Publisher", 0, REG_SZ, (const BYTE*)publisherStr, (wcslen(publisherStr) + 1) * sizeof(WCHAR));
-								wsprintf(icongroupStr, L"Ansible Desktop");
+								wsprintf(icongroupStr, L"Telegram Desktop");
 								RegSetValueEx(rkey, L"Inno Setup: Icon Group", 0, REG_SZ, (const BYTE*)icongroupStr, (wcslen(icongroupStr) + 1) * sizeof(WCHAR));
 								wsprintf(dateStr, L"%04d%02d%02d", stLocalTime.wYear, stLocalTime.wMonth, stLocalTime.wDay);
 								RegSetValueEx(rkey, L"InstallDate", 0, REG_SZ, (const BYTE*)dateStr, (wcslen(dateStr) + 1) * sizeof(WCHAR));
 
-								const WCHAR *appURL = L"https://ansible.su";
+								const WCHAR *appURL = L"https://desktop.telegram.org";
 								RegSetValueEx(rkey, L"HelpLink", 0, REG_SZ, (const BYTE*)appURL, (wcslen(appURL) + 1) * sizeof(WCHAR));
 								RegSetValueEx(rkey, L"URLInfoAbout", 0, REG_SZ, (const BYTE*)appURL, (wcslen(appURL) + 1) * sizeof(WCHAR));
 								RegSetValueEx(rkey, L"URLUpdateInfo", 0, REG_SZ, (const BYTE*)appURL, (wcslen(appURL) + 1) * sizeof(WCHAR));
@@ -377,14 +379,14 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 				exeName = args[i];
 				for (int j = 0, l = exeName.size(); j < l; ++j) {
 					if (exeName[j] == L'/' || exeName[j] == L'\\') {
-						exeName = L"Ansible.exe";
+						exeName = L"Telegram.exe";
 						break;
 					}
 				}
 			}
 		}
 		if (exeName.empty()) {
-			exeName = L"Ansible.exe";
+			exeName = L"Telegram.exe";
 		}
 		if (needupdate) writeLog(L"Need to update!");
 		if (autostart) writeLog(L"From autostart!");
@@ -491,7 +493,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 	return 0;
 }
 
-static const WCHAR *_programName = L"Ansible Desktop"; // folder in APPDATA, if current path is unavailable for writing
+static const WCHAR *_programName = L"Telegram Desktop"; // folder in APPDATA, if current path is unavailable for writing
 static const WCHAR *_exeName = L"Updater.exe";
 
 LPTOP_LEVEL_EXCEPTION_FILTER _oldWndExceptionFilter = 0;

@@ -1,17 +1,15 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/view/media_view_pip_raster.h"
 
 #include "ui/image/image_prepare.h"
 #include "ui/widgets/shadow.h"
 #include "ui/painter.h"
-#include "styles/style_media_view.h"
-#include "styles/style_widgets.h"
 
 namespace Media::View {
 namespace {

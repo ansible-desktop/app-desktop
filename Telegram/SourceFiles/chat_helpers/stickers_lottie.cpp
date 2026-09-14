@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/stickers_lottie.h"
 
@@ -153,7 +153,7 @@ bool HasLottieThumbnail(
 		Data::StickersSetThumbnailView *thumb,
 		Data::DocumentMedia *media) {
 	if (thumb) {
-		return (thumbType == StickerType::Ass)
+		return (thumbType == StickerType::Tgs)
 			&& !thumb->content().isEmpty();
 	} else if (!media) {
 		return false;
@@ -347,7 +347,7 @@ not_null<DocumentData*> GenerateLocalSticker(
 	return document;
 }
 
-not_null<DocumentData*> GenerateLocalAssSticker(
+not_null<DocumentData*> GenerateLocalTgsSticker(
 		not_null<Main::Session*> session,
 		const QString &name,
 		bool useTextColor) {
@@ -379,7 +379,7 @@ not_null<DocumentData*> GenerateLocalAssSticker(
 
 	const auto result = GenerateLocalSticker(
 		session,
-		u":/animations/"_q + name + u".ass"_q);
+		u":/animations/"_q + name + u".tgs"_q);
 	if (useTextColor) {
 		result->overrideEmojiUsesTextColor(true);
 	}

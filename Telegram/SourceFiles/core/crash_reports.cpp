@@ -1,12 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/crash_reports.h"
 
+#include "core/version.h"
 #include "platform/platform_specific.h"
 #include "base/platform/base_platform_info.h"
 #include "core/launcher.h"
@@ -66,6 +67,8 @@ FILE *ReportFile = nullptr;
 int ReportFileNo = 0;
 
 void SafeWriteChar(char ch) {
+	if (!ReportFile) return;
+
 	fwrite(&ch, 1, 1, ReportFile);
 }
 

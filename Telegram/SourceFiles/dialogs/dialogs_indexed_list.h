@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -49,10 +49,7 @@ public:
 	[[nodiscard]] const List &all() const {
 		return _list;
 	}
-	[[nodiscard]] const List *filtered(QChar ch) const {
-		const auto i = _index.find(ch);
-		return (i != _index.end()) ? &i->second : nullptr;
-	}
+	[[nodiscard]] const List *filtered(QChar ch) const;
 	[[nodiscard]] std::vector<not_null<Row*>> filtered(
 		const QStringList &words) const;
 
@@ -97,8 +94,9 @@ private:
 
 	SortMode _sortMode = SortMode();
 	FilterId _filterId = 0;
+	uint64 _dateVersion = 1;
 	List _list, _empty;
-	base::flat_map<QChar, List> _index;
+	mutable base::flat_map<QChar, List> _index;
 
 };
 

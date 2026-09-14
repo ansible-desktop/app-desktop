@@ -1,13 +1,12 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/linux/main_window_linux.h"
 
-#include "styles/style_window.h"
 #include "platform/linux/specific_linux.h"
 #include "history/history.h"
 #include "history/history_widget.h"
@@ -25,15 +24,12 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "window/window_controller.h"
 #include "window/window_session_controller.h"
 #include "base/platform/base_platform_info.h"
+#include "base/platform/linux/base_linux_xcb_utilities.h"
 #include "base/event_filter.h"
 #include "ui/platform/ui_platform_window_title.h"
 #include "ui/widgets/popup_menu.h"
 #include "ui/widgets/fields/input_field.h"
 #include "ui/ui_utility.h"
-
-#ifndef DESKTOP_APP_DISABLE_X11_INTEGRATION
-#include "base/platform/linux/base_linux_xcb_utilities.h"
-#endif // !DESKTOP_APP_DISABLE_X11_INTEGRATION
 
 #include <QtCore/QSize>
 #include <QtCore/QMimeData>
@@ -49,8 +45,8 @@ namespace {
 
 using WorkMode = Core::Settings::WorkMode;
 
-#ifndef DESKTOP_APP_DISABLE_X11_INTEGRATION
 void XCBSkipTaskbar(QWindow *window, bool skip) {
+	using namespace base::Platform::XCB::Library;
 	const base::Platform::XCB::Connection connection;
 	if (!connection || xcb_connection_has_error(connection)) {
 		return;
@@ -100,15 +96,12 @@ void XCBSkipTaskbar(QWindow *window, bool skip) {
 					| XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY,
 				reinterpret_cast<const char*>(&xev))));
 }
-#endif // !DESKTOP_APP_DISABLE_X11_INTEGRATION
 
 void SkipTaskbar(QWindow *window, bool skip) {
-#ifndef DESKTOP_APP_DISABLE_X11_INTEGRATION
 	if (IsX11()) {
 		XCBSkipTaskbar(window, skip);
 		return;
 	}
-#endif // !DESKTOP_APP_DISABLE_X11_INTEGRATION
 }
 
 void SendKeySequence(
@@ -228,7 +221,7 @@ void MainWindow::createGlobalMenu() {
 		});
 
 	auto quit = file->addAction(
-		tr::lng_mac_menu_quit_telegram(tr::now, lt_telegram, u"Ansible"_q),
+		tr::lng_mac_menu_quit_telegram(tr::now, lt_telegram, u"Telegram"_q),
 		this,
 		[=] { quitFromTray(); },
 		QKeySequence::Quit);
@@ -427,7 +420,7 @@ void MainWindow::createGlobalMenu() {
 		tr::lng_mac_menu_about_telegram(
 			tr::now,
 			lt_telegram,
-			u"Ansible"_q),
+			u"Telegram"_q),
 		[=] {
 			ensureWindowShown();
 			controller().show(Box(AboutBox));
@@ -529,6 +522,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *evt) {
 		}
 	} else if (obj == this && t == QEvent::Hide) {
 		_exposed = false;
+		if (IsX11() && isHidden()) {
+			not_null(windowHandle())->destroy();
+		}
 	} else if (obj == this && t == QEvent::ThemeChange) {
 		updateWindowIcon();
 	}

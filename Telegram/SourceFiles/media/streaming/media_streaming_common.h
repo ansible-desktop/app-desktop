@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -22,6 +22,8 @@ bool SupportsSpeedControl();
 } // namespace Audio
 
 namespace Streaming {
+
+inline constexpr auto kMaxFrameArea = 3840 * 2160;
 
 inline bool SupportsSpeedControl() {
 	return Media::Audio::SupportsSpeedControl();
@@ -175,6 +177,7 @@ enum class FrameFormat {
 	ARGB32,
 	YUV420,
 	NV12,
+	NativeTexture,
 };
 
 struct FrameChannel {
@@ -190,9 +193,16 @@ struct FrameYUV {
 	FrameChannel v;
 };
 
+struct NativeFrame {
+	void *pixelBuffer = nullptr;
+	QSize size;
+	QSize chromaSize;
+};
+
 struct FrameWithInfo {
 	QImage image;
 	FrameYUV *yuv = nullptr;
+	NativeFrame *nativeFrame = nullptr;
 	FrameFormat format = FrameFormat::None;
 	int index = -1;
 	bool alpha = false;

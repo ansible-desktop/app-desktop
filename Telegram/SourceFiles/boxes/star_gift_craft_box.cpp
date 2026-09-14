@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/star_gift_craft_box.h"
 
@@ -907,7 +907,7 @@ void ShowSelectGiftBox(
 		attr.radial->setGeometry(0, 0, single, single);
 
 		btn->setClickedCallback([=] {
-			auto &a = state->attrs[idx];
+			const auto &a = state->attrs[idx];
 			if (state->tooltip) {
 				state->tooltip->toggleAnimated(false);
 			}
@@ -997,7 +997,7 @@ void ShowSelectGiftBox(
 			: single;
 
 		for (auto i = 0; i != 8; ++i) {
-			auto &attr = state->attrs[i];
+			const auto &attr = state->attrs[i];
 			if (i < count) {
 				const auto inRow1 = (i < row1);
 				const auto rowItems = inRow1 ? row1 : row2;

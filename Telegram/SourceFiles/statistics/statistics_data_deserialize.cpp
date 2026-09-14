@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "statistics/statistics_data_deserialize.h"
 
@@ -96,6 +96,13 @@ Data::StatisticalChart StatisticalChartFromJSON(const QByteArray &json) {
 			result.timeStep = kOneDay;
 		}
 		result.measure();
+	}
+	if (result.x.empty()
+		|| ranges::any_of(result.lines, [&](const auto &line) {
+			return line.y.size() != result.x.size();
+		})) {
+		LOG(("API Error: Mismatched columns from stats graph received."));
+		return {};
 	}
 	if (result.maxValue == result.minValue) {
 		if (result.minValue) {

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -121,8 +121,17 @@ struct ComplexBubble {
 	const std::vector<BubbleSelectionInterval> &selection;
 };
 
+struct TornEdgeCache;
+
+struct BubbleWithGaps {
+	SimpleBubble simple;
+	const std::vector<BubbleSelectionInterval> &gaps;
+	not_null<TornEdgeCache*> torn;
+};
+
 void PaintBubble(QPainter &p, const SimpleBubble &args);
 void PaintBubble(QPainter &p, const ComplexBubble &args);
+void PaintBubble(QPainter &p, const BubbleWithGaps &args);
 
 void PaintPatternBubblePart(
 	QPainter &p,

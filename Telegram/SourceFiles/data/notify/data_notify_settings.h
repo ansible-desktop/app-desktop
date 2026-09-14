@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -12,6 +12,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "base/timer.h"
 
 class PeerData;
+class ChannelData;
 
 namespace Data {
 
@@ -68,6 +69,7 @@ public:
 	void resetToDefault(not_null<PeerData*> peer);
 
 	void forumParentMuteUpdated(not_null<Forum*> forum);
+	void communityParentMuteUpdated(not_null<ChannelData*> community);
 
 	void cacheSound(DocumentId id);
 	void cacheSound(not_null<DocumentData*> document);

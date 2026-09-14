@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_file.h"
 
@@ -12,6 +12,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/history_item.h"
 #include "history/history.h"
 #include "history/view/history_view_element.h"
+#include "history/view/media/history_view_media_common.h"
+#include "ui/rect.h"
 #include "data/data_document.h"
 #include "data/data_file_click_handler.h"
 #include "data/data_session.h"
@@ -97,6 +99,42 @@ void File::radialAnimationCallback(crl::time now) const {
 	}
 	if (!_animation->radial.animating()) {
 		checkAnimationFinished();
+	}
+}
+
+void File::paintTtlFire(QPainter &p, QRect inner) const {
+	if (const auto state = _parent->Get<TtlPaintState>()) {
+		Ui::PaintTtlFireIcon(p, inner, state->fireCache);
+	}
+}
+
+void File::paintTtlCountdown(
+		QPainter &p,
+		QRect inner,
+		int line,
+		const style::color &color,
+		bool paused) const {
+	const auto state = _parent->Get<TtlPaintState>();
+	if (!state) {
+		return;
+	}
+	if (state->countdown
+		&& state->countdown->destroyAt != _realParent->mediaDestroyAt()) {
+		state->countdown = nullptr;
+	}
+	if (!state->countdown) {
+		state->countdown = MakeTtlCountdown(
+			_realParent,
+			[parent = _parent] { parent->repaint(); });
+	}
+	if (state->countdown) {
+		Ui::PaintTtlCountdown(
+			p,
+			inner - Margins(line),
+			line,
+			state->countdown.get(),
+			color,
+			paused);
 	}
 }
 

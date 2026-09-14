@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -31,6 +31,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 	Fn<void(FilterId)> choose,
 	ChatHelpers::PauseReason pauseLevel,
 	Window::SessionController *controller = nullptr,
-	bool trackActiveFilterAndUnreadAndReorder = false);
+	bool trackActiveFilterAndUnreadAndReorder = false,
+	bool handleKeyboardSwitch = false);
 
 } // namespace Ui

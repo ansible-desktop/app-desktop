@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_members_controllers.h"
 
@@ -17,8 +17,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/painter.h"
 #include "styles/style_info.h"
 #include "styles/style_boxes.h"
-#include "styles/style_chat.h"
-#include "styles/style_dialogs.h"
 #include "styles/style_widgets.h"
 
 namespace Info {
@@ -515,6 +513,10 @@ void MemberListRow::elementsPaint(
 			outerWidth,
 			(selectedElement == kTagElement));
 	}
+}
+
+bool MemberListRow::elementsAnimating() const {
+	return _wasHovered || _hoverAnimation.animating();
 }
 
 std::unique_ptr<ParticipantsBoxController> CreateMembersController(

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 
 #include "data/data_passkey_deserialize.h"
@@ -23,7 +23,7 @@ namespace {
 	obj["challenge"] = QString::fromUtf8(
 		challenge.toBase64(QByteArray::Base64UrlEncoding
 			| QByteArray::OmitTrailingEquals));
-	obj["origin"] = "https://ansible.su";
+	obj["origin"] = "https://telegram.org";
 	obj["crossOrigin"] = false;
 	return QJsonDocument(obj).toJson(QJsonDocument::Compact).toStdString();
 }

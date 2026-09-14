@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/mime_type.h"
 
@@ -54,7 +54,7 @@ MimeType::MimeType(Known type) : _type(type) {
 QStringList MimeType::globPatterns() const {
 	switch (_type) {
 	case Known::WebP: return QStringList(u"*.webp"_q);
-	case Known::Ass: return QStringList(u"*.ass"_q);
+	case Known::Tgs: return QStringList(u"*.tgs"_q);
 	case Known::Tgv: return QStringList(u"*.tgv"_q);
 	case Known::TDesktopTheme: return QStringList(u"*.tdesktop-theme"_q);
 	case Known::TDesktopPalette: return QStringList(u"*.tdesktop-palette"_q);
@@ -66,7 +66,7 @@ QStringList MimeType::globPatterns() const {
 QString MimeType::filterString() const {
 	switch (_type) {
 	case Known::WebP: return u"WebP image (*.webp)"_q;
-	case Known::Ass: return u"Ansible sticker (*.ass)"_q;
+	case Known::Tgs: return u"Telegram sticker (*.tgs)"_q;
 	case Known::Tgv: return u"Wallpaper pattern (*.tgv)"_q;
 	case Known::TDesktopTheme: return u"Theme files (*.tdesktop-theme)"_q;
 	case Known::TDesktopPalette: return u"Palette files (*.tdesktop-palette)"_q;
@@ -78,7 +78,7 @@ QString MimeType::filterString() const {
 QString MimeType::name() const {
 	switch (_type) {
 	case Known::WebP: return u"image/webp"_q;
-	case Known::Ass: return u"application/x-ansible-sticker"_q;
+	case Known::Tgs: return u"application/x-tgsticker"_q;
 	case Known::Tgv: return u"application/x-tgwallpattern"_q;
 	case Known::TDesktopTheme: return u"application/x-tdesktop-theme"_q;
 	case Known::TDesktopPalette: return u"application/x-tdesktop-palette"_q;
@@ -90,8 +90,8 @@ QString MimeType::name() const {
 MimeType MimeTypeForName(const QString &mime) {
 	if (mime == u"image/webp"_q) {
 		return MimeType(MimeType::Known::WebP);
-	} else if (mime == u"application/x-ansible-sticker"_q) {
-		return MimeType(MimeType::Known::Ass);
+	} else if (mime == u"application/x-tgsticker"_q) {
+		return MimeType(MimeType::Known::Tgs);
 	} else if (mime == u"application/x-tgwallpattern"_q) {
 		return MimeType(MimeType::Known::Tgv);
 	} else if (mime == u"application/x-tdesktop-theme"_q
@@ -109,8 +109,8 @@ MimeType MimeTypeForFile(const QFileInfo &file) {
 	QString path = file.absoluteFilePath();
 	if (path.endsWith(u".webp"_q, Qt::CaseInsensitive)) {
 		return MimeType(MimeType::Known::WebP);
-	} else if (path.endsWith(u".ass"_q, Qt::CaseInsensitive)) {
-		return MimeType(MimeType::Known::Ass);
+	} else if (path.endsWith(u".tgs"_q, Qt::CaseInsensitive)) {
+		return MimeType(MimeType::Known::Tgs);
 	} else if (path.endsWith(u".tgv"_q)) {
 		return MimeType(MimeType::Known::Tgv);
 	} else if (path.endsWith(u".tdesktop-theme"_q, Qt::CaseInsensitive)) {
@@ -144,7 +144,7 @@ MimeType MimeTypeForData(const QByteArray &data) {
 }
 
 bool IsMimeStickerLottie(const QString &mime) {
-	return (mime == u"application/x-ansible-sticker"_q);
+	return (mime == u"application/x-tgsticker"_q);
 }
 
 bool IsMimeStickerWebm(const QString &mime) {
@@ -152,7 +152,7 @@ bool IsMimeStickerWebm(const QString &mime) {
 }
 
 bool IsMimeStickerAnimated(const QString &mime) {
-	return (mime == u"application/x-ansible-sticker"_q);
+	return (mime == u"application/x-tgsticker"_q);
 }
 
 bool IsMimeSticker(const QString &mime) {
@@ -160,11 +160,15 @@ bool IsMimeSticker(const QString &mime) {
 		|| IsMimeStickerAnimated(mime);
 }
 
+bool IsMimeSentAsVideo(const QString &mime) {
+	return (mime == u"video/mp4"_q)
+		|| (mime == u"video/quicktime"_q);
+}
+
 bool IsMimeAcceptedForPhotoVideoAlbum(const QString &mime) {
 	return (mime == u"image/jpeg"_q)
 		|| (mime == u"image/png"_q)
-		|| (mime == u"video/mp4"_q)
-		|| (mime == u"video/quicktime"_q);
+		|| IsMimeSentAsVideo(mime);
 }
 
 bool FileIsImage(const QString &name, const QString &mime) {
@@ -205,7 +209,15 @@ MimeImageData ReadMimeImage(not_null<const QMimeData*> data) {
 			};
 		}
 	} else if (data->hasImage()) {
-		return { .image = qvariant_cast<QImage>(data->imageData()) };
+		auto image = qvariant_cast<QImage>(data->imageData());
+		// The same area limit Images::Read() applies to files: a huge
+		// image can't be scaled down for the preview, because the smooth
+		// scale converts the whole source first, needing a second full
+		// size buffer, which fails in a 32 bit process.
+		if (qint64(image.width()) * image.height() > Images::kReadMaxArea) {
+			return {};
+		}
+		return { .image = std::move(image) };
 	}
 	return {};
 }
@@ -247,7 +259,7 @@ NameType DetectNameType(const QString &filepath) {
 afdesign ai avif bmp dng gif heic icns ico jfif jpeg jpg jpg-large jxl nef \
 png png-large psd qoi raw sketch svg tga tif tiff webp"_q);
 	static const auto kVideo = SplitExtensions(u"\
-3g2 3gp 3gpp aep avi flv h264 m4s m4v mkv mov mp4 mpeg mpg ogv srt ass tgv \
+3g2 3gp 3gpp aep avi flv h264 m4s m4v mkv mov mp4 mpeg mpg ogv srt tgs tgv \
 vob webm wmv"_q);
 	static const auto kAudio = SplitExtensions(u"\
 aac ac3 aif amr caf cda cue flac m4a m4b mid midi mp3 ogg opus wav wma"_q);
@@ -326,12 +338,22 @@ bool NameTypeAllowsThumbnail(NameType type) {
 
 bool IsIpRevealingPath(const QString &filepath) {
 	static const auto kExtensions = [] {
-		const auto joined = u"htm html svg m4v m3u m3u8 xhtml xml"_q;
+		auto joined = u"htm html svg m4v m3u m3u8 xhtml xml kml kmz xspf"_q;
+#ifdef Q_OS_WIN
+		joined += u" wpl"_q;
+#endif // Q_OS_WIN
+#ifdef Q_OS_MAC
+		joined += u" docx dotx docm dotm"_q;
+		joined += u" xlsx xltx xlsm xltm xlsb"_q;
+		joined += u" pptx ppsx potx pptm ppsm potm"_q;
+#endif // Q_OS_MAC
 		const auto list = joined.split(' ');
 		return base::flat_set<QString>(list.begin(), list.end());
 	}();
 	static const auto kMimeTypes = [] {
-		const auto joined = u"text/html image/svg+xml"_q;
+		const auto joined = u"text/html image/svg+xml "
+			"application/vnd.google-earth.kml+xml "
+			"application/vnd.google-earth.kmz"_q;
 		const auto list = joined.split(' ');
 		return base::flat_set<QString>(list.begin(), list.end());
 	}();

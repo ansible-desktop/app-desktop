@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/boxes/confirm_box.h"
 
@@ -34,7 +34,9 @@ void ConfirmBox(not_null<Ui::GenericBox*> box, ConfirmBoxArgs &&args) {
 			object_ptr<Ui::FlatLabel>(
 				box.get(),
 				v::text::take_marked(std::move(args.text)),
-				args.labelStyle ? *args.labelStyle : st::boxLabel),
+				args.labelStyle ? *args.labelStyle : st::boxLabel,
+				st::defaultPopupMenu,
+				args.labelContext),
 			use);
 		if (args.labelFilter) {
 			label->setClickHandlerFilter(std::move(args.labelFilter));

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "mtproto/details/mtproto_dcenter.h"
 
@@ -110,7 +110,7 @@ CreatingKeyType Dcenter::acquireKeyCreation(DcType type) {
 	QReadLocker lock(&_mutex);
 	const auto keyType = TemporaryKeyTypeByDcType(type);
 	const auto index = IndexByType(keyType);
-	auto &key = _temporaryKeys[index];
+	const auto &key = _temporaryKeys[index];
 	if (key != nullptr) {
 		return CreatingKeyType::None;
 	}

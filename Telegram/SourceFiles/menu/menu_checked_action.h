@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -24,5 +24,17 @@ not_null<QAction*> AddCheckedAction(
 	Fn<void()> callback,
 	const style::icon *icon,
 	bool checked);
+
+// Like a usual menu action, but when `active` the whole item (icon, text and
+// shortcut) is painted in st::windowActiveTextFg instead of showing a check.
+// When `premiumStarSize` is positive a gradient premium star of that size is
+// painted right-aligned, with any shortcut text shifted to the star's left.
+not_null<QAction*> AddActiveColorAction(
+	not_null<Ui::PopupMenu*> menu,
+	const QString &text,
+	Fn<void()> callback,
+	const style::icon *icon,
+	bool active,
+	int premiumStarSize = 0);
 
 } // namespace Menu

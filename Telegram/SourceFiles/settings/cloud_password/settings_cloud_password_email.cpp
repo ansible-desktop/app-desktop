@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/cloud_password/settings_cloud_password_email.h"
 
@@ -88,6 +88,9 @@ void Email::setupContent() {
 		content,
 		tr::lng_cloud_password_email(),
 		currentStepDataEmail);
+	newInput->setInputMethodHints(Qt::ImhEmailCharactersOnly
+		| Qt::ImhNoAutoUppercase
+		| Qt::ImhNoPredictiveText);
 	const auto error = AddError(content, nullptr);
 	newInput->changes(
 	) | rpl::on_next([=] {
@@ -96,7 +99,9 @@ void Email::setupContent() {
 	AddSkipInsteadOfField(content);
 
 	const auto send = [=](Fn<void()> close) {
-		Expects(!_requestLifetime);
+		if (_requestLifetime) {
+			return;
+		}
 
 		const auto data = stepData();
 

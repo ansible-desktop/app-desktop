@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -14,6 +14,9 @@ class ApiWrap;
 class HistoryItem;
 struct PollData;
 struct PollMedia;
+namespace Data {
+struct StatisticalGraph;
+} // namespace Data
 
 namespace Main {
 class Session;
@@ -45,6 +48,10 @@ public:
 	void deleteAnswer(FullMsgId itemId, const QByteArray &option);
 	void close(not_null<HistoryItem*> item);
 	void reloadResults(not_null<HistoryItem*> item);
+	void requestStats(
+		FullMsgId itemId,
+		Fn<void(Data::StatisticalGraph)> done,
+		Fn<void(QString)> fail);
 
 private:
 	const not_null<Main::Session*> _session;

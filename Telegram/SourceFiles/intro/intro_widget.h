@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -51,6 +51,8 @@ enum class EmailStatus {
 struct Data {
 	// Required for the UserpicButton.
 	const not_null<Window::Controller*> controller;
+
+	base::weak_ptr<Main::Account> accountBeforeIntro;
 
 	QString country;
 	QString phone;
@@ -106,7 +108,8 @@ public:
 		QWidget *parent,
 		not_null<Window::Controller*> controller,
 		not_null<Main::Account*> account,
-		EnterPoint point);
+		EnterPoint point,
+		Main::Account *accountBeforeIntro);
 	~Widget();
 
 	void showAnimated(QPixmap oldContentCache, bool back = false);

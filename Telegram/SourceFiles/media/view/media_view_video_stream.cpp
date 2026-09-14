@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/view/media_view_video_stream.h"
 
@@ -283,6 +283,22 @@ void VideoStream::ensureBorrowedRenderer() {
 void VideoStream::borrowedPaint(Painter &p, const QRegion &clip) {
 	_viewport->borrowedPaint(p, clip);
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void VideoStream::borrowedPaintOffscreen(
+		QRhi *rhi,
+		QRhiRenderTarget *rt,
+		QRhiCommandBuffer *cb) {
+	_viewport->borrowedPaintOffscreen(rhi, rt, cb);
+}
+
+void VideoStream::borrowedPaintOnscreen(
+		QRhi *rhi,
+		QRhiRenderTarget *rt,
+		QRhiCommandBuffer *cb) {
+	_viewport->borrowedPaintOnscreen(rhi, rt, cb);
+}
+#endif
 
 rpl::lifetime &VideoStream::lifetime() {
 	return _lifetime;

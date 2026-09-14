@@ -1,8 +1,8 @@
-// This file is part of Ansible Desktop, a fork of Telegram Desktop,
+// This file is part of Telegram Desktop,
 // the official desktop application for the Telegram messaging service.
 //
 // For license and copyright information please follow this link:
-// https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+// https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 //
 #include "history/view/history_view_top_peers_selector.h"
 
@@ -83,7 +83,10 @@ void ShowTopPeersSelector(
 							.singleMessage = single,
 							.to1 = peer,
 						})).current();
-					show->showToast(std::move(text));
+					show->showToast({
+						.text = std::move(text),
+						.filter = ForwardedToSavedMessagesFilter(session),
+					});
 				});
 		}
 	};

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/stories/info_stories_widget.h"
 
@@ -63,15 +63,29 @@ Widget::Widget(
 	not_null<Controller*> controller)
 : ContentWidget(parent, controller)
 , _albumId(controller->key().storiesAlbumId())
-, _inner(
-	setupFlexibleInnerWidget(
+, _inner(UseClassicProfileScroll()
+	? setupFlexibleInnerWidget(
 		object_ptr<InnerWidget>(
 			this,
 			controller,
 			_albumId.value(),
 			controller->key().storiesAddToAlbumId()),
-		_flexibleScroll))
+		_flexibleScroll)
+	: setInnerWidget(
+		object_ptr<InnerWidget>(
+			this,
+			controller,
+			_albumId.value(),
+			controller->key().storiesAddToAlbumId())))
 , _pinnedToTop(_inner->createPinnedToTop(this)) {
+	const auto classic = UseClassicProfileScroll();
+	const auto flexible = _pinnedToTop
+		&& _pinnedToTop->minimumHeight()
+		&& _inner->hasFlexibleTopBar();
+	if (classic) {
+		_inner->move(0, 0);
+	}
+
 	_emptyAlbumShown = _inner->albumEmptyValue();
 	_inner->albumIdChanges() | rpl::on_next([=](int id) {
 		controller->showSection(
@@ -81,15 +95,21 @@ Widget::Widget(
 	_inner->setScrollHeightValue(scrollHeightValue());
 	_inner->scrollToRequests(
 	) | rpl::on_next([this](Ui::ScrollToRequest request) {
+		const auto reserve = innerTopReserve();
 		if (request.ymin < 0) {
 			scrollTopRestore(
-				qMin(scrollTopSave(), request.ymax));
+				qMin(scrollTopSave(), request.ymax + reserve));
 		} else {
-			scrollTo(request);
+			scrollTo({
+				request.ymin + reserve,
+				(request.ymax < 0) ? -1 : (request.ymax + reserve),
+			});
 		}
 	}, lifetime());
 
-	if (_pinnedToTop) {
+	if (!classic && flexible) {
+		setupFlexibleRegularScroll(_inner, _pinnedToTop.get());
+	} else if (_pinnedToTop) {
 		_inner->widthValue(
 		) | rpl::on_next([=](int w) {
 			_pinnedToTop->resizeToWidth(w);
@@ -102,9 +122,7 @@ Widget::Widget(
 		}, _pinnedToTop->lifetime());
 	}
 
-	if (_pinnedToTop
-		&& _pinnedToTop->minimumHeight()
-		&& _inner->hasFlexibleTopBar()) {
+	if (classic && flexible) {
 		_flexibleScrollHelper = std::make_unique<FlexibleScrollHelper>(
 			scroll(),
 			_inner,

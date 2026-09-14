@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -165,9 +165,10 @@ private:
 	mutable std::unique_ptr<MediaSpoilerTag> _spoilerTag;
 	mutable QImage _imageCache;
 	mutable std::optional<Ui::BubbleRounding> _imageCacheRounding;
-	uint32 _serviceWidth : 26 = 0;
+	uint32 _serviceWidth : 25 = 0;
 	uint32 _purchasedPriceTag : 1 = 0;
 	const uint32 _sensitiveSpoiler : 1 = 0;
+	const uint32 _ttlCover : 1 = 0;
 	mutable uint32 _imageCacheForum : 1 = 0;
 	mutable uint32 _imageCacheBlurred : 1 = 0;
 	mutable uint32 _pollingStory : 1 = 0;

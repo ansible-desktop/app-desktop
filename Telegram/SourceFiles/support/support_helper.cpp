@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "support/support_helper.h"
 
@@ -53,7 +53,7 @@ namespace {
 
 constexpr auto kOccupyFor = TimeId(60);
 constexpr auto kReoccupyEach = 30 * crl::time(1000);
-constexpr auto kMaxSupportInfoLength = MaxMessageSize * 4;
+constexpr auto kMaxSupportInfoLength = 16 * 1024;
 constexpr auto kTopicRootId = MsgId(0);
 constexpr auto kMonoforumPeerId = PeerId(0);
 

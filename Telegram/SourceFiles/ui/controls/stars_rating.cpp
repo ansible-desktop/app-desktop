@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/controls/stars_rating.h"
 
@@ -30,8 +30,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "styles/style_info_levels.h"
 #include "styles/style_layers.h"
 #include "styles/style_premium.h"
-#include "styles/style_settings.h"
-#include "styles/style_media_view.h"
 #include "styles/style_menu_icons.h"
 
 namespace Ui {

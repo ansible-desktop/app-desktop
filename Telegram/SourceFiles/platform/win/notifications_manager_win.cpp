@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/win/notifications_manager_win.h"
 
@@ -30,7 +30,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "main/main_session.h"
 #include "mainwindow.h"
 #include "windows_quiethours_h.h"
-#include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
 
 #include <QtCore/QOperatingSystemVersion>

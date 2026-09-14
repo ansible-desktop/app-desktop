@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/chat/attach/attach_abstract_single_file_preview.h"
 
@@ -16,6 +16,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "styles/style_boxes.h"
 #include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
+#include "styles/style_chat_style.h"
 
 namespace Ui {
 
@@ -160,7 +161,7 @@ void AbstractSingleFilePreview::paintEvent(QPaintEvent *e) {
 			PainterHighQualityEnabler hq(p);
 			p.drawEllipse(inner);
 		}
-		auto &icon = _data.fileIsAudio
+		const auto &icon = _data.fileIsAudio
 			? (_data.fileThumb.isNull()
 				? _st.files.iconPlay
 				: st::historyFileThumbPlay)

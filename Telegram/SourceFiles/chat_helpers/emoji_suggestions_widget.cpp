@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/emoji_suggestions_widget.h"
 
@@ -55,6 +55,7 @@ public:
 	void showWithQuery(SuggestionsQuery query, bool force = false);
 	void selectFirstResult();
 	bool handleKeyEvent(int key);
+	[[nodiscard]] bool consumesEnter() const;
 
 	[[nodiscard]] rpl::producer<bool> toggleAnimated() const;
 
@@ -684,6 +685,10 @@ void SuggestionsWidget::mouseReleaseEvent(QMouseEvent *e) {
 	}
 }
 
+bool SuggestionsWidget::consumesEnter() const {
+	return (_selected >= 0) && (_selected < int(_rows.size()));
+}
+
 bool SuggestionsWidget::triggerSelectedRow() const {
 	if (_selected >= 0) {
 		triggerRow(_rows[_selected]);
@@ -868,6 +873,10 @@ void SuggestionsController::handleTextChange() {
 			_suggestions->selectFirstResult();
 		}
 	}
+}
+
+bool SuggestionsController::consumesEnter() const {
+	return shown() && _suggestions && _suggestions->consumesEnter();
 }
 
 void SuggestionsController::showWithQuery(SuggestionsQuery query) {

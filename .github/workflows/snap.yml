@@ -1,10 +1,11 @@
 name: Snap.
 
 on:
-  workflow_dispatch:
   push:
+    # Pushes to the canary branches run only canary.yml, see there.
     branches-ignore:
-      - dev        # dev branch uses the fast dev_win.yml only
+      - public-canary
+      - private-canary
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -43,14 +44,14 @@ jobs:
 
   snap:
     name: Ubuntu
-    runs-on: ubuntu-latest
+    runs-on: ${{ (github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/nightly') && 'depot-ubuntu-latest-16' || 'ubuntu-latest' }}
 
     env:
       UPLOAD_ARTIFACT: "true"
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
@@ -88,3 +89,4 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: artifact
+          retention-days: 1

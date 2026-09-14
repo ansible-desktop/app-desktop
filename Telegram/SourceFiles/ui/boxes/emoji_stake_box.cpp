@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/boxes/emoji_stake_box.h"
 
@@ -25,6 +25,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/controls/ton_common.h"
 #include "ui/text/custom_emoji_helper.h"
 #include "ui/text/custom_emoji_text_badge.h"
+#include "ui/text/text_custom_emoji.h"
 #include "ui/text/text_lottie_custom_emoji.h"
 #include "ui/toast/toast.h"
 #include "ui/widgets/fields/input_field.h"
@@ -475,14 +476,15 @@ void EmojiGameStakeBox(
 	const auto sixContext = helper.context();
 	const auto factory = [=](
 			QStringView data,
-			const Text::MarkedContext &context) {
+			const Text::MarkedContext &context)
+	-> std::unique_ptr<Text::CustomEmoji> {
 		if (auto result = sixContext.customEmojiFactory(data, context)) {
-			return std::make_unique<Text::LimitedLoopsEmoji>(
+			return MakeWrappedEmoji<Text::LimitedLoopsEmoji>(
 				std::move(result),
 				0,
 				true);
 		}
-		return std::unique_ptr<Text::LimitedLoopsEmoji>();
+		return nullptr;
 	};
 	const auto context = Text::MarkedContext{
 		.customEmojiFactory = factory,

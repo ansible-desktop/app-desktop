@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_photo.h"
 
@@ -205,6 +205,21 @@ void PhotoData::cancel() {
 	}
 }
 
+void PhotoData::clearLocalCache() {
+	auto keys = base::flat_set<Storage::Cache::Key>();
+	for (auto &file : _images) {
+		if (const auto key = file.location.file().cacheKey()) {
+			keys.emplace(key);
+		}
+		if (file.loader) {
+			file.loader->cancel();
+		}
+	}
+	for (const auto &key : keys) {
+		_owner->cache().remove(key);
+	}
+}
+
 float64 PhotoData::progress() const {
 	if (uploading()) {
 		if (uploadingData->size > 0) {
@@ -254,7 +269,7 @@ Image *PhotoData::getReplyPreview(
 
 Image *PhotoData::getReplyPreview(not_null<HistoryItem*> item) {
 	const auto media = item->media();
-	const auto spoiler = (media && media->hasSpoiler());
+	const auto spoiler = (media && media->hasSpoilerForPreview());
 	return getReplyPreview(item->fullId(), item->history()->peer, spoiler);
 }
 

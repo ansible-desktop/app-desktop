@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -76,9 +76,11 @@ public:
 	void finishAnimations();
 
 	void setButtonVisible(bool value);
+	void setModifyAllowed(bool value);
 	void moveButtons(int thumbTop);
 
 	[[nodiscard]] bool isCompressedSticker() const;
+	[[nodiscard]] bool canEditVideo() const;
 
 	static constexpr auto kShrinkDuration = crl::time(150);
 
@@ -92,6 +94,7 @@ private:
 		QRect geometry,
 		float64 shrinkProgress);
 	void paintPlayVideo(QPainter &p, QRect geometry);
+	[[nodiscard]] bool canModify() const;
 
 	const style::ComposeControls &_st;
 	GroupMediaLayout _layout;
@@ -100,7 +103,12 @@ private:
 	const int _shrinkSize;
 	const bool _isPhoto;
 	const bool _isVideo;
+	const bool _canEditVideo;
+	bool _modifyAllowed = false;
 	const bool _canShowHighQualityBadge;
+	const bool _canShowAnimatedBadge;
+	const int _videoQuality = 0;
+	const crl::time _ttlSeconds = 0;
 	QPixmap _albumImage;
 	QPixmap _albumImageBlurred;
 	QImage _albumCache;

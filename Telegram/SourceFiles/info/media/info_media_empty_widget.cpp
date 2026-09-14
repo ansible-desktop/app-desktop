@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/media/info_media_empty_widget.h"
 
@@ -37,6 +37,7 @@ void EmptyWidget::setType(Type type) {
 	_icon = [&] {
 		switch (_type) {
 		case Type::Photo:
+		case Type::PhotoVideo:
 		case Type::GIF: return &st::infoEmptyPhoto;
 		case Type::Video: return &st::infoEmptyVideo;
 		case Type::MusicFile: return &st::infoEmptyAudio;
@@ -53,6 +54,7 @@ void EmptyWidget::setSearchQuery(const QString &query) {
 	_text->setText([&] {
 		switch (_type) {
 		case Type::Photo:
+		case Type::PhotoVideo:
 			return tr::lng_media_photo_empty(tr::now);
 		case Type::GIF:
 			return tr::lng_media_gif_empty(tr::now);
@@ -83,6 +85,7 @@ void EmptyWidget::setLoading(bool loading) {
 		return;
 	}
 	_loading = loading;
+	_text->setVisible(!_loading);
 	resizeToWidth(width());
 	update();
 }
@@ -112,6 +115,7 @@ void EmptyWidget::paintEvent(QPaintEvent *e) {
 }
 
 int EmptyWidget::resizeGetHeight(int newWidth) {
+	_text->setVisible(!_loading);
 	if (!_loading) {
 		auto labelTop = _height - st::infoEmptyLabelTop;
 		auto labelWidth = newWidth - 2 * st::infoEmptyLabelSkip;

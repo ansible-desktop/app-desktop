@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -12,7 +12,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/effects/cross_line.h"
 #include "ui/effects/gradient.h"
 #include "ui/effects/radial_animation.h"
-#include "ui/widgets/call_button.h"
+#include "ui/controls/call_button.h"
 #include "ui/widgets/tooltip.h"
 #include "lottie/lottie_icon.h"
 

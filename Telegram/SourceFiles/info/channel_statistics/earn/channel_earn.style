@@ -1,15 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 using "ui/basic.style";
 using "boxes/boxes.style";
 using "statistics/statistics.style";
-
-channelEarnLearnArrowMargins: margins(-2px, 5px, 0px, 0px);
 
 channelEarnOverviewTitleSkip: 11px;
 channelEarnOverviewMajorLabel: FlatLabel(defaultFlatLabel) {
@@ -112,7 +110,6 @@ channelEarnBalanceMinorLabel: FlatLabel(channelEarnOverviewMinorLabel) {
 	}
 }
 channelEarnBalanceMinorLabelSkip: 6px;
-channelEarnFadeDuration: 60;
 
 channelEarnLearnDescription: FlatLabel(defaultFlatLabel) {
 	maxHeight: 0px;
@@ -152,4 +149,3 @@ botEarnButtonLock: IconEmoji {
 	icon: icon{{ "chat/mini_lock", premiumButtonFg }};
 	padding: margins(-2px, 4px, 0px, 0px);
 }
-

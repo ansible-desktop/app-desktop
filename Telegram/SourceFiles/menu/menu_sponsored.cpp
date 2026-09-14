@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "menu/menu_sponsored.h"
 
@@ -31,6 +31,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/popup_menu.h"
 #include "styles/style_channel_earn.h"
 #include "styles/style_chat.h"
+#include "styles/style_chat_helpers.h"
 #include "styles/style_info.h"
 #include "styles/style_layers.h"
 #include "styles/style_media_view.h"
@@ -53,7 +54,7 @@ void AboutBox(
 		SponsoredPhrases phrases,
 		const Data::SponsoredMessages::Details &details,
 		Data::SponsoredReportAction report) {
-	constexpr auto kUrl = "https://ansible.su/promote"_cs;
+	constexpr auto kUrl = "https://promote.telegram.org"_cs;
 
 	box->setWidth(st::boxWideWidth);
 	box->setNoContentMargin(true);
@@ -308,7 +309,7 @@ void ShowReportSponsoredBox(
 		Data::SponsoredReportAction report) {
 	const auto guideLink = tr::link(
 		tr::lng_report_sponsored_reported_link(tr::now),
-		u"https://ansible.su/promote/guidelines"_q);
+		u"https://promote.telegram.org/guidelines"_q);
 
 	auto performRequest = [=](
 			const auto &repeatRequest,
@@ -405,7 +406,11 @@ void FillSponsored(
 				}).text;
 			const auto callback = [=] {
 				TextUtilities::SetClipboardText({ allText });
-				show->showToast(tr::lng_text_copied(tr::now));
+				show->showToast({
+					.text = { tr::lng_text_copied(tr::now) },
+					.iconLottie = u"toast/copy"_q,
+					.iconLottieSize = st::toastLottieIconSize,
+				});
 			};
 			for (const auto &i : info) {
 				auto item = base::make_unique_q<Ui::Menu::MultilineAction>(
@@ -431,6 +436,9 @@ void FillSponsored(
 				? &st::mediaMenuIconChannel
 				: &st::menuIconChannel),
 			.fillSubmenu = std::move(fillSubmenu),
+			.submenuSt = (dark
+				? &st::mediaviewSponsorInfoMenu
+				: &st::historySponsorInfoMenu),
 		});
 		addAction({
 			.separatorSt = (dark

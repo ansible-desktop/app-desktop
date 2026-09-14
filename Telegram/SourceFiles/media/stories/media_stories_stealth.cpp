@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/stories/media_stories_stealth.h"
 
@@ -382,19 +382,23 @@ void SetupStealthMode(
 void AddStealthModeMenu(
 		const Ui::Menu::MenuCallback &add,
 		not_null<PeerData*> peer,
-		not_null<Window::SessionController*> controller) {
+		not_null<Window::SessionController*> controller,
+		Fn<void()> onActivated) {
 	if (!peer->session().premiumPossible() || !peer->isUser()) {
 		return;
 	}
 	const auto now = base::unixtime::now();
 	const auto stealth = peer->owner().stories().stealthMode();
+	const auto open = onActivated
+		? onActivated
+		: Fn<void()>([=] { controller->openPeerStories(peer->id); });
 	add(
 		tr::lng_stories_view_anonymously(tr::now),
 		[=] {
 			SetupStealthMode(
 				controller->uiShow(),
 				StealthModeDescriptor{
-					[=] { controller->openPeerStories(peer->id); },
+					open,
 					&st::storiesStealthStyleDefault,
 				});
 		},

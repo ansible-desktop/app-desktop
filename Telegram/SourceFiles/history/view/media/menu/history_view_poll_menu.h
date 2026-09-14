@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -51,6 +51,10 @@ void FillPollAnswerMenu(
 	not_null<DocumentData*> document,
 	FullMsgId itemId,
 	not_null<Window::SessionController*> controller);
+
+void ShowPollStatsBox(
+	not_null<Window::SessionController*> controller,
+	FullMsgId itemId);
 
 void ShowPollStickerPreview(
 	not_null<Window::SessionController*> controller,

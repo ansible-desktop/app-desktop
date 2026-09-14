@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_userpic_suggestion.h"
 
@@ -128,7 +128,7 @@ void ShowSetToast(
 			lt_link,
 			tr::link(
 				tr::lng_profile_changed_photo_link(tr::now),
-				u"as://settings/edit_profile"_q),
+				u"tg://settings/edit_profile"_q),
 			tr::marked)
 	);
 	auto st = std::make_shared<style::Toast>(st::historyPremiumToast);

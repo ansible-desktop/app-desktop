@@ -1,14 +1,15 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/phone_banned_box.h"
 
 #include "ui/boxes/confirm_box.h"
 #include "core/click_handler_types.h" // UrlClickHandler
+#include "core/version.h"
 #include "base/qthelp_url.h" // qthelp::url_encode
 #include "base/platform/base_platform_info.h"
 #include "window/window_controller.h"

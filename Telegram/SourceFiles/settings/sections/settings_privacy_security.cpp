@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_privacy_security.h"
 
@@ -371,6 +371,9 @@ void OpenFileConfirmationsBox(not_null<Ui::GenericBox*> box) {
 			tr::lng_settings_edit_extensions(),
 			TextWithTags{ text }),
 		st::boxRowPadding + QMargins(0, 0, 0, st::settingsPrivacySkip));
+	extensions->setInputMethodHints(Qt::ImhLatinOnly
+		| Qt::ImhNoAutoUppercase
+		| Qt::ImhNoPredictiveText);
 	Ui::AddDividerText(layout, tr::lng_settings_edit_extensions_about());
 	Ui::AddSkip(layout);
 	const auto ip = layout->add(object_ptr<Ui::SettingsButton>(
@@ -727,7 +730,7 @@ void BuildSecuritySection(
 			.icon = { &st::menuIconRecoveryEmail },
 			.label = std::move(loginEmailLabel),
 			.onClick = [=] {
-				UrlClickHandler::Open(u"as://settings/login_email"_q);
+				UrlClickHandler::Open(u"tg://settings/login_email"_q);
 			},
 			.keywords = { u"email"_q, u"login"_q },
 			.shown = std::move(loginEmailShown),

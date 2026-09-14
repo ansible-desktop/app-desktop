@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/edit_privacy_box.h"
 
@@ -40,7 +40,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/shadow.h"
 #include "ui/wrap/slide_wrap.h"
 #include "window/window_session_controller.h"
-#include "styles/style_boxes.h"
+#include "styles/style_chat_helpers.h"
 #include "styles/style_info.h"
 #include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
@@ -1355,7 +1355,11 @@ void EditDirectMessagesPriceBox(
 			+ kDirectParam.utf8();
 		const auto copyLink = [=] {
 			TextUtilities::SetClipboardText(TextForMimeData::Simple(link));
-			box->uiShow()->showToast(tr::lng_group_invite_copied(tr::now));
+			box->uiShow()->showToast({
+				.text = { tr::lng_group_invite_copied(tr::now) },
+				.iconLottie = u"toast/voip_invite"_q,
+				.iconLottieSize = st::toastLottieIconSize,
+			});
 		};
 		const auto shareLink = [=] {
 			box->uiShow()->showBox(ShareInviteLinkBox(channel, link));

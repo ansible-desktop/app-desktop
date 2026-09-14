@@ -1,12 +1,13 @@
-// This file is part of Ansible Desktop, a fork of Telegram Desktop,
+// This file is part of Telegram Desktop,
 // the official desktop application for the Telegram messaging service.
 //
 // For license and copyright information please follow this link:
-// https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+// https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 //
 #pragma once
 
 #include "ui/rp_widget.h"
+#include "ui/ui_touch_forward.h"
 #include "ui/effects/animations.h"
 #include "ui/effects/round_area_with_shadow.h"
 
@@ -48,6 +49,7 @@ private:
 
 	const QSize _innerSize;
 	RoundAreaWithShadow _cachedRound;
+	TouchForward _touchForward;
 	QImage _paintBuffer;
 	PopupAppearType _appearType = PopupAppearType::CenterExpand;
 

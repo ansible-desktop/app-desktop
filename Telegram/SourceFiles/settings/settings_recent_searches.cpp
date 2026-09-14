@@ -1,12 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/settings_recent_searches.h"
 
+#include "core/version.h"
 #include "main/main_session.h"
 #include "storage/serialize_common.h"
 #include "storage/storage_account.h"

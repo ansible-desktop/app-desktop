@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_report.h"
 
@@ -22,6 +22,32 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace Api {
 
 namespace {
+
+[[nodiscard]] ReportResult ParseReportResult(const MTPReportResult &result) {
+	return result.match([&](const MTPDreportResultChooseOption &data) {
+		auto list = ReportResult::Options();
+		list.reserve(data.voptions().v.size());
+		for (const auto &tl : data.voptions().v) {
+			list.emplace_back(ReportResult::Option{
+				.id = tl.data().voption().v,
+				.text = qs(tl.data().vtext()),
+			});
+		}
+		return ReportResult{
+			.options = std::move(list),
+			.title = qs(data.vtitle()),
+		};
+	}, [&](const MTPDreportResultAddComment &data) -> ReportResult {
+		return {
+			.commentOption = ReportResult::CommentOption{
+				.optional = data.is_optional(),
+				.id = data.voption().v,
+			}
+		};
+	}, [&](const MTPDreportResultReported &data) -> ReportResult {
+		return { .successful = true };
+	});
+}
 
 MTPreportReason ReasonToTL(const Ui::ReportReason &reason) {
 	using Reason = Ui::ReportReason;
@@ -62,11 +88,6 @@ auto CreateReportMessagesOrStoriesCallback(
 	std::shared_ptr<Ui::Show> show,
 	not_null<PeerData*> peer)
 -> Fn<void(Data::ReportInput, Fn<void(ReportResult)>)> {
-	using TLChoose = MTPDreportResultChooseOption;
-	using TLAddComment = MTPDreportResultAddComment;
-	using TLReported = MTPDreportResultReported;
-	using Result = ReportResult;
-
 	struct State final {
 #ifdef _DEBUG
 		~State() {
@@ -79,7 +100,7 @@ auto CreateReportMessagesOrStoriesCallback(
 
 	return [=](
 			Data::ReportInput reportInput,
-			Fn<void(Result)> done) {
+			Fn<void(ReportResult)> done) {
 		auto apiIds = QVector<MTPint>();
 		apiIds.reserve(reportInput.ids.size() + reportInput.stories.size());
 		for (const auto &id : reportInput.ids) {
@@ -96,27 +117,7 @@ auto CreateReportMessagesOrStoriesCallback(
 				return;
 			}
 			state->requestId = 0;
-			done(result.match([&](const TLChoose &data) {
-				const auto t = qs(data.vtitle());
-				auto list = Result::Options();
-				list.reserve(data.voptions().v.size());
-				for (const auto &tl : data.voptions().v) {
-					list.emplace_back(Result::Option{
-						.id = tl.data().voption().v,
-						.text = qs(tl.data().vtext()),
-					});
-				}
-				return Result{ .options = std::move(list), .title = t };
-			}, [&](const TLAddComment &data) -> Result {
-				return {
-					.commentOption = ReportResult::CommentOption{
-						.optional = data.is_optional(),
-						.id = data.voption().v,
-					}
-				};
-			}, [&](const TLReported &data) -> Result {
-				return { .successful = true };
-			}));
+			done(ParseReportResult(result));
 		};
 
 		const auto fail = [=](const MTP::Error &error) {
@@ -142,6 +143,72 @@ auto CreateReportMessagesOrStoriesCallback(
 			).done(received).fail(fail).send();
 		}
 	};
+}
+
+auto CreateReportEphemeralMessageCallback(
+	std::shared_ptr<Ui::Show> show,
+	not_null<PeerData*> peer,
+	int32 ephemeralId)
+-> Fn<void(Data::ReportInput, Fn<void(ReportResult)>)> {
+	struct State final {
+		mtpRequestId requestId = 0;
+	};
+	const auto state = std::make_shared<State>();
+
+	return [=](
+			Data::ReportInput reportInput,
+			Fn<void(ReportResult)> done) {
+		const auto received = [=](
+				const MTPReportResult &result,
+				mtpRequestId requestId) {
+			if (state->requestId != requestId) {
+				return;
+			}
+			state->requestId = 0;
+			done(ParseReportResult(result));
+		};
+
+		const auto fail = [=](const MTP::Error &error) {
+			state->requestId = 0;
+			done({ .error = error.type() });
+		};
+
+		state->requestId = peer->session().api().request(
+			MTPephemeral_ReportMessage(
+				peer->input(),
+				MTP_int(ephemeralId),
+				MTP_bytes(reportInput.optionId),
+				MTP_string(reportInput.comment))
+		).done(received).fail(fail).send();
+	};
+}
+
+ReactionReportCapabilities GetReactionReportCapabilities(
+		not_null<PeerData*> group,
+		not_null<PeerData*> participant) {
+	const auto channel = group->asMegagroup();
+	return channel
+		? ReactionReportCapabilities{
+			.canReport = channel->isPublic() && !participant->isSelf(),
+			.canBan = channel->canRestrictParticipant(participant),
+		}
+		: ReactionReportCapabilities();
+}
+
+void ReportReaction(
+		std::shared_ptr<Ui::Show> show,
+		not_null<PeerData*> group,
+		MsgId messageId,
+		not_null<PeerData*> participant) {
+	group->session().api().request(MTPmessages_ReportReaction(
+		group->input(),
+		MTP_int(messageId.bare),
+		participant->input()
+	)).done([=] {
+		if (show) {
+			show->showToast(tr::lng_report_thanks(tr::now));
+		}
+	}).send();
 }
 
 void ReportSpam(

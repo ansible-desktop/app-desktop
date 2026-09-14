@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/audio/media_audio_local_cache.h"
 
@@ -134,16 +134,7 @@ constexpr auto kFrameSize = 4096;
 		return {};
 	}
 
-	auto swrContext = MakeSwresamplePointer(
-		&inCodecContext->ch_layout,
-		inCodecContext->sample_fmt,
-		inCodecContext->sample_rate,
-		&outCodecContext->ch_layout,
-		outCodecContext->sample_fmt,
-		outCodecContext->sample_rate);
-	if (!swrContext) {
-		return {};
-	}
+	auto swrContext = SwresamplePointer();
 
 	auto packet = av_packet_alloc();
 	const auto guard = gsl::finally([&] {
@@ -238,6 +229,17 @@ constexpr auto kFrameSize = 4096;
 					LogError("avcodec_receive_frame", error);
 					return {};
 				}
+			}
+			swrContext = MakeSwresamplePointer(
+				&frame->ch_layout,
+				static_cast<AVSampleFormat>(frame->format),
+				frame->sample_rate,
+				&outCodecContext->ch_layout,
+				outCodecContext->sample_fmt,
+				outCodecContext->sample_rate,
+				&swrContext);
+			if (!swrContext) {
+				return {};
 			}
 			error = swr_convert(
 				swrContext.get(),

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/controls/filter_link_header.h"
 
@@ -19,6 +19,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "styles/style_chat_helpers.h" // defaultEmojiSuggestions
 #include "styles/style_dialogs.h" // dialogsSearchTabs
 #include "styles/style_filter_icons.h"
+#include "styles/style_filter_link_header.h"
 #include "styles/style_layers.h"
 #include "styles/style_settings.h"
 #include "styles/style_window.h"

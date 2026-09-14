@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/controls/call_mute_button.h"
 
@@ -13,7 +13,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/paint/blobs.h"
 #include "ui/painter.h"
 #include "ui/power_saving.h"
-#include "ui/widgets/call_button.h"
+#include "ui/controls/call_button.h"
 #include "ui/widgets/labels.h"
 #include "ui/ui_utility.h"
 #include "base/random.h"

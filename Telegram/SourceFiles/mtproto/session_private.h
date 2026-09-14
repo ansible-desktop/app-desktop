@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -129,11 +129,16 @@ private:
 		const mtpPrime *from,
 		const mtpPrime *end,
 		uint64 msgId,
-		OuterInfo info);
+		OuterInfo info,
+		int &unpackedBudget,
+		int gzipDepth);
 	[[nodiscard]] HandleResult handleBindResponse(
 		mtpMsgId requestMsgId,
 		const mtpBuffer &response);
-	mtpBuffer ungzip(const mtpPrime *from, const mtpPrime *end) const;
+	mtpBuffer ungzip(
+		const mtpPrime *from,
+		const mtpPrime *end,
+		int sizeLimit) const;
 	void handleMsgsStates(const QVector<MTPlong> &ids, const QByteArray &states);
 
 	// _sessionDataMutex must be locked for read.

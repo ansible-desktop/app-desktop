@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -15,6 +15,10 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace Info {
 class Controller;
 } // namespace Info
+
+namespace Ui::Menu {
+struct MenuCallback;
+} // namespace Ui::Menu
 
 namespace Info::Statistics {
 
@@ -55,6 +59,9 @@ public:
 
 	void showFinished();
 
+	void fillMenu(const Ui::Menu::MenuCallback &addAction);
+	[[nodiscard]] rpl::producer<> menuFilledChanges() const;
+
 	void saveState(not_null<Memento*> memento);
 	void restoreState(not_null<Memento*> memento);
 
@@ -62,6 +69,7 @@ private:
 	void load();
 	void fill();
 	void fillRecentPosts(not_null<Ui::VerticalLayout*> container);
+	void fillPollVotesGraph(not_null<Ui::VerticalLayout*> container);
 
 	not_null<Controller*> _controller;
 	not_null<PeerData*> _peer;

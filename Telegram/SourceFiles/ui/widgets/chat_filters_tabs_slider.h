@@ -1,16 +1,20 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "ui/unread_badge_paint.h"
+#include "ui/widgets/chat_filters_tabs_mode.h"
 #include "ui/widgets/discrete_sliders.h"
 
 namespace style {
+namespace internal {
+class Icon;
+} // namespace internal
 struct SettingsSlider;
 } // namespace style
 
@@ -34,7 +38,12 @@ public:
 
 	void fitWidthToSections() override;
 	void setUnreadCount(int index, int unreadCount, bool muted);
+	void setTabsMode(ChatsFiltersTabsMode mode);
+	void setSectionIcons(std::vector<const style::internal::Icon*> icons);
 	void setLockedFrom(int index);
+	[[nodiscard]] int lockedFrom() const {
+		return _lockedFrom;
+	}
 
 	[[nodiscard]] rpl::producer<int> contextMenuRequested() const;
 	[[nodiscard]] rpl::producer<> lockedClicked() const;
@@ -68,6 +77,11 @@ protected:
 private:
 	[[nodiscard]] QImage cacheUnreadCount(int count, bool muted) const;
 	[[nodiscard]] int calculateLockedFromX() const;
+	[[nodiscard]] auto sectionIcon(int index) const
+	-> const style::internal::Icon*;
+	[[nodiscard]] int iconExtraWidth(const style::internal::Icon *icon) const;
+	[[nodiscard]] int badgeExtraWidth(int index) const;
+	void updateSectionsContentWidths();
 
 	using Index = int;
 	struct Unread final {
@@ -80,6 +94,9 @@ private:
 	const UnreadBadgeStyle _unreadSt;
 	const QString _unreadMaxString;
 	const int _unreadSkip;
+	const int _iconSkip;
+	ChatsFiltersTabsMode _tabsMode = ChatsFiltersTabsMode::TextOnly;
+	std::vector<const style::internal::Icon*> _sectionIcons;
 	std::vector<int> _cachedBadgeWidths;
 	int _cachedBadgeHeight = 0;
 	int _lockedFrom = 0;

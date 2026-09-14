@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_self_forwards_tagger.h"
 
@@ -31,9 +31,10 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/popup_menu.h"
 #include "ui/widgets/tooltip.h"
 #include "window/window_session_controller.h"
+#include "styles/style_boxes.h"
 #include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
-#include "styles/style_info.h"
+#include "styles/style_premium.h"
 
 namespace HistoryView {
 namespace {
@@ -136,7 +137,18 @@ void SelfForwardsTagger::showSelectorForMessages(
 		[] { return false; },
 		false);
 	selector->setBubbleUp(true);
+	selector->setExpandDown(true);
 
+	const auto destroyFast = [
+			selectorWeak = base::make_weak(selector),
+			toastWidgetWeak = _toast] {
+		if (const auto toast = toastWidgetWeak.get()) {
+			delete toast->widget();
+		}
+		if (const auto selector = selectorWeak.get()) {
+			delete selector;
+		}
+	};
 	const auto hideAndDestroy = [
 			selectorWeak = base::make_weak(selector),
 			toastWidgetWeak = _toast] {
@@ -181,9 +193,7 @@ void SelfForwardsTagger::showSelectorForMessages(
 	};
 	base::install_event_filter(selector, _parent, eventFilterCallback);
 	if (const auto list = _listWidget()) {
-		list->lifetime().add([=] {
-			hideAndDestroy();
-		});
+		list->lifetime().add(destroyFast);
 		base::install_event_filter(selector, list, eventFilterCallback);
 	}
 
@@ -226,6 +236,8 @@ void SelfForwardsTagger::showToast(
 		.textContext = Core::TextContext({
 			.session = &_controller->session(),
 		}),
+		.filter = ChatHelpers::ForwardedToSavedMessagesFilter(
+			&_controller->session()),
 		.iconLottie = u"toast/saved_messages"_q,
 		.iconPadding = st::selfForwardsTaggerIconPadding,
 		.st = &st::selfForwardsTaggerToast,

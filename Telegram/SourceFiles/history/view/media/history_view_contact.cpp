@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_contact.h"
 
@@ -32,7 +32,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "window/window_session_controller.h"
 #include "styles/style_boxes.h"
 #include "styles/style_chat.h"
-#include "styles/style_layers.h"
 
 namespace HistoryView {
 namespace {
@@ -215,12 +214,7 @@ Contact::Contact(
 
 	_nameLine.setText(
 		st::webPageTitleStyle,
-		tr::lng_full_name(
-			tr::now,
-			lt_first_name,
-			data.firstName,
-			lt_last_name,
-			data.lastName).trimmed(),
+		langFullName(data.firstName, data.lastName),
 		Ui::WebpageTextTitleOptions());
 
 	_phoneLine.setText(

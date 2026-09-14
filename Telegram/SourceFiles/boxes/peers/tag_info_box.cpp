@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/peers/tag_info_box.h"
 
@@ -27,7 +27,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/labels.h"
 #include "window/section_widget.h"
 #include "window/themes/window_theme.h"
-#include "styles/style_boxes.h"
 #include "styles/style_calls.h"
 #include "styles/style_chat.h"
 #include "styles/style_info.h"
@@ -235,7 +234,7 @@ void TagPreviewsWidget::paintPreview(
 		QSize(rect.width(), window()->height()),
 		local);
 
-	auto &cache = (previewRole == BadgeRole::User)
+	const auto &cache = (previewRole == BadgeRole::User)
 		? _leftCache
 		: _rightCache;
 	if (cache.isNull()) {

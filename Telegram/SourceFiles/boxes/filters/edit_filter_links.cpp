@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/filters/edit_filter_links.h"
 
@@ -154,16 +154,19 @@ void ChatFilterLinkBox(
 		labelField->setFocusFast();
 	});
 
-	const auto &saveLabel = link.isEmpty()
-		? tr::lng_formatting_link_create
-		: tr::lng_settings_save;
-	box->addButton(saveLabel(), [=] {
+	const auto save = [=] {
 		session->data().chatsFilters().edit(
 			data.id,
 			data.url,
 			labelField->getLastText().trimmed());
 		box->closeBox();
-	});
+	};
+	labelField->submits() | rpl::on_next(save, labelField->lifetime());
+
+	const auto &saveLabel = link.isEmpty()
+		? tr::lng_formatting_link_create
+		: tr::lng_settings_save;
+	box->addButton(saveLabel(), save);
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 }
 
@@ -263,10 +266,10 @@ QString LinkRow::generateName() {
 		u"https://"_q,
 		QString()
 	).replace(
-		u"asme.su/+"_q,
+		u"t.me/+"_q,
 		QString()
 	).replace(
-		u"asme.su/joinchat/"_q,
+		u"t.me/joinchat/"_q,
 		QString()
 	);
 }

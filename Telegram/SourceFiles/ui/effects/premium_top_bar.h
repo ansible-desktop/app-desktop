@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -28,6 +28,11 @@ class Icon;
 } // namespace Lottie
 
 namespace Ui::Premium {
+
+class Star;
+class Diamond;
+class Coin;
+class StarParticles;
 
 class TopBarAbstract : public RpWidget {
 public:
@@ -71,7 +76,12 @@ struct TopBarDescriptor {
 	rpl::producer<TextWithEntities> about;
 	bool light = false;
 	bool optimizeMinistars = true;
+	bool use3dStar = false;
+	bool star3dGolden = false;
+	bool use3dDiamond = false;
+	bool use3dCoin = false;
 	std::optional<QGradientStops> gradientStops;
+	rpl::producer<> showFinished;
 };
 
 class TopBar final : public TopBarAbstract {
@@ -102,6 +112,11 @@ private:
 	QSvgRenderer _star;
 	QImage _dollar;
 	std::unique_ptr<Lottie::Icon> _lottie;
+	Star *_star3d = nullptr;
+	bool _star3dGolden = false;
+	Diamond *_diamond3d = nullptr;
+	Coin *_coin3d = nullptr;
+	std::unique_ptr<StarParticles> _particles3d;
 
 	struct {
 		float64 top = 0.;

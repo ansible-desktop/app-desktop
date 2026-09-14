@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -56,6 +56,7 @@ public:
 	using PlayRequest = EmojiInteractionPlayRequest;
 
 	void startOutgoing(not_null<const HistoryView::Element*> view);
+	void startAutoplay(not_null<const HistoryView::Element*> view);
 	void startIncoming(
 		not_null<PeerData*> peer,
 		MsgId messageId,
@@ -122,6 +123,7 @@ private:
 
 	base::flat_map<not_null<HistoryItem*>, std::vector<Animation>> _outgoing;
 	base::flat_map<not_null<HistoryItem*>, std::vector<Animation>> _incoming;
+	base::flat_map<not_null<HistoryItem*>, std::vector<Animation>> _autoplay;
 	base::Timer _checkTimer;
 	rpl::event_stream<PlayRequest> _playRequests;
 	base::flat_map<

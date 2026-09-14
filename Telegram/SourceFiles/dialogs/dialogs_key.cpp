@@ -1,12 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_key.h"
 
+#include "data/data_channel.h"
 #include "data/data_folder.h"
 #include "data/data_forum_topic.h"
 #include "data/data_saved_sublist.h"
@@ -92,10 +93,16 @@ PeerData *Key::peer() const {
 }
 
 ChatSearchTab SearchState::defaultTabForMe() const {
+	const auto history = inChat.history();
+	const auto channel = history ? history->peer->asChannel() : nullptr;
 	return inChat.topic()
 		? ChatSearchTab::ThisTopic
-		: (inChat.history() || inChat.sublist())
+		: (channel && channel->isCommunity())
+		? ChatSearchTab::ThisCommunity
+		: (history || inChat.sublist())
 		? ChatSearchTab::ThisPeer
+		: inChat.folder()
+		? ChatSearchTab::Archive
 		: ChatSearchTab::MyMessages;
 }
 

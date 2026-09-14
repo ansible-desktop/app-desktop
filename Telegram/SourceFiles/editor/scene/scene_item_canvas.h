@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -74,6 +74,7 @@ private:
 	[[nodiscard]] float64 arrowHeadLength() const;
 
 	bool _drawing = false;
+	bool _dragging = false;
 	std::vector<StrokePoint> _currentStroke;
 	int _lastRenderedIndex = 0;
 	float64 _zoom = 1.0;

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "passport/passport_panel_edit_scans.h"
 
@@ -24,8 +24,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "boxes/abstract_box.h"
 #include "storage/storage_media_prepare.h"
 #include "storage/file_upload.h" // For Storage::kUseBigFilesFrom.
-#include "styles/style_layers.h"
 #include "styles/style_passport.h"
+#include "styles/style_widgets.h"
 
 #include <QtCore/QBuffer>
 
@@ -745,7 +745,7 @@ void EditScans::scanFieldsChanged(bool changed) {
 
 void EditScans::updateErrorLabels() {
 	const auto updateList = [&](FileType type) {
-		auto &list = this->list(type);
+		const auto &list = this->list(type);
 		if (list.uploadMoreError) {
 			list.uploadMoreError->toggle(
 				!list.uploadedSomeMore(),
@@ -963,7 +963,7 @@ void EditScans::toggleSpecialScanError(FileType type, bool shown) {
 }
 
 void EditScans::specialScanErrorAnimationCallback(FileType type) {
-	auto &scan = findSpecialScan(type);
+	const auto &scan = findSpecialScan(type);
 	const auto error = scan.errorAnimation.value(
 		scan.errorShown ? 1. : 0.);
 	if (error == 0.) {

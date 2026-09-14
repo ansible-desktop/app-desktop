@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/crash_report_window.h"
 
@@ -12,12 +12,17 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "core/sandbox.h"
 #include "core/update_checker.h"
 #include "core/ui_integration.h"
+#include "core/version.h"
 #include "window/main_window.h"
 #include "platform/platform_specific.h"
 #include "base/zlib_help.h"
 
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMenu>
+#include <QtGui/QClipboard>
+#include <QtGui/QContextMenuEvent>
 #include <QtGui/QFontInfo>
+#include <QtGui/QGuiApplication>
 #include <QtGui/QScreen>
 #include <QtGui/QDesktopServices>
 #include <QtCore/QStandardPaths>
@@ -35,7 +40,7 @@ PreLaunchWindow::PreLaunchWindow(QString title) {
 	setWindowIcon(Window::CreateIcon());
 	setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
-	setWindowTitle(title.isEmpty() ? u"Ansible"_q : title);
+	setWindowTitle(title.isEmpty() ? u"Telegram"_q : title);
 
 	QPalette p(palette());
 	p.setColor(QPalette::Window, QColor(255, 255, 255));
@@ -112,6 +117,46 @@ void PreLaunchLabel::setText(const QString &text) {
 	QLabel::setText(text);
 	updateGeometry();
 	resize(sizeHint());
+}
+
+void PreLaunchLabel::contextMenuEvent(QContextMenuEvent *e) {
+	const auto flags = textInteractionFlags();
+	const auto selectable = flags
+		& (Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+	if (!selectable) {
+		e->ignore();
+		return;
+	}
+	const auto accel = [](QKeySequence::StandardKey key) {
+		return QCoreApplication::testAttribute(
+				Qt::AA_DontShowShortcutsInContextMenus)
+			? QString()
+			: QChar('\t')
+				+ QKeySequence(key).toString(QKeySequence::NativeText);
+	};
+	const auto menu = new QMenu(this);
+	menu->setAttribute(Qt::WA_DeleteOnClose);
+
+	const auto copy = menu->addAction(
+		u"&Copy"_q + accel(QKeySequence::Copy));
+	copy->setEnabled(hasSelectedText());
+	connect(copy, &QAction::triggered, this, [=] {
+		if (hasSelectedText()) {
+			QGuiApplication::clipboard()->setText(selectedText());
+		}
+	});
+
+	menu->addSeparator();
+
+	const auto selectAll = menu->addAction(
+		u"Select All"_q + accel(QKeySequence::SelectAll));
+	selectAll->setEnabled(!text().isEmpty());
+	connect(selectAll, &QAction::triggered, this, [=] {
+		setSelection(0, text().size());
+	});
+
+	e->accept();
+	menu->popup(e->globalPos());
 }
 
 PreLaunchInput::PreLaunchInput(QWidget *parent, bool password) : QLineEdit(parent) {
@@ -437,7 +482,7 @@ LastCrashedWindow::LastCrashedWindow(
 	connect(&_saveReport, &QPushButton::clicked, [=] { saveReport(); });
 	_getApp.setText(u"GET THE LATEST OFFICIAL VERSION OF TELEGRAM DESKTOP"_q);
 	connect(&_getApp, &QPushButton::clicked, [=] {
-		QDesktopServices::openUrl(u"https://ansible.su"_q);
+		QDesktopServices::openUrl(u"https://desktop.telegram.org"_q);
 	});
 
 	_send.setText(u"SEND CRASH REPORT"_q);
@@ -455,7 +500,7 @@ LastCrashedWindow::LastCrashedWindow(
 }
 
 void LastCrashedWindow::saveReport() {
-	QString to = QFileDialog::getSaveFileName(0, u"Ansible Crash Report"_q, QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + u"/report.telegramcrash"_q, u"Ansible crash report (*.ansiblecrash)"_q);
+	QString to = QFileDialog::getSaveFileName(0, u"Telegram Crash Report"_q, QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + u"/report.telegramcrash"_q, u"Telegram crash report (*.telegramcrash)"_q);
 	if (!to.isEmpty()) {
 		QFile file(to);
 		if (file.open(QIODevice::WriteOnly)) {

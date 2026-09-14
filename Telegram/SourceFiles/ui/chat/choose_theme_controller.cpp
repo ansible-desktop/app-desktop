@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/chat/choose_theme_controller.h"
 
@@ -52,10 +52,10 @@ struct Preview {
 
 [[nodiscard]] Preview GeneratePreview(
 		not_null<Ui::ChatTheme*> theme,
-		const std::shared_ptr<Ui::DynamicImage> &takenUserpic) {
+		const std::shared_ptr<Ui::DynamicImage> &takenUserpic,
+		QSize size = st::chatThemePreviewSize) {
 	const auto &background = theme->background();
 	const auto &colors = background.colors;
-	const auto size = st::chatThemePreviewSize;
 	auto prepared = background.prepared;
 	const auto paintPattern = [&](QPainter &p, bool inverted) {
 		if (prepared.isNull()) {
@@ -179,6 +179,26 @@ struct Preview {
 }
 
 } // namespace
+
+QImage GenerateChatThemePreview(
+		not_null<ChatTheme*> theme,
+		EmojiPtr emoji,
+		QSize size) {
+	auto result = GeneratePreview(theme, nullptr, size).preview;
+	if (emoji) {
+		auto p = QPainter(&result);
+		const auto large = Ui::Emoji::GetSizeLarge();
+		const auto factor = style::DevicePixelRatio();
+		const auto esize = large / factor;
+		Ui::Emoji::Draw(
+			p,
+			emoji,
+			large,
+			(size.width() - esize) / 2,
+			size.height() - esize - st::chatThemeEmojiBottom);
+	}
+	return result;
+}
 
 struct ChooseThemeController::Entry {
 	QString token;

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_suggest_decision.h"
 
@@ -21,7 +21,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/text/text_utilities.h"
 #include "ui/text/format_values.h"
 #include "styles/style_chat.h"
-#include "styles/style_credits.h"
 
 namespace HistoryView {
 namespace {

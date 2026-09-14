@@ -1,12 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/chat/attach/attach_single_file_preview.h"
 
+#include "lang/lang_keys.h"
 #include "ui/chat/attach/attach_prepare.h"
 #include "ui/text/format_song_name.h"
 #include "ui/text/format_values.h"
@@ -58,7 +59,11 @@ void SingleFilePreview::preparePreview(const PreparedFile &file) {
 	}
 	prepareThumbFor(data, preview);
 	const auto filepath = file.path;
-	if (filepath.isEmpty()) {
+	if (file.archive) {
+		data.name = file.displayName;
+		data.fileIsImage = false;
+		data.statusText = tr::lng_folder_archive_status(tr::now);
+	} else if (filepath.isEmpty()) {
 		const auto fallbackName = u"image.png"_q;
 		const auto displayName = file.displayName.isEmpty()
 			? fallbackName

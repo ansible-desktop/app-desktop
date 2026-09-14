@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -20,6 +20,13 @@ namespace Ui {
 class RpWidget;
 class VerticalLayout;
 
+struct UniqueGiftCoverMessage {
+	TextWithEntities text;
+	QString placeholder;
+	not_null<PeerData*> sender;
+	bool hidden = false;
+};
+
 struct UniqueGiftCoverArgs {
 	rpl::producer<QString> pretitle;
 	rpl::producer<QString> numberText;
@@ -35,6 +42,7 @@ struct UniqueGiftCoverArgs {
 		std::optional<Data::UniqueGift> next,
 		float64 progress)> repaintedHook;
 	std::shared_ptr<Data::GiftUpgradeSpinner> upgradeSpinner;
+	rpl::producer<UniqueGiftCoverMessage> message;
 };
 
 struct UniqueGiftCover {
@@ -103,6 +111,7 @@ private:
 		GiftView &gift,
 		const PaintContext &context,
 		float64 shown);
+	void layoutContent(int width, int subtitleHeight, int messageHeight);
 
 	void paintSpinnerAnimation(QPainter &p, const PaintContext &context);
 	void paintNormalAnimation(

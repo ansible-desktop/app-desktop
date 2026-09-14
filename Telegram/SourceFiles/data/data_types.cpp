@@ -1,12 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_types.h"
 
+#include "media/media_common.h"
 #include "ui/widgets/fields/input_field.h"
 #include "storage/cache/storage_cache_types.h"
 #include "base/openssl_help.h"
@@ -157,8 +158,9 @@ BusinessShortcutId BusinessShortcutIdFromMessage(
 bool GoodStickerDimensions(int width, int height) {
 	// Show all .webp (except very large ones) as stickers,
 	// allow to open them in media viewer to see details.
-	constexpr auto kLargetsStickerSide = 2560;
-	return (width > 0)
-		&& (height > 0)
-		&& (width * height <= kLargetsStickerSide * kLargetsStickerSide);
+	constexpr auto kLargestStickerSide = 2560;
+	return ::Media::ValidFrameSize(
+		width,
+		height,
+		kLargestStickerSide * kLargestStickerSide);
 }

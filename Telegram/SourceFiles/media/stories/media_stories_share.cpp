@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/stories/media_stories_share.h"
 
@@ -30,7 +30,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "settings/settings_credits_graphics.h"
 #include "ui/boxes/confirm_box.h"
 #include "ui/text/text_utilities.h"
-#include "styles/style_calls.h"
 
 namespace Media::Stories {
 

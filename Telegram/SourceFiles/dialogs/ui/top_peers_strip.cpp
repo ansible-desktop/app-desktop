@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/ui/top_peers_strip.h"
 
@@ -397,7 +397,7 @@ int TopPeersStrip::clearPressed() {
 	const auto pressed = std::exchange(_pressed, -1);
 	if (pressed >= 0) {
 		Assert(pressed < _entries.size());
-		auto &entry = _entries[pressed];
+		const auto &entry = _entries[pressed];
 		if (entry.ripple) {
 			entry.ripple->lastStop();
 		}

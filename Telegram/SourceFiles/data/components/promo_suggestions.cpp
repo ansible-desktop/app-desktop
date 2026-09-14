@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/components/promo_suggestions.h"
 
@@ -58,6 +58,11 @@ PromoSuggestions::PromoSuggestions(
 PromoSuggestions::~PromoSuggestions() = default;
 
 void PromoSuggestions::refreshTopPromotion() {
+	if (_contactBirthdaysLastDayRequest != -1
+		&& _contactBirthdaysLastDayRequest != QDate::currentDate().day()) {
+		_refreshed.fire({});
+	}
+
 	const auto now = base::unixtime::now();
 	const auto next = (_topPromotionNextRequestTime != 0)
 		? _topPromotionNextRequestTime
@@ -71,7 +76,8 @@ void PromoSuggestions::refreshTopPromotion() {
 			return {};
 		}
 		const auto &proxy = Core::App().settings().proxy().selected();
-		if (proxy.type != MTP::ProxyData::Type::Mtproto) {
+		if (proxy.type != MTP::ProxyData::Type::Mtproto
+			&& proxy.type != MTP::ProxyData::Type::Web) {
 			return {};
 		}
 		return { proxy.host, proxy.port };

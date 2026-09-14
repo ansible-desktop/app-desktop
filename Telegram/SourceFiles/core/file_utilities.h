@@ -1,11 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
+
+#include <QtCore/QUrl>
 
 namespace Main {
 class Session;
@@ -92,6 +94,9 @@ void GetFolder(
 [[nodiscard]] QString AllOrImagesFilter();
 [[nodiscard]] QString ImagesOrAllFilter();
 [[nodiscard]] QString PhotoVideoFilesFilter();
+[[nodiscard]] QString PhotoVideoAudioFilesFilter();
+[[nodiscard]] QString AudioFilesFilter();
+[[nodiscard]] QString MusicFilesFilter();
 [[nodiscard]] const QString &Tmp();
 
 namespace internal {

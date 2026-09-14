@@ -1,13 +1,15 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_separate_id.h"
 
+#include "core/application.h"
 #include "data/data_channel.h"
+#include "data/data_community.h"
 #include "data/data_folder.h"
 #include "data/data_peer.h"
 #include "data/data_saved_messages.h"
@@ -16,6 +18,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/history.h"
 #include "main/main_account.h"
 #include "main/main_session.h"
+#include "window/window_lock_widgets.h"
 
 namespace Window {
 
@@ -78,10 +81,35 @@ Data::SavedSublist *SeparateId::sublist() const {
 		: thread->asSublist();
 }
 
+Data::CommunityInfo *SeparateId::community() const {
+	if (type != SeparateType::Community || !thread) {
+		return nullptr;
+	}
+	const auto channel = thread->peer()->asChannel();
+	return channel ? channel->communityInfo() : nullptr;
+}
+
 bool SeparateId::hasChatsList() const {
 	return (type == SeparateType::Primary)
 		|| (type == SeparateType::Archive)
-		|| (type == SeparateType::Forum);
+		|| (type == SeparateType::Forum)
+		|| (type == SeparateType::Community);
+}
+
+bool SeparateWindowThreadAvailable(SeparateId id) {
+	const auto thread = id.thread;
+	return !thread || thread->peer()->computeUnavailableReason().isEmpty();
+}
+
+bool SeparateWindowLocked(SeparateId id) {
+	const auto thread = id.thread;
+	return (thread != nullptr)
+		&& (Core::App().passcodeLocked()
+			|| thread->session().termsLocked().has_value());
+}
+
+bool CanShowSeparateWindow(SeparateId id) {
+	return SeparateWindowThreadAvailable(id) && !SeparateWindowLocked(id);
 }
 
 } // namespace Window

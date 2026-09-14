@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -16,6 +16,7 @@ namespace Ui {
 class AbstractButton;
 class FlatLabel;
 class ScrollArea;
+class SearchWithGroups;
 } // namespace Ui
 
 namespace ChatHelpers {
@@ -62,6 +63,7 @@ protected:
 	void paintEvent(QPaintEvent *e) override;
 	void resizeEvent(QResizeEvent *e) override;
 	void mousePressEvent(QMouseEvent *e) override;
+	void keyPressEvent(QKeyEvent *e) override;
 
 private:
 	class Strip;
@@ -70,6 +72,9 @@ private:
 	void relayout();
 	void toggleEmoji(EmojiPtr emoji, bool fromGrid);
 	void notifySelectionChanged();
+	void setupSearch();
+	void applySearchQuery(std::vector<QString> query);
+	void refreshGridEmojis();
 	void startExpandAnimation(bool expanded);
 	void applyExpandProgress();
 	void paintTailBubble(QPainter &p, const QRect &bubble, float64 opacity);
@@ -85,6 +90,8 @@ private:
 	const bool _allowExpand;
 
 	std::vector<EmojiPtr> _allForGrid;
+	std::vector<QString> _query;
+	bool _nothingFound = false;
 
 	std::vector<EmojiPtr> _selectedList;
 	rpl::variable<std::vector<EmojiPtr>> _selectedVar;
@@ -93,8 +100,10 @@ private:
 	std::unique_ptr<Ui::FlatLabel> _about;
 	Strip *_strip = nullptr;
 	Ui::AbstractButton *_expandButton = nullptr;
+	Ui::SearchWithGroups *_search = nullptr;
 	std::unique_ptr<Ui::ScrollArea> _scroll;
 	Grid *_grid = nullptr;
+	Ui::FlatLabel *_notFound = nullptr;
 	Ui::Animations::Simple _expandAnim;
 	Ui::BoxShadow _shadow;
 

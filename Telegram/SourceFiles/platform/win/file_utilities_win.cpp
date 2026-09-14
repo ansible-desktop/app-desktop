@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/win/file_utilities_win.h"
 
@@ -140,6 +140,8 @@ bool ShouldSaveZoneInformation() {
 	return (value != 1);
 }
 } // namespace
+
+namespace Unfused {
 
 void UnsafeOpenEmailLink(const QString &email) {
 	auto url = QUrl(qstr("mailto:") + email);
@@ -297,6 +299,8 @@ void UnsafeLaunch(const QString &filepath) {
 	auto wstringPath = QDir::toNativeSeparators(filepath).toStdWString();
 	ShellExecute(0, L"open", wstringPath.c_str(), 0, 0, SW_SHOWNORMAL);
 }
+
+} // namespace Unfused
 
 void PostprocessDownloaded(const QString &filepath) {
 	// Mark file saved to the NTFS file system as originating from the Internet security zone

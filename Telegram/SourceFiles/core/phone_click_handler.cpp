@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/phone_click_handler.h"
 
@@ -241,7 +241,7 @@ void ResolvePhoneAction::prepare() {
 			_st.widthMin,
 			_st.widthMax);
 		if (!no.isEmpty()) {
-			_below = Ui::Text::String(w);
+			_below = Ui::Text::String(w - rect::m::sum::h(padding));
 		}
 		_above.setMarkedText(_st.itemStyle, { above }, options);
 		_below.setMarkedText(_st.itemStyle, { below }, options);

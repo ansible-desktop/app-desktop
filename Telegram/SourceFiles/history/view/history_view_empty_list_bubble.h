@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -33,7 +33,7 @@ private:
 
 	const style::margins &_padding;
 	const not_null<const Ui::ChatStyle*> _st;
-	Ui::Text::String _text;
+	Ui::Text::String _text = { 1 };
 	int _innerWidth = 0;
 	int _forceWidth = 0;
 

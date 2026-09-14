@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_peer.h"
 
@@ -440,13 +440,12 @@ QImage *PeerData::userpicCloudImage(Ui::PeerUserpicView &view) const {
 	if (const auto image = view.cloud.get(); image && !image->isNull()) {
 		_userpicEmpty = nullptr;
 		return image;
+	} else if (isNotificationsUser()) {
+		static auto result = Window::LogoNoMargin().scaledToWidth(
+			kUserpicSize,
+			Qt::SmoothTransformation);
+		return &result;
 	}
-	// NOTE: upstream tdesktop returned the app logo (LogoNoMargin) as avatar
-	// for the notifications user 777000 when no cloud avatar was set. We
-	// dropped that override -- the backend serves a real avatar for that
-	// account, and when it isn't loaded yet we want the regular EmptyUserpic
-	// letter fallback (first letter of name 'Ansible' = 'A') rather than the
-	// hardcoded app icon.
 	return nullptr;
 }
 
@@ -465,11 +464,7 @@ void PeerData::paintUserpic(
 	const auto cloud = userpicCloudImage(view);
 	const auto ratio = style::DevicePixelRatio();
 	if (context.shape == Ui::PeerUserpicShape::Auto) {
-		context.shape = (isForum() && !isBot())
-			? Ui::PeerUserpicShape::Forum
-			: isMonoforum()
-			? Ui::PeerUserpicShape::Monoforum
-			: Ui::PeerUserpicShape::Circle;
+		context.shape = userpicShape();
 	}
 	Ui::ValidateUserpicCache(
 		view,
@@ -506,6 +501,9 @@ bool PeerData::useEmptyUserpic(Ui::PeerUserpicView &view) const {
 }
 
 InMemoryKey PeerData::userpicUniqueKey(Ui::PeerUserpicView &view) const {
+	if (const auto broadcast = monoforumBroadcast()) {
+		return broadcast->userpicUniqueKey(view);
+	}
 	return useEmptyUserpic(view)
 		? ensureEmptyUserpic()->uniqueKey()
 		: inMemoryKey(_userpic.location());
@@ -697,7 +695,7 @@ bool PeerData::canPinMessages() const {
 	Unexpected("Peer type in PeerData::canPinMessages.");
 }
 
-bool PeerData::canCreatePolls() const {
+bool PeerData::canCreatePolls(bool forbidInForums) const {
 	if (const auto user = asUser()) {
 		return user->isSelf()
 			|| (user->isBot()
@@ -707,15 +705,16 @@ bool PeerData::canCreatePolls() const {
 	} else if (isMonoforum()) {
 		return false;
 	}
-	return Data::CanSend(this, ChatRestriction::SendPolls);
+	return Data::CanSend(this, ChatRestriction::SendPolls, forbidInForums);
 }
 
-bool PeerData::canCreateTodoLists() const {
+bool PeerData::canCreateTodoLists(bool forbidInForums) const {
 	if (isMonoforum() || isBroadcast()) {
 		return false;
 	}
 	return session().premium()
-		&& (Data::CanSend(this, ChatRestriction::SendPolls) || isUser());
+		&& (Data::CanSend(this, ChatRestriction::SendPolls, forbidInForums)
+			|| isUser());
 }
 
 bool PeerData::canCreateTopics() const {
@@ -1296,7 +1295,10 @@ not_null<const PeerData*> PeerData::userpicPaintingPeer() const {
 }
 
 Ui::PeerUserpicShape PeerData::userpicShape() const {
-	return isForum() && !isBot()
+	const auto channel = asChannel();
+	return (isForum() && !isBot())
+		? Ui::PeerUserpicShape::Forum
+		: (channel && channel->isCommunity())
 		? Ui::PeerUserpicShape::Forum
 		: isMonoforum()
 		? Ui::PeerUserpicShape::Monoforum
@@ -1701,6 +1703,23 @@ bool PeerData::useSubsectionTabs() const {
 	return false;
 }
 
+bool PeerData::displayAsForum() const {
+	if (!isForum()) {
+		return false;
+	} else if (Data::IsBotCreatesTopics(this)) {
+		const auto forum = asBot()->botInfo->forum();
+		return forum && !forum->topicsList()->empty();
+	}
+	return true;
+}
+
+bool PeerData::displaySubsectionTabs() const {
+	if (asBot()) {
+		return displayAsForum();
+	}
+	return useSubsectionTabs();
+}
+
 bool PeerData::viewForumAsMessages() const {
 	if (const auto channel = asChannel()) {
 		return channel->viewForumAsMessages();
@@ -1876,8 +1895,23 @@ bool PeerData::canManageRanks() const {
 		return chat->amCreator()
 			|| (chat->adminRights() & ChatAdminRight::ManageRanks);
 	} else if (const auto channel = asChannel()) {
+		if (channel->isCommunity()) {
+			return false;
+		}
 		return channel->amCreator()
 			|| (channel->adminRights() & ChatAdminRight::ManageRanks);
+	}
+	return false;
+}
+
+bool PeerData::canManageWelcomeMessages() const {
+	if (const auto chat = asChat()) {
+		return chat->amCreator()
+			|| (chat->adminRights() & ChatAdminRight::ManageWelcomeMessages);
+	} else if (const auto channel = asChannel()) {
+		return channel->amCreator()
+			|| (channel->adminRights()
+				& ChatAdminRight::ManageWelcomeMessages);
 	}
 	return false;
 }
@@ -2027,6 +2061,17 @@ int PeerData::peerGiftsCount() const {
 		return channel->peerGiftsCount();
 	}
 	return 0;
+}
+
+void PeerData::setMainProfileTab(Data::ProfileTab tab) {
+	if (_mainProfileTab != tab) {
+		_mainProfileTab = tab;
+		session().changes().peerUpdated(this, UpdateFlag::MainProfileTab);
+	}
+}
+
+Data::ProfileTab PeerData::mainProfileTab() const {
+	return _mainProfileTab;
 }
 
 MTPInputPeer PeerData::input() const {
@@ -2234,9 +2279,54 @@ std::optional<uint8> ColorIndexFromColor(const MTPPeerColor *color) {
 	});
 }
 
+ProfileTab ParseProfileTab(const MTPProfileTab *tab) {
+	if (!tab) {
+		return ProfileTab::None;
+	}
+	return tab->match([](const MTPDprofileTabPosts &) {
+		return ProfileTab::Posts;
+	}, [](const MTPDprofileTabGifts &) {
+		return ProfileTab::Gifts;
+	}, [](const MTPDprofileTabMedia &) {
+		return ProfileTab::Media;
+	}, [](const MTPDprofileTabFiles &) {
+		return ProfileTab::Files;
+	}, [](const MTPDprofileTabMusic &) {
+		return ProfileTab::Music;
+	}, [](const MTPDprofileTabVoice &) {
+		return ProfileTab::Voice;
+	}, [](const MTPDprofileTabLinks &) {
+		return ProfileTab::Links;
+	}, [](const MTPDprofileTabGifs &) {
+		return ProfileTab::Gifs;
+	});
+}
+
+MTPProfileTab ProfileTabToMTP(ProfileTab tab) {
+	switch (tab) {
+	case ProfileTab::Posts: return MTP_profileTabPosts();
+	case ProfileTab::Gifts: return MTP_profileTabGifts();
+	case ProfileTab::Media: return MTP_profileTabMedia();
+	case ProfileTab::Files: return MTP_profileTabFiles();
+	case ProfileTab::Music: return MTP_profileTabMusic();
+	case ProfileTab::Voice: return MTP_profileTabVoice();
+	case ProfileTab::Links: return MTP_profileTabLinks();
+	case ProfileTab::Gifs: return MTP_profileTabGifs();
+	case ProfileTab::None: break;
+	}
+	Unexpected("Tab in Data::ProfileTabToMTP.");
+}
+
 bool IsBotUserCreatesTopics(not_null<PeerData*> peer) {
 	if (const auto user = peer->asUser()) {
 		return user->botInfo && user->botInfo->userCreatesTopics;
+	}
+	return false;
+}
+
+bool IsBotCreatesTopics(not_null<const PeerData*> peer) {
+	if (const auto user = peer->asUser()) {
+		return user->botInfo && !user->botInfo->userCreatesTopics;
 	}
 	return false;
 }

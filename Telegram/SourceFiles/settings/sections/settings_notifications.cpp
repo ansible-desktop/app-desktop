@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_notifications.h"
 
@@ -16,6 +16,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "base/platform/base_platform_info.h"
 #include "boxes/ringtones_box.h"
 #include "core/application.h"
+#include "core/version.h"
 #include "data/data_chat_filters.h"
 #include "data/data_session.h"
 #include "data/notify/data_notify_settings.h"
@@ -49,12 +50,14 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "window/section_widget.h"
 #include "window/themes/window_theme.h"
 #include "window/window_session_controller.h"
-#include "styles/style_boxes.h"
+#include "styles/style_background_preview_box.h"
 #include "styles/style_chat.h"
 #include "styles/style_dialogs.h"
+#include "styles/style_edit_peer_members.h"
 #include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
+#include "styles/style_settings_notifications.h"
 #include "styles/style_window.h"
 
 #include <QtGui/QGuiApplication>
@@ -492,7 +495,7 @@ void NotificationsCount::prepareNotificationSampleLarge() {
 		p.setPen(st::dialogsNameFg);
 		p.setFont(st::msgNameFont);
 
-		auto notifyTitle = st::msgNameFont->elided(u"Ansible Desktop"_q, rectForName.width());
+		auto notifyTitle = st::msgNameFont->elided(u"Telegram Desktop"_q, rectForName.width());
 		p.drawText(rectForName.left(), rectForName.top() + st::msgNameFont->ascent, notifyTitle);
 
 		st::notifyClose.icon.paint(p, w - st::notifyClosePos.x() - st::notifyClose.width + st::notifyClose.iconPosition.x(), st::notifyClosePos.y() + st::notifyClose.iconPosition.y(), w);

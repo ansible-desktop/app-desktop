@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_connecting_widget.h"
 
@@ -310,7 +310,8 @@ void ConnectionState::refreshState() {
 		const auto exposed = _parent->window()->windowHandle()
 			&& _parent->window()->windowHandle()->isExposed();
 		const auto under = _widget && _widget->isOver();
-		const auto ready = (Checker().state() == Checker::State::Ready);
+		const auto ready = !Core::UpdaterDisabled()
+			&& (Checker().state() == Checker::State::Ready);
 		const auto state = _account->mtp().dcstate();
 		const auto proxy = Core::App().settings().proxy().isEnabled();
 		if (state == MTP::ConnectingState

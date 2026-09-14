@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=com.ansible.desktop
-Exec=@CMAKE_INSTALL_FULL_BINDIR@/Ansible

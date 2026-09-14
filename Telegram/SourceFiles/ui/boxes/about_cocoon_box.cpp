@@ -1,15 +1,16 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/boxes/about_cocoon_box.h"
 
 #include "lang/lang_keys.h"
 #include "ui/controls/feature_list.h"
 #include "ui/effects/ministar_particles.h"
+#include "ui/image/image_prepare.h"
 #include "ui/layers/generic_box.h"
 #include "ui/layers/generic_box.h"
 #include "ui/painter.h"
@@ -27,7 +28,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace Ui {
 namespace {
 
-void AddCocoonBoxCover(not_null<Ui::VerticalLayout*> container) {
+void AddCocoonBoxCover(not_null<Ui::GenericBox*> box) {
+	const auto container = box->verticalLayout();
 	const auto cover = container->add(object_ptr<Ui::RpWidget>(container));
 
 	static const auto gradientEdge = QColor(0x06, 0x11, 0x29);
@@ -71,6 +73,8 @@ void AddCocoonBoxCover(not_null<Ui::VerticalLayout*> container) {
 
 	struct State {
 		QImage gradient;
+		QImage roundedTop;
+		int roundedTopSkip = -1;
 		Ui::Animations::Basic animation;
 		std::optional<Ui::StarParticles> particles;
 		style::owned_color subtitleFg = style::owned_color{ textColor };
@@ -124,6 +128,12 @@ void AddCocoonBoxCover(not_null<Ui::VerticalLayout*> container) {
 		cover->resize(width, subtitle->y() + subtitle->height() + bottom);
 	}, cover->lifetime());
 
+	box->setInitScrollCallback([=] {
+		box->scrolls() | rpl::on_next([=] {
+			cover->update();
+		}, cover->lifetime());
+	});
+
 	cover->paintRequest() | rpl::on_next([=] {
 		auto p = Painter(cover);
 
@@ -133,7 +143,9 @@ void AddCocoonBoxCover(not_null<Ui::VerticalLayout*> container) {
 			state->gradient = Ui::CreateTopBgGradient(
 				cover->size(),
 				gradientCenter,
-				gradientEdge);
+				gradientEdge,
+				false);
+			state->roundedTopSkip = -1;
 
 			auto font = st::cocoonTitleFont->f;
 			font.setWeight(QFont::Bold);
@@ -158,7 +170,27 @@ void AddCocoonBoxCover(not_null<Ui::VerticalLayout*> container) {
 
 			q.drawText(left, titleTop + metrics.ascent(), text);
 		}
+		const auto radius = st::boxRadius;
+		const auto skip = std::clamp(
+			-cover->mapTo(box, QPoint()).y(),
+			0,
+			cover->height());
+		if (state->roundedTopSkip != skip) {
+			state->roundedTopSkip = skip;
+			auto top = state->gradient.copy(
+				QRect(QPoint(0, skip * ratio), QSize(width, radius) * ratio));
+			top.setDevicePixelRatio(ratio);
+			const auto mask = Images::CornersMask(radius);
+			state->roundedTop = Images::Round(
+				std::move(top),
+				mask,
+				RectPart::FullTop);
+		}
+		const auto rounded = QRect(0, skip, width, radius);
+		p.setClipRegion(QRegion(cover->rect()).subtracted(rounded));
 		p.drawImage(0, 0, state->gradient);
+		p.setClipping(false);
+		p.drawImage(rounded.topLeft(), state->roundedTop);
 
 		const auto logoRect = QRect(
 			(width - logoSize) / 2,
@@ -185,7 +217,7 @@ struct CocoonLinkInfo {
 [[nodiscard]] CocoonLinkInfo CocoonMention() {
 	const auto mention = tr::lng_translate_cocoon_private_mention(tr::now);
 	const auto username = QString(mention).replace('@', QString());
-	const auto link = u"as://resolve?domain="_q + username;
+	const auto link = u"tg://resolve?domain="_q + username;
 	return { mention, link };
 }
 
@@ -208,8 +240,7 @@ void AboutCocoonBox(not_null<Ui::GenericBox*> box) {
 	box->setStyle(st::stakeBox);
 	box->setNoContentMargin(true);
 
-	const auto container = box->verticalLayout();
-	AddCocoonBoxCover(container);
+	AddCocoonBoxCover(box);
 
 	AddUniqueCloseButton(box);
 

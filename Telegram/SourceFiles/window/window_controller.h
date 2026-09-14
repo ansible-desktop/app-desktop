@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -98,7 +98,9 @@ public:
 
 	void hideLayer(anim::type animated = anim::type::normal);
 	void hideSettingsAndLayer(anim::type animated = anim::type::normal);
+	bool closeLayerByBackButton();
 	[[nodiscard]] bool isLayerShown() const;
+	[[nodiscard]] rpl::producer<bool> boxShownValue() const;
 
 	template <
 		typename BoxType,
@@ -163,7 +165,7 @@ private:
 	};
 	explicit Controller(CreateArgs &&args);
 
-	void setupIntro(QPixmap oldContentCache);
+	void setupIntro(Main::Account *accountBeforeIntro, QPixmap oldContentCache);
 	void setupMain(MsgId singlePeerShowAtMsgId, QPixmap oldContentCache);
 
 	void showAccount(

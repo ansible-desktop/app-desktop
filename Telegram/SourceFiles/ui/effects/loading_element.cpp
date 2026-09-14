@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/effects/loading_element.h"
 
@@ -179,7 +179,7 @@ object_ptr<Ui::RpWidget> CreateLoadingElementWidget(
 		}
 		p.resetTransform();
 
-		auto &_glare = state->glare;
+		const auto &_glare = state->glare;
 		if (_glare.glare.birthTime) {
 			const auto progress = _glare.progress(crl::now());
 			const auto x = (-_glare.width)

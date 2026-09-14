@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -67,6 +67,14 @@ protected:
 	void setStatusSize(int64 newSize, int64 fullSize, TimeId duration, TimeId realDuration) const;
 
 	void radialAnimationCallback(crl::time now) const;
+
+	void paintTtlFire(QPainter &p, QRect inner) const;
+	void paintTtlCountdown(
+		QPainter &p,
+		QRect inner,
+		int line,
+		const style::color &color,
+		bool paused) const;
 
 	void ensureAnimation() const;
 	void checkAnimationFinished() const;

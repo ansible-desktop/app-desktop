@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "mtproto/details/mtproto_domain_resolver.h"
 
@@ -65,7 +65,7 @@ QByteArray DnsUserAgent() {
 	static const auto kResult = QByteArray(
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
 		"AppleWebKit/537.36 (KHTML, like Gecko) "
-		"Chrome/146.0.0.0 Safari/537.36");
+		"Chrome/151.0.0.0 Safari/537.36");
 	return kResult;
 }
 

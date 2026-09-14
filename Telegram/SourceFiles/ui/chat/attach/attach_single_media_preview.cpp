@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/chat/attach/attach_single_media_preview.h"
 
@@ -33,9 +33,16 @@ SingleMediaPreview *SingleMediaPreview::Create(
 			&file.information->media)) {
 		preview = file.videoCover
 			? file.videoCover->preview
-			: video->thumbnail;
+			: (video->thumbnail.isNull()
+				|| !video->modifications.geometry)
+			? video->thumbnail
+			: Editor::ImageModified(
+				video->thumbnail,
+				video->modifications.geometry);
 		animated = true;
-		animationPreview = video->isGifv;
+		// The animated preview plays the file itself, which knows nothing
+		// about the crop or the rotation, so show the edited frame instead.
+		animationPreview = video->isGifv && !video->modifications.geometry;
 	}
 	if (preview.isNull()) {
 		return nullptr;
@@ -54,7 +61,10 @@ SingleMediaPreview *SingleMediaPreview::Create(
 		file.spoiler,
 		animationPreview ? file.path : QString(),
 		type);
+	result->setModifyAllowed(file.canEditVideo());
 	result->setCanShowHighQualityBadge(file.canUseHighQualityPhoto());
+	result->setCanShowAnimatedBadge(file.hasAnimatedEditScene());
+	result->setVideoQuality(file.videoQuality());
 	return result;
 }
 

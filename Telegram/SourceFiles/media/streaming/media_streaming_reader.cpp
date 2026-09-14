@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/streaming/media_streaming_reader.h"
 
@@ -699,7 +699,7 @@ bool Reader::Slices::readCacheForDownloaderRequired(uint32 offset) {
 		return false;
 	}
 	const auto index = offset / kInSlice;
-	auto &slice = _data[index];
+	const auto &slice = _data[index];
 	return !(slice.flags & Slice::Flag::LoadedFromCache);
 }
 
@@ -859,7 +859,13 @@ Reader::Reader(
 	_loader->parts(
 	) | rpl::on_next([=](LoadedPart &&part) {
 		if (_attachedDownloader) {
+			const auto weak = base::make_weak(this);
 			_partsForDownloader.fire_copy(part);
+			if (!weak) {
+				// Reader can be destroyed synchronously, if this part
+				// finished the streamed file downloader owning it.
+				return;
+			}
 		}
 		if (_streamingActive) {
 			_loadedParts.emplace(std::move(part));

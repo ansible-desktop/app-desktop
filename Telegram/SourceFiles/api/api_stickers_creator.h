@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -84,8 +84,11 @@ public:
 	StickerUpload(
 		not_null<Main::Session*> session,
 		StickerSetIdentifier set,
-		QByteArray webpBytes,
-		QString emoji);
+		QByteArray bytes,
+		QSize dimensions,
+		QString emoji,
+		Data::StickersType type = Data::StickersType::Stickers,
+		crl::time videoDuration = 0);
 	~StickerUpload();
 
 	void start(
@@ -104,7 +107,10 @@ private:
 	const not_null<Main::Session*> _session;
 	StickerSetIdentifier _set;
 	QByteArray _bytes;
+	QSize _dimensions;
 	QString _emoji;
+	Data::StickersType _type = Data::StickersType::Stickers;
+	crl::time _videoDuration = 0;
 	MTP::Sender _api;
 	rpl::lifetime _uploadLifetime;
 	FullMsgId _uploadId;

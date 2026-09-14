@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_similar_channels.h"
 
@@ -33,6 +33,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/painter.h"
 #include "window/window_session_controller.h"
 #include "styles/style_chat.h"
+#include "styles/style_chat_style.h"
 #include "styles/style_polls.h"
 
 namespace HistoryView {

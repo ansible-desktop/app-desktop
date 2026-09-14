@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -12,9 +12,18 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 class PeerData;
 struct PeerListState;
 
+namespace Info {
+class AbstractController;
+} // namespace Info
+
 namespace Info::SimilarPeers {
 
 class InnerWidget;
+
+[[nodiscard]] object_ptr<Ui::RpWidget> MakeSimilarPeersInner(
+	QWidget *parent,
+	not_null<AbstractController*> controller,
+	not_null<PeerData*> peer);
 
 class Memento final : public ContentMemento {
 public:

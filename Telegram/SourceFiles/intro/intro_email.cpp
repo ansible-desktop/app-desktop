@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "intro/intro_email.h"
 
@@ -73,6 +73,9 @@ EmailWidget::EmailWidget(
 		content,
 		tr::lng_settings_cloud_login_email_placeholder(),
 		QString());
+	newInput->setInputMethodHints(Qt::ImhEmailCharactersOnly
+		| Qt::ImhNoAutoUppercase
+		| Qt::ImhNoPredictiveText);
 	Ui::AddSkip(content);
 	const auto error = Settings::CloudPassword::AddError(content, nullptr);
 	newInput->changes() | rpl::on_next([=] {

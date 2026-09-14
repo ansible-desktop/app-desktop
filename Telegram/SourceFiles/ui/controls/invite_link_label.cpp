@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/controls/invite_link_label.h"
 
@@ -12,7 +12,9 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/labels.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/popup_menu.h"
+
 #include "styles/style_info.h"
+#include "styles/style_layers.h"
 
 namespace Ui {
 
@@ -25,7 +27,9 @@ InviteLinkLabel::InviteLinkLabel(
 	const auto label = CreateChild<FlatLabel>(
 		_outer.get(),
 		std::move(text),
-		createMenu ? st::defaultFlatLabel : st::inviteLinkFieldLabel);
+		createMenu
+			? st::inviteLinkFieldLabelLeft
+			: st::inviteLinkFieldLabel);
 	label->setAttribute(Qt::WA_TransparentForMouseEvents);
 
 	const auto button = createMenu
@@ -35,7 +39,13 @@ InviteLinkLabel::InviteLinkLabel(
 	_outer->widthValue(
 	) | rpl::on_next([=](int width) {
 		const auto margin = st::inviteLinkFieldMargin;
-		const auto labelWidth = width - margin.left() - margin.right();
+		const auto labelWidth = createMenu
+			? (st::boxWideWidth
+				- st::inviteLinkFieldPadding.left()
+				- st::inviteLinkFieldPadding.right()
+				- margin.left()
+				- margin.right())
+			: (width - margin.left() - margin.right());
 		label->resizeToWidth(labelWidth);
 		label->moveToLeft(
 			createMenu

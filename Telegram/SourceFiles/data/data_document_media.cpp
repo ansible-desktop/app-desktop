@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_document_media.h"
 
@@ -25,6 +25,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "core/mime_type.h"
 #include "storage/file_download.h"
 #include "ui/chat/attach/attach_prepare.h"
+#include "ui/image/svg_preview.h"
+#include "ui/rect.h"
 
 #include <QtCore/QBuffer>
 #include <QtGui/QImageReader>
@@ -44,6 +46,7 @@ enum class FileType {
 	WallPatternPNG,
 	WallPatternSVG,
 	Theme,
+	SvgImage,
 };
 
 [[nodiscard]] bool MayHaveGoodThumbnail(not_null<DocumentData*> owner) {
@@ -51,6 +54,7 @@ enum class FileType {
 		|| owner->isAnimation()
 		|| owner->isWallPaper()
 		|| owner->isTheme()
+		|| owner->isSvgImage()
 		|| (owner->sticker() && owner->sticker()->isAnimated());
 }
 
@@ -78,6 +82,21 @@ enum class FileType {
 				kWallPaperThumbnailLimit),
 			.gzipSvg = true,
 		}).image;
+	} else if (type == FileType::SvgImage) {
+		if (data.isEmpty() && !path.isEmpty()) {
+			auto file = QFile(path);
+			if (file.open(QIODevice::ReadOnly)) {
+				const auto limit = Ui::SvgPreviewBytesLimit();
+				if (!file.isSequential() && (file.size() > limit)) {
+					return QImage();
+				}
+				data = file.read(limit + 1);
+				if (data.size() > limit) {
+					return QImage();
+				}
+			}
+		}
+		return Ui::RenderSvgPreview(data, Size(kWallPaperThumbnailLimit));
 	}
 	auto buffer = QBuffer(&data);
 	auto file = QFile(path);
@@ -256,7 +275,6 @@ void DocumentMedia::videoThumbnailWanted(Data::FileOrigin origin) {
 
 void DocumentMedia::setVideoThumbnail(QByteArray content) {
 	_videoThumbnailBytes = std::move(content);
-	_videoThumbnailBytes.detach();
 }
 
 void DocumentMedia::checkStickerLarge() {
@@ -294,7 +312,9 @@ void DocumentMedia::automaticLoad(
 		return;
 	}
 	const auto toCache = _owner->saveToCache();
-	if (!toCache && !Core::App().canSaveFileWithoutAskingForPath()) {
+	if (!toCache && _owner->forbidsFileSave()) {
+		return;
+	} else if (!toCache && !Core::App().canSaveFileWithoutAskingForPath()) {
 		// We need a filename, but we're supposed to ask user for it.
 		// No automatic download in this case.
 		return;
@@ -316,6 +336,12 @@ void DocumentMedia::automaticLoad(
 	const auto loadFromCloud = shouldLoadFromCloud
 		? LoadFromCloudOrLocal
 		: LoadFromLocalOnly;
+	if (_owner->loading()) {
+		if (loadFromCloud == LoadFromCloudOrLocal) {
+			_owner->permitLoadFromCloud();
+		}
+		return;
+	}
 	_owner->save(
 		origin,
 		filename,
@@ -422,6 +448,8 @@ void DocumentMedia::GenerateGoodThumbnail(
 		? FileType::WallPaper
 		: document->isTheme()
 		? FileType::Theme
+		: document->isSvgImage()
+		? FileType::SvgImage
 		: !document->sticker()
 		? FileType::Video
 		: document->sticker()->isLottie()
@@ -447,7 +475,8 @@ void DocumentMedia::GenerateGoodThumbnail(
 				|| type == FileType::VideoSticker)
 				? "WEBP"
 				: (type == FileType::WallPatternPNG
-					|| type == FileType::WallPatternSVG)
+					|| type == FileType::WallPatternSVG
+					|| type == FileType::SvgImage)
 				? "PNG"
 				: "JPG";
 			result.save(&buffer, format, kGoodThumbQuality);
@@ -539,7 +568,7 @@ auto DocumentIconFrameGenerator(not_null<DocumentMedia*> media)
 			return nullptr;
 		}
 		switch (type) {
-		case Type::Ass:
+		case Type::Tgs:
 			return std::make_unique<Lottie::FrameGenerator>(bytes);
 		case Type::Webm:
 			return std::make_unique<FFmpeg::FrameGenerator>(bytes);

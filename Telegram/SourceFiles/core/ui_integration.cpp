@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/ui_integration.h"
 
@@ -21,6 +21,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/text/text_utilities.h"
 #include "ui/basic_click_handlers.h"
 #include "ui/emoji_config.h"
+#include "ui/toast/toast.h"
 #include "lang/lang_keys.h"
 #include "platform/platform_specific.h"
 #include "boxes/url_auth_box.h"
@@ -33,6 +34,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "window/window_session_controller.h"
 #include "mainwindow.h"
 #include "base/unixtime.h"
+#include "styles/style_chat_helpers.h"
 
 #include <QtCore/QDateTime>
 #include <QtCore/QLocale>
@@ -247,14 +249,14 @@ Ui::Text::MarkedContext TextContext(TextContextArgs &&args) {
 		? Factory([simple, loop = args.customEmojiLoopLimit](
 				QStringView data,
 				const Context &context) {
-			return std::make_unique<Ui::Text::LimitedLoopsEmoji>(
+			return MakeWrappedEmoji<Ui::Text::LimitedLoopsEmoji>(
 				simple(data, context),
 				loop);
 		})
 		: Factory([simple](
 				QStringView data,
 				const Context &context) {
-			return std::make_unique<Ui::Text::FirstFrameEmoji>(
+			return MakeWrappedEmoji<Ui::Text::FirstFrameEmoji>(
 				simple(data, context));
 		});
 	args.details.session = session;
@@ -280,6 +282,10 @@ void UiIntegration::unregisterLeaveSubscription(not_null<QWidget*> widget) {
 
 QString UiIntegration::emojiCacheFolder() {
 	return cWorkingDir() + "tdata/emoji";
+}
+
+QString UiIntegration::fontsCacheFolder() {
+	return cWorkingDir() + "tdata/fonts";
 }
 
 QString UiIntegration::openglCheckFilePath() {
@@ -318,6 +324,9 @@ std::shared_ptr<ClickHandler> UiIntegration::createLinkHandler(
 	const auto my = std::any_cast<Core::TextContextDetails>(&context.other);
 	switch (data.type) {
 	case EntityType::Url:
+		if (data.data.startsWith(u"internal:"_q, Qt::CaseInsensitive)) {
+			return nullptr;
+		}
 		return (!data.data.isEmpty()
 			&& UrlClickHandler::IsSuspicious(data.data))
 			? std::make_shared<HiddenUrlClickHandler>(data.data)
@@ -412,7 +421,7 @@ bool UiIntegration::handleUrlClick(
 	if (UrlClickHandler::IsEmail(url)) {
 		File::OpenEmailLink(url);
 		return true;
-	} else if (local.startsWith(u"as://"_q, Qt::CaseInsensitive)) {
+	} else if (local.startsWith(u"tg://"_q, Qt::CaseInsensitive)) {
 		Core::App().openLocalUrl(local, context);
 		return true;
 	} else if (local.startsWith(u"tonsite://"_q, Qt::CaseInsensitive)) {
@@ -443,9 +452,17 @@ bool UiIntegration::handleUrlClick(
 bool UiIntegration::copyPreOnClick(const QVariant &context) {
 	const auto my = context.value<ClickHandlerContext>();
 	if (const auto window = my.sessionWindow.get()) {
-		window->showToast(tr::lng_code_copied(tr::now));
+		window->showToast({
+			.text = { tr::lng_code_copied(tr::now) },
+			.iconLottie = u"toast/copy"_q,
+			.iconLottieSize = st::toastLottieIconSize,
+		});
 	} else if (my.show) {
-		my.show->showToast(tr::lng_code_copied(tr::now));
+		my.show->showToast({
+			.text = { tr::lng_code_copied(tr::now) },
+			.iconLottie = u"toast/copy"_q,
+			.iconLottieSize = st::toastLottieIconSize,
+		});
 	}
 	return true;
 }

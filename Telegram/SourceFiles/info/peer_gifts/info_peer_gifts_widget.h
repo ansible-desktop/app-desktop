@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -18,6 +18,14 @@ class RpWidget;
 template <typename Widget>
 class SlideWrap;
 } // namespace Ui
+
+namespace Window {
+class SessionController;
+} // namespace Window
+
+namespace Ui::Menu {
+struct MenuCallback;
+} // namespace Ui::Menu
 
 namespace Info::PeerGifts {
 
@@ -55,6 +63,19 @@ struct Descriptor {
 		const Descriptor &,
 		const Descriptor &) = default;
 };
+
+struct InlineGifts {
+	object_ptr<Ui::RpWidget> widget = { nullptr };
+	Fn<void(const Ui::Menu::MenuCallback&)> fillMenu;
+	rpl::producer<Descriptor> descriptorChanges;
+};
+
+[[nodiscard]] InlineGifts MakePeerGiftsInner(
+	QWidget *parent,
+	not_null<Window::SessionController*> window,
+	not_null<PeerData*> peer,
+	rpl::producer<Descriptor> descriptor);
+
 
 class InnerWidget;
 

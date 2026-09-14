@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "layout/layout_mosaic.h"
 
@@ -93,7 +93,7 @@ QRect AbstractMosaicLayout::findRect(int index) const {
 	const auto rows = _rows.size();
 	auto top = 0;
 	for (auto row = 0; row != rows; ++row) {
-		auto &inlineRow = _rows[row];
+		const auto &inlineRow = _rows[row];
 		// if ((top + inlineRow.height) > clip.top()) {
 			auto left = 0;
 			if (row == (rows - 1)) {
@@ -223,7 +223,7 @@ void AbstractMosaicLayout::paint(
 		if (top >= clip.top() + clip.height()) {
 			break;
 		}
-		auto &inlineRow = _rows[row];
+		const auto &inlineRow = _rows[row];
 		if ((top + inlineRow.height) > clip.top()) {
 			auto left = _padding.left();
 			if (row == (rows - 1)) {

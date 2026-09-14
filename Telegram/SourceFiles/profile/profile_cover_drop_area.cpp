@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "profile/profile_cover_drop_area.h"
 
@@ -61,7 +61,7 @@ void CoverDropArea::paintEvent(QPaintEvent *e) {
 	if (height() < st::profileDropAreaPadding.top() + st::profileDropAreaPadding.bottom()) return;
 
 	auto border = st::profileDropAreaBorderWidth;
-	auto &borderFg = st::profileDropAreaBorderFg;
+	const auto &borderFg = st::profileDropAreaBorderFg;
 	auto inner = rect().marginsRemoved(st::profileDropAreaPadding);
 	p.fillRect(inner.x(), inner.y(), inner.width(), border, borderFg);
 	p.fillRect(inner.x(), inner.y() + inner.height() - border, inner.width(), border, borderFg);

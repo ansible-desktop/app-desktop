@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -82,6 +82,8 @@ public:
 	[[nodiscard]] QRect desktopRect() const;
 	[[nodiscard]] Core::WindowPosition withScreenInPosition(
 		Core::WindowPosition position) const;
+	[[nodiscard]] Core::WindowPosition countPositionForSave();
+	void applySavedPosition(const Core::WindowPosition &position);
 
 	void init();
 
@@ -193,6 +195,8 @@ protected:
 
 private:
 	void refreshTitleWidget();
+	void setupCanaryTitleLabel();
+	[[nodiscard]] QString nativeTitleSuffix() const;
 	void updateMinimumSize();
 	void updatePalette();
 

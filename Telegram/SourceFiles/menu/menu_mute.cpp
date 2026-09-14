@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "menu/menu_mute.h"
 
@@ -26,9 +26,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/menu/menu_action.h"
 #include "ui/widgets/popup_menu.h"
 #include "ui/painter.h"
-#include "styles/style_boxes.h"
 #include "styles/style_info.h" // infoTopBarMenu
-#include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
 
 namespace MuteMenu {
@@ -293,6 +291,15 @@ Descriptor DefaultDescriptor(
 		.updateMutePeriod = updateMutePeriod,
 		.volumeController = DefaultRingtonesVolumeController(session, type),
 	};
+}
+
+bool ToggleMuteForever(not_null<Data::Thread*> thread) {
+	const auto settings = &thread->owner().notifySettings();
+	const auto muted = !settings->isMuted(thread);
+	settings->update(thread, muted
+		? Data::MuteValue{ .forever = true }
+		: Data::MuteValue{ .unmute = true });
+	return muted;
 }
 
 void FillMuteMenu(

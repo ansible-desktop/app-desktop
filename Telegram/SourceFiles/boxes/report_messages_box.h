@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -19,6 +19,11 @@ namespace style {
 struct ReportBox;
 } // namespace style
 
+namespace Window {
+class SessionController;
+} // namespace Window
+
+class HistoryItem;
 class PeerData;
 
 [[nodiscard]] object_ptr<Ui::BoxContent> ReportProfilePhotoBox(
@@ -30,4 +35,9 @@ void ShowReportMessageBox(
 	not_null<PeerData*> peer,
 	const std::vector<MsgId> &ids,
 	const std::vector<StoryId> &stories,
-	const style::ReportBox *stOverride = nullptr);
+	const style::ReportBox *stOverride = nullptr,
+	Fn<Window::SessionController*()> resolveController = nullptr);
+
+void ShowReportEphemeralBox(
+	std::shared_ptr<Ui::Show> show,
+	not_null<HistoryItem*> item);

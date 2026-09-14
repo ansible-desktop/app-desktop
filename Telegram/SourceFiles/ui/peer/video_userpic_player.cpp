@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/peer/video_userpic_player.h"
 
@@ -18,7 +18,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/image/image_prepare.h"
 #include "ui/empty_userpic.h"
 #include "ui/painter.h"
-#include "styles/style_widgets.h"
 
 namespace Ui {
 
@@ -47,7 +46,10 @@ void VideoUserpicPlayer::clear() {
 	_peer = nullptr;
 }
 
-QImage VideoUserpicPlayer::frame(QSize size, not_null<PeerData*> peer) {
+QImage VideoUserpicPlayer::frame(
+		QSize size,
+		not_null<PeerData*> peer,
+		bool paused) {
 	if (!_streamed
 		|| !_streamed->player().ready()
 		|| _streamed->player().videoSize().isEmpty()
@@ -91,7 +93,9 @@ QImage VideoUserpicPlayer::frame(QSize size, not_null<PeerData*> peer) {
 			_monoforumMask);
 		q.end();
 	}
-	_streamed->markFrameShown();
+	if (!paused) {
+		_streamed->markFrameShown();
+	}
 	return result;
 }
 

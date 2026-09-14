@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/boxes/choose_font_box.h"
 
@@ -22,9 +22,9 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/ui_utility.h"
 #include "styles/style_boxes.h"
 #include "styles/style_chat.h"
+#include "styles/style_chat_style.h"
 #include "styles/style_settings.h"
 #include "styles/style_layers.h"
-#include "styles/style_window.h"
 
 #include <QtGui/QFontDatabase>
 
@@ -583,7 +583,7 @@ PreviewPainter::PreviewPainter(const QImage &bg, PreviewRequest request)
 : _request(request)
 , _msgBg(_request.msgBg)
 , _msgShadow(_request.msgShadow)
-, _nameFontOwned(_request.family, style::FontFlag::Semibold, st::fsize)
+, _nameFontOwned(_request.family, style::FontFlag::Bold, st::fsize)
 , _nameFont(_nameFontOwned.font())
 , _nameStyle(st::semiboldTextStyle)
 , _textFontOwned(_request.family, 0, st::fsize)

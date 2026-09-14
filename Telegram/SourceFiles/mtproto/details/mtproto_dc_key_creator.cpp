@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "mtproto/details/mtproto_dc_key_creator.h"
 
@@ -600,9 +600,9 @@ void DcKeyCreator::dhParamsAnswered(
 			return failed();
 		}
 
-		auto &encDHStr = data.vencrypted_answer().v;
+		const auto &encDHStr = data.vencrypted_answer().v;
 		uint32 encDHLen = encDHStr.length(), encDHBufLen = encDHLen >> 2;
-		if ((encDHLen & 0x03) || encDHBufLen < 6) {
+		if ((encDHLen % AES_BLOCK_SIZE) != 0 || encDHBufLen < 6) {
 			LOG(("AuthKey Error: bad encrypted data length %1 (in server_DH_params_ok)!").arg(encDHLen));
 			DEBUG_LOG(("AuthKey Error: received encrypted data %1").arg(Logs::mb(encDHStr.constData(), encDHLen).str()));
 			return failed();

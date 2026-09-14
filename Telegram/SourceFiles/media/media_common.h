@@ -1,15 +1,16 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "base/algorithm.h"
 
 #include <compare>
+#include <cstdint>
 
 namespace Media {
 
@@ -41,6 +42,16 @@ struct VideoQuality {
 inline constexpr auto kSpeedMin = 0.5;
 inline constexpr auto kSpeedMax = 2.5;
 inline constexpr auto kSpedUpDefault = 1.7;
+
+[[nodiscard]] inline bool ValidFrameSize(int w, int h, int maxArea) {
+	return (w > 0)
+		&& (h > 0)
+		&& (int64_t(w) * h <= int64_t(maxArea));
+}
+
+[[nodiscard]] inline bool ValidFrameSize(QSize size, int maxArea) {
+	return ValidFrameSize(size.width(), size.height(), maxArea);
+}
 
 [[nodiscard]] inline bool EqualSpeeds(float64 a, float64 b) {
 	return int(base::SafeRound(a * 10.)) == int(base::SafeRound(b * 10.));

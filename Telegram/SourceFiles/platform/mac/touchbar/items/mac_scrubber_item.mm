@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/mac/touchbar/items/mac_scrubber_item.h"
 
@@ -30,6 +30,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "platform/mac/touchbar/mac_touchbar_common.h"
 #include "styles/style_basic.h"
 #include "styles/style_settings.h"
+#include "styles/style_settings_premium.h"
 #include "ui/widgets/fields/input_field.h"
 #include "window/section_widget.h"
 #include "window/window_controller.h"

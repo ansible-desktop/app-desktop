@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/bot_keyboard.h"
 
@@ -150,13 +150,15 @@ void Style::paintButtonBg(
 	const auto radius = [&](int index) {
 		return (rounding[index] == Corner::Large) ? large : small;
 	};
-	p.drawPath(
-		Ui::ComplexRoundedRectPath(
-			rect,
-			radius(0),
-			radius(1),
-			radius(2),
-			radius(3)));
+	const auto tl = radius(0);
+	const auto tr = radius(1);
+	const auto bl = radius(2);
+	const auto br = radius(3);
+	if ((tl == tr) && (tl == bl) && (tl == br)) {
+		p.drawRoundedRect(rect, tl, tl);
+	} else {
+		p.drawPath(Ui::ComplexRoundedRectPath(rect, tl, tr, bl, br));
+	}
 }
 
 void Style::paintButtonIcon(
@@ -340,24 +342,23 @@ bool BotKeyboard::updateMarkup(HistoryItem *to, bool force) {
 	_wasForMsgId = FullMsgId(peerId, to->id);
 
 	auto markupFlags = to->replyKeyboardFlags();
+	const auto markup = to->Get<HistoryMessageReplyMarkup>();
+	const auto hasVisibleRows = markup
+		&& !markup->data.rows.empty()
+		&& !(markupFlags & ReplyMarkupFlag::Inline);
 	_forceReply = markupFlags & ReplyMarkupFlag::ForceReply;
 	_maximizeSize = !(markupFlags & ReplyMarkupFlag::Resize);
-	_singleUse = _forceReply || (markupFlags & ReplyMarkupFlag::SingleUse);
+	_singleUse = (_forceReply && !hasVisibleRows)
+		|| (markupFlags & ReplyMarkupFlag::SingleUse);
 	_persistent = (markupFlags & ReplyMarkupFlag::Persistent);
 
-	if (const auto markup = to->Get<HistoryMessageReplyMarkup>()) {
-		_placeholder = markup->data.placeholder;
-	} else {
-		_placeholder = QString();
-	}
+	_placeholder = markup ? markup->data.placeholder : QString();
 
 	_impl = nullptr;
-	if (auto markup = to->Get<HistoryMessageReplyMarkup>()) {
-		if (!markup->data.rows.empty()) {
-			_impl = std::make_unique<ReplyKeyboard>(
-				to,
-				std::make_unique<Style>(this, *_st));
-		}
+	if (hasVisibleRows) {
+		_impl = std::make_unique<ReplyKeyboard>(
+			to,
+			std::make_unique<Style>(this, *_st));
 	}
 
 	resizeToWidth(width(), _maxOuterHeight);

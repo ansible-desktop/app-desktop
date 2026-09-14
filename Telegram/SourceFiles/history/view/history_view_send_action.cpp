@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_send_action.h"
 
@@ -132,8 +132,10 @@ bool SendActionPainter::updateNeedsAnimating(
 	}, [&](const MTPDsendMessageEmojiInteractionSeen &) {
 		// #TODO interaction
 	}, [&](const MTPDsendMessageTextDraftAction &) {
+	}, [&](const MTPDsendMessageRichMessageDraftAction &) {
 	}, [&](const MTPDsendMessageCancelAction &) {
 		Unexpected("CancelAction here.");
+	}, [&](const auto &) {
 	});
 	return updateNeedsAnimating(now, true);
 }
@@ -387,17 +389,10 @@ bool SendActionPainter::updateNeedsAnimating(crl::time now, bool force) {
 	if (force
 		|| sendActionChanged
 		|| (sendActionResult && !anim::Disabled())) {
-		const auto left = 0;
-		const auto top = Ui::Emoji::GetCustomSkipNormal();
 		const auto width = _sendActionAnimation.width() + _animationLeft;
-		const auto height = std::max({
-			st::normalFont->height - top,
-			st::dialogsMiniPreviewTop + st::dialogsMiniPreview - top,
-			Ui::Emoji::GetCustomSizeNormal(),
-		});
 		_history->peer->owner().sendActionManager().updateAnimation({
 			_topic ? ((Data::Thread*)_topic) : _history,
-			{ left, top, width, height },
+			{ 0, 0, width, st::normalFont->height },
 			(force || sendActionChanged)
 		});
 	}

@@ -1,14 +1,15 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 struct ClickHandlerContext;
 class HistoryItem;
+struct HistoryMessageMarkupButton;
 
 namespace Window {
 class SessionController;
@@ -16,17 +17,17 @@ class SessionController;
 
 namespace Api {
 
+using BotButtonLookup = Fn<const HistoryMessageMarkupButton*()>;
+
 void SendBotCallbackData(
 	not_null<Window::SessionController*> controller,
 	not_null<HistoryItem*> item,
-	int row,
-	int column);
+	BotButtonLookup lookup);
 
 void SendBotCallbackDataWithPassword(
 	not_null<Window::SessionController*> controller,
 	not_null<HistoryItem*> item,
-	int row,
-	int column);
+	BotButtonLookup lookup);
 
 bool SwitchInlineBotButtonReceived(
 	not_null<Window::SessionController*> controller,
@@ -34,6 +35,10 @@ bool SwitchInlineBotButtonReceived(
 	UserData *samePeerBot = nullptr,
 	MsgId samePeerReplyTo = 0);
 
+void ActivateBotButton(ClickHandlerContext context, BotButtonLookup lookup);
 void ActivateBotCommand(ClickHandlerContext context, int row, int column);
+void ActivateRichPageBotButton(
+	ClickHandlerContext context,
+	const HistoryMessageMarkupButton &button);
 
 } // namespace Api

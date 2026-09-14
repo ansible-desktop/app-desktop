@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -68,7 +68,7 @@ struct DocumentAdditionalData {
 
 enum class StickerType : uchar {
 	Webp,
-	Ass,
+	Tgs,
 	Webm,
 };
 
@@ -100,6 +100,7 @@ struct VideoData : public DocumentAdditionalData {
 	QString codec;
 	std::vector<not_null<DocumentData*>> qualities;
 	QSize realVideoSize;
+	crl::time startTs = 0;
 };
 
 using RoundData = VoiceData;
@@ -123,6 +124,9 @@ public:
 	void automaticLoadSettingsChanged();
 	void setVideoQualities(std::vector<not_null<DocumentData*>> qualities);
 	[[nodiscard]] int resolveVideoQuality() const;
+	[[nodiscard]] int resolveOriginalVideoQuality() const;
+	[[nodiscard]] Media::VideoQuality initialPlaybackVideoQuality(
+		Media::VideoQuality request) const;
 	[[nodiscard]] auto resolveQualities(HistoryItem *context) const
 		-> const std::vector<not_null<DocumentData*>> &;
 	[[nodiscard]] not_null<DocumentData*> chooseQuality(
@@ -130,8 +134,13 @@ public:
 		Media::VideoQuality request);
 
 	[[nodiscard]] bool loading() const;
+	void permitLoadFromCloud();
 	[[nodiscard]] QString loadingFilePath() const;
 	[[nodiscard]] bool displayLoading() const;
+
+	void setForbidsFileSave();
+	[[nodiscard]] bool forbidsFileSave() const;
+
 	void save(
 		Data::FileOrigin origin,
 		const QString &toFile,
@@ -165,7 +174,8 @@ public:
 	[[nodiscard]] Image *getReplyPreview(
 		Data::FileOrigin origin,
 		not_null<PeerData*> context,
-		bool spoiler);
+		bool spoiler,
+		bool skipCover = false);
 	[[nodiscard]] Image *getReplyPreview(not_null<HistoryItem*> item);
 	[[nodiscard]] bool replyPreviewLoaded(bool spoiler) const;
 
@@ -207,6 +217,7 @@ public:
 	[[nodiscard]] bool isPatternWallPaper() const;
 	[[nodiscard]] bool isPatternWallPaperPNG() const;
 	[[nodiscard]] bool isPatternWallPaperSVG() const;
+	[[nodiscard]] bool isSvgImage() const;
 	[[nodiscard]] bool isPremiumSticker() const;
 	[[nodiscard]] bool isPremiumEmoji() const;
 	[[nodiscard]] bool emojiUsesTextColor() const;
@@ -329,6 +340,7 @@ private:
 		UseTextColor = 0x0800,
 		StoryDocument = 0x1000,
 		SilentVideo = 0x2000,
+		FileSaveForbidden = 0x4000,
 	};
 	using Flags = base::flags<Flag>;
 	friend constexpr bool is_flag_type(Flag) { return true; };
@@ -376,7 +388,7 @@ private:
 	const not_null<Data::Session*> _owner;
 
 	int _videoPreloadPrefix = 0;
-	// Two types of location: from MVSy by dc+access or from web by url
+	// Two types of location: from MTProto by dc+access or from web by url
 	int32 _dc = 0;
 	uint64 _access = 0;
 	QByteArray _fileReference;

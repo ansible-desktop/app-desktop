@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/stickers_emoji_pack.h"
 
@@ -122,7 +122,8 @@ EmojiPack::EmojiPack(not_null<Main::Session*> session)
 EmojiPack::~EmojiPack() = default;
 
 bool EmojiPack::add(not_null<ViewElement*> view) {
-	if (view->data()->textAppearing()) {
+	if (view->data()->textAppearing()
+		|| view->Get<HistoryView::FakeBotAboutTop>()) {
 		return false;
 	} else if (const auto custom = view->onlyCustomEmoji()) {
 		_onlyCustomItems.emplace(view);

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_service_message.h"
 
@@ -438,7 +438,10 @@ QRect Service::innerGeometry() const {
 	return countGeometry();
 }
 
-bool Service::consumeHorizontalScroll(QPoint position, int delta) {
+bool Service::consumeHorizontalScroll(
+		QPoint position,
+		int delta,
+		Qt::ScrollPhase phase) {
 	if (const auto media = this->media()) {
 		return media->consumeHorizontalScroll(position, delta);
 	}

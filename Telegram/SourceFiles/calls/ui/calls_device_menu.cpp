@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "calls/ui/calls_device_menu.h"
 
@@ -17,7 +17,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "webrtc/webrtc_device_common.h"
 #include "webrtc/webrtc_environment.h"
 #include "styles/style_calls.h"
-#include "styles/style_layers.h"
 
 namespace Calls {
 namespace {

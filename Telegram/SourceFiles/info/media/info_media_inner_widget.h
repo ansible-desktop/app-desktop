@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -50,6 +50,12 @@ public:
 	void selectionAction(SelectionAction action);
 
 	void jumpToMessage(MsgId msgId);
+
+	bool processZoomWheel(not_null<QWheelEvent*> e);
+	void zoomIn();
+	void zoomOut();
+	[[nodiscard]] bool canZoomIn() const;
+	[[nodiscard]] bool canZoomOut() const;
 
 	~InnerWidget();
 

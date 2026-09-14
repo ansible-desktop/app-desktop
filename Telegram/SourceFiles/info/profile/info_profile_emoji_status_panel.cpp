@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_emoji_status_panel.h"
 
@@ -172,6 +172,22 @@ void EmojiStatusPanel::show(Descriptor &&descriptor) {
 			local.x() + button->width() * 3);
 	}
 	_panel->toggleAnimated();
+}
+
+void EmojiStatusPanel::hideFast() {
+	if (_panel) {
+		_panel->hideFast();
+	}
+}
+
+void EmojiStatusPanel::hideAnimated() {
+	if (_panel) {
+		_panel->hideAnimated();
+	}
+}
+
+bool EmojiStatusPanel::shown() const {
+	return _panel && !_panel->isHidden();
 }
 
 bool EmojiStatusPanel::hasFocus() const {

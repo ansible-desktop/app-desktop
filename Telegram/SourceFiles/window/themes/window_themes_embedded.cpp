@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/themes/window_themes_embedded.h"
 
@@ -181,7 +181,7 @@ style::colorizer ColorizerFrom(
 
 std::optional<QColor> SystemAccentColor() {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-	if (Platform::IsWindows() && !Platform::IsWindows8OrGreater()) {
+	if (Platform::IsWindows() && Platform::IsWindows8OrGreater()) {
 		return std::nullopt;
 	}
 #endif // Qt < 6.0.0

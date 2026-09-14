@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "intro/intro_password_check.h"
 
@@ -21,7 +21,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "main/main_account.h"
 #include "base/random.h"
 #include "styles/style_intro.h"
-#include "styles/style_boxes.h"
+#include "styles/style_widgets.h"
 
 namespace Intro {
 namespace details {
@@ -197,6 +197,15 @@ void PasswordCheckWidget::requestPasswordData() {
 }
 
 void PasswordCheckWidget::passwordChecked() {
+	if (!_passwordState.mtp.request) {
+		if (_passwordState.mtp.unknownAlgorithm) {
+			// Switched to an algorithm this build cannot compute.
+			return serverError();
+		}
+		// The password was removed after this step was created, which is the
+		// same situation the PASSWORD_EMPTY error reports.
+		return goBack();
+	}
 	const auto check = Core::ComputeCloudPasswordCheck(
 		_passwordState.mtp.request,
 		_passwordHash);
@@ -386,6 +395,9 @@ void PasswordCheckWidget::submit() {
 	} else {
 		hideError();
 
+		if (!_passwordState.mtp.request) {
+			return serverError();
+		}
 		const auto password = _pwdField->getLastText().toUtf8();
 		_passwordHash = Core::ComputeCloudPasswordHash(
 			_passwordState.mtp.request.algo,

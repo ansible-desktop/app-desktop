@@ -1,17 +1,15 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "calls/calls_video_bubble.h"
 
 #include "webrtc/webrtc_video_track.h"
 #include "ui/image/image_prepare.h"
 #include "ui/widgets/shadow.h"
-#include "styles/style_calls.h"
-#include "styles/style_widgets.h"
 #include "styles/style_layers.h"
 
 namespace Calls {

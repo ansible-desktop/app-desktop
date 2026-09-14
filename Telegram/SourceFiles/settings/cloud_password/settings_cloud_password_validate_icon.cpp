@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/cloud_password/settings_cloud_password_validate_icon.h"
 
@@ -16,6 +16,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "main/main_session.h"
 #include "ui/rect.h"
 #include "ui/rp_widget.h"
+#include "ui/text/text_custom_emoji.h"
 #include "styles/style_settings.h"
 
 namespace Settings {
@@ -50,7 +51,8 @@ object_ptr<Ui::RpWidget> CreateValidateGoodIcon(
 	};
 	const auto state = widget->lifetime().make_state<State>();
 	const auto size = st::settingsCloudPasswordIconSize;
-	state->emoji = std::make_unique<Ui::Text::LimitedLoopsEmoji>(
+	const auto padding = st::settingLocalPasscodeIconPadding;
+	state->emoji = MakeWrappedEmoji<Ui::Text::LimitedLoopsEmoji>(
 		session->data().customEmojiManager().create(
 			document,
 			[=] { widget->update(); },
@@ -59,15 +61,18 @@ object_ptr<Ui::RpWidget> CreateValidateGoodIcon(
 		1,
 		true);
 	widget->paintRequest() | rpl::on_next([=] {
+		if (!state->emoji) {
+			return;
+		}
 		auto p = QPainter(widget);
+		const auto left = (widget->width() - size) / 2;
 		state->emoji->paint(p, Ui::Text::CustomEmojiPaintContext{
 			.textColor = st::windowFg->c,
 			.now = crl::now(),
+			.position = QPoint(left, padding.top()),
 		});
 	}, widget->lifetime());
-	const auto padding = st::settingLocalPasscodeIconPadding;
 	widget->resize((Rect(Size(size)) + padding).size());
-	widget->setNaturalWidth(padding.left() + size + padding.right());
 
 	return owned;
 }

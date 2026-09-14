@@ -1,18 +1,18 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "base/object_ptr.h"
+#include "info/profile/info_profile_section_stack.h"
 
 namespace Ui {
 class RpWidget;
 class VerticalLayout;
-class MultiSlideTracker;
 } // namespace Ui
 
 namespace Data {
@@ -31,25 +31,6 @@ extern const char kOptionShowChannelJoinedBelowAbout[];
 
 struct Origin;
 
-object_ptr<Ui::RpWidget> SetupDetails(
-	not_null<Controller*> controller,
-	not_null<Ui::RpWidget*> parent,
-	not_null<PeerData*> peer,
-	Origin origin,
-	Ui::MultiSlideTracker &mainTracker);
-
-object_ptr<Ui::RpWidget> SetupDetails(
-	not_null<Controller*> controller,
-	not_null<Ui::RpWidget*> parent,
-	not_null<Data::ForumTopic*> topic,
-	Ui::MultiSlideTracker &mainTracker);
-
-object_ptr<Ui::RpWidget> SetupDetails(
-	not_null<Controller*> controller,
-	not_null<Ui::RpWidget*> parent,
-	not_null<Data::SavedSublist*> sublist,
-	Ui::MultiSlideTracker &mainTracker);
-
 object_ptr<Ui::RpWidget> SetupActions(
 	not_null<Controller*> controller,
 	not_null<Ui::RpWidget*> parent,
@@ -66,9 +47,15 @@ void AddDetails(
 	not_null<PeerData*> peer,
 	Data::ForumTopic *topic,
 	Data::SavedSublist *sublist,
-	Origin origin,
-	Ui::MultiSlideTracker &mainTracker,
-	rpl::variable<bool> &dividerOverridden);
+	Origin origin);
+
+void BuildProfileDetailsSections(
+	SectionStack &stack,
+	not_null<Controller*> controller,
+	not_null<PeerData*> peer,
+	Data::ForumTopic *topic,
+	Data::SavedSublist *sublist,
+	Origin origin);
 
 } // namespace Info::Profile
 

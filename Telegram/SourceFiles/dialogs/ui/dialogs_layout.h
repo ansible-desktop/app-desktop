@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -23,6 +23,7 @@ namespace Data {
 class Forum;
 class Folder;
 class Thread;
+class CommunityInfo;
 } // namespace Data
 
 namespace Dialogs {
@@ -61,6 +62,7 @@ struct PaintContext {
 	TopicJumpCache *topicJumpCache = nullptr;
 	Data::Folder *folder = nullptr;
 	Data::Forum *forum = nullptr;
+	Data::CommunityInfo *community = nullptr;
 	required<QBrush> currentBg;
 	FilterId filter = 0;
 	float64 topicsExpanded = 0.;
@@ -74,6 +76,7 @@ struct PaintContext {
 	bool search = false;
 	bool narrow = false;
 	bool displayUnreadInfo = false;
+	bool insideCommunity = false;
 };
 
 extern const char kOptionDialogsMuteIcon[];

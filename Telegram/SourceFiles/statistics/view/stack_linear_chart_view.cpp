@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "statistics/view/stack_linear_chart_view.h"
 
@@ -48,7 +48,7 @@ inline float64 InterpolationRatio(float64 from, float64 to, float64 result) {
 
 [[nodiscard]] Limits FindAdditionalZoomedOutXIndices(const PaintContext &c) {
 	constexpr auto kOffset = int(1);
-	auto &xPercentage = c.chartData.xPercentage;
+	const auto &xPercentage = c.chartData.xPercentage;
 	auto leftResult = 0.;
 	{
 		auto i = std::max(int(c.xIndices.min) - kOffset, 0);

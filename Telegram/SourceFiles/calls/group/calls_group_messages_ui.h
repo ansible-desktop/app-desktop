@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -58,7 +58,8 @@ public:
 		rpl::producer<std::vector<not_null<PeerData*>>> topDonorsValue,
 		rpl::producer<MessageIdUpdate> idUpdates,
 		rpl::producer<bool> canManageValue,
-		rpl::producer<bool> shown);
+		rpl::producer<bool> shown,
+		Fn<bool(QPoint)> inputReserved = nullptr);
 	~MessagesUi();
 
 	void move(int left, int bottom, int width, int availableHeight);
@@ -142,6 +143,7 @@ private:
 	const not_null<QWidget*> _parent;
 	const std::shared_ptr<ChatHelpers::Show> _show;
 	const MessagesMode _mode;
+	const Fn<bool(QPoint)> _inputReserved;
 	std::unique_ptr<Ui::ElasticScroll> _scroll;
 	Ui::Animations::Simple _scrollToAnimation;
 	Ui::RpWidget *_messages = nullptr;

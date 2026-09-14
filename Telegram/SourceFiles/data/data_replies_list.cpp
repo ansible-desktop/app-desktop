@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_replies_list.h"
 
@@ -231,7 +231,7 @@ void RepliesList::appendClientSideMessages(MessagesSlice &slice) {
 		ranges::sort(slice.ids);
 		return;
 	}
-	auto &owner = _history->owner();
+	const auto &owner = _history->owner();
 	auto dates = std::vector<TimeId>();
 	dates.reserve(slice.ids.size());
 	for (const auto &id : slice.ids) {

@@ -1,14 +1,16 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/changelogs.h"
 
 #include "lang/lang_keys.h"
 #include "core/application.h"
+#include "core/update_channel.h"
+#include "core/version.h"
 #include "main/main_domain.h"
 #include "main/main_session.h"
 #include "storage/storage_domain.h"
@@ -58,6 +60,10 @@ Changelogs::Changelogs(not_null<Main::Session*> session, int oldVersion)
 
 std::unique_ptr<Changelogs> Changelogs::Create(
 		not_null<Main::Session*> session) {
+	if (BuildIsCanary) {
+		// Canary changelogs live in the canary channels themselves.
+		return nullptr;
+	}
 	auto &local = Core::App().domain().local();
 	const auto oldVersion = local.oldVersion();
 	local.clearOldVersion();

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -21,6 +21,9 @@ private:
 };
 
 void ReplaceEmoji(QTextDocument *doc);
+void ReplaceEmojiInRange(QTextDocument *doc, int from, int to);
+void SanitizeRange(QTextDocument *doc, int from, int to);
 [[nodiscard]] QString RecoverTextFromDocument(QTextDocument *doc);
+[[nodiscard]] QString RecoverWrappedTextFromDocument(QTextDocument *doc);
 
 } // namespace Editor

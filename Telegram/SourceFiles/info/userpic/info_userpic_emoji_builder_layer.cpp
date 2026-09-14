@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/userpic/info_userpic_emoji_builder_layer.h"
 
@@ -15,6 +15,11 @@ namespace UserpicBuilder {
 
 LayerWidget::LayerWidget()
 : _corners(Ui::PrepareCornerPixmaps(st::boxRadius, st::boxDividerBg)) {
+	style::PaletteChanged(
+	) | rpl::on_next([=] {
+		_corners = Ui::PrepareCornerPixmaps(st::boxRadius, st::boxDividerBg);
+		update();
+	}, lifetime());
 }
 
 void LayerWidget::setContent(not_null<Ui::RpWidget*> content) {

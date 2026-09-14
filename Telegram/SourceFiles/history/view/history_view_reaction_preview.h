@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -12,6 +12,7 @@ class PhotoData;
 
 namespace Ui {
 class DropdownMenu;
+class PopupMenu;
 class RpWidget;
 } // namespace Ui
 
@@ -47,5 +48,12 @@ bool ShowReactionPreview(
 	FullMsgId origin,
 	Data::ReactionId reactionId,
 	bool emojiPreview = false);
+
+[[nodiscard]] bool AttachReactionPreviewToMenu(
+	not_null<Ui::PopupMenu*> menu,
+	not_null<Window::SessionController*> controller,
+	QPoint desiredPosition,
+	FullMsgId origin,
+	const Data::ReactionId &reactionId);
 
 } // namespace HistoryView

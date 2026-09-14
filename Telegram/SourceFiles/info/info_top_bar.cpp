@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/info_top_bar.h"
 
@@ -241,6 +241,7 @@ void TopBar::createSearchView(
 	});
 
 	_searchField = field;
+	field->customUpDown(true);
 	auto fieldWrap = Ui::CreateChild<Ui::FadeWrap<Ui::InputField>>(
 		wrap,
 		object_ptr<Ui::InputField>::fromRaw(field),
@@ -393,10 +394,17 @@ void TopBar::updateDefaultControlsGeometry(int newWidth) {
 		const auto y = _subtitle
 			? _st.titleWithSubtitlePosition.y()
 			: _st.titlePosition.y();
+		const auto available = std::max(newWidth - right - x, 0);
+		_title->entity()->resizeToWidth(available);
 		_title->moveToLeft(x, y, newWidth);
 		if (_subtitle) {
+			const auto subtitleX = _back
+				? _st.back.width
+				: _st.subtitlePosition.x();
+			_subtitle->entity()->resizeToWidth(
+				std::max(newWidth - right - subtitleX, 0));
 			_subtitle->moveToLeft(
-				_back ? _st.back.width : _st.subtitlePosition.x(),
+				subtitleX,
 				_st.subtitlePosition.y(),
 				newWidth);
 		}

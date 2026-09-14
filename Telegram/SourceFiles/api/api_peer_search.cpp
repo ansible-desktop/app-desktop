@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_peer_search.h"
 
@@ -63,6 +63,7 @@ void PeerSearch::request(
 
 void PeerSearch::requestPeers() {
 	const auto requestId = _session->api().request(MTPcontacts_Search(
+		MTP_flags(0),
 		MTP_string(_query),
 		MTP_int(SearchPeopleLimit)
 	)).done([=](const MTPcontacts_Found &result, mtpRequestId requestId) {

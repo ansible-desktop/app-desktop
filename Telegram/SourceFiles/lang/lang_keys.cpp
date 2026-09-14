@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "lang/lang_keys.h"
 
@@ -66,6 +66,19 @@ bool langFirstNameGoesSecond() {
 		lt_last_name,
 		QString(1, kLastName));
 	return fullname.indexOf(kLastName) < fullname.indexOf(kFirstName);
+}
+
+QString langFullName(
+		const QString &firstName,
+		const QString &lastName) {
+	if (firstName.isEmpty()) {
+		return lastName;
+	} else if (lastName.isEmpty()) {
+		return firstName;
+	}
+	return langFirstNameGoesSecond()
+		? (lastName + u' ' + firstName)
+		: (firstName + u' ' + lastName);
 }
 
 QString langDayOfMonth(const QDate &date) {

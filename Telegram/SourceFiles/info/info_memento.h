@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -23,6 +23,7 @@ enum class SharedMediaType : signed char;
 
 namespace Data {
 class ForumTopic;
+class SavedMessages;
 class SavedSublist;
 struct ReactionId;
 } // namespace Data
@@ -52,6 +53,7 @@ public:
 	Memento(not_null<Data::ForumTopic*> topic, Section section);
 	explicit Memento(not_null<Data::SavedSublist*> sublist);
 	Memento(not_null<Data::SavedSublist*> sublist, Section section);
+	explicit Memento(not_null<Data::SavedMessages*> savedMessages);
 	Memento(Settings::Tag settings, Section section);
 	Memento(not_null<PollData*> poll, FullMsgId contextId);
 	Memento(
@@ -85,12 +87,13 @@ public:
 		return _stack.back().get();
 	}
 
-	static Section DefaultSection(not_null<PeerData*> peer);
 	static std::shared_ptr<Memento> Default(not_null<PeerData*> peer);
 
 	~Memento();
 
 private:
+	static Section DefaultSection(not_null<PeerData*> peer);
+
 	static std::vector<std::shared_ptr<ContentMemento>> DefaultStack(
 		not_null<PeerData*> peer,
 		Section section);
@@ -100,6 +103,8 @@ private:
 	static std::vector<std::shared_ptr<ContentMemento>> DefaultStack(
 		not_null<Data::SavedSublist*> sublist,
 		Section section);
+	static std::vector<std::shared_ptr<ContentMemento>> DefaultStack(
+		not_null<Data::SavedMessages*> savedMessages);
 	static std::vector<std::shared_ptr<ContentMemento>> DefaultStack(
 		Settings::Tag settings,
 		Section section);

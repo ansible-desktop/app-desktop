@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -22,6 +22,7 @@ struct ComposeFeatures {
 	bool collectibleStatus : 1 = false;
 	bool stickersSettings : 1 = true;
 	bool openStickerSets : 1 = true;
+	bool photoButton : 1 = false;
 	bool autocompleteHashtags : 1 = true;
 	bool autocompleteMentions : 1 = true;
 	bool autocompleteCommands : 1 = true;
@@ -31,6 +32,7 @@ struct ComposeFeatures {
 	bool editMessageStars : 1 = false;
 	bool emojiOnlyPanel : 1 = false;
 	bool videoStream : 1 = false;
+	bool richEditor : 1 = true;
 };
 
 } // namespace ChatHelpers

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -68,6 +68,7 @@ private:
 		Solution = 0x10,
 		Media    = 0x20,
 		Deadline = 0x40,
+		Country  = 0x80,
 	};
 	friend constexpr inline bool is_flag_type(Error) { return true; }
 	using Errors = base::flags<Error>;

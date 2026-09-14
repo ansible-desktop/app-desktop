@@ -1,14 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/widgets/middle_click_autoscroll.h"
 
 #include "styles/style_chat.h"
-#include "styles/style_widgets.h"
 #include "ui/effects/animation_value.h"
 #include "ui/rect.h"
 

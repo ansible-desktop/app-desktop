@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_forum_topic.h"
 
@@ -34,7 +34,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/text/text_custom_emoji.h"
 #include "ui/text/text_utilities.h"
 #include "styles/style_dialogs.h"
-#include "styles/style_chat_helpers.h"
 
 #include <QtSvg/QSvgRenderer>
 
@@ -807,7 +806,7 @@ void ForumTopic::applyIconId(DocumentId iconId) {
 	_iconId = iconId;
 	invalidateTitleWithIcon();
 	_icon = iconId
-		? std::make_unique<Ui::Text::LimitedLoopsEmoji>(
+		? MakeWrappedEmoji<Ui::Text::LimitedLoopsEmoji>(
 			owner().customEmojiManager().create(
 				_iconId,
 				[=] { updateChatListEntry(); },

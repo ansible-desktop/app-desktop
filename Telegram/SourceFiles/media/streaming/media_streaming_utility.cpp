@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/streaming/media_streaming_utility.h"
 
@@ -154,6 +154,9 @@ QImage ConvertFrame(
 
 	if (!FFmpeg::GoodStorageForFrame(storage, resize)) {
 		storage = FFmpeg::CreateFrameStorage(resize);
+		if (storage.isNull()) {
+			return QImage();
+		}
 	}
 
 	const auto format = AV_PIX_FMT_BGRA;
@@ -429,6 +432,9 @@ QImage PrepareByRequest(
 		: request.outer;
 	if (!FFmpeg::GoodStorageForFrame(storage, outer)) {
 		storage = FFmpeg::CreateFrameStorage(outer);
+		if (storage.isNull()) {
+			return QImage();
+		}
 	}
 
 	if (hasAlpha && request.keepAlpha) {

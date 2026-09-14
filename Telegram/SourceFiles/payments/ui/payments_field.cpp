@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "payments/ui/payments_field.h"
 
@@ -258,6 +258,30 @@ struct SimpleFieldState {
 	Unexpected("FieldType in Payments::Ui::UseMaskedField.");
 }
 
+[[nodiscard]] Qt::InputMethodHints HintsForType(FieldType type) {
+	switch (type) {
+	case FieldType::Text:
+	case FieldType::Country:
+		return {};
+	case FieldType::Email:
+		return Qt::ImhEmailCharactersOnly
+			| Qt::ImhNoAutoUppercase
+			| Qt::ImhNoPredictiveText;
+	case FieldType::CardNumber:
+	case FieldType::CardCVC:
+		return Qt::ImhDigitsOnly
+			| Qt::ImhNoPredictiveText
+			| Qt::ImhSensitiveData;
+	case FieldType::CardExpireDate:
+		return Qt::ImhDigitsOnly | Qt::ImhNoPredictiveText;
+	case FieldType::Phone:
+		return Qt::ImhDialableCharactersOnly | Qt::ImhNoPredictiveText;
+	case FieldType::Money:
+		return Qt::ImhFormattedNumbersOnly | Qt::ImhNoPredictiveText;
+	}
+	Unexpected("FieldType in Payments::Ui::HintsForType.");
+}
+
 [[nodiscard]] base::unique_qptr<RpWidget> CreateWrap(
 		QWidget *parent,
 		FieldConfig &config) {
@@ -433,6 +457,9 @@ Field::Field(QWidget *parent, FieldConfig &&config)
 , _countryIso2(config.value) {
 	if (_masked) {
 		setupMaskedGeometry();
+		_masked->setInputMethodHints(HintsForType(_config.type));
+	} else {
+		_input->setInputMethodHints(HintsForType(_config.type));
 	}
 	if (_config.type == FieldType::Country) {
 		setupCountry();

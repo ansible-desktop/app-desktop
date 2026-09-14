@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -56,6 +56,7 @@ struct ButtonParameters {
 	QPoint pointer;
 	QPoint globalPointer;
 	int reactionsHeight = 0;
+	int keyboardHeight = 0;
 	int reactionsCount = 1;
 	int visibleTop = 0;
 	int visibleBottom = 0;

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_cloud_password.h"
 
@@ -303,7 +303,9 @@ rpl::producer<rpl::no_value, QString> CloudPassword::check(
 		)).done([=](const MTPaccount_Password &result) {
 			const auto latestState = ProcessMtpState(result);
 			const auto input = [&] {
-				if (password.isEmpty()) {
+				if (password.isEmpty() || !latestState.hasPassword) {
+					// Without a password the algorithm is the null variant
+					// and ComputeCloudPasswordHash() aborts on it.
 					return Core::CloudPasswordResult{
 						MTP_inputCheckPasswordEmpty()
 					};

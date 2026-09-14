@@ -1,12 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/file_utilities.h"
 
+#include "core/version.h"
 #include "storage/localstorage.h"
 #include "storage/storage_account.h"
 #include "base/platform/base_platform_file_utilities.h"
@@ -163,7 +164,7 @@ void ShowInFolder(const QString &filepath) {
 
 QString DefaultDownloadPathFolder(not_null<Main::Session*> session) {
 #if OS_MAC_STORE
-	return u"Ansible Lite"_q;
+	return u"Telegram Lite"_q;
 #else // OS_MAC_STORE
 	return session->supportMode() ? u"Tsupport Desktop"_q : AppName.utf16();
 #endif // OS_MAC_STORE
@@ -332,7 +333,26 @@ QString ImagesOrAllFilter() {
 }
 
 QString PhotoVideoFilesFilter() {
-	return u"Image and Video Files (*"_q + Ui::ImageExtensions().join(u" *"_q) + u" *.mp4 *.mov *.m4v);;"_q
+	return u"Image and Video Files (*"_q
+		+ Ui::ImageExtensions().join(u" *"_q)
+		+ u" *.mp4 *.mov *.m4v);;"_q
+		+ AllFilesFilter();
+}
+
+QString PhotoVideoAudioFilesFilter() {
+	return u"Image, Video and Audio Files (*"_q
+		+ Ui::ImageExtensions().join(u" *"_q)
+		+ u" *.mp4 *.mov *.m4v *.webm"_q
+		+ u" *.mp3 *.m4a *.aac *.ogg *.flac *.opus *.oga)"_q;
+}
+
+QString AudioFilesFilter() {
+	return u"Audio Files (*.mp3 *.m4a *.aac *.ogg *.flac *.opus *.oga);;"_q
+		+ AllFilesFilter();
+}
+
+QString MusicFilesFilter() {
+	return u"Audio files (*.mp3 *.m4a *.flac *.ogg *.wav *.aac *.opus);;"_q
 		+ AllFilesFilter();
 }
 

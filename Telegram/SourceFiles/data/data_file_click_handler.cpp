@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_file_click_handler.h"
 
@@ -80,6 +80,9 @@ void DocumentSaveClickHandler::Save(
 		return;
 	}
 
+	if (data->forbidsFileSave()) {
+		return;
+	}
 	auto savename = QString();
 	if (mode == Mode::ToCacheOrFile && data->saveToCache()) {
 		data->save(origin, savename);
@@ -96,8 +99,7 @@ void DocumentSaveClickHandler::Save(
 			return;
 		}
 		const auto filepath = data->filepath(true);
-		const auto fileinfo = QFileInfo(
-			);
+		const auto fileinfo = QFileInfo(filepath);
 		const auto filedir = filepath.isEmpty()
 			? QDir()
 			: fileinfo.dir();

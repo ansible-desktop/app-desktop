@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/peer_lists_box.h"
 
@@ -17,7 +17,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "main/main_session.h"
 #include "data/data_session.h"
 #include "data/data_peer.h"
-#include "styles/style_boxes.h"
 #include "styles/style_layers.h"
 
 PeerListsBox::PeerListsBox(

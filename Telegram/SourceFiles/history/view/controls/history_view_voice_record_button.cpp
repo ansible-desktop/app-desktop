@@ -1,18 +1,16 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/controls/history_view_voice_record_button.h"
 
 #include "lottie/lottie_icon.h"
 #include "ui/paint/blobs.h"
 #include "ui/painter.h"
-#include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
-#include "styles/style_layers.h"
 #include "lang/lang_keys.h"
 
 #include <QtMath>
@@ -152,7 +150,7 @@ void VoiceRecordButton::init() {
 				const auto index = (state == Type::Record)
 					? kVoiceIconIndex
 					: kRoundIconIndex;
-				auto &icon = _voiceRoundIcons[index];
+				const auto &icon = _voiceRoundIcons[index];
 				if (!icon) {
 					initVoiceRoundIcon(index);
 				}
@@ -220,8 +218,8 @@ void VoiceRecordButton::initVoiceRoundIcon(int index) {
 
 	_voiceRoundIcons[index] = Lottie::MakeIcon({
 		.path = ((index == kVoiceIconIndex)
-			? u":/animations/chat/voice_to_video.ass"_q
-			: u":/animations/chat/video_to_voice.ass"_q),
+			? u":/animations/chat/voice_to_video.tgs"_q
+			: u":/animations/chat/video_to_voice.tgs"_q),
 		.sizeOverride = st::historySend.recordSize,
 		.colorizeUsingAlpha = true,
 	});

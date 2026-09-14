@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -12,6 +12,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 class History;
 class PeerData;
+class UserData;
 class HistoryItem;
 
 namespace Dialogs {
@@ -123,8 +124,10 @@ struct PeerUpdate {
 		GroupCall           = (1ULL << 55),
 		ManagedBot          = (1ULL << 56),
 
+		MainProfileTab      = (1ULL << 57),
+
 		// For iteration
-		LastUsedBit         = (1ULL << 56),
+		LastUsedBit         = (1ULL << 57),
 	};
 	using Flags = base::flags<Flag>;
 	friend inline constexpr auto is_flag_type(Flag) { return true; }
@@ -154,8 +157,9 @@ struct HistoryUpdate {
 		TranslateFrom      = (1U << 13),
 		TranslatedTo       = (1U << 14),
 		UnreadPollVotes    = (1U << 15),
+		StreamedDrafts     = (1U << 16),
 
-		LastUsedBit        = (1U << 15),
+		LastUsedBit        = (1U << 16),
 	};
 	using Flags = base::flags<Flag>;
 	friend inline constexpr auto is_flag_type(Flag) { return true; }

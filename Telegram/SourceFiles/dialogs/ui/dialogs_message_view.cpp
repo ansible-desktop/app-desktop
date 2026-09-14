@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/ui/dialogs_message_view.h"
 
@@ -385,6 +385,24 @@ int MessageView::countWidth() const {
 	return result + _textCache.maxWidth();
 }
 
+bool MessageView::hasAnimatedContent() const {
+	if (_textCache.hasCustomEmoji()
+		|| _textCache.hasSpoilers()
+		|| _senderCache.hasCustomEmoji()) {
+		return true;
+	}
+	for (const auto &image : _imagesCache) {
+		if (image.hasSpoiler()) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void MessageView::resetLastPaintGeometry() {
+	_lastPaintGeometry = QRect();
+}
+
 void MessageView::paint(
 		Painter &p,
 		const QRect &geometry,
@@ -392,6 +410,7 @@ void MessageView::paint(
 	if (geometry.isEmpty()) {
 		return;
 	}
+	_lastPaintGeometry = geometry;
 	p.setFont(st::dialogsTextFont);
 	p.setPen(context.active
 		? st::dialogsTextFgActive

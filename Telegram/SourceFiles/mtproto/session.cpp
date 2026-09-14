@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "mtproto/session.h"
 
@@ -237,12 +237,13 @@ void Session::restart() {
 }
 
 void Session::refreshOptions() {
-	auto &settings = Core::App().settings().proxy();
+	const auto &settings = Core::App().settings().proxy();
 	const auto &proxy = settings.selected();
 	const auto isEnabled = settings.isEnabled();
 	const auto proxyType = (isEnabled ? proxy.type : ProxyData::Type::None);
 	const auto useTcp = (proxyType != ProxyData::Type::Http);
-	const auto useHttp = (proxyType != ProxyData::Type::Mtproto);
+	const auto useHttp = (proxyType != ProxyData::Type::Mtproto)
+		&& (proxyType != ProxyData::Type::Web);
 	const auto useIPv4 = true;
 	const auto useIPv6 = settings.tryIPv6();
 	_data->setOptions(SessionOptions(

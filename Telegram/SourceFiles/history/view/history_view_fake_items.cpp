@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_fake_items.h"
 
@@ -62,7 +62,8 @@ PeerId GenerateUser(not_null<History*> history, const QString &name) {
 		MTPPeerColor(), // profile_color
 		MTPint(), // bot_active_users
 		MTPlong(), // bot_verification_icon
-		MTPlong())); // send_paid_messages_stars
+		MTPlong(), // send_paid_messages_stars
+		MTPlong())); // linked_community_id
 	return peerId;
 }
 

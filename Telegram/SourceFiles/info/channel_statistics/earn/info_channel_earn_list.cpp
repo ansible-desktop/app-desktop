@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/channel_statistics/earn/info_channel_earn_list.h"
 
@@ -56,6 +56,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/painter.h"
 #include "ui/rect.h"
 #include "ui/text/text_utilities.h"
+#include "ui/toast/toast.h"
 #include "ui/vertical_list.h"
 #include "ui/widgets/fields/input_field.h"
 #include "ui/widgets/peer_bubble.h"
@@ -67,10 +68,9 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
 #include "styles/style_layers.h"
+#include "styles/style_premium.h"
 #include "styles/style_settings.h"
 #include "styles/style_statistics.h"
-#include "styles/style_credits.h"
-#include "styles/style_window.h" // mainMenuToggleFourStrokes.
 
 #include <QtWidgets/QApplication>
 
@@ -88,7 +88,11 @@ void ShowMenu(not_null<Ui::GenericBox*> box, const QString &text) {
 	const auto menu = Ui::CreateChild<Ui::PopupMenu>(box.get());
 	menu->addAction(tr::lng_context_copy_link(tr::now), [=] {
 		TextUtilities::SetClipboardText(TextForMimeData::Simple(text));
-		box->uiShow()->showToast(tr::lng_background_link_copied(tr::now));
+		box->uiShow()->showToast({
+			.text = { tr::lng_background_link_copied(tr::now) },
+			.iconLottie = u"toast/voip_invite"_q,
+			.iconLottieSize = st::toastLottieIconSize,
+		});
 	});
 	menu->popup(QCursor::pos());
 }
@@ -169,7 +173,11 @@ void AddRecipient(not_null<Ui::GenericBox*> box, const TextWithEntities &t) {
 	}, container->lifetime());
 	container->setClickedCallback([=] {
 		QGuiApplication::clipboard()->setText(t.text);
-		box->showToast(tr::lng_text_copied(tr::now));
+		box->showToast({
+			.text = { tr::lng_text_copied(tr::now) },
+			.iconLottie = u"toast/copy"_q,
+			.iconLottieSize = st::toastLottieIconSize,
+		});
 	});
 }
 
@@ -367,10 +375,17 @@ void InnerWidget::fill() {
 		? _peer->asUser()
 		: nullptr;
 	const auto channel = _peer->asChannel();
-	// TON currency earn UI removed — we have no TON currency. The credits
-	// (diamonds) earn section below is unaffected; TON data is still parsed
-	// into _state.currencyEarn, we just never render it. TON removal.
-	const auto canViewCurrencyEarn = false;
+	const auto canViewCurrencyEarn = [&] {
+		if (!channel) {
+			return true;
+		} else if (!(channel->flags() & ChannelDataFlag::CanViewRevenue)) {
+			return false;
+		} else if (channel->isMegagroup()) {
+			return _state.canViewCurrencyMegagroupEarn;
+		} else {
+			return true;
+		}
+	}();
 	const auto &data = canViewCurrencyEarn
 		? _state.currencyEarn
 		: Data::EarnStatistics();
@@ -959,8 +974,7 @@ void InnerWidget::fill() {
 		const auto button = Info::BotStarRef::AddViewListButton(
 			container,
 			tr::lng_credits_summary_earn_title(),
-			tr::lng_credits_summary_earn_about(),
-			true);
+			tr::lng_credits_summary_earn_about());
 		button->setClickedCallback([=] {
 			_controller->showSection(Info::BotStarRef::Join::Make(_peer));
 		});
@@ -1405,7 +1419,7 @@ void InnerWidget::fill() {
 			phrase());
 
 		button->toggleOn(rpl::single(
-			data.switchedOff
+			_state.currencyEarn.switchedOff
 		) | rpl::then(toggled->events()));
 		button->setToggleLocked(isLocked);
 

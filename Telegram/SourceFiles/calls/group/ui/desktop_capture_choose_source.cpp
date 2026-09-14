@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "calls/group/ui/desktop_capture_choose_source.h"
 
@@ -315,11 +315,6 @@ void ChooseSourceProcess::activate() {
 }
 
 void ChooseSourceProcess::setupPanel() {
-#ifndef Q_OS_LINUX
-	//_window->setAttribute(Qt::WA_OpaquePaintEvent);
-#endif // Q_OS_LINUX
-	//_window->setAttribute(Qt::WA_NoSystemBackground);
-
 	_window->setWindowIcon(QIcon(
 		QPixmap::fromImage(Image::Empty()->original(), Qt::ColorOnly)));
 	_window->setTitleStyle(st::desktopCaptureSourceTitle);

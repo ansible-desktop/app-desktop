@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_chat.h"
 
@@ -60,6 +60,7 @@ ChatAdminRightsInfo ChatData::defaultAdminRights(not_null<UserData*> user) {
 		| Flag::InviteByLinkOrAdd
 		| Flag::PinMessages
 		| Flag::ManageCall
+		| Flag::ManageWelcomeMessages
 		| (isCreator ? Flag::AddAdmins : Flag(0)));
 }
 
@@ -502,9 +503,12 @@ void ApplyChatUpdate(not_null<ChatData*> chat, const MTPDchatFull &update) {
 		chat->setBotCommands({});
 	}
 	using Flag = ChatDataFlag;
-	const auto mask = Flag::CanSetUsername;
+	const auto mask = Flag::CanSetUsername | Flag::HasWelcomeMessages;
 	chat->setFlags((chat->flags() & ~mask)
-		| (update.is_can_set_username() ? Flag::CanSetUsername : Flag()));
+		| (update.is_can_set_username() ? Flag::CanSetUsername : Flag())
+		| (update.is_has_welcome_messages()
+			? Flag::HasWelcomeMessages
+			: Flag()));
 	if (const auto photo = update.vchat_photo()) {
 		chat->setUserpicPhoto(*photo);
 	} else {

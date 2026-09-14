@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "mtproto/proxy_check.h"
 
@@ -49,6 +49,9 @@ void StartProxyCheck(
 	using Variants = DcOptions::Variants;
 
 	ResetProxyCheckers(v4, v6);
+	if (proxy.type == ProxyData::Type::Web) {
+		return;
+	}
 	const auto connType = (proxy.type == ProxyData::Type::Http)
 		? Variants::Http
 		: Variants::Tcp;

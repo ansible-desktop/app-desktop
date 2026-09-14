@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/media/info_media_inner_widget.h"
 
@@ -243,6 +243,26 @@ void InnerWidget::setScrollHeightValue(rpl::producer<int> value) {
 
 rpl::producer<Ui::ScrollToRequest> InnerWidget::scrollToRequests() const {
 	return _scrollToRequests.events();
+}
+
+bool InnerWidget::processZoomWheel(not_null<QWheelEvent*> e) {
+	return _list->processZoomWheel(e);
+}
+
+void InnerWidget::zoomIn() {
+	_list->zoomIn();
+}
+
+void InnerWidget::zoomOut() {
+	_list->zoomOut();
+}
+
+bool InnerWidget::canZoomIn() const {
+	return _list->canZoomIn();
+}
+
+bool InnerWidget::canZoomOut() const {
+	return _list->canZoomOut();
 }
 
 void InnerWidget::jumpToMessage(MsgId msgId) {

@@ -1,13 +1,14 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "base/timer.h"
+#include "base/weak_ptr.h"
 
 class PeerData;
 
@@ -66,7 +67,7 @@ enum class GroupCallOrigin : uchar {
 	VideoStream,
 };
 
-class GroupCall final {
+class GroupCall final : public base::has_weak_ptr {
 public:
 	GroupCall(
 		not_null<PeerData*> peer,

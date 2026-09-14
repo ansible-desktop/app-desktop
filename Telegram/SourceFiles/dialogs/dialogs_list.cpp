@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_list.h"
 
@@ -83,6 +83,7 @@ void List::adjustByName(not_null<Row*> row) {
 
 void List::adjustByDate(not_null<Row*> row) {
 	Expects(_sortMode == SortMode::Date);
+	Expects(row->index() >= 0 && row->index() < _rows.size());
 
 	if (_frozen) {
 		const auto canAdjustWhileFrozen = _pendingAdjust.empty()
@@ -97,19 +98,24 @@ void List::adjustByDate(not_null<Row*> row) {
 	const auto key = row->sortKey(_filterId);
 	const auto index = row->index();
 	const auto i = _rows.begin() + index;
-	const auto before = std::find_if(i + 1, _rows.end(), [&](Row *row) {
-		return (row->sortKey(_filterId) <= key);
-	});
-	if (before != i + 1) {
+	if (i + 1 != _rows.end() && (*(i + 1))->sortKey(_filterId) > key) {
+		const auto before = std::lower_bound(
+			i + 2,
+			_rows.end(),
+			key,
+			[&](not_null<Row*> row, uint64 key) {
+				return (row->sortKey(_filterId) > key);
+			});
 		rotate(i, i + 1, before);
-	} else {
-		const auto from = std::make_reverse_iterator(i);
-		const auto after = std::find_if(from, _rows.rend(), [&](Row *row) {
-			return (row->sortKey(_filterId) >= key);
-		}).base();
-		if (after != i) {
-			rotate(after, i, i + 1);
-		}
+	} else if (i != _rows.begin() && (*(i - 1))->sortKey(_filterId) < key) {
+		const auto after = std::lower_bound(
+			_rows.begin(),
+			i - 1,
+			key,
+			[&](not_null<Row*> row, uint64 key) {
+				return (row->sortKey(_filterId) >= key);
+			});
+		rotate(after, i, i + 1);
 	}
 }
 

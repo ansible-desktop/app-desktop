@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -26,4 +26,5 @@ API_AVAILABLE(macos(10.12.2))
 - (id)init:(rpl::producer<Ui::MarkdownEnabledState>)markdownState
 	controller:(not_null<Window::Controller*>)controller
 	domain:(not_null<Main::Domain*>)domain;
+- (void)invalidate;
 @end

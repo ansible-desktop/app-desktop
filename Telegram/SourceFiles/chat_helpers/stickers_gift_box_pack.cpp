@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/stickers_gift_box_pack.h"
 
@@ -60,7 +60,7 @@ DocumentData *GiftBoxPack::lookup(
 	if (it == begin(pack.dividers)) {
 		return fallback;
 	} else if (it == end(pack.dividers)) {
-		return pack.documents.back();
+		return pack.documents.empty() ? nullptr : pack.documents.back();
 	}
 	const auto shift = exact
 		? ((*it > divider) ? 1 : 0)

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_setup_email.h"
 
@@ -200,6 +200,9 @@ SetupEmailLockWidget::SetupEmailLockWidget(
 				tr::lng_settings_cloud_login_email_placeholder()),
 			st::boxRowPadding,
 			style::al_top);
+		emailInput->setInputMethodHints(Qt::ImhEmailCharactersOnly
+			| Qt::ImhNoAutoUppercase
+			| Qt::ImhNoPredictiveText);
 
 		Ui::AddSkip(_layout);
 		Ui::AddSkip(_layout);

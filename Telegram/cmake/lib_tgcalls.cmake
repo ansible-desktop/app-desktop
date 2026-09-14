@@ -1,8 +1,8 @@
-# This file is part of Ansible Desktop, a fork of Telegram Desktop,
+# This file is part of Telegram Desktop,
 # the official desktop application for the Telegram messaging service.
 #
 # For license and copyright information please follow this link:
-# https://github.com/behappy-desktop/app-desktop/blob/master/LEGAL
+# https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 add_library(lib_tgcalls STATIC)
 init_target(lib_tgcalls) # Can't use std::optional::value on macOS.
@@ -65,6 +65,8 @@ PRIVATE
 
     v2/ContentNegotiation.cpp
     v2/ContentNegotiation.h
+    v2/CustomDcSctpSocket.cpp
+    v2/CustomDcSctpSocket.h
     v2/DirectNetworkingImpl.cpp
     v2/DirectNetworkingImpl.h
     v2/ExternalSignalingConnection.cpp

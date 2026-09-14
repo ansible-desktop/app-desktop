@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -109,7 +109,8 @@ private:
 	void moveAnimated(QPoint to);
 	void updateDecorations();
 
-	const std::unique_ptr<Ui::RpWidgetWrap> _content;
+	const std::unique_ptr<Ui::RpWidget> _window;
+	std::unique_ptr<Ui::RpWidgetWrap> _content;
 	const QPointer<QWidget> _parent;
 	RectParts _attached = RectParts();
 	RectParts _snapped = RectParts();
@@ -197,6 +198,7 @@ private:
 	class Renderer;
 	class RendererGL;
 	class RendererSW;
+	class RendererRhi;
 
 	void setupPanel();
 	void setupButtons();

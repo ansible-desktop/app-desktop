@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/player/media_player_dropdown.h"
 
@@ -767,6 +767,10 @@ void SpeedController::reloadFromLookup() {
 		setSpeed(lookup(false));
 		_speed = lookup(true);
 	}
+}
+
+void SpeedController::setQualities(std::vector<VideoQuality> qualities) {
+	_qualities = std::move(qualities);
 }
 
 float64 SpeedController::speed() const {

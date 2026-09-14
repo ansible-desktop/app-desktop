@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -25,7 +25,24 @@ class ForumTopic;
 class SavedSublist;
 } // namespace Data
 
+namespace Info {
+class AbstractController;
+} // namespace Info
+
 namespace Info::Polls {
+
+struct InlinePolls {
+	Ui::RpWidget *list = nullptr;
+	Fn<void(int width, int viewportHeight)> updateGeometry;
+	Fn<void(int top, int bottom)> setVisibleRegion;
+	Fn<void(QPainter &p, QRect clip)> paintBackground;
+	rpl::producer<SelectedItems> selectedItems;
+	Fn<void(SelectionAction)> selectionAction;
+	Fn<void(QString)> setSearchQuery;
+	bool canCreatePoll = false;
+	Fn<void()> createPoll;
+	std::shared_ptr<void> guard;
+};
 
 class ListMemento final : public ContentMemento {
 public:
@@ -60,6 +77,11 @@ public:
 		QWidget *parent,
 		not_null<Controller*> controller);
 	~ListWidget();
+
+	[[nodiscard]] static InlinePolls MakeInline(
+		not_null<Ui::RpWidget*> parent,
+		not_null<AbstractController*> controller,
+		Fn<void(int top)> scrollToRequest);
 
 	bool showInternal(
 		not_null<ContentMemento*> memento) override;

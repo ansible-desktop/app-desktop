@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "payments/ui/payments_reaction_box.h"
 
@@ -30,12 +30,9 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
 #include "styles/style_credits.h"
-#include "styles/style_info.h"
 #include "styles/style_info_levels.h"
 #include "styles/style_layers.h"
-#include "styles/style_media_player.h"
 #include "styles/style_premium.h"
-#include "styles/style_settings.h"
 
 namespace Settings {
 [[nodiscard]] not_null<Ui::RpWidget*> AddBalanceWidget(

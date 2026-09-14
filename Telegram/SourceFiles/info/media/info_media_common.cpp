@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/media/info_media_common.h"
 
@@ -26,6 +26,10 @@ UniversalMsgId GetUniversalId(not_null<const HistoryItem*> item) {
 
 UniversalMsgId GetUniversalId(not_null<const BaseLayout*> layout) {
 	return GetUniversalId(layout->getItem()->fullId());
+}
+
+uint64 GetLayoutCacheKey(not_null<const BaseLayout*> layout) {
+	return uint64(reinterpret_cast<quintptr>(layout.get()));
 }
 
 bool ChangeItemSelection(
@@ -56,12 +60,13 @@ bool ChangeItemSelection(
 }
 
 int MinItemHeight(Type type, int width) {
-	auto &songSt = st::overviewFileLayout;
+	const auto &songSt = st::overviewFileLayout;
 
 	switch (type) {
 	case Type::Photo:
 	case Type::GIF:
 	case Type::Video:
+	case Type::PhotoVideo:
 	case Type::RoundFile: {
 		auto itemsLeft = st::infoMediaSkip;
 		auto itemsInRow = (width - itemsLeft)

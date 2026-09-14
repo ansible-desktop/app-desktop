@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -225,9 +225,10 @@ private:
 	void setSendLargePhotos(bool enabled);
 	void changePrice();
 
-	[[nodiscard]] bool canChangePrice() const;
 	[[nodiscard]] bool hasPrice() const;
 	[[nodiscard]] bool hasSendLargePhotosOption() const;
+	[[nodiscard]] bool canMoveCaptionInCurrentSendWay() const;
+	[[nodiscard]] bool canChangePrice() const;
 	void refreshPriceTag();
 	[[nodiscard]] QImage preparePriceTagBg(QSize size) const;
 
@@ -256,7 +257,10 @@ private:
 	void updateControlsGeometry();
 	void updateCaptionVisibility();
 
-	bool addFiles(not_null<const QMimeData*> data);
+	bool addFiles(
+		not_null<const QMimeData*> data,
+		std::optional<bool> overrideSendImagesAsPhotos = std::nullopt);
+	void applySendImagesAsPhotosOverride(const Ui::PreparedList &list);
 	bool addFiles(Ui::PreparedList list);
 	void addFile(Ui::PreparedFile &&file);
 	void pushBlock(int from, int till);

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -22,6 +22,7 @@ class SessionShow;
 
 namespace Ui {
 class PopupMenu;
+class Show;
 enum class ReportReason;
 } // namespace Ui
 
@@ -59,6 +60,10 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 	const ContextMenuRequest &request);
 
 void InsertPollHiddenResultsLabel(not_null<Ui::PopupMenu*> menu);
+void InsertPollVoteRestrictionsLabel(
+	not_null<Ui::PopupMenu*> menu,
+	not_null<HistoryItem*> item,
+	not_null<PollData*> poll);
 
 void CopyPostLink(
 	not_null<Window::SessionController*> controller,
@@ -94,7 +99,8 @@ void AddPollActions(
 	not_null<HistoryItem*> item,
 	Context context,
 	not_null<Window::SessionController*> controller,
-	bool skipRetractVote = false);
+	bool skipRetractVote = false,
+	bool skipViewStats = false);
 void AddSaveSoundForNotifications(
 	not_null<Ui::PopupMenu*> menu,
 	not_null<HistoryItem*> item,
@@ -152,6 +158,13 @@ void AddSelectRestrictionAction(
 	not_null<Ui::PopupMenu*> menu,
 	not_null<HistoryItem*> item,
 	bool addIcon);
+void AddEphemeralMessageActions(
+	not_null<Ui::PopupMenu*> menu,
+	std::shared_ptr<Ui::Show> show,
+	not_null<HistoryItem*> item);
+void AddEphemeralAboutAction(
+	not_null<Ui::PopupMenu*> menu,
+	not_null<HistoryItem*> item);
 
 [[nodiscard]] TextWithEntities TransribedText(not_null<HistoryItem*> item);
 

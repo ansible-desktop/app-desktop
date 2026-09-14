@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "mtproto/mtproto_config.h"
 
@@ -24,8 +24,10 @@ constexpr auto kVersion = 1;
 } // namespace
 
 ConfigFields::ConfigFields(Environment environment)
-: webFileDcId(1)
-, txtDomainString(u""_q)
+: webFileDcId(environment == Environment::Test ? 2 : 4)
+, txtDomainString(environment == Environment::Test
+	? u"tapv3.stel.com"_q
+	: u"apv3.stel.com"_q)
 , reactionDefaultEmoji(ConfigDefaultReactionEmoji())
 , gifSearchUsername(environment == Environment::Test
 	? u"izgifbot"_q

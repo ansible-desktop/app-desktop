@@ -1,11 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
+
+#include "history/history_message_selection.h"
 
 class HistoryItem;
 
@@ -54,12 +56,20 @@ struct TextState {
 	ClickHandlerPtr link;
 	uint16 symbol = 0;
 	bool afterSymbol = false;
+	MessageSelectionEndpoint selectionCursor;
 	bool overMessageText = false;
 	bool customTooltip = false;
 	bool horizontalScroll = false;
 	QString customTooltipText;
 
 };
+
+void SyncFlatSelectionCursor(not_null<TextState*> state);
+void SetTextStatePosition(
+	not_null<TextState*> state,
+	uint16 symbol,
+	bool afterSymbol);
+void AddTextStateOffset(not_null<TextState*> state, uint16 offset);
 
 struct StateRequest {
 	Ui::Text::StateRequest::Flags flags = Ui::Text::StateRequest::Flag::LookupLink;
@@ -76,5 +86,9 @@ enum class InfoDisplayType : char {
 	Image,
 	Background,
 };
+
+[[nodiscard]] not_null<HistoryItem*> LookupItemByPoint(
+	not_null<Element*> view,
+	QPoint itemPoint);
 
 } // namespace HistoryView

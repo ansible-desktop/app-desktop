@@ -1,15 +1,16 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "data/data_drafts.h"
 
 class History;
+class PhotoData;
 
 namespace Data {
 class Thread;
@@ -36,6 +37,7 @@ struct SendOptions {
 	bool invertCaption = false;
 	bool hideViaBot = false;
 	bool mediaSpoiler = false;
+	bool welcomeTemplate = false;
 	crl::time ttlSeconds = 0;
 	SuggestOptions suggest;
 
@@ -86,6 +88,16 @@ struct RemoteFileInfo {
 	std::vector<MTPInputDocument> attachedStickers;
 	bool forceFile = false;
 
+};
+
+struct VideoCoverEdit {
+	PhotoData *photo = nullptr;
+	bool cleared = false;
+	Fn<void(Fn<void(PhotoData*)> done)> refresh;
+
+	[[nodiscard]] explicit operator bool() const {
+		return (photo != nullptr) || cleared;
+	}
 };
 
 } // namespace Api

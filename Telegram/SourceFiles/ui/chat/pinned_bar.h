@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -44,6 +44,7 @@ public:
 	[[nodiscard]] int height() const;
 	[[nodiscard]] rpl::producer<int> heightValue() const;
 	[[nodiscard]] rpl::producer<> barClicks() const;
+	[[nodiscard]] rpl::producer<> barRightClicks() const;
 	[[nodiscard]] rpl::producer<> contextMenuRequested() const;
 
 	[[nodiscard]] rpl::lifetime &lifetime() {
@@ -67,6 +68,7 @@ private:
 	std::unique_ptr<Ui::PlainShadow> _shadow;
 	Fn<bool()> _customEmojiPaused;
 	rpl::event_stream<> _barClicks;
+	rpl::event_stream<> _barRightClicks;
 	rpl::event_stream<> _contextMenuRequested;
 	Fn<QRect(QRect)> _shadowGeometryPostprocess;
 	bool _shouldBeShown = false;

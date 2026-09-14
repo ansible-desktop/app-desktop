@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 
 #define __HUGE
@@ -111,6 +111,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 #include "base/algorithm.h"
 #include "base/basic_types.h"
+#include "base/const_string.h"
 #include "base/debug_destroy_informer.h" // _DEBUG only.
 #include "base/flat_set.h"
 #include "base/flat_map.h"

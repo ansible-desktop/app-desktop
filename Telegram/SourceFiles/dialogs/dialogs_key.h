@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -12,6 +12,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 class History;
 class PeerData;
+class ChannelData;
 
 namespace Data {
 class Thread;
@@ -115,6 +116,7 @@ struct EntryState {
 		ContextMenu,
 		SubsectionTabsMenu,
 		ShortcutMessages,
+		WelcomeMessages,
 	};
 
 	Key key;
@@ -141,9 +143,11 @@ enum class ChatTypeFilter : uchar {
 struct SearchState {
 	Key inChat;
 	PeerData *fromPeer = nullptr;
+	ChannelData *community = nullptr;
 	std::vector<Data::ReactionId> tags;
 	ChatSearchTab tab = {};
 	ChatTypeFilter filter = ChatTypeFilter::All;
+	bool fromArchive = true;
 	QString query;
 
 	[[nodiscard]] bool empty() const;

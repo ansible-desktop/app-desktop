@@ -1,12 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
+#include "base/weak_ptr.h"
 #include "ui/userpic_view.h"
 
 namespace Main {
@@ -43,7 +44,9 @@ private:
 	const not_null<Main::Session*> _session;
 
 	std::vector<not_null<PeerData*>> _list;
-	std::vector<not_null<Thread*>> _opens;
+	// Weak: a ForumTopic or SavedSublist can be destroyed without an
+	// applyTopicDeleted() / applySublistDeleted() call.
+	std::vector<base::weak_ptr<Thread>> _opens;
 	base::flat_map<
 		not_null<PeerData*>,
 		Ui::PeerUserpicView> _chatOpenUserpicsCache;

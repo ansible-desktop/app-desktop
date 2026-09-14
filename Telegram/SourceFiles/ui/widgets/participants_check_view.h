@@ -1,25 +1,29 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
+#include "ui/text/text.h"
+#include "ui/widgets/buttons.h"
 #include "ui/widgets/checkbox.h"
 
 namespace Ui {
 
-class ParticipantsCheckView : public Ui::AbstractCheckView {
+class ExpanderCheckView final : public Ui::AbstractCheckView {
 public:
-	ParticipantsCheckView(
-		int count,
+	ExpanderCheckView(
+		TextWithEntities text,
 		int duration,
 		bool checked,
 		Fn<void()> updateCallback);
 
-	[[nodiscard]] static QSize ComputeSize(int count);
+	[[nodiscard]] static QSize ComputeSize(const TextWithEntities &text);
+
+	void setText(TextWithEntities text);
 
 	QSize getSize() const override;
 
@@ -27,12 +31,33 @@ public:
 	QImage prepareRippleMask() const override;
 	bool checkRippleStartPosition(QPoint position) const override;
 
-	~ParticipantsCheckView();
+	~ExpanderCheckView();
 
 private:
-	const QString _text;
-	const int _count;
 	void checkedChangedHook(anim::type animated) override;
+
+	Ui::Text::String _text;
+	QSize _size;
+
+};
+
+class ExpanderButton final : public Ui::RippleButton {
+public:
+	ExpanderButton(
+		not_null<QWidget*> parent,
+		TextWithEntities text);
+
+	[[nodiscard]] static QSize ComputeSize(const TextWithEntities &text);
+
+	void setText(TextWithEntities text);
+	[[nodiscard]] not_null<Ui::AbstractCheckView*> checkView() const;
+
+private:
+	void paintEvent(QPaintEvent *event) override;
+	QImage prepareRippleMask() const override;
+	QPoint prepareRippleStartPosition() const override;
+
+	std::unique_ptr<Ui::ExpanderCheckView> _view;
 
 };
 

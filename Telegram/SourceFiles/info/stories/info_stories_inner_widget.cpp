@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/stories/info_stories_inner_widget.h"
 
@@ -308,17 +308,13 @@ void InnerWidget::createProfileTop() {
 		_topBarColor.value());
 
 	using namespace Profile;
-	auto mainTracker = Ui::MultiSlideTracker();
-	auto dividerOverridden = rpl::variable<bool>(false);
 	AddDetails(
 		_top,
 		_controller,
 		_peer,
 		nullptr,
 		nullptr,
-		{ v::null },
-		mainTracker,
-		dividerOverridden);
+		{ v::null });
 
 	auto tracker = Ui::MultiSlideTracker();
 	const auto dividerWrap = _top->add(

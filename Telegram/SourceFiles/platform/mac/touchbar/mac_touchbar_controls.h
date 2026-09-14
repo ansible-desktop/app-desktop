@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -16,7 +16,6 @@ struct TrackState;
 @class NSButton;
 @class NSCustomTouchBarItem;
 @class NSImage;
-@class NSSliderTouchBarItem;
 
 namespace TouchBar {
 
@@ -51,7 +50,7 @@ NSButton *CreateTouchBarButtonWithTwoStates(
 	rpl::producer<bool> stateChanged = rpl::never<bool>());
 
 [[nodiscard]] API_AVAILABLE(macos(10.12.2))
-NSSliderTouchBarItem *CreateTouchBarSlider(
+NSCustomTouchBarItem *CreateTouchBarSlider(
 	NSString *itemId,
 	rpl::lifetime &lifetime,
 	Fn<void(bool, double, double)> callback,

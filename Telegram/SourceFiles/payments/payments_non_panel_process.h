@@ -1,11 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
+
+#include "base/weak_ptr.h"
 
 class HistoryItem;
 
@@ -38,11 +40,11 @@ void ProcessCreditsReceipt(
 	Fn<void(CheckoutResult)> maybeReturnToBot = nullptr);
 
 Fn<void(NonPanelPaymentForm)> ProcessNonPanelPaymentFormFactory(
-	not_null<Window::SessionController*> controller,
+	base::weak_ptr<Window::SessionController> controller,
 	Fn<void(Payments::CheckoutResult)> maybeReturnToBot = nullptr);
 
 Fn<void(NonPanelPaymentForm)> ProcessNonPanelPaymentFormFactory(
-	not_null<Window::SessionController*> controller,
+	base::weak_ptr<Window::SessionController> controller,
 	not_null<HistoryItem*> item);
 
 } // namespace Payments

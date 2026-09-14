@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 
 #pragma once
@@ -22,6 +22,11 @@ struct Info {
 	QString alternativeName;
 	std::vector<CallingCodeInfo> codes;
 	bool isHidden = false;
+};
+
+enum class Naming : uchar {
+	Default,
+	Polls,
 };
 
 struct FormatResult {
@@ -50,7 +55,9 @@ public:
 	[[nodiscard]] const Map &byISO2() const;
 
 	[[nodiscard]] QString validPhoneCode(QString fullCode) const;
-	[[nodiscard]] QString countryNameByISO2(const QString &iso) const;
+	[[nodiscard]] QString countryNameByISO2(
+		const QString &iso,
+		Naming naming = Naming::Default) const;
 	[[nodiscard]] QString countryISO2ByPhone(const QString &phone) const;
 	[[nodiscard]] QString flagEmojiByISO2(const QString &iso) const;
 

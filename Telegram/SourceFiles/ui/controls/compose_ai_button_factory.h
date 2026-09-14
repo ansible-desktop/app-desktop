@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -33,6 +33,8 @@ extern const char kOptionHideAiButton[];
 	not_null<Main::Session*> session,
 	not_null<Ui::InputField*> field);
 
+[[nodiscard]] bool HasEnoughLinesForExpand(not_null<Ui::InputField*> field);
+
 struct SetupCaptionAiButtonArgs {
 	not_null<QWidget*> parent;
 	not_null<Ui::InputField*> field;
@@ -49,7 +51,6 @@ void UpdateCaptionAiButtonGeometry(
 	not_null<Ui::InputField*> field);
 
 [[nodiscard]] PreparedList PrepareTextAsFile(const QString &text);
-[[nodiscard]] int SendAsFilePasteThreshold();
 
 struct LargeTextPasteResult {
 	bool exceeds = false;
@@ -57,6 +58,7 @@ struct LargeTextPasteResult {
 };
 
 [[nodiscard]] LargeTextPasteResult CheckLargeTextPaste(
+	not_null<Main::Session*> session,
 	not_null<Ui::InputField*> field,
 	not_null<const QMimeData*> data);
 

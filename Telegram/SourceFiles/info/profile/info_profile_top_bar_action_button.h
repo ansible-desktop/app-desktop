@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -47,6 +47,7 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent *e) override;
+	void onStateChanged(State was, StateChangeSource source) override;
 
 	QImage prepareRippleMask() const override;
 	QPoint prepareRippleStartPosition() const override;
@@ -68,7 +69,8 @@ private:
 
 	QColor _bgColor;
 	std::optional<QColor> _fgColor;
-	std::optional<QColor> _shadowColor;
+	std::optional<QColor> _rippleColor;
+	Ui::Animations::Simple _overAnimation;
 
 };
 

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "inline_bots/inline_bot_result.h"
 
@@ -205,6 +205,10 @@ std::shared_ptr<Result> Result::Create(
 			qs(data.vmessage()),
 			Api::EntitiesFromMTP(session, data.ventities().value_or_empty()),
 			data.is_no_webpage());
+	}, [&](const MTPDbotInlineMessageRichMessage &data) {
+		result->sendData = std::make_unique<internal::SendRichMessage>(
+			session,
+			data.vrich_message());
 	}, [&](const MTPDbotInlineMessageMediaGeo &data) {
 		data.vgeo().match([&](const MTPDgeoPoint &geo) {
 			if (const auto period = data.vperiod()) {

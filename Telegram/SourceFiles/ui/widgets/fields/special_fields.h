@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -81,6 +81,7 @@ private:
 	QString _additionalPlaceholder;
 	rpl::event_stream<not_null<QKeyEvent*>> _frontBackspaceEvent;
 	GroupsCallback _groupsCallback;
+	bool _addingToNumber = false;
 
 };
 

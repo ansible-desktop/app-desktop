@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/win/specific_win.h"
 
@@ -17,6 +17,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "base/platform/win/base_windows_shlobj_h.h"
 #include "base/platform/win/base_windows_winrt.h"
 #include "base/call_delayed.h"
+#include "core/version.h"
 #include "ui/boxes/confirm_box.h"
 #include "lang/lang_keys.h"
 #include "mainwindow.h"
@@ -26,6 +27,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "core/application.h"
 #include "window/window_controller.h"
 #include "core/crash_reports.h"
+#include "core/version.h"
 
 #include <QtCore/QOperatingSystemVersion>
 #include <QtWidgets/QApplication>
@@ -68,6 +70,12 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #define WM_NCPOINTERUPDATE 0x0241
 #define WM_NCPOINTERDOWN 0x0242
 #define WM_NCPOINTERUP 0x0243
+#endif
+
+// Windows 10 version 2004 and later. Older systems only have WDA_MONITOR,
+// which leaves the window in the capture but paints it black.
+#ifndef WDA_EXCLUDEFROMCAPTURE
+#define WDA_EXCLUDEFROMCAPTURE 0x00000011
 #endif
 
 using namespace ::Platform;
@@ -474,7 +482,7 @@ void AutostartToggle(bool enabled, Fn<void(bool)> done) {
 		silent,
 		FOLDERID_Startup,
 		L"-autostart",
-		L"Ansible autorun link.\n"
+		L"Telegram autorun link.\n"
 		"You can disable autorun in Telegram settings.");
 	if (done) {
 		done(enabled && success);
@@ -515,6 +523,28 @@ void WriteCrashDumpDetails() {
 #endif // TDESKTOP_DISABLE_CRASH_REPORTS
 }
 
+bool ScreenshotProtectionSupported() {
+	return true;
+}
+
+bool AmbientScreenshotProtectionSupported() {
+	// Display affinity hides the window from the viewer, not just captures.
+	return false;
+}
+
+void SetWindowScreenshotProtection(not_null<QWidget*> window, bool enabled) {
+	const auto handle = window->internalWinId();
+	if (!handle) {
+		return;
+	}
+	const auto hwnd = reinterpret_cast<HWND>(handle);
+	if (!enabled) {
+		SetWindowDisplayAffinity(hwnd, WDA_NONE);
+	} else if (!SetWindowDisplayAffinity(hwnd, WDA_EXCLUDEFROMCAPTURE)) {
+		SetWindowDisplayAffinity(hwnd, WDA_MONITOR);
+	}
+}
+
 void SetWindowPriority(not_null<QWidget*> window, uint32 priority) {
 	const auto hwnd = reinterpret_cast<HWND>(window->winId());
 	Assert(hwnd != nullptr);
@@ -536,6 +566,18 @@ void ActivateOtherProcess(uint64 processId, uint64 windowId) {
 		::SetForegroundWindow(hwnd);
 		::SetFocus(hwnd);
 	}
+}
+
+bool WaitForProcessExit(uint64 processId, crl::time timeout) {
+	const auto process = ::OpenProcess(
+		SYNCHRONIZE,
+		FALSE,
+		DWORD(processId));
+	if (!process) {
+		return (::GetLastError() == ERROR_INVALID_PARAMETER);
+	}
+	const auto guard = gsl::finally([&] { ::CloseHandle(process); });
+	return (::WaitForSingleObject(process, DWORD(timeout)) == WAIT_OBJECT_0);
 }
 
 } // namespace Platform
@@ -708,7 +750,7 @@ void psSendToMenu(bool send, bool silent) {
 		silent,
 		FOLDERID_SendTo,
 		L"--",
-		L"Ansible send to link.\n"
+		L"Telegram send to link.\n"
 		"You can disable send to menu item in Telegram settings.");
 }
 

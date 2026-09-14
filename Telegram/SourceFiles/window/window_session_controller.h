@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -15,6 +15,9 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "mtproto/sender.h"
 #include "settings/settings_type.h"
 #include "window/window_adaptive.h"
+
+#include <QtCore/QDate>
+#include <QtCore/QPointer>
 
 class PhotoData;
 class MainWidget;
@@ -84,6 +87,7 @@ struct CloudTheme;
 enum class CloudThemeType;
 class PhotoMedia;
 class Thread;
+class CommunityInfo;
 class Forum;
 class ForumTopic;
 class SavedSublist;
@@ -108,6 +112,7 @@ using GifPauseReason = ChatHelpers::PauseReason;
 using GifPauseReasons = ChatHelpers::PauseReasons;
 
 class SectionMemento;
+class SectionWidget;
 class Controller;
 class FiltersMenu;
 class ChatPreviewManager;
@@ -207,9 +212,11 @@ struct SectionShow {
 	bool childColumn = false;
 	bool forbidLayer = false;
 	bool forceTopicsList = false;
+	bool preferCurrentWindow = false;
 	bool reapplyLocalDraft = false;
 	bool dropSameFromStack = false;
 	bool allowDuplicateInStack = false;
+	bool slideFromBottom = false;
 	Origin origin;
 
 };
@@ -412,6 +419,7 @@ public:
 	[[nodiscard]] SeparateId windowId() const;
 	[[nodiscard]] bool isPrimary() const;
 	[[nodiscard]] not_null<::MainWindow*> widget() const;
+	[[nodiscard]] rpl::producer<> imeCompositionStarts() const;
 	[[nodiscard]] not_null<MainWidget*> content() const;
 	[[nodiscard]] Adaptive &adaptive() const;
 	[[nodiscard]] ChatHelpers::EmojiInteractions &emojiInteractions() const {
@@ -458,6 +466,10 @@ public:
 		MsgId showAtMsgId = ShowAtUnreadMsgId);
 	void closeForum();
 	const rpl::variable<Data::Forum*> &shownForum() const;
+
+	void openCommunity(not_null<Data::CommunityInfo*> info);
+	void closeCommunity();
+	const rpl::variable<Data::CommunityInfo*> &openedCommunity() const;
 
 	void setActiveChatEntry(Dialogs::RowDescriptor row);
 	void setActiveChatEntry(Dialogs::Key key);
@@ -513,7 +525,6 @@ public:
 	void resizeForThirdSection();
 	void closeThirdSection();
 
-	[[nodiscard]] bool canShowSeparateWindow(SeparateId id) const;
 	void showPeer(not_null<PeerData*> peer, MsgId msgId = ShowAtUnreadMsgId);
 
 	void startOrJoinGroupCall(not_null<PeerData*> peer);
@@ -552,6 +563,10 @@ public:
 	}
 	void removeLayerBlackout();
 	[[nodiscard]] bool isLayerShown() const;
+	[[nodiscard]] rpl::producer<bool> boxShownValue() const;
+	void registerActiveLayerSection(SectionWidget *section);
+	void unregisterActiveLayerSection(SectionWidget *section);
+	[[nodiscard]] SectionWidget *activeLayerSection() const;
 
 	struct ShowCalendarDescriptor {
 		Dialogs::Key chat;
@@ -742,6 +757,7 @@ private:
 
 	void init();
 	void setupShortcuts();
+	void setupScreenshotProtection();
 	void checkOpenedFilter();
 	void suggestArchiveAndMute();
 	void activateFirstChatsFilter();
@@ -782,6 +798,8 @@ private:
 	void checkNonPremiumLimitToastUpload(FullMsgId id);
 
 	bool openFolderInDifferentWindow(not_null<Data::Folder*> folder);
+	bool openCommunityInDifferentWindow(
+		not_null<Data::CommunityInfo*> info);
 	bool showForumInDifferentWindow(
 		not_null<Data::Forum*> forum,
 		const SectionShow &params,
@@ -789,7 +807,8 @@ private:
 
 	[[nodiscard]] bool openPhotoExternal(
 		not_null<PhotoData*> photo,
-		Data::FileOrigin origin);
+		Data::FileOrigin origin,
+		HistoryItem *item);
 	void handleDrawToReplyRequest(Data::DrawToReplyRequest request);
 	[[nodiscard]] Data::Thread *resolveDrawToReplyThread(
 		const Data::DrawToReplyRequest &request) const;
@@ -843,15 +862,19 @@ private:
 	rpl::variable<int> _connectingBottomSkip;
 
 	rpl::event_stream<ChatHelpers::FileChosen> _stickerOrEmojiChosen;
+	QPointer<SectionWidget> _activeLayerSection;
 
 	PeerData *_showEditPeer = nullptr;
 	rpl::variable<Data::Folder*> _openedFolder;
 	rpl::variable<Data::Forum*> _shownForum;
 	rpl::lifetime _shownForumLifetime;
+	rpl::variable<Data::CommunityInfo*> _openedCommunity;
+	rpl::lifetime _openedCommunityLifetime;
 
 	rpl::event_stream<> _filtersMenuChanged;
 
 	const std::shared_ptr<Ui::ChatTheme> _defaultChatTheme;
+	std::vector<QColor> _defaultChatThemeBubblesColors;
 	base::flat_map<CachedThemeKey, CachedTheme> _customChatThemes;
 	rpl::event_stream<std::shared_ptr<Ui::ChatTheme>> _cachedThemesStream;
 	rpl::event_stream<> _giftSymbolLoaded;

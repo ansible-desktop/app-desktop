@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "editor/controllers/stickers_panel_controller.h"
 
@@ -34,6 +34,7 @@ StickersPanelController::StickersPanelController(
 						.megagroupSet = false,
 						.stickersSettings = false,
 						.openStickerSets = false,
+						.photoButton = true,
 					},
 				}),
 		})) {
@@ -50,6 +51,10 @@ auto StickersPanelController::stickerChosen() const
 	) | rpl::map([](const ChatHelpers::FileChosen &data) {
 		return data.document;
 	});
+}
+
+rpl::producer<> StickersPanelController::photoRequests() const {
+	return _stickersPanel->selector()->photoRequests();
 }
 
 rpl::producer<bool> StickersPanelController::panelShown() const {

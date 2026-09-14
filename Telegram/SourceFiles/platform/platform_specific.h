@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -19,6 +19,16 @@ namespace Platform {
 
 void start();
 void finish();
+
+// Passed to the instance relaunched from its original location after an
+// App Translocation fix, so a relaunch that is still translocated stops
+// instead of trying again.
+inline constexpr auto kUntranslocatedArgument = "-untranslocated";
+
+// Returns false when startup must stop right away: the process was
+// started by macOS from a read-only translocated copy of the bundle and
+// either relaunched itself from the original location or told the user.
+[[nodiscard]] bool CheckAppTranslocation();
 
 enum class PermissionStatus {
 	Granted,
@@ -48,6 +58,9 @@ void AutostartToggle(bool enabled, Fn<void(bool)> done = nullptr);
 [[nodiscard]] bool AutostartSkip();
 [[nodiscard]] bool TrayIconSupported();
 [[nodiscard]] bool SkipTaskbarSupported();
+[[nodiscard]] bool ScreenshotProtectionSupported();
+[[nodiscard]] bool AmbientScreenshotProtectionSupported();
+void SetWindowScreenshotProtection(not_null<QWidget*> window, bool enabled);
 void WriteCrashDumpDetails();
 void NewVersionLaunched(int oldVersion);
 [[nodiscard]] QImage DefaultApplicationIcon();

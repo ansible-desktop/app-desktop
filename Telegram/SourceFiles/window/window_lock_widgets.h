@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -32,6 +32,18 @@ namespace Window {
 
 class Controller;
 class SlideAnimation;
+
+enum class PasscodeAttempt : uchar {
+	Empty,
+	Flood,
+	Wrong,
+	Correct,
+};
+
+// Bumps the bad tries counters on a wrong passcode. Does not unlock:
+// Core::App().unlockPasscode() destroys the main lock screen widget, so
+// the caller runs it as its own last statement.
+[[nodiscard]] PasscodeAttempt TryPasscode(const QString &passcode);
 
 class LockWidget : public Ui::RpWidget {
 public:

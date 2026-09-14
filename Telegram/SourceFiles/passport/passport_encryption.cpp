@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "passport/passport_encryption.h"
 
@@ -373,6 +373,9 @@ bytes::vector DecryptData(
 		return {};
 	} else if (dataSecret.size() != kSecretSize) {
 		LOG(("API Error: Bad data secret size %1").arg(dataSecret.size()));
+		return {};
+	} else if ((encrypted.size() % kAlignTo) != 0) {
+		LOG(("API Error: Bad encrypted size %1").arg(encrypted.size()));
 		return {};
 	}
 

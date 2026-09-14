@@ -1,12 +1,13 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
+#include "mtproto/sender.h"
 #include "spellcheck/spellcheck_types.h"
 
 class History;
@@ -43,6 +44,7 @@ private:
 	};
 	struct ItemToRequest {
 		int length = 0;
+		bool rich = false;
 	};
 
 	void setup();
@@ -54,6 +56,7 @@ private:
 	void checkRecognized(const std::vector<LanguageId> &skip);
 	void applyLimit();
 	void requestSome();
+	void requestSomeRich(LanguageId to, PeerId peerId);
 	void cancelToRequest();
 	void cancelSentRequest();
 	void stopAndRevert();
@@ -61,6 +64,7 @@ private:
 
 	const not_null<History*> _history;
 	const std::unique_ptr<Ui::TranslateProvider> _provider;
+	MTP::Sender _api;
 	rpl::variable<bool> _trackingLanguage = false;
 	base::flat_map<FullMsgId, ItemForRecognize> _itemsForRecognize;
 	uint64 _generation = 0;

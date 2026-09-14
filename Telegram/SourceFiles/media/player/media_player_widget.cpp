@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/player/media_player_widget.h"
 
@@ -37,8 +37,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "main/main_session.h"
 #include "window/window_session_controller.h"
 #include "styles/style_media_player.h"
-#include "styles/style_media_view.h"
-#include "styles/style_chat.h" // expandedMenuSeparator.
 
 namespace Media {
 namespace Player {

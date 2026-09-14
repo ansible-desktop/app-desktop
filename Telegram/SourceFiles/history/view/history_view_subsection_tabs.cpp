@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_subsection_tabs.h"
 
@@ -980,7 +980,7 @@ bool SubsectionTabs::switchTo(
 bool SubsectionTabs::UsedFor(not_null<Data::Thread*> thread) {
 	const auto history = thread->owningHistory();
 	return history->amMonoforumAdmin()
-		|| history->peer->useSubsectionTabs();
+		|| history->peer->displaySubsectionTabs();
 }
 
 void SubsectionTabs::applyReorder(

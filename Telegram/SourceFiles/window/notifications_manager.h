@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -77,21 +77,11 @@ struct custom_is_fast_copy_type<Window::Notifications::ChangeType> : std::true_t
 
 } // namespace base
 
-namespace base::options {
-
-template <typename Type>
-class option;
-
-using toggle = option<bool>;
-
-} // namespace base::options
-
 namespace Window::Notifications {
 
 extern const char kOptionCustomNotification[];
 extern const char kOptionGNotification[];
-extern base::options::toggle OptionGNotification;
-
+extern const char kOptionMacModernNotifications[];
 extern const char kOptionHideReplyButton[];
 
 class Manager;

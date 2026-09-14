@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/peers/edit_peer_reactions.h"
 
@@ -24,6 +24,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "main/main_session.h"
 #include "ui/boxes/boost_box.h"
 #include "ui/layers/generic_box.h"
+#include "ui/text/text_custom_emoji.h"
 #include "ui/text/text_utilities.h"
 #include "ui/vertical_list.h"
 #include "ui/widgets/checkbox.h"
@@ -393,12 +394,12 @@ object_ptr<Ui::RpWidget> AddReactionsSelector(
 		const auto id = Data::ParseCustomEmojiData(data);
 		auto result = Ui::Text::MakeCustomEmoji(data, simpleContext);
 		if (state->unifiedFactoryOwner->lookupReactionId(id).custom()) {
-			return std::make_unique<MaybeDisabledEmoji>(
+			return MakeWrappedEmoji<MaybeDisabledEmoji>(
 				std::move(result),
 				[=] { return state->allowed.contains(id); });
 		}
 		using namespace Ui::Text;
-		return std::make_unique<FirstFrameEmoji>(std::move(result));
+		return MakeWrappedEmoji<FirstFrameEmoji>(std::move(result));
 	};
 	raw->setCustomTextContext(
 		std::move(context),
@@ -940,7 +941,7 @@ void EditAllowedReactionsBox(
 				tr::lng_manage_peer_reactions_paid_link([=](QString text) {
 					return tr::link(
 						text,
-						u"https://ansible.su/tos/stars"_q);
+						u"https://telegram.org/tos/stars"_q);
 				}),
 				tr::marked));
 	}

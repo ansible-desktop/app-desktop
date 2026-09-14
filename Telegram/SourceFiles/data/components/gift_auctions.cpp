@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/components/gift_auctions.h"
 
@@ -333,8 +333,17 @@ ActiveAuctions GiftAuctions::collectActive() const {
 }
 
 uint64 GiftAuctions::countActiveHash() const {
+	// The server hashes the auctions in a fixed order, so we have to sort
+	// them by (date, version) before hashing, just like the Android client
+	// does in GiftAuctionController::calculateUserAuctionsHash. Otherwise
+	// the server will never answer with starGiftActiveAuctionsNotModified.
+	auto list = collectActive().list;
+	ranges::sort(list, ranges::less(), [](const auto &active) {
+		return (uint64(uint32(active->my.date)) << 32)
+			| uint32(active->version);
+	});
 	auto result = Api::HashInit();
-	for (const auto &active : collectActive().list) {
+	for (const auto &active : list) {
 		Api::HashUpdate(result, active->version);
 		Api::HashUpdate(result, active->my.date);
 	}

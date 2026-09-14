@@ -1,15 +1,19 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "platform/platform_specific.h"
 
 namespace Platform {
+
+inline bool CheckAppTranslocation() {
+	return true;
+}
 
 inline void IgnoreApplicationActivationRightNow() {
 }
@@ -24,14 +28,30 @@ inline bool PreventsQuit(Core::QuitReason reason) {
 	return false;
 }
 
-inline void ActivateThisProcess() {
-}
+void ActivateThisProcess();
 
 inline uint64 ActivationWindowId(not_null<QWidget*> window) {
 	return 1;
 }
 
 inline void ActivateOtherProcess(uint64 processId, uint64 windowId) {
+}
+
+inline bool WaitForProcessExit(uint64 processId, crl::time timeout) {
+	return true;
+}
+
+inline bool ScreenshotProtectionSupported() {
+	return false;
+}
+
+inline bool AmbientScreenshotProtectionSupported() {
+	return false;
+}
+
+inline void SetWindowScreenshotProtection(
+		not_null<QWidget*> window,
+		bool enabled) {
 }
 
 } // namespace Platform

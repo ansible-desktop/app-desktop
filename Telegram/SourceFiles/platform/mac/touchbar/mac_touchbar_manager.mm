@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/mac/touchbar/mac_touchbar_manager.h"
 
@@ -121,9 +121,14 @@ const auto kAudioItemIdentifier = @"touchbarAudio";
 	return self;
 }
 
+- (void)invalidate {
+	_lifetime.destroy();
+	_controller = nullptr;
+}
+
 - (NSTouchBarItem*)touchBar:(NSTouchBar*)touchBar
 		makeItemForIdentifier:(NSTouchBarItemIdentifier)itemId {
-	if (!touchBar || !_controller->sessionController()) {
+	if (!touchBar || !_controller || !_controller->sessionController()) {
 		return nil;
 	}
 	const auto isEqual = [&](NSString *string) {

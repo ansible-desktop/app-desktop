@@ -1,11 +1,15 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
+
+#include "api/api_common.h"
+
+#include <optional>
 
 class HistoryItem;
 
@@ -18,9 +22,6 @@ class Error;
 } // namespace MTP
 
 namespace Api {
-
-struct SendOptions;
-struct RemoteFileInfo;
 
 const auto kDefaultEditMessagesErrors = {
 	u"MESSAGE_ID_INVALID"_q,
@@ -56,7 +57,14 @@ mtpRequestId EditTextMessage(
 	SendOptions options,
 	Fn<void(mtpRequestId requestId)> done,
 	Fn<void(const QString &error, mtpRequestId requestId)> fail,
-	bool spoilered);
+	bool spoilered,
+	VideoCoverEdit videoCover = {});
+mtpRequestId EditRichMessage(
+	not_null<HistoryItem*> item,
+	Fn<std::optional<MTPInputRichMessage>()> richMessage,
+	SendOptions options,
+	Fn<void(mtpRequestId requestId)> done,
+	Fn<void(const QString &error, mtpRequestId requestId)> fail);
 
 void EditTodoList(
 	not_null<HistoryItem*> item,

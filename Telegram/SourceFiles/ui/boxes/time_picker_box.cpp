@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/boxes/time_picker_box.h"
 
@@ -14,7 +14,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/ui_utility.h"
 #include "ui/widgets/vertical_drum_picker.h"
 #include "styles/style_chat_helpers.h"
-#include "styles/style_layers.h"
 
 namespace Ui {
 

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_emoji_interactions.h"
 
@@ -24,7 +24,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "base/random.h"
 #include "ui/power_saving.h"
 #include "ui/ui_utility.h"
-#include "styles/style_chat.h"
 
 namespace HistoryView {
 namespace {
@@ -45,6 +44,17 @@ constexpr auto kDropDelayedAfterDelay = crl::time(2000);
 }
 
 } // namespace
+
+bool CanPlayEmojiInteraction(not_null<const Element*> view) {
+	if (!view->media()) {
+		// Large emoji may be disabled.
+		return false;
+	} else if (!view->isIsolatedEmoji() && !view->isOnlyCustomEmoji()) {
+		return false;
+	}
+	const auto emoji = view->isolatedEmoji();
+	return !emoji.empty() && v::is_null(emoji.items[1]);
+}
 
 EmojiInteractions::EmojiInteractions(
 	not_null<QWidget*> parent,
@@ -76,8 +86,7 @@ EmojiInteractions::~EmojiInteractions() = default;
 void EmojiInteractions::play(
 		ChatHelpers::EmojiInteractionPlayRequest request,
 		not_null<Element*> view) {
-	if (!view->media()) {
-		// Large emoji may be disabled.
+	if (!CanPlayEmojiInteraction(view)) {
 		return;
 	} else if (_plays.empty()) {
 		play(

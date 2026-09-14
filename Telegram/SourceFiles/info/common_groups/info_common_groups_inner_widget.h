@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -17,7 +17,7 @@ class Show;
 
 namespace Info {
 
-class Controller;
+class AbstractController;
 
 namespace CommonGroups {
 
@@ -29,7 +29,7 @@ class InnerWidget final
 public:
 	InnerWidget(
 		QWidget *parent,
-		not_null<Controller*> controller,
+		not_null<AbstractController*> controller,
 		not_null<UserData*> user);
 
 	not_null<UserData*> user() const {
@@ -71,7 +71,7 @@ private:
 		not_null<PeerListController*> controller) const;
 
 	std::shared_ptr<Main::SessionShow> _show;
-	not_null<Controller*> _controller;
+	not_null<AbstractController*> _controller;
 	not_null<UserData*> _user;
 	std::unique_ptr<PeerListController> _listController;
 	object_ptr<ListWidget> _list;

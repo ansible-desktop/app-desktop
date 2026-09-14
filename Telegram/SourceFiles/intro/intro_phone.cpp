@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "intro/intro_phone.h"
 
@@ -126,7 +126,7 @@ void PhoneWidget::setupQrLogin() {
 	}, qrLogin->lifetime());
 
 	qrLogin->setClickedCallback([=] {
-		goReplace<QrWidget>(Animate::Forward);
+		goNextOrBack<QrWidget>();
 	});
 }
 
@@ -201,7 +201,7 @@ void PhoneWidget::submit() {
 
 	_checkRequestTimer.callEach(1000);
 
-	_sentPhone = DigitsOnly(phone);
+	_sentPhone = phone;
 	api().instance().setUserPhone(_sentPhone);
 	_sentRequest = api().request(MTPauth_SendCode(
 		MTP_string(_sentPhone),
@@ -274,17 +274,15 @@ void PhoneWidget::phoneSubmitFail(const MTP::Error &error) {
 
 	stopCheck();
 	_sentRequest = 0;
-	auto &err = error.type();
+	const auto &err = error.type();
 	if (err == u"PHONE_NUMBER_FLOOD"_q) {
 		Ui::show(Ui::MakeInformBox(tr::lng_error_phone_flood()));
 	} else if (err == u"PHONE_NUMBER_INVALID"_q) { // show error
 		showPhoneError(tr::lng_bad_phone());
 	} else if (err == u"PHONE_NUMBER_BANNED"_q) {
 		Ui::ShowPhoneBannedError(getData()->controller, _sentPhone);
-	} else if (Logs::DebugEnabled()) { // internal server error
-		showPhoneError(rpl::single(err + ": " + error.description()));
-	} else {
-		showPhoneError(rpl::single(Lang::Hard::ServerError()));
+	} else if (!MTP::IgnoreError(error)) {
+		showPhoneError(rpl::single(err));
 	}
 }
 

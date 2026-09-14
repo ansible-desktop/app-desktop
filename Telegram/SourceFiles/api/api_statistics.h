@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -11,6 +11,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "data/data_boosts.h"
 #include "data/data_channel_earn.h"
 #include "data/data_statistics.h"
+#include "data/data_statistics_lists.h"
 
 class ChannelData;
 class PeerData;
@@ -29,10 +30,12 @@ public:
 
 	[[nodiscard]] Data::ChannelStatistics channelStats() const;
 	[[nodiscard]] Data::SupergroupStatistics supergroupStats() const;
+	[[nodiscard]] Data::StatisticsLists lists() const;
 
 private:
 	Data::ChannelStatistics _channelStats;
 	Data::SupergroupStatistics _supergroupStats;
+	Data::StatisticsLists _lists;
 
 	std::deque<Fn<void()>> _zoomDeque;
 

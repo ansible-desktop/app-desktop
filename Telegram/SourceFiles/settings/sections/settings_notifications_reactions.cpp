@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_notifications_reactions.h"
 
@@ -21,7 +21,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/checkbox.h"
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
-#include "styles/style_boxes.h"
 #include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
@@ -143,7 +142,7 @@ void BuildNotificationsReactionsContent(SectionBuilder &builder) {
 
 	builder.add([](const WidgetContext &ctx) {
 		const auto session = &ctx.controller->session();
-		auto &rs = session->api().reactionsNotifySettings();
+		const auto &rs = session->api().reactionsNotifySettings();
 
 		AddToggleRow(
 			ctx.container,
@@ -194,7 +193,7 @@ void BuildNotificationsReactionsContent(SectionBuilder &builder) {
 
 	builder.add([](const WidgetContext &ctx) {
 		const auto session = &ctx.controller->session();
-		auto &rs = session->api().reactionsNotifySettings();
+		const auto &rs = session->api().reactionsNotifySettings();
 
 		const auto showSender = AddButtonWithIcon(
 			ctx.container,

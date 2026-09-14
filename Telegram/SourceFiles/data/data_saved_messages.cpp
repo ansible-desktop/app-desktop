@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_saved_messages.h"
 
@@ -27,8 +27,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace Data {
 namespace {
 
-constexpr auto kPerPage = 50;
-constexpr auto kFirstPerPage = 10;
 constexpr auto kListPerPage = 100;
 constexpr auto kListFirstPerPage = 20;
 constexpr auto kLoadedSublistsMinCount = 20;
@@ -469,6 +467,10 @@ void SavedMessages::apply(const MTPDupdatePinnedSavedDialogs &update) {
 			LOG(("API Error: "
 				"updatePinnedSavedDialogs has folders."));
 			return false;
+		}, [&](const MTPDdialogPeerCommunity &data) {
+			LOG(("API Error: "
+				"updatePinnedSavedDialogs has communities."));
+			return false;
 		});
 	};
 	if (!ranges::none_of(order, notLoaded)) {
@@ -493,6 +495,8 @@ void SavedMessages::apply(const MTPDupdateSavedDialogPinned &update) {
 		}
 	}, [&](const MTPDdialogPeerFolder &data) {
 		DEBUG_LOG(("API Error: Folder in updateSavedDialogPinned."));
+	}, [&](const MTPDdialogPeerCommunity &data) {
+		DEBUG_LOG(("API Error: Community in updateSavedDialogPinned."));
 	});
 }
 

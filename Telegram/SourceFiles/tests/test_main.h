@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -36,6 +36,12 @@ void test(not_null<Ui::RpWindow*> window, not_null<Ui::RpWidget*> widget);
 };
 
 class App final : public QApplication, public QAbstractNativeEventFilter {
+private:
+	auto createEventNestingLevel() {
+		incrementEventNestingLevel();
+		return gsl::finally([=] { decrementEventNestingLevel(); });
+	}
+
 public:
 	using QApplication::QApplication;
 
@@ -56,18 +62,12 @@ private:
 		FnMut<void()> callable;
 	};
 
-	auto createEventNestingLevel() {
-		incrementEventNestingLevel();
-		return gsl::finally([=] { decrementEventNestingLevel(); });
-	}
-
 	void checkForEmptyLoopNestingLevel();
 	void processPostponedCalls(int level);
 	void incrementEventNestingLevel();
 	void decrementEventNestingLevel();
 	void registerEnterFromEventLoop();
 
-	bool notifyOrInvoke(QObject *receiver, QEvent *e);
 	bool notify(QObject *receiver, QEvent *e) override;
 	bool nativeEventFilter(
 		const QByteArray &eventType,
@@ -103,8 +103,14 @@ public:
 	void registerLeaveSubscription(not_null<QWidget*> widget);
 	void unregisterLeaveSubscription(not_null<QWidget*> widget);
 	QString emojiCacheFolder();
+	QString fontsCacheFolder();
 	QString openglCheckFilePath();
 	QString angleBackendFilePath();
+	void touchCounterIncrement();
+	int touchCounterNow();
+
+private:
+	int _touchCounter = 0;
 };
 
 } // namespace Test

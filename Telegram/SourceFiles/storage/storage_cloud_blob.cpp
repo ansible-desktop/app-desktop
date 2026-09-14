@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "storage/storage_cloud_blob.h"
 
@@ -51,10 +51,15 @@ bool UnpackBlob(
 	if (zip.goToFirstFile() != UNZ_OK) {
 		return false;
 	}
+	const auto cleanFolder = QDir::cleanPath(folder);
 	do {
 		const auto name = zip.getCurrentFileName();
 		const auto path = folder + '/' + name;
-		if (checkNameCallback(name) && !ExtractZipFile(zip, path)) {
+		const auto cleanPath = QDir::cleanPath(path);
+		const auto inside = (cleanPath == cleanFolder)
+			|| cleanPath.startsWith(cleanFolder + '/');
+		if (checkNameCallback(name)
+			&& (!inside || !ExtractZipFile(zip, path))) {
 			return false;
 		}
 

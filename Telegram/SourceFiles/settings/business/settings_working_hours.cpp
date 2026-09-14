@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/business/settings_working_hours.h"
 
@@ -27,7 +27,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/vertical_list.h"
 #include "ui/ui_utility.h"
 #include "window/window_session_controller.h"
-#include "styles/style_boxes.h"
+#include "styles/style_edit_peer_members.h"
 #include "styles/style_layers.h"
 #include "styles/style_settings.h"
 

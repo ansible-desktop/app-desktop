@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -35,6 +35,7 @@ public:
 
 	[[nodiscard]] auto stickerChosen() const
 	-> rpl::producer<not_null<DocumentData*>>;
+	[[nodiscard]] rpl::producer<> photoRequests() const;
 	[[nodiscard]] rpl::producer<bool> panelShown() const;
 
 	void setShowRequestChanges(rpl::producer<ShowRequest> &&showRequest);

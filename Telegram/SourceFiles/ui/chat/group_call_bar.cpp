@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/chat/group_call_bar.h"
 
@@ -266,6 +266,10 @@ void GroupCallBar::setupRightButton(not_null<RoundButton*> button) {
 	}, button->lifetime());
 
 	button->clicks() | rpl::start_to_stream(_joinClicks, button->lifetime());
+
+	// This button is created and replaced deeper in the tree than the bars
+	// container watches, so it wouldn't be placed in the visual Tab order.
+	RefreshVisualTabOrder(button);
 }
 
 void GroupCallBar::paint(Painter &p) {

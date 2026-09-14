@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -46,6 +46,8 @@ struct UnreadState;
 class Row;
 class IndexedList;
 class MainList;
+
+extern const char kOptionDialogsUnreadOnTop[];
 
 [[nodiscard]] BadgesState BadgesForUnread(
 	const UnreadState &state,
@@ -200,6 +202,7 @@ private:
 	virtual void changedChatListPinHook();
 	void pinnedIndexChanged(FilterId filterId, int was, int now);
 	[[nodiscard]] uint64 computeSortPosition(FilterId filterId) const;
+	[[nodiscard]] bool hasUnreadUnmutedForSort() const;
 
 	void setChatListExistence(bool exists);
 	not_null<Row*> mainChatListLink(FilterId filterId) const;

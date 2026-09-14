@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -34,7 +34,9 @@ public:
 	void setQueryChangedCallback(Fn<void(const QString &query)> callback);
 	void setSubmittedCallback(Fn<void(Qt::KeyboardModifiers)> callback);
 	void setCancelledCallback(Fn<void()> callback);
+	void setFocusedChangedCallback(Fn<void(bool focused)> callback);
 	void setResizedCallback(Fn<void()> callback);
+	void setCancelButtonShown(bool shown);
 
 	enum class AddItemWay {
 		Default,

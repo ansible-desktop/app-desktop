@@ -1,15 +1,15 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "data/stickers/data_stickers.h"
 
-#include <QtGui/QImage>
+class DocumentData;
 
 namespace ChatHelpers {
 class Show;
@@ -21,16 +21,27 @@ class GenericBox;
 
 namespace Api {
 
-void CreateStickerBox(
-	not_null<Ui::GenericBox*> box,
-	std::shared_ptr<ChatHelpers::Show> show,
-	StickerSetIdentifier set,
-	QImage image,
-	Fn<void(MTPmessages_StickerSet)> done);
-
 void OpenCreateStickerFlow(
 	std::shared_ptr<ChatHelpers::Show> show,
 	StickerSetIdentifier set,
+	Fn<void(MTPmessages_StickerSet)> done = nullptr);
+
+void OpenCreateEmojiFlow(
+	std::shared_ptr<ChatHelpers::Show> show,
+	StickerSetIdentifier set,
+	Fn<void(MTPmessages_StickerSet)> done = nullptr);
+
+[[nodiscard]] bool AdaptStickerToEmoji(
+	std::shared_ptr<ChatHelpers::Show> show,
+	StickerSetIdentifier set,
+	not_null<DocumentData*> document,
+	Fn<void(MTPmessages_StickerSet)> done = nullptr);
+
+[[nodiscard]] bool AdaptGifToSet(
+	std::shared_ptr<ChatHelpers::Show> show,
+	StickerSetIdentifier set,
+	not_null<DocumentData*> document,
+	Data::StickersType type,
 	Fn<void(MTPmessages_StickerSet)> done = nullptr);
 
 } // namespace Api

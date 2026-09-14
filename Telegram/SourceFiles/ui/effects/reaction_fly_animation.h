@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -27,9 +27,12 @@ struct ReactionFlyAnimationArgs {
 	::Data::ReactionId id;
 	QImage flyIcon;
 	QRect flyFrom;
+	int flyUp = 0;
 	crl::time scaleOutDuration = 0;
 	float64 scaleOutTarget = 0.;
 	float64 miniCopyMultiplier = 1.;
+	float64 centerSizeMultiplier = 0.;
+	bool flyKeepSize = false;
 	bool effectOnly = false;
 	bool forceFirstFrame = false;
 
@@ -68,6 +71,7 @@ public:
 	[[nodiscard]] bool flying() const;
 	[[nodiscard]] float64 flyingProgress() const;
 	[[nodiscard]] bool finished() const;
+	[[nodiscard]] bool centerInDefaultState();
 
 	[[nodiscard]] ReactionFlyCenter takeCenter();
 
@@ -120,8 +124,10 @@ private:
 	QRect _flyFrom;
 	float64 _centerSizeMultiplier = 0.;
 	int _customSize = 0;
+	int _flyUp = 0;
 	crl::time _scaleOutDuration = 0;
 	float64 _scaleOutTarget = 0.;
+	bool _flyKeepSize = false;
 	bool _noEffectScaleStarted = false;
 	bool _forceFirstFrame = false;
 	bool _effectOnly = false;

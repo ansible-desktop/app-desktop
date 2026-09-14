@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -73,6 +73,7 @@ struct CreditsHistoryEntry final {
 	uint64 bareGiftHostId = 0;
 	uint64 bareGiftReleasedById = 0;
 	uint64 bareGiftResaleRecipientId = 0;
+	uint64 bareGiftMessageAuthorId = 0;
 	uint64 bareActorId = 0;
 	uint64 bareEntryOwnerId = 0;
 	uint64 giftChannelSavedId = 0;
@@ -119,6 +120,7 @@ struct CreditsHistoryEntry final {
 	bool giftUpgradeSeparate : 1 = false;
 	bool giftUpgradeGifted : 1 = false;
 	bool giftResale : 1 = false;
+	bool giftOffer : 1 = false;
 	bool giftResaleForceTon : 1 = false;
 	bool giftPinned : 1 = false;
 	bool giftCrafted : 1 = false;

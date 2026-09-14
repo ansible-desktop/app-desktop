@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -43,12 +43,17 @@ public:
 			Shortcut       = 0x080,
 			EstimateDate   = 0x100,
 			ForwardedDate  = 0x200,
+			Silent         = 0x400,
+			EditedPrimary  = 0x800,
+			Ephemeral      = 0x1000,
+			Updated        = 0x2000,
 			//Unread, // We don't want to pass and update it in Date for now.
 		};
 		friend inline constexpr bool is_flag_type(Flag) { return true; };
 		using Flags = base::flags<Flag>;
 
 		QDateTime date;
+		QDateTime editedDate;
 		QString author;
 		EffectId effectId = 0;
 		int64 tonStake = 0;

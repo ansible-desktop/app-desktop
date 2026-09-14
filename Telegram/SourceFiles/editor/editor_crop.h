@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -30,6 +30,10 @@ public:
 		bool flipped,
 		const QSizeF &scaledImageSize);
 	[[nodiscard]] QRect saveCropRect();
+	[[nodiscard]] rpl::producer<> changes() const {
+		return _changes.events();
+	}
+	[[nodiscard]] QRect paintRect() const;
 	[[nodiscard]] style::margins cropMargins() const;
 	void setAspectRatio(float64 ratio);
 	void setCornersLevel(RoundedCornersLevel level);
@@ -69,6 +73,8 @@ private:
 	[[nodiscard]] Qt::Edges mouseState(const QPoint &p);
 	void performCrop(const QPoint &pos);
 	void performMove(const QPoint &pos);
+
+	rpl::event_stream<> _changes;
 
 	const int _pointSize;
 	const float _pointSizeH;

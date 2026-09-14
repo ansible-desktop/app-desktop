@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "passport/passport_panel_password.h"
 
@@ -124,12 +124,12 @@ void PanelAskPassword::updateControlsGeometry() {
 		_password->height());
 	_password->moveToLeft((width() - _password->width()) / 2, top);
 
-	top -= st::passportPasswordFieldSkip + _about2->height();
 	_about2->resizeToWidth(availableWidth);
+	top -= st::passportPasswordFieldSkip + _about2->height();
 	_about2->moveToLeft(padding.left(), top);
 
-	top -= _about1->height();
 	_about1->resizeToWidth(availableWidth);
+	top -= _about1->height();
 	_about1->moveToLeft(padding.left(), top);
 
 	top -= st::passportPasswordUserpicSkip + _userpic->height();

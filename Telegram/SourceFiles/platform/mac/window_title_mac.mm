@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/platform_window_title.h"
 
@@ -79,7 +79,7 @@ void PreviewWindowTitle(Painter &p, const style::palette &palette, QRect body, i
 	p.setPen(st::titleFgActive[palette]);
 	p.setFont(font);
 
-	p.drawText(titleRect, u"Ansible"_q, style::al_center);
+	p.drawText(titleRect, u"Telegram"_q, style::al_center);
 
 	auto isGraphite = ([NSColor currentControlTint] == NSGraphiteControlTint);
 	auto buttonSkip = 8;

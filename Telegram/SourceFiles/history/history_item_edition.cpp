@@ -1,13 +1,14 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_item_edition.h"
 
 #include "api/api_text_entities.h"
+#include "iv/iv_rich_page.h"
 #include "main/main_session.h"
 
 HistoryMessageEdition::HistoryMessageEdition(
@@ -28,6 +29,9 @@ HistoryMessageEdition::HistoryMessageEdition(
 	mtpMedia = message.vmedia();
 	mtpReactions = message.vreactions();
 	mtpFactcheck = message.vfactcheck();
+	if (const auto data = message.vrich_message()) {
+		richPage = Iv::ParseRichPage(session, *data);
+	}
 	views = message.vviews().value_or(-1);
 	forwards = message.vforwards().value_or(-1);
 	if (const auto mtpReplies = message.vreplies()) {

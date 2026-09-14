@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_game.h"
 
@@ -124,10 +124,9 @@ QSize Game::countOptimalSize() {
 
 		_attach->initDimensions();
 		QMargins bubble(_attach->bubbleMargins());
-		auto maxMediaWidth = _attach->maxWidth() - bubble.left() - bubble.right();
-		if (isBubbleBottom() && _attach->customInfoLayout()) {
-			maxMediaWidth += skipBlockWidth;
-		}
+		const auto maxMediaWidth = _attach->maxWidth()
+			- bubble.left()
+			- bubble.right();
 		accumulate_max(maxWidth, maxMediaWidth);
 		minHeight += _attach->minHeight() - bubble.top() - bubble.bottom();
 	}

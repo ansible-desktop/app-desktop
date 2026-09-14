@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/mac/notifications_manager_mac.h"
 
@@ -24,6 +24,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "mainwindow.h"
+#include "platform/mac/notifications_manager_mac_un.h"
 #include "platform/platform_specific.h"
 #include "ui/empty_userpic.h"
 #include "window/notifications_utilities.h"
@@ -239,6 +240,12 @@ bool VolumeSupported() {
 }
 
 void Create(Window::Notifications::System *system) {
+	if (UseUNManager()) {
+		system->setManager([=] {
+			return std::make_unique<UNManager>(system);
+		});
+		return;
+	}
 	system->setManager([=] { return std::make_unique<Manager>(system); });
 }
 

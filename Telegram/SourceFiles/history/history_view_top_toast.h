@@ -1,17 +1,26 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
+#include "base/unique_qptr.h"
 #include "base/weak_ptr.h"
+
+#include <rpl/producer.h>
 
 namespace Main {
 class Session;
 } // namespace Main
+
+namespace Ui {
+class ElasticScroll;
+class ImportantTooltip;
+class ScrollArea;
+} // namespace Ui
 
 namespace Ui::Toast {
 class Instance;
@@ -32,6 +41,24 @@ public:
 
 private:
 	base::weak_ptr<Ui::Toast::Instance> _topToast;
+
+};
+
+class AnchoredTooltip final {
+public:
+	void show(
+		not_null<QWidget*> scroll,
+		rpl::producer<> scrolls,
+		QRect globalArea,
+		TextWithEntities text);
+	void show(
+		not_null<Ui::ElasticScroll*> scroll,
+		QRect globalArea,
+		TextWithEntities text);
+	void hide();
+
+private:
+	base::unique_qptr<Ui::ImportantTooltip> _tooltip;
 
 };
 

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "passport/passport_panel_controller.h"
 
@@ -502,6 +502,9 @@ EditContactScheme GetContactScheme(Scope::Type type) {
 		result.newHeader = tr::lng_passport_new_email(tr::now);
 		result.newPlaceholder = tr::lng_passport_email_title();
 		result.aboutNew = tr::lng_passport_new_email_code(tr::now);
+		result.inputHints = Qt::ImhEmailCharactersOnly
+			| Qt::ImhNoAutoUppercase
+			| Qt::ImhNoPredictiveText;
 		result.validate = [](const QString &value) {
 			const auto at = value.indexOf('@');
 			const auto dot = value.lastIndexOf('.');

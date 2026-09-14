@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/themes/window_theme_preview.h"
 
@@ -20,8 +20,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/chat/chat_theme.h"
 #include "ui/chat/chat_style.h"
 #include "ui/chat/message_bubble.h"
+#include "styles/style_chat_style.h"
 #include "styles/style_widgets.h"
-#include "styles/style_window.h"
 #include "styles/style_media_view.h"
 #include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
@@ -448,7 +448,7 @@ void Generator::paintHistoryList() {
 	_historyBottom -= st::historyPaddingBottom;
 	_p->setClipping(true);
 	for (auto i = _bubbles.size(); i != 0;) {
-		auto &bubble = _bubbles[--i];
+		const auto &bubble = _bubbles[--i];
 		if (bubble.width > 0) {
 			paintBubble(bubble);
 		} else {
@@ -568,7 +568,7 @@ void Generator::paintComposeArea() {
 	auto right = st::historySendRight + st::historySendSize.width();
 
 	const auto recordIcon = Lottie::MakeIcon({
-		.path = u":/animations/chat/voice_to_video.ass"_q,
+		.path = u":/animations/chat/voice_to_video.tgs"_q,
 		.sizeOverride = st::historySend.recordSize,
 		.colorizeUsingAlpha = true,
 	});

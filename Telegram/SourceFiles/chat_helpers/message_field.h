@@ -1,15 +1,16 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "base/qt/qt_compare.h"
 #include "base/timer.h"
 #include "chat_helpers/compose/compose_features.h"
+#include "ui/text/text.h"
 #include "ui/widgets/fields/input_field.h"
 
 #ifndef TDESKTOP_DISABLE_SPELLCHECK
@@ -22,6 +23,11 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace tr {
 struct now_t;
 } // namespace tr
+
+class DocumentData;
+class HistoryItem;
+class PeerData;
+class UserData;
 
 namespace Main {
 class Session;
@@ -61,7 +67,10 @@ Fn<bool(
 	Ui::InputField::EditLinkAction action)> DefaultEditLinkCallback(
 		std::shared_ptr<Main::SessionShow> show,
 		not_null<Ui::InputField*> field,
-		const style::InputField *fieldStyle = nullptr);
+		const style::InputField *fieldStyle = nullptr,
+		Fn<QString(QString)> linkValidator = nullptr,
+		Fn<void(bool)> interactionActive = nullptr,
+		Fn<void()> restoreFocus = nullptr);
 Fn<void(QString now, Fn<void(QString)> save)> DefaultEditLanguageCallback(
 	std::shared_ptr<Ui::Show> show);
 
@@ -71,8 +80,13 @@ struct MessageFieldHandlersArgs {
 	not_null<Ui::InputField*> field;
 	Fn<bool()> customEmojiPaused;
 	Fn<bool(not_null<DocumentData*>)> allowPremiumEmoji;
+	Fn<bool(QStringView)> keepCustomEmojiData;
+	Ui::Text::CustomEmojiFactory customEmojiFactory;
 	const style::InputField *fieldStyle = nullptr;
+	Fn<QString(QString)> linkValidator;
 	base::flat_set<QString> allowMarkdownTags;
+	bool allowTypedMarkdown = true;
+	bool instantMarkdown = false;
 };
 auto InitMessageFieldHandlers(MessageFieldHandlersArgs &&args)
 -> std::shared_ptr<Ui::ChatStyle>;
@@ -168,7 +182,8 @@ private:
 
 [[nodiscard]] base::unique_qptr<Ui::RpWidget> CreateDisabledFieldView(
 	QWidget *parent,
-	not_null<PeerData*> peer);
+	not_null<PeerData*> peer,
+	QWidget *toastParent = nullptr);
 [[nodiscard]] std::unique_ptr<Ui::RpWidget> TextErrorSendRestriction(
 	QWidget *parent,
 	const QString &text);
@@ -222,3 +237,5 @@ void FrozenInfoBox(
 [[nodiscard]] Ui::InputField::MimeDataHook WrappedMessageFieldMimeHook(
 	Ui::InputField::MimeDataHook original,
 	not_null<Ui::InputField*> field);
+
+[[nodiscard]] bool PasteAsPlainTextRequested();

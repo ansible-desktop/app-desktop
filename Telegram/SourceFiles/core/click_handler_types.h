@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -56,6 +56,7 @@ struct ClickHandlerContext {
 	bool skipBotAutoLogin = false;
 	bool botStartAutoSubmit = false;
 	bool ignoreIv = false;
+	bool forceExternalUrlConfirmation = false;
 	bool dark = false;
 	// Is filled from peer info.
 	PeerData *peer = nullptr;
@@ -76,7 +77,12 @@ public:
 	void onClick(ClickContext context) const override {
 		const auto button = context.button;
 		if (button == Qt::LeftButton || button == Qt::MiddleButton) {
-			Open(url(), context.other);
+			const auto original = originalUrl();
+			Open(
+				UrlClickHandler::ExternalUrlFromInternalUrl(original).isEmpty()
+					? url()
+					: original,
+				context.other);
 		}
 	}
 

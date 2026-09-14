@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "calls/calls_box_controller.h"
 
@@ -44,6 +44,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "info/profile/info_profile_icon.h"
 #include "settings/sections/settings_calls.h"
 #include "settings/settings_common.h"
+#include "styles/style_edit_peer_members.h"
 #include "styles/style_info.h" // infoTopBarMenu
 #include "styles/style_layers.h" // st::boxLabel.
 #include "styles/style_calls.h"
@@ -73,6 +74,16 @@ public:
 			int nameTop,
 			int nameWidth,
 			int availableWidth,
+			int outerWidth,
+			bool selected) override {
+		return 0;
+	}
+	int paintNameIconGetLeadingWidth(
+			Painter &p,
+			Fn<void()> repaint,
+			crl::time now,
+			int nameLeft,
+			int nameTop,
 			int outerWidth,
 			bool selected) override {
 		return 0;
@@ -326,6 +337,16 @@ public:
 			int nameTop,
 			int nameWidth,
 			int availableWidth,
+			int outerWidth,
+			bool selected) override {
+		return 0;
+	}
+	int paintNameIconGetLeadingWidth(
+			Painter &p,
+			Fn<void()> repaint,
+			crl::time now,
+			int nameLeft,
+			int nameTop,
 			int outerWidth,
 			bool selected) override {
 		return 0;

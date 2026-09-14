@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 using "ui/basic.style";
 using "ui/chat/chat.style";
@@ -131,6 +131,11 @@ linksBorder: 1px;
 linksBorderFg: shadowFg;
 linksPhotoSize: 46px;
 linksPhotoPadding: 12px;
+
+overviewLinkIvIcon: IconEmoji {
+	icon: icon {{ "info/info_iv_mini-12x12", windowActiveTextFg }};
+	padding: margins(0px, 5px, 2px, 0px);
+}
 
 overviewVideoStatusMargin: 3px;
 overviewVideoStatusPadding: point(6px, 0px);

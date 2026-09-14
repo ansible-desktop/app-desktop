@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -27,7 +27,13 @@ namespace Window {
 class SessionController;
 } // namespace Window
 
+namespace ChatHelpers {
+class Show;
+} // namespace ChatHelpers
+
 namespace Ui {
+
+struct PreparedList;
 
 class GenericBox;
 class InputField;
@@ -49,6 +55,16 @@ void SendGifWithCaptionBox(
 	not_null<DocumentData*> document,
 	not_null<PeerData*> peer,
 	const SendMenu::Details &details,
-	Fn<void(Api::SendOptions, TextWithTags)> done);
+	TextWithTags initialText,
+	Fn<void(Api::SendOptions, TextWithTags, Ui::PreparedList&&)> done,
+	Fn<void(TextWithTags)> cancelled);
+
+void SendGifWithCaption(
+	std::shared_ptr<ChatHelpers::Show> show,
+	not_null<Ui::InputField*> field,
+	not_null<DocumentData*> document,
+	not_null<PeerData*> peer,
+	const SendMenu::Details &details,
+	Fn<void(Api::SendOptions, TextWithTags, Ui::PreparedList&&)> send);
 
 } // namespace Ui

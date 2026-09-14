@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_main.h"
 
@@ -31,6 +31,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "data/data_user.h"
 #include "info/profile/info_profile_badge.h"
 #include "info/profile/info_profile_emoji_status_panel.h"
+#include "info/profile/info_profile_phone_menu.h"
 #include "info/profile/info_profile_values.h"
 #include "lang/lang_cloud_manager.h"
 #include "lang/lang_instance.h"
@@ -69,6 +70,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/rect.h"
 #include "ui/text/format_values.h"
 #include "ui/text/text_utilities.h"
+#include "ui/toast/toast.h"
 #include "ui/vertical_list.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/continuous_sliders.h"
@@ -78,6 +80,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/wrap/slide_wrap.h"
 #include "window/window_controller.h"
 #include "window/window_session_controller.h"
+#include "styles/style_chat_helpers.h"
 #include "styles/style_info.h"
 #include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
@@ -172,10 +175,8 @@ Cover::Cover(
 	const auto hook = [=](Ui::FlatLabel::ContextMenuRequest request) {
 		if (request.selection.empty()) {
 			const auto callback = [=] {
-				auto phone = rpl::variable<TextWithEntities>(
-					Info::Profile::PhoneValue(_user)).current().text;
-				phone.replace(' ', QString()).replace('-', QString());
-				TextUtilities::SetClipboardText({ phone });
+				Info::Profile::CopyPhoneToClipboard(
+					Info::Profile::PhoneValue(_user));
 			};
 			request.menu->addAction(
 				tr::lng_profile_copy_phone(tr::now),
@@ -184,25 +185,14 @@ Cover::Cover(
 		} else {
 			_phone->fillContextMenu(request);
 		}
-		const auto hidden = _user->session().settings().phoneNumberHidden();
-		const auto toggle = [=] {
-			_user->session().settings().setPhoneNumberHidden(
-				!_user->session().settings().phoneNumberHidden());
-			_user->session().saveSettingsDelayed();
-			updatePhoneText();
-		};
-		Menu::AddCheckedAction(
-			request.menu,
-			tr::lng_context_spoiler_effect(tr::now),
-			toggle,
-			&st::menuIconSpoiler,
-			hidden);
+		Info::Profile::AddPhoneSpoilerMenu(request.menu, _user);
 	};
 	_phone->setContextMenuHook(hook);
 
 	initViewers();
 	setupChildGeometry();
 
+	_userpic->setVideoAllowed(true);
 	_userpic->switchChangePhotoOverlay(_user->isSelf(), [=](
 			Ui::UserpicButton::ChosenImage chosen) {
 		auto &image = chosen.image;
@@ -211,9 +201,10 @@ Cover::Cover(
 		_user->session().api().peerPhoto().upload(
 			_user,
 			{
-				std::move(image),
-				chosen.markup.documentId,
-				chosen.markup.colors,
+				.image = std::move(image),
+				.markupDocumentId = chosen.markup.documentId,
+				.markupColors = chosen.markup.colors,
+				.video = std::move(chosen.video),
 			});
 		if (!isMarkup) {
 			_userpic->showUploadProgress();
@@ -276,6 +267,11 @@ void Cover::initViewers() {
 		updatePhoneText();
 	}, lifetime());
 
+	_user->session().settings().phoneNumberHiddenValue(
+	) | rpl::on_next([=] {
+		updatePhoneText();
+	}, lifetime());
+
 	Info::Profile::UsernameValue(
 		_user
 	) | rpl::on_next([=](const TextWithEntities &value) {
@@ -295,7 +291,11 @@ void Cover::initViewers() {
 		} else {
 			QGuiApplication::clipboard()->setText(
 				_user->session().createInternalLinkFull(username));
-			_controller->showToast(tr::lng_username_copied(tr::now));
+			_controller->showToast({
+				.text = { tr::lng_username_copied(tr::now) },
+				.iconLottie = u"toast/voip_invite"_q,
+				.iconLottieSize = st::toastLottieIconSize,
+			});
 		}
 	});
 }
@@ -548,8 +548,8 @@ void BuildPremiumSection(SectionBuilder &builder) {
 			showOther(CurrencyId());
 		},
 		.keywords = { u"ton"_q, u"crypto"_q, u"wallet"_q },
-		// TON entry hidden — we have no TON currency. Data still loaded above.
-		.shown = rpl::single(false),
+		.shown = session->credits().tonBalanceValue(
+		) | rpl::map([](CreditsAmount c) { return !c.empty(); }),
 	});
 
 	builder.addButton({
@@ -659,6 +659,7 @@ void Main::fillTopBarMenu(const Ui::Menu::MenuCallback &addAction) {
 	const auto &list = Core::App().domain().accounts();
 	if (list.size() < Core::App().domain().maxAccounts()) {
 		addAction(tr::lng_menu_add_account(tr::now), [=] {
+			Core::App().setActivePrimaryWindow(&controller()->window());
 			Core::App().domain().addActivated(MTP::Environment{});
 		}, &st::menuIconAddAccount);
 	}
@@ -784,7 +785,7 @@ const auto kMeta = BuildHelper({
 			.title = tr::lng_profile_set_photo_for(tr::now),
 			.keywords = { u"photo"_q, u"avatar"_q, u"picture"_q, u"profile"_q },
 			.icon = { &st::menuIconProfile },
-			.deeplink = u"as://settings/profile-photo"_q,
+			.deeplink = u"tg://settings/profile-photo"_q,
 		};
 	});
 

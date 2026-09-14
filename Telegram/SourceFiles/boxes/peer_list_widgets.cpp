@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/peer_list_widgets.h"
 
@@ -91,11 +91,20 @@ crl::time PeerListWidgets::paintRow(
 			+ rightActionMargins.right()
 			- skipRight;
 	}
-	namew -= row->paintNameIconGetWidth(
+	const auto leading = row->paintNameIconGetLeadingWidth(
 		p,
 		[=] { updateRow(row); },
 		now,
 		namex,
+		namey,
+		w,
+		selected);
+	namew -= leading;
+	namew -= row->paintNameIconGetWidth(
+		p,
+		[=] { updateRow(row); },
+		now,
+		namex + leading,
 		namey,
 		name.maxWidth(),
 		namew,
@@ -103,7 +112,7 @@ crl::time PeerListWidgets::paintRow(
 		selected);
 	auto nameCheckedRatio = row->disabled() ? 0. : row->checkedRatio();
 	p.setPen(anim::pen(st.nameFg, st.nameFgChecked, nameCheckedRatio));
-	name.drawLeftElided(p, namex, namey, namew, w);
+	name.drawLeftElided(p, namex + leading, namey, namew, w);
 
 	p.setFont(st::contactsStatusFont);
 	row->paintStatusText(p, st, statusx, statusy, statusw, w, selected);

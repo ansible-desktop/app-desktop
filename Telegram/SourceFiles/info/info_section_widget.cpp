@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/info_section_widget.h"
 
@@ -50,6 +50,7 @@ void SectionWidget::init() {
 		return (_content != nullptr);
 	}) | rpl::on_next([=](QSize size, int) {
 		const auto expanding = false;
+		const auto contentTillBottom = true;
 		const auto full = !_content->scrollBottomSkip();
 		const auto additionalScroll = (full ? st::boxRadius : 0);
 		const auto height = size.height() - (full ? 0 : st::boxRadius);
@@ -57,6 +58,7 @@ void SectionWidget::init() {
 		_content->updateGeometry(
 			wrapGeometry,
 			expanding,
+			contentTillBottom,
 			additionalScroll,
 			size.height());
 	}, lifetime());
@@ -110,6 +112,10 @@ bool SectionWidget::showInternal(
 		not_null<Window::SectionMemento*> memento,
 		const Window::SectionShow &params) {
 	return _content->showInternal(memento, params);
+}
+
+bool SectionWidget::showBackInternal() {
+	return _content->closeByBackButton();
 }
 
 std::shared_ptr<Window::SectionMemento> SectionWidget::createMemento() {

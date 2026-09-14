@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_group_call_bar.h"
 
@@ -19,7 +19,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "calls/group/calls_group_call.h"
 #include "calls/calls_instance.h"
 #include "core/application.h"
-#include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
 
 namespace HistoryView {
@@ -380,9 +379,12 @@ rpl::producer<Ui::GroupCallBarContent> GroupCallBarContentByCall(
 			return RegenerateUserpics(state, call, userpicSize);
 		}) | rpl::on_next(pushNext, lifetime);
 
+		// The only stream here not owned by the call, so it can fire
+		// after the call was destroyed.
+		const auto weakCall = base::make_weak(call);
 		call->peer()->session().downloaderTaskFinished(
 		) | rpl::filter([=] {
-			return state->someUserpicsNotLoaded;
+			return weakCall && state->someUserpicsNotLoaded;
 		}) | rpl::on_next([=] {
 			for (const auto &userpic : state->userpics) {
 				if (userpic.peer->userpicUniqueKey(userpic.view)

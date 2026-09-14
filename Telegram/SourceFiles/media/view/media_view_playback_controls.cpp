@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/view/media_view_playback_controls.h"
 
@@ -164,8 +164,10 @@ void PlaybackControls::handleSeekFinished(float64 progress) {
 		crl::time(0),
 		_lastDurationMs);
 	_seekPositionMs = -1;
-	_delegate->playbackControlsSeekFinished(positionMs);
 	refreshTimeTexts();
+
+	// This may destroy PlaybackControls.
+	_delegate->playbackControlsSeekFinished(positionMs);
 }
 
 template <typename Callback>
@@ -229,6 +231,13 @@ void PlaybackControls::saveQuality(Media::VideoQuality quality) {
 }
 
 void PlaybackControls::updateSpeedToggleQuality() {
+	const auto qualities = _delegate->playbackControlsQualities();
+	if (_qualitiesList != qualities) {
+		_qualitiesList = qualities;
+		if (_speedController) {
+			_speedController->setQualities(qualities);
+		}
+	}
 	_speedToggle->setQuality(_delegate->playbackControlsCurrentQuality());
 }
 

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/linux/file_utilities_linux.h"
 
@@ -24,6 +24,8 @@ using namespace gi::repository;
 using base::Platform::XdgActivationToken;
 
 } // namespace
+
+namespace Unfused {
 
 bool UnsafeShowOpenWith(const QString &filepath) {
 	auto proxy = XdpOpenURI::OpenURIProxy::new_for_bus_sync(
@@ -122,5 +124,6 @@ bool UnsafeShowOpenWith(const QString &filepath) {
 	return true;
 }
 
+} // namespace Unfused
 } // namespace File
 } // namespace Platform

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/platform_text_recognition.h"
 
@@ -61,21 +61,38 @@ Result RecognizeText(const QImage &image) {
 						topCandidates:1].firstObject;
 					if (recognizedText) {
 						const auto text = recognizedText.string;
-						const auto boundingBox = obs.boundingBox;
-						const auto x = boundingBox.origin.x * imageSize.width;
-						const auto y = (1.0 - boundingBox.origin.y
-							- boundingBox.size.height) * imageSize.height;
-						const auto width = boundingBox.size.width
-							* imageSize.width;
-						const auto height = boundingBox.size.height
-							* imageSize.height;
-						result.items.push_back({
-							NS2QString(text),
-							QRect(
+						const auto convert = [&](CGRect box) {
+							const auto x = box.origin.x * imageSize.width;
+							const auto y = (1.0 - box.origin.y
+								- box.size.height) * imageSize.height;
+							const auto width = box.size.width
+								* imageSize.width;
+							const auto height = box.size.height
+								* imageSize.height;
+							return QRect(
 								style::ConvertScale(x),
 								style::ConvertScale(y),
 								style::ConvertScale(width),
-								style::ConvertScale(height))
+								style::ConvertScale(height));
+						};
+						auto glyphs = std::vector<QRect>();
+						if (@available(macOS 11.0, *)) {
+							const auto length = NSInteger(text.length);
+							glyphs.reserve(length);
+							for (auto i = NSInteger(); i < length; ++i) {
+								NSError *rangeError = nil;
+								auto *box = [recognizedText
+									boundingBoxForRange:NSMakeRange(i, 1)
+									error:&rangeError];
+								glyphs.push_back((box && !rangeError)
+									? convert(box.boundingBox)
+									: QRect());
+							}
+						}
+						result.items.push_back({
+							NS2QString(text),
+							convert(obs.boundingBox),
+							std::move(glyphs)
 						});
 					}
 				}

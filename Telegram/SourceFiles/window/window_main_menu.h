@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -61,6 +61,7 @@ private:
 	bool eventHook(QEvent *event) override;
 	void paintEvent(QPaintEvent *e) override;
 	void resizeEvent(QResizeEvent *e) override;
+	void hideEvent(QHideEvent *e) override;
 
 	void doSetInnerFocus() override {
 		setFocus();
@@ -71,6 +72,7 @@ private:
 	void setupAccounts();
 	void setupAccountsToggle();
 	void setupSetEmojiStatus();
+	void setupEmojiStatusDismiss();
 	void setupArchive();
 	void setupMenu();
 	void updateControlsGeometry();
@@ -112,6 +114,7 @@ private:
 
 	rpl::variable<bool> _showFinished = false;
 	bool _insideEventRedirect = false;
+	bool _emojiStatusDismissSetup = false;
 
 };
 

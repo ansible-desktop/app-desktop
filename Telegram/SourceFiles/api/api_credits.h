@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -83,7 +83,8 @@ public:
 
 	void request(
 		const Data::CreditsStatusSlice::OffsetToken &token,
-		Fn<void(Data::CreditsStatusSlice)> done);
+		Fn<void(Data::CreditsStatusSlice)> done,
+		int limit = 0);
 	void requestSubscriptions(
 		const Data::CreditsStatusSlice::OffsetToken &token,
 		Fn<void(Data::CreditsStatusSlice)> done,

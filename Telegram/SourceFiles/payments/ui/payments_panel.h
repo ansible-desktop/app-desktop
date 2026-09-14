@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -39,6 +39,11 @@ class EditCard;
 struct PaymentMethodDetails;
 struct PaymentMethodAdditional;
 struct NativeMethodDetails;
+
+enum class WebviewMode {
+	PaymentMethod,
+	Verification,
+};
 
 class Panel final : public base::has_weak_ptr {
 public:
@@ -86,7 +91,7 @@ public:
 
 	bool showWebview(
 		const QString &url,
-		bool allowBack,
+		WebviewMode mode,
 		rpl::producer<QString> bottomText);
 	void updateThemeParams(const Webview::ThemeParams &params);
 
@@ -129,6 +134,7 @@ private:
 	QPointer<EditInformation> _weakEditInformation;
 	QPointer<EditCard> _weakEditCard;
 	rpl::event_stream<QString> _savedMethodChosen;
+	WebviewMode _webviewMode = WebviewMode::Verification;
 	bool _themeUpdateScheduled = false;
 	bool _webviewProgress = false;
 	bool _testMode = false;

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/audio/media_audio_track.h"
 
@@ -244,6 +244,7 @@ void Track::reattachToDevice() {
 }
 
 Track::~Track() {
+	finish();
 	detachFromDevice();
 	_instance->unregisterTrack(this);
 }

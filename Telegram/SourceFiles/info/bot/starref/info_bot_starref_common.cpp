@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/bot/starref/info_bot_starref_common.h"
 
@@ -34,6 +34,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/wrap/table_layout.h"
 #include "ui/wrap/vertical_layout.h"
 #include "ui/text/text_utilities.h"
+#include "ui/toast/toast.h"
 #include "ui/new_badges.h"
 #include "ui/painter.h"
 #include "ui/vertical_list.h"
@@ -91,7 +92,7 @@ void ConnectStarRef(
 	const auto outer = QSize(outerSide, outerSide + add);
 	const auto inner = QSize(innerSide, innerSide);
 	const auto state = raw->lifetime().make_state<State>(State{
-		.icon = ChatHelpers::GenerateLocalAssSticker(
+		.icon = ChatHelpers::GenerateLocalTgsSticker(
 			session,
 			u"starref_link"_q,
 			true),
@@ -459,7 +460,11 @@ object_ptr<Ui::BoxContent> StarRefLinkBox(
 		const auto copy = [=](bool close) {
 			return [=] {
 				QApplication::clipboard()->setText(row.state.link);
-				box->uiShow()->showToast(tr::lng_username_copied(tr::now));
+				box->uiShow()->showToast({
+					.text = { tr::lng_username_copied(tr::now) },
+					.iconLottie = u"toast/voip_invite"_q,
+					.iconLottieSize = st::toastLottieIconSize,
+				});
 				if (close) {
 					box->closeBox();
 				}
@@ -468,7 +473,7 @@ object_ptr<Ui::BoxContent> StarRefLinkBox(
 		preview->setClickedCallback(copy(false));
 		const auto button = box->addButton(
 			tr::lng_star_ref_link_copy(),
-			[=] { copy(true); },
+			copy(true),
 			st::starrefCopyButton);
 
 		const auto name = TextWithEntities{ bot->name() };

@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_forum.h"
 
@@ -32,7 +32,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "storage/storage_shared_media.h"
 #include "window/window_session_controller.h"
 #include "window/notifications_manager.h"
-#include "styles/style_boxes.h"
 
 namespace Data {
 namespace {
@@ -58,6 +57,17 @@ Forum::Forum(not_null<History*> history)
 	if (peer()->canCreateTopics()) {
 		owner().forumIcons().requestDefaultIfUnknown();
 	}
+	_topicsList.fullSize().value(
+	) | rpl::map([](int size) {
+		return size > 0;
+	}) | rpl::distinct_until_changed(
+	) | rpl::skip(
+		1
+	) | rpl::on_next([=] {
+		if (IsBotCreatesTopics(_history->peer)) {
+			_history->updateChatListEntryHeight();
+		}
+	}, _lifetime);
 }
 
 Forum::~Forum() {

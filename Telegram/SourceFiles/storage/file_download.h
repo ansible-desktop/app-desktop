@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -90,7 +90,7 @@ public:
 	[[nodiscard]] virtual uint64 objId() const {
 		return 0;
 	}
-	[[nodiscard]] QImage imageData(int progressiveSizeLimit = 0) const;
+	[[nodiscard]] QImage imageData() const;
 	[[nodiscard]] QString fileName() const {
 		return _filename;
 	}
@@ -140,7 +140,7 @@ protected:
 		Loaded,
 	};
 
-	void readImage(int progressiveSizeLimit) const;
+	void readImage() const;
 
 	bool checkForOpen();
 	bool tryLoadLocal();

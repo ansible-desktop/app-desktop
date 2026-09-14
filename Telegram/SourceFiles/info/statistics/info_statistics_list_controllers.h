@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -23,8 +23,8 @@ struct CreditsHistoryEntry;
 struct CreditsStatusSlice;
 struct PublicForwardsSlice;
 struct RecentPostId;
+struct StatisticsLists;
 struct SubscriptionEntry;
-struct SupergroupStatistics;
 } // namespace Data
 
 namespace Main {
@@ -41,7 +41,7 @@ void AddPublicForwards(
 	Data::RecentPostId contextId);
 
 void AddMembersList(
-	Data::SupergroupStatistics data,
+	Data::StatisticsLists data,
 	not_null<Ui::VerticalLayout*> container,
 	Fn<void(not_null<PeerData*>)> showPeerInfo,
 	not_null<PeerData*> peer,
@@ -65,7 +65,8 @@ void AddCreditsHistoryList(
 	not_null<PeerData*> peer,
 	bool in,
 	bool out,
-	bool subscription = false);
+	bool subscription = false,
+	bool currency = false);
 
 [[nodiscard]] not_null<Ui::SlideWrap<Ui::SettingsButton>*> AddShowMoreButton(
 	not_null<Ui::VerticalLayout*> container,

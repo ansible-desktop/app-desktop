@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/emoji_sets_manager.h"
 
@@ -134,7 +134,10 @@ int64 GetDownloadSize(int id) {
 MTP::DedicatedLoader::Location GetDownloadLocation(int id) {
 	const auto username = kCloudLocationUsername.utf16();
 	const auto i = ranges::find(kSets, id, &Set::id);
-	return MTP::DedicatedLoader::Location{ username, i->postId };
+	return MTP::DedicatedLoader::Location{
+		.username = username,
+		.postId = i->postId,
+	};
 }
 
 SetState ComputeState(int id) {

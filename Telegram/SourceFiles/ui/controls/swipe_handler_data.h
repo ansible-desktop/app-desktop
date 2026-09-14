@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -20,11 +20,25 @@ struct SwipeContextData final {
 		return !empty();
 	}
 
+	[[nodiscard]] int visualTranslationFor(int64 bareId) const {
+		if (!translation || (msgBareId != bareId)) {
+			return 0;
+		}
+		return inverted ? translation : -translation;
+	}
+
 	float64 ratio = 0.;
 	float64 reachRatio = 0.;
+	float64 exactTranslation = 0.;
 	int64 msgBareId = 0;
 	int translation = 0;
 	int cursorTop = 0;
+	bool inverted = false;
+};
+
+struct SwipeHandlerInitData final {
+	QPoint cursorPosition;
+	Qt::LayoutDirection direction = Qt::LeftToRight;
 };
 
 struct SwipeBackResult final {

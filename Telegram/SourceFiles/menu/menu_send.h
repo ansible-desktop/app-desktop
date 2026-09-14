@@ -1,13 +1,14 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "api/api_common.h"
+#include "menu/menu_send_details.h"
 
 namespace style {
 struct ComposeIcons;
@@ -30,45 +31,6 @@ class Thread;
 
 namespace SendMenu {
 
-enum class Type : uchar {
-	Disabled,
-	SilentOnly,
-	Scheduled,
-	ScheduledToUser, // For "Send when online".
-	Reminder,
-	EditCommentPrice,
-};
-
-enum class SpoilerState : uchar {
-	None,
-	Enabled,
-	Possible,
-};
-
-enum class CaptionState : uchar {
-	None,
-	Below,
-	Above,
-};
-
-enum class PhotoQualityState : uchar {
-	None,
-	Standard,
-	High,
-};
-
-struct Details {
-	Type type = Type::Disabled;
-	SpoilerState spoiler = SpoilerState::None;
-	CaptionState caption = CaptionState::None;
-	PhotoQualityState photoQuality = PhotoQualityState::None;
-	TextWithTags commentPreview;
-	QString commentStreamerName;
-	std::optional<uint64> price;
-	std::optional<uint64> commentPriceMin;
-	bool effectAllowed = false;
-};
-
 enum class FillMenuResult : uchar {
 	Prepared,
 	Skipped,
@@ -84,6 +46,8 @@ enum class ActionType : uchar {
 	CaptionDown,
 	PhotoQualityOn,
 	PhotoQualityOff,
+	EditCover,
+	RemoveCover,
 	ChangePrice,
 };
 struct Action {

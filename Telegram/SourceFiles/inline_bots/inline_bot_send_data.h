@@ -1,13 +1,15 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
 #include "history/history_location_manager.h"
+
+#include <memory>
 
 struct HistoryItemCommonFields;
 
@@ -20,6 +22,10 @@ class Session;
 } // namespace Main
 
 class History;
+
+namespace Iv {
+struct RichPage;
+} // namespace Iv
 
 namespace InlineBots {
 
@@ -112,6 +118,31 @@ public:
 private:
 	QString _message;
 	EntitiesInText _entities;
+
+};
+
+class SendRichMessage final : public SendData {
+public:
+	SendRichMessage(
+		not_null<Main::Session*> session,
+		const MTPRichMessage &message);
+
+	bool isValid() const override;
+
+	not_null<HistoryItem*> makeMessage(
+		const Result *owner,
+		not_null<History*> history,
+		HistoryItemCommonFields &&fields) const override;
+
+	Data::SendError getErrorOnSend(
+		const Result *owner,
+		not_null<History*> history) const override;
+
+	QString getLayoutDescription(const Result *owner) const override;
+
+private:
+	std::shared_ptr<const Iv::RichPage> _page;
+	TextWithEntities _summary;
 
 };
 

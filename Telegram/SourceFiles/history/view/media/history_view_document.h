@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
@@ -71,6 +71,8 @@ public:
 
 	QSize sizeForGroupingOptimal(int maxWidth, bool last) const override;
 	QSize sizeForGrouping(int width) const override;
+	int widenGroupingMaxWidth(int current, bool last) override;
+	int contributedMaxMonospaceWidth() const override;
 	void drawGrouped(
 		Painter &p,
 		const PaintContext &context,
@@ -88,6 +90,7 @@ public:
 
 	bool voiceProgressAnimationCallback(crl::time now);
 
+	void clickHandlerActiveChanged(const ClickHandlerPtr &p, bool active) override;
 	void clickHandlerPressedChanged(const ClickHandlerPtr &p, bool pressed) override;
 
 	void refreshParentId(not_null<HistoryItem*> realParent) override;
@@ -146,6 +149,10 @@ private:
 		Painter &p,
 		const PaintContext &context,
 		LayoutMode mode) const;
+	void paintPlaybackBlobs(
+		Painter &p,
+		const PaintContext &context,
+		QRect inner) const;
 	[[nodiscard]] TextState cornerDownloadTextState(
 		QPoint point,
 		StateRequest request,

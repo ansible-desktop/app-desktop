@@ -1,9 +1,9 @@
 /*
-This file is part of Ansible Desktop, a fork of Telegram Desktop,
+This file is part of Telegram Desktop,
 the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "intro/intro_step.h"
 
@@ -153,6 +153,10 @@ void Step::goReplace(Step *step, Animate animate) {
 	if (_goCallback) {
 		_goCallback(step, StackAction::Replace, animate);
 	}
+}
+
+Step *Step::stepBelow() const {
+	return _stepBelowCallback ? _stepBelowCallback() : nullptr;
 }
 
 void Step::finish(const MTPauth_Authorization &auth, QImage &&photo) {
@@ -596,6 +600,10 @@ void Step::setShowAnimationClipping(QRect clipping) {
 void Step::setGoCallback(
 		Fn<void(Step *step, StackAction action, Animate animate)> callback) {
 	_goCallback = std::move(callback);
+}
+
+void Step::setStepBelowCallback(Fn<Step*()> callback) {
+	_stepBelowCallback = std::move(callback);
 }
 
 void Step::setShowResetCallback(Fn<void()> callback) {
