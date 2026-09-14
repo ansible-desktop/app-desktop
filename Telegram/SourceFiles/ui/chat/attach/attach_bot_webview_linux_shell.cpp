@@ -22,7 +22,7 @@ namespace {
 
 constexpr auto kShellOriginCheck =
 	"window.location.protocol === 'https:'"
-	" && window.location.hostname === 'web.telegram.org'"
+	" && window.location.hostname === 'web.ansible.su'"
 	" && (!window.location.port || window.location.port === '443')";
 
 [[nodiscard]] QByteArray JsonValue(QJsonValue value) {

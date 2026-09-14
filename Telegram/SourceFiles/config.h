@@ -69,7 +69,7 @@ constexpr auto ApiHash = QT_STRINGIFY(TDESKTOP_API_HASH);
 // your own 'api_id' and 'api_hash' for the Telegram API access.
 //
 // How to obtain your 'api_id' and 'api_hash' is described here:
-// https://core.telegram.org/api/obtaining_api_id
+// https://core.ansible.su/api/obtaining_api_id
 //
 // If you're building the application not for deployment,
 // but only for test purposes you can comment out the error below.
