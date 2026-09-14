@@ -42,20 +42,35 @@ inline const char *cGUIDStr() {
 	return gGuidStr;
 }
 
+// Ключ ПРОВЕРКИ ПОДПИСИ ОБНОВЛЕНИЙ (RSA-1024, PKCS#1).
+//
+// 🚨 Не путать с ключом РУКОПОЖАТИЯ с DC — тот RSA-2048 и лежит в
+// mtproto/mtproto_dc_options.cpp. Два разных кастомных RSA-ключа в одном
+// проекте, оба наши, и перепутать их легко.
+//
+// Приватная половина вне дерева: updates_keys/updates_private.pem и
+// Vault secret/ansible/desktop/updates_private.
+// SHA256(public PEM) =
+//   f94337c1d2bfb4093c8653f186a18756822b933c8a40dd15a7f505b985331d29
+//
+// Stable и beta пока один и тот же ключ — разнести можно позже, если
+// понадобятся разные каденции выпуска.
+//
+// 🚨 _other/packer.cpp до сих пор держит АПСТРИМОВСКИЕ ключи Телеграма:
+// пакер и клиент разойдутся подписью, пока это не исправлено.
 static const char *UpdatesPublicKey = "\
 -----BEGIN RSA PUBLIC KEY-----\n\
-MIGJAoGBAMA4ViQrjkPZ9xj0lrer3r23JvxOnrtE8nI69XLGSr+sRERz9YnUptnU\n\
-BZpkIfKaRcl6XzNJiN28cVwO1Ui5JSa814UAiDHzWUqCaXUiUEQ6NmNTneiGx2sQ\n\
-+9PKKlb8mmr3BB9A45ZNwLT6G9AK3+qkZLHojeSA+m84/a6GP4svAgMBAAE=\n\
------END RSA PUBLIC KEY-----\
+MIGJAoGBAMLHY3bK+69SEDUqu3gM9JNqVxH+jvezWLFw0SYAdIoFOd7qC8KFWdBO\n\
+pF3oMULzag4n91f6b1w9gjRkjBsCgmgK/zdXyrd3DA0pJg4A3mRtYMpDRvE6LJ8N\n\
+V50dC2K65CO+8rXSZpbF4egU6Yz+PpPNt9T8eOpsnEOplqEO+u3JAgMBAAE=\n\
+-----END RSA PUBLIC KEY-----\n\
 ";
-
 static const char *UpdatesPublicBetaKey = "\
 -----BEGIN RSA PUBLIC KEY-----\n\
-MIGJAoGBALWu9GGs0HED7KG7BM73CFZ6o0xufKBRQsdnq3lwA8nFQEvmdu+g/I1j\n\
-0LQ+0IQO7GW4jAgzF/4+soPDb6uHQeNFrlVx1JS9DZGhhjZ5rf65yg11nTCIHZCG\n\
-w/CVnbwQOw0g5GBwwFV3r0uTTvy44xx8XXxk+Qknu4eBCsmrAFNnAgMBAAE=\n\
------END RSA PUBLIC KEY-----\
+MIGJAoGBAMLHY3bK+69SEDUqu3gM9JNqVxH+jvezWLFw0SYAdIoFOd7qC8KFWdBO\n\
+pF3oMULzag4n91f6b1w9gjRkjBsCgmgK/zdXyrd3DA0pJg4A3mRtYMpDRvE6LJ8N\n\
+V50dC2K65CO+8rXSZpbF4egU6Yz+PpPNt9T8eOpsnEOplqEO+u3JAgMBAAE=\n\
+-----END RSA PUBLIC KEY-----\n\
 ";
 
 #if defined TDESKTOP_API_ID && defined TDESKTOP_API_HASH
@@ -69,7 +84,7 @@ constexpr auto ApiHash = QT_STRINGIFY(TDESKTOP_API_HASH);
 // your own 'api_id' and 'api_hash' for the Telegram API access.
 //
 // How to obtain your 'api_id' and 'api_hash' is described here:
-// https://core.ansible.su/api/obtaining_api_id
+// https://my.ansible.su
 //
 // If you're building the application not for deployment,
 // but only for test purposes you can comment out the error below.
