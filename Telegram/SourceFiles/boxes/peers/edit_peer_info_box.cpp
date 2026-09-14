@@ -126,9 +126,13 @@ constexpr auto kWelcomePreviewLength = 8;
 }
 
 [[nodiscard]] int EnableForumMinMembers(not_null<PeerData*> peer) {
+	// Порог в 200 участников — бизнес-правило Телеграма, в нашей установке
+	// ему взяться неоткуда. По умолчанию 0: переключатель «Темы» доступен
+	// администратору супергруппы всегда. Значение всё так же можно задать
+	// с сервера через appConfig.
 	return peer->session().appConfig().get<int>(
 		u"forum_upgrade_participants_min"_q,
-		200);
+		0);
 }
 
 void AddSkip(

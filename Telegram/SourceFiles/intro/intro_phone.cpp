@@ -201,7 +201,9 @@ void PhoneWidget::submit() {
 
 	_checkRequestTimer.callEach(1000);
 
-	_sentPhone = phone;
+	// 🚨 На сервер уходит только цифры. Апстрим шлёт номер как набран, с
+	// пробелами и скобками из форматтера; наш бэкенд ждёт голые цифры.
+	_sentPhone = DigitsOnly(phone);
 	api().instance().setUserPhone(_sentPhone);
 	_sentRequest = api().request(MTPauth_SendCode(
 		MTP_string(_sentPhone),
