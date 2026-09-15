@@ -484,11 +484,15 @@ win:
         mingw-w64-x86_64-perl ^
         mingw-w64-x86_64-pkgconf
 
-    rem 🚨 msys2 отдаёт nasm 3.x, а его COFF-объекты линкер MSVC отвергает
-    rem как «invalid or corrupt file» (LNK1136) при сборке libvpx — и на x86,
-    rem и на x64, файлы *_asm.obj. Ассемблер libjpeg-turbo при этом собирается
-    rem нормально, то есть это взаимодействие именно libvpx с nasm 3.x.
-    rem Кладём поверх заведомо рабочий nasm 2.16.03.
+    rem WARNING: msys2 ships nasm 3.x, whose COFF objects MSVC's linker
+    rem rejects as "invalid or corrupt file" (LNK1136) when building libvpx,
+    rem on both x86 and x64 (the *_asm.obj files). libjpeg-turbo's own asm
+    rem builds fine, so this is a libvpx + nasm-3.x interaction.
+    rem Pin the known-good nasm 2.16.03 over the msys2 binary.
+    rem
+    rem Keep this file ASCII-only: printCommands() prints the stage body to
+    rem stdout, which is cp1252 on the GitHub runner -- a single non-ASCII
+    rem character aborts prepare.py with UnicodeEncodeError.
     powershell -Command "iwr -OutFile ./nasm-pin.zip https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/win64/nasm-2.16.03-win64.zip"
     powershell -Command "Expand-Archive -Force -Path ./nasm-pin.zip -DestinationPath ./nasm-pin"
     copy /Y nasm-pin\\nasm-2.16.03\\nasm.exe msys64\\mingw64\\bin\\nasm.exe

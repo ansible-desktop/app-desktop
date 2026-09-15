@@ -30,7 +30,7 @@ if (TDESKTOP_API_ID STREQUAL "0" OR TDESKTOP_API_ID STREQUAL "" OR TDESKTOP_API_
     " \n"
     " PROVIDE: -D TDESKTOP_API_ID=[API_ID] -D TDESKTOP_API_HASH=[API_HASH]\n"
     " \n"
-    " > Свой api_id выдаёт портал https://my.ansible.su\n"
+    " > Get your own api_id at https://my.ansible.su\n"
     " ")
 endif()
 
