@@ -191,7 +191,11 @@ jobs:
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=ON
 
-          cmake --build ..\out --config Debug --parallel
+          rem -k 0: ninja не останавливается на первой ошибке, а собирает всё,
+          rem что может. На переносе форка это экономит часы: иначе каждая
+          rem ошибка компиляции стоит отдельного прогона по 40-80 минут, и
+          rem следующая всплывает только после починки предыдущей.
+          cmake --build ..\out --config Debug --parallel -- -k 0
 
       - name: sccache stats.
         shell: bash

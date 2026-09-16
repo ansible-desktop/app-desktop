@@ -18,6 +18,28 @@ INTERFACE
 if (MSVC AND CMAKE_GENERATOR MATCHES "^Visual Studio ")
     set_property(TARGET td_iv APPEND PROPERTY VS_PROJECT_IMPORT
         ${CMAKE_CURRENT_LIST_DIR}/td_iv_msvc_warning_suppressions.props)
+elseif (MSVC)
+    # Те же подавления, что и в .props выше, но для генераторов, отличных от
+    # Visual Studio. VS_PROJECT_IMPORT работает ТОЛЬКО у VS-генератора, а наша
+    # быстрая сборка идёт на "Ninja Multi-Config" — там .props просто
+    # игнорируется, и заголовки MicroTeX валят сборку под /W4 /WX:
+    #   graphic_basic.h(168): warning C5038 (порядок инициализации полей)
+    #   graphic_qt.h(67):     warning C4265 (невиртуальный деструктор)
+    # Подключать их SYSTEM нельзя: external/microtex осознанно оставляет
+    # INTERFACE-пути обычными, иначе clang -MMD выкидывает эти заголовки из
+    # зависимостей и объекты td_iv перестают пересобираться при смене раскладки
+    # классов.
+    #
+    # 🚨 Флаги отдаются через INTERFACE-библиотеку, а не PRIVATE-опциями цели:
+    # CMake ставит собственные PRIVATE COMPILE_OPTIONS ПЕРЕД
+    # INTERFACE_COMPILE_OPTIONS прилинкованных библиотек, и тогда /W4 /WX из
+    # common_options оказались бы последними и молча победили.
+    target_compile_options(td_iv_reorder_warning_off
+    INTERFACE
+        /wd5038
+        /wd4265
+        /wd4005
+    )
 endif()
 
 target_precompile_headers(td_iv PRIVATE ${src_loc}/iv/iv_pch.h)
