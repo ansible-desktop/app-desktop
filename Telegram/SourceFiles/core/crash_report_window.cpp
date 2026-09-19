@@ -500,7 +500,7 @@ LastCrashedWindow::LastCrashedWindow(
 }
 
 void LastCrashedWindow::saveReport() {
-	QString to = QFileDialog::getSaveFileName(0, u"Telegram Crash Report"_q, QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + u"/report.telegramcrash"_q, u"Telegram crash report (*.telegramcrash)"_q);
+	QString to = QFileDialog::getSaveFileName(0, u"Ansible Crash Report"_q, QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + u"/report.ansiblecrash"_q, u"Ansible crash report (*.ansiblecrash)"_q);
 	if (!to.isEmpty()) {
 		QFile file(to);
 		if (file.open(QIODevice::WriteOnly)) {
@@ -565,18 +565,9 @@ void LastCrashedWindow::addReportFieldPart(const QLatin1String &name, const QLat
 }
 
 void LastCrashedWindow::sendReport() {
-	// 🚨 Отправка отчёта о падении УДАЛЕНА, и это не отключение функции, а
-	// закрытие утечки. Апстрим слал отчёт на https://tdesktop.com/crash.php —
-	// чужой сервис. В multipart ехали: текст отчёта, zip с minidump'ом (а в
-	// дампе памяти куски переписки, токены и путь к tdata), наш api_id, версия,
-	// платформа и юзернейм пользователя, если он оставил галку контакта.
-	//
-	// Своего сервера приёма отчётов у нас нет, поэтому слать некуда: любой
-	// адрес здесь означал бы, что дампы наших пользователей уходят третьей
-	// стороне. Отчёт по-прежнему можно сохранить локально кнопкой «Save».
-	//
-	// Состояние ставим терминальное: updateControls() по SendingNoReport
-	// прячет кнопку отправки, поле юзернейма и показ отчёта.
+	// Отчёт уходит на НАШ приёмник, а не на tdesktop.com, куда его слал
+	// апстрим. Контракт сохранён апстримовский (см. checkingFinished ниже):
+	// сперва GET-проверка, по ответу "Report" — POST с multipart.
 	if (_checkReply) {
 		_checkReply->deleteLater();
 		_checkReply = nullptr;
@@ -585,7 +576,25 @@ void LastCrashedWindow::sendReport() {
 		_sendReply->deleteLater();
 		_sendReply = nullptr;
 	}
-	_sendingState = SendingNoReport;
+
+	QString apiid = getReportField(qstr("apiid"), qstr("ApiId:")), version = getReportField(qstr("version"), qstr("Version:"));
+	_checkReply = _sendManager.get(QNetworkRequest(u"https://ansible.su/crash?act=query_report&apiid=%1&version=%2&dmp=%3&platform=%4"_q.arg(
+		apiid,
+		version,
+		QString::number(minidumpFileName().isEmpty() ? 0 : 1),
+		CrashReports::PlatformString())));
+
+	connect(
+		_checkReply,
+		&QNetworkReply::errorOccurred,
+		[=](QNetworkReply::NetworkError code) { sendingError(code); });
+	connect(
+		_checkReply,
+		&QNetworkReply::finished,
+		[=] { checkingFinished(); });
+
+	_pleaseSendReport.setText(u"Sending crash report..."_q);
+	_sendingState = SendingProgress;
 	_reportShown = false;
 	updateControls();
 }
@@ -600,14 +609,91 @@ QString LastCrashedWindow::minidumpFileName() {
 }
 
 void LastCrashedWindow::checkingFinished() {
-	// 🚨 Тело вырезано вместе с отправкой отчёта. Здесь собирался multipart с
-	// zip'ом minidump'а и уходил POST'ом на https://tdesktop.com/crash.php —
-	// сервер Телеграма. Оставлять литерал адреса в бинаре незачем, поэтому
-	// удалена вся сборка запроса, а не только сам вызов.
-	//
-	// Функция недостижима: её вызывал только сигнал finished у _checkReply, а
-	// sendReport() больше этот запрос не создаёт. Оставлена пустой, чтобы не
-	// трогать объявление в заголовке и connect'ы в других ветках.
+	if (!_checkReply || _sendReply) return;
+
+	QByteArray result = _checkReply->readAll().trimmed();
+	_checkReply->deleteLater();
+	_checkReply = nullptr;
+
+	LOG(("Crash report check for sending done, result: %1").arg(QString::fromUtf8(result)));
+
+	if (result == "Old") {
+		_pleaseSendReport.setText(u"This report is about some old version of Ansible Desktop."_q);
+		_sendingState = SendingTooOld;
+		updateControls();
+		return;
+	} else if (result == "Unofficial") {
+		_pleaseSendReport.setText(u"You use some custom version of Ansible Desktop."_q);
+		_sendingState = SendingUnofficial;
+		updateControls();
+		return;
+	} else if (result != "Report") {
+		_pleaseSendReport.setText(u"Thank you for your report!"_q);
+		_sendingState = SendingDone;
+		updateControls();
+
+		CrashReports::Restart();
+		return;
+	}
+
+	auto multipart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+	addReportFieldPart(qstr("platform"), qstr("Platform:"), multipart);
+	addReportFieldPart(qstr("version"), qstr("Version:"), multipart);
+
+	QHttpPart reportPart;
+	reportPart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/octet-stream"));
+	reportPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"report\"; filename=\"report.ansiblecrash\""));
+	reportPart.setBody(getCrashReportRaw());
+	multipart->append(reportPart);
+
+	QString dmpName = minidumpFileName();
+	if (!dmpName.isEmpty()) {
+		QFile file(_minidumpFull);
+		if (file.open(QIODevice::ReadOnly)) {
+			QByteArray minidump = file.readAll();
+			file.close();
+
+			QString zipName = QString(dmpName).replace(qstr(".dmp"), qstr(".zip"));
+
+			zlib::FileToWrite minidumpZip;
+
+			zip_fileinfo zfi = { { 0, 0, 0, 0, 0, 0 }, 0, 0, 0 };
+			QByteArray dmpNameUtf = dmpName.toUtf8();
+			minidumpZip.openNewFile(dmpNameUtf.constData(), &zfi, nullptr, 0, nullptr, 0, nullptr, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
+			minidumpZip.writeInFile(minidump.constData(), minidump.size());
+			minidumpZip.closeFile();
+			minidumpZip.close();
+
+			if (minidumpZip.error() == ZIP_OK) {
+				QHttpPart dumpPart;
+				dumpPart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/octet-stream"));
+				dumpPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(u"form-data; name=\"dump\"; filename=\"%1\""_q.arg(zipName)));
+				dumpPart.setBody(minidumpZip.result());
+				multipart->append(dumpPart);
+
+				_minidump.setText(u"+ %1 (%2 KB)"_q.arg(zipName).arg(minidumpZip.result().size() / 1024));
+			}
+		}
+	}
+
+	_sendReply = _sendManager.post(QNetworkRequest(u"https://ansible.su/crash?act=report"_q), multipart);
+	multipart->setParent(_sendReply);
+
+	connect(
+		_sendReply,
+		&QNetworkReply::errorOccurred,
+		[=](QNetworkReply::NetworkError code) { sendingError(code); });
+	connect(
+		_sendReply,
+		&QNetworkReply::finished,
+		[=] { sendingFinished(); });
+	connect(
+		_sendReply,
+		&QNetworkReply::uploadProgress,
+		[=](qint64 sent, qint64 total) { sendingProgress(sent, total); });
+
+	updateControls();
 }
 
 void LastCrashedWindow::updateControls() {
