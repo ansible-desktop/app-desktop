@@ -282,7 +282,19 @@ void updateRegistry() {
 		writeLog(L"Updating registry..");
 		versionStr[versionLen / 2] = 0;
 		HKEY rkey;
-		LSTATUS status = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{53F49750-6209-4FBF-9CA8-7A333C87D1ED}_is1", 0, KEY_QUERY_VALUE | KEY_SET_VALUE, &rkey);
+		// 🚨 Здесь стоял АПСТРИМОВСКИЙ GUID {53F49750-6209-4FBF-9CA8-7A333C87D1ED}.
+		// Это не косметика: под этим ключом лежит запись об установке НАСТОЯЩЕГО
+		// Telegram. На машине, где он стоит, наш апдейтер открывал его запись и
+		// перезаписывал InstallLocation, DisplayVersion и издателя — то есть
+		// ломал чужую установку, а свою собственную не обновлял вовсе.
+		//
+		// GUID обязан совпадать с тремя местами сразу:
+		//   core/version.h        constexpr auto AppId
+		//   build/setup.iss       #define MyAppId  (Inno Setup дописывает _is1)
+		//   этот файл
+		// Апдейтер — отдельный маленький бинарь и core/version.h не подключает,
+		// поэтому значение продублировано литералом. Меняешь AppId — меняй здесь.
+		LSTATUS status = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{5DE84367-0BFF-4829-8074-A3C10556F2FB}_is1", 0, KEY_QUERY_VALUE | KEY_SET_VALUE, &rkey);
 		if (status == ERROR_SUCCESS) {
 			writeLog(L"Checking registry install location..");
 			static const int bufSize = 4096;

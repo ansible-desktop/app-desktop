@@ -686,19 +686,16 @@ QString ExecutablePathForShortcuts() {
 } // namespace Platform
 
 QString psAppDataPath() {
-	// Previously we used ~/.TelegramDesktop, so look there first.
-	// If we find data there, we should still use it.
-	auto home = QDir::homePath();
-	if (!home.isEmpty()) {
-		auto oldPath = home + u"/.TelegramDesktop/"_q;
-		auto oldSettingsBase = oldPath + u"tdata/settings"_q;
-		if (QFile::exists(oldSettingsBase + '0')
-			|| QFile::exists(oldSettingsBase + '1')
-			|| QFile::exists(oldSettingsBase + 's')) {
-			return oldPath;
-		}
-	}
-
+	// 🚨 Здесь апстрим сначала заглядывал в ~/.TelegramDesktop и, найдя там
+	// tdata/settings, ИСПОЛЬЗОВАЛ эту папку. Для него это верно — своя прежняя
+	// директория. Для нас это ЧУЖАЯ рабочая папка настоящего Telegram: на
+	// Linux-машине, где он установлен, наш клиент молча начинал читать и писать
+	// в его tdata — чужие сессии, ключи и кеш.
+	//
+	// Проверка удалена целиком, никакой «миграции» на её месте быть не должно:
+	// переносить чужие данные в свой профиль ничем не лучше, чем писать в них.
+	// Работаем только в своей директории, которую даёт Qt по имени приложения
+	// (QApplication::applicationName() = "AnsibleDesktop", core/launcher.cpp).
 	return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + '/';
 }
 
