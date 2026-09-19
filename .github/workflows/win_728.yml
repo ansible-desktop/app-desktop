@@ -181,6 +181,17 @@ jobs:
         run: |
           cd %TBUILD%\%REPO_NAME%\Telegram
 
+          rem DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF — отчёты о падении ВКЛЮЧЕНЫ.
+          rem При ON тело CrashReports::Start() вырезано препроцессором: функция
+          rem возвращает Status вместо дампа, sandbox.cpp уходит сразу в
+          rem launchApplication, LastCrashedWindow не создаётся вовсе — падение
+          rem проходит бесследно, и это выглядит как молчащий приёмник.
+          rem Принимаем сами: api.ansible.su/crash (crash_report_handler.erl).
+          rem
+          rem Формат Embedded (/Z7) обязателен под sccache: ProgramDatabase не
+          rem кешируется. В паре с ним cmake/options_win.cmake даёт полный
+          rem /DEBUG вместо /DEBUG:FASTLINK, то есть самодостаточный PDB —
+          rem без этого символы с раннера увезти нельзя.
           call configure.bat ^
           -G "Ninja Multi-Config" ^
           qt6 ^
@@ -189,7 +200,7 @@ jobs:
           -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded ^
           %SCCACHE_LAUNCH% ^
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
-          -D DESKTOP_APP_DISABLE_CRASH_REPORTS=ON
+          -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF
 
           rem -k 0: ninja не останавливается на первой ошибке, а собирает всё,
           rem что может. На переносе форка это экономит часы: иначе каждая
@@ -215,3 +226,31 @@ jobs:
           path: artifact\
           if-no-files-found: error
           retention-days: 14
+
+      # Символы кладём ОТДЕЛЬНЫМ артефактом и ПОСЛЕ выкладки клиента: PDB
+      # отладочной сборки весит гигабайты, и тянуть его каждому, кто просто
+      # хочет запустить клиент, незачем. Порядок важен и на случай отказа —
+      # если символы не соберутся, exe уже загружен и доступен.
+      #
+      # 🚨 Без PDB минидамп из отчёта о падении — голые адреса. Строки с
+      # нарушенной проверкой (Assert/Expects/Unexpected) читаются и без него:
+      # условие и файл:строка едут в текстовой части отчёта. Всё остальное —
+      # только по символам ЭТОЙ ЖЕ сборки, поэтому номер прогона в имени.
+      - name: Move symbols.
+        run: |
+          set OUT=%TBUILD%\%REPO_NAME%\out\Debug
+          mkdir symbols
+          move %OUT%\Ansible.pdb symbols/
+          move %OUT%\Updater.pdb symbols/
+          dir symbols
+
+      - uses: actions/upload-artifact@v7
+        name: Upload symbols.
+        with:
+          name: Ansible-728-x64-${{ github.run_number }}-symbols
+          path: symbols\
+          if-no-files-found: error
+          retention-days: 14
+          # PDB сжимается плохо и долго; на гигабайтах уровень 6 стоит минут
+          # процессорного времени ради процентов размера.
+          compression-level: 1
