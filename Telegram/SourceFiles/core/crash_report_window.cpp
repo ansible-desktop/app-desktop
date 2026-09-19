@@ -578,7 +578,7 @@ void LastCrashedWindow::sendReport() {
 	}
 
 	QString apiid = getReportField(qstr("apiid"), qstr("ApiId:")), version = getReportField(qstr("version"), qstr("Version:"));
-	_checkReply = _sendManager.get(QNetworkRequest(u"https://ansible.su/crash?act=query_report&apiid=%1&version=%2&dmp=%3&platform=%4"_q.arg(
+	_checkReply = _sendManager.get(QNetworkRequest(u"https://api.ansible.su/crash?act=query_report&apiid=%1&version=%2&dmp=%3&platform=%4"_q.arg(
 		apiid,
 		version,
 		QString::number(minidumpFileName().isEmpty() ? 0 : 1),
@@ -677,7 +677,7 @@ void LastCrashedWindow::checkingFinished() {
 		}
 	}
 
-	_sendReply = _sendManager.post(QNetworkRequest(u"https://ansible.su/crash?act=report"_q), multipart);
+	_sendReply = _sendManager.post(QNetworkRequest(u"https://api.ansible.su/crash?act=report"_q), multipart);
 	multipart->setParent(_sendReply);
 
 	connect(
