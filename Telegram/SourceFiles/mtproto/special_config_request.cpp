@@ -200,15 +200,11 @@ SpecialConfigRequest::SpecialConfigRequest(
 
 	_manager.setProxy(QNetworkProxy::NoProxy);
 
-	std::random_device rd;
-	const auto shuffle = [&](int from, int till) {
-		Expects(till > from);
-
-		ranges::shuffle(
-			begin(_attempts) + from,
-			begin(_attempts) + till,
-			std::mt19937(rd()));
-	};
+	// 🚨 Здесь стояли std::random_device и лямбда shuffle, перемешивавшая
+	// список попыток. Список ниже вычищен, перемешивать стало нечего — и
+	// GCC это заметил: `variable 'shuffle' set but not used`, а под -Werror
+	// это обрыв сборки. MSVC про неиспользованную лямбду молчит, поэтому
+	// Windows собиралась, а Linux падал на 2013-м файле из 2267.
 
 	// Ansible: внешнее обнаружение конфига нам не нужно — адрес DC вшит,
 	// мы ходим напрямую. Апстримовский список попыток (Google DNS,
