@@ -1,18 +1,18 @@
-name: Ansible Windows 7.2.8 (fast).
+name: Ansible Windows (fast).
 
 # Fast iteration build — NOT a release. Windows x64 Debug only, with sccache so
 # repeated builds recompile only the changed translation units (~minutes on a warm
 # cache). Reuses the SAME dependency caches as win.yml (ThirdParty/Libraries/Qt),
-# so it never rebuilds Qt/OpenSSL/etc. once win.yml or release_win.yml warmed them.
+# so it never rebuilds Qt/OpenSSL/etc. once win.yml warmed them.
 #
-# The production release (release_win.yml, on v* tags) is intentionally left
-# untouched — it stays a full, proper Release build with PDB crash reports.
+# Ветки (20.09.2026, после уборки):
+#   dev    — повседневная работа. Push сюда поднимает ТОЛЬКО эту сборку.
+#   master — релизная ветка: там собираются все варианты сразу,
+#            win/linux/mac/snap, каждый своим воркфлоу с `branches: [master]`.
+# Поэтому файлы воркфлоу на обеих ветках ОДИНАКОВЫ — расходиться нечему, и
+# мерж dev -> master не тащит за собой правку триггеров.
 #
-# Branching model: работа по переносу идёт в ветке `7.2.8` — каждый push туда
-# запускает ЭТУ быструю сборку, а тяжёлая матрица win/linux/mac/snap на ней
-# отключена через branches-ignore. Когда сборка устоится — в `master` и тег `v*`
-# для полноценного релиза. Также срабатывает на тег `dev-*` и на ручной запуск
-# «Run workflow» с выбором ref.
+# Также срабатывает на тег `dev-*` и на ручной запуск «Run workflow» с выбором ref.
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ on:
         type: string
   push:
     branches:
-      - '7.2.8'
+      - dev
     tags:
       - 'dev-*'
 

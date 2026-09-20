@@ -3,12 +3,13 @@ name: Linux.
 on:
   push:
     # Pushes to the canary branches run only canary.yml, see there.
-    branches-ignore:
-      # Ветка переноса форка на 7.2.8: тяжёлая матрица здесь не нужна,
-      # проверяем быстрой dev_win.yml по workflow_dispatch.
-      - '7.2.8'
-      - public-canary
-      - private-canary
+    # Тяжёлая матрица живёт ТОЛЬКО на master: именно там собираются все
+    # варианты сразу — win/linux/mac/snap. На dev идёт только быстрая
+    # сборка винды (win_728.yml), чтобы правка не стоила четырёх платформ.
+    # Список именной, а не branches-ignore: так файлы на master и dev одинаковы
+    # и не расходятся при мержах, а новая ветка не поднимает матрицу случайно.
+    branches:
+      - master
     paths-ignore:
       - 'docs/**'
       - '**.md'
