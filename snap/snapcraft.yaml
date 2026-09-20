@@ -52,8 +52,12 @@ parts:
     cmake-parameters:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/usr
-      - -DTDESKTOP_API_ID=611335
-      - -DTDESKTOP_API_HASH=d524b414d21f4d37f08684c1df41ac9c
+      # 🚨 Здесь стояли УЧЁТНЫЕ ДАННЫЕ ТЕЛЕГРАМА (api_id 611335) и явными -D
+      # перекрывали наш дефолт из Telegram/cmake/telegram_options.cmake.
+      # Серверный контроль у нас идёт по sessions.api_id — баны, троттлинг,
+      # гейты, — так что snap-сборка попадала не в свою корзину, а в списке
+      # активных сеансов пользователь видел чужое приложение. Ничего не
+      # задаём: дефолт из CMake и есть наш api_id.
     override-pull: |
       craftctl default
 
