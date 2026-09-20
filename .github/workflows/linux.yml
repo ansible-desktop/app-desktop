@@ -1,6 +1,15 @@
 name: Linux.
 
 on:
+  # Ручной запуск с выбором ветки. Сборка привязана к master, поэтому без
+  # этого проверить правку можно было только влив её в master — а вливать
+  # рано. Теперь любую ветку собирает кнопка «Run workflow».
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch / tag / SHA to build (default: ref this is launched from).'
+        required: false
+        type: string
   push:
     # Pushes to the canary branches run only canary.yml, see there.
     # Тяжёлая матрица живёт ТОЛЬКО на master: именно там собираются все
