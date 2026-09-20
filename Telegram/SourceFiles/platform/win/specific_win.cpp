@@ -327,11 +327,17 @@ void psDoFixPrevious() {
 		WCHAR userDesktopFolder[MAX_PATH], commonDesktopFolder[MAX_PATH];
 		HRESULT userDesktopRes = SHGetFolderPath(0, CSIDL_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, userDesktopFolder);
 		HRESULT commonDesktopRes = SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, commonDesktopFolder);
+		// 🚨 Имя ярлыка держать в синхроне с MyAppShortName из
+		// Telegram/build/setup.iss — сейчас "Ansible", то есть Ansible.lnk.
+		// Со старым именем этот код искал ЧУЖОЙ ярлык: свой не находил
+		// никогда (то есть дедупликация не работала вовсе), зато при
+		// установленном рядом Telegram Desktop удалял с общего рабочего
+		// стола ЕГО ярлык.
 		if (SUCCEEDED(userDesktopRes)) {
-			userDesktopLnk = QString::fromWCharArray(userDesktopFolder) + "\\Telegram.lnk";
+			userDesktopLnk = QString::fromWCharArray(userDesktopFolder) + "\\Ansible.lnk";
 		}
 		if (SUCCEEDED(commonDesktopRes)) {
-			commonDesktopLnk = QString::fromWCharArray(commonDesktopFolder) + "\\Telegram.lnk";
+			commonDesktopLnk = QString::fromWCharArray(commonDesktopFolder) + "\\Ansible.lnk";
 		}
 		QFile userDesktopFile(userDesktopLnk), commonDesktopFile(commonDesktopLnk);
 		if (QFile::exists(userDesktopLnk) && QFile::exists(commonDesktopLnk) && userDesktopLnk != commonDesktopLnk) {

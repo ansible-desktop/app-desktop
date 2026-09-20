@@ -2309,7 +2309,14 @@ bool checkReadyUpdate() {
 	QFileInfo updater(cWorkingDir() + u"tupdates/temp/Updater.exe"_q);
 #elif defined Q_OS_MAC // Q_OS_WIN
 	QString curUpdater = (cExeDir() + cExeName() + u"/Contents/Frameworks/Updater"_q);
-	QFileInfo updater(cWorkingDir() + u"tupdates/temp/Telegram.app/Contents/Frameworks/Updater"_q);
+	// 🚨 Бандл распакованного обновления называется так же, как наш — сейчас
+	// Ansible.app (OUTPUT_NAME в Telegram/CMakeLists.txt). Литерал Telegram.app
+	// от апстрима означал, что апдейтер в распакованном обновлении НЕ находился
+	// и подстановка новой версии на macOS не срабатывала вовсе — молча, потому
+	// что дальше идёт ветка «апдейтера нет». Берём имя из cExeName(), как
+	// строкой выше для текущего бандла: тогда оно не разъедется при следующем
+	// переименовании.
+	QFileInfo updater(cWorkingDir() + u"tupdates/temp/"_q + cExeName() + u"/Contents/Frameworks/Updater"_q);
 #else // Q_OS_MAC
 	QString curUpdater = (cExeDir() + u"Updater"_q);
 	QFileInfo updater(cWorkingDir() + u"tupdates/temp/Updater"_q);

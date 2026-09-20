@@ -349,9 +349,13 @@ bool GenerateDesktopFile(
 			| QFileDevice::ExeOther);
 
 	if (!Core::UpdaterDisabled()) {
-		DEBUG_LOG(("App Info: removing old .desktop files"));
-		QFile::remove(u"%1telegram.desktop"_q.arg(targetPath));
-		QFile::remove(u"%1telegramdesktop.desktop"_q.arg(targetPath));
+		// 🚨 Здесь апстрим удалял СВОИ прежние имена — telegram.desktop и
+		// telegramdesktop.desktop. У нас ярлык называется
+		// com.ansible.desktop.desktop, и эти два файла принадлежат
+		// НАСТОЯЩЕМУ Telegram Desktop, если он стоит рядом: мы молча сносили
+		// пользователю чужой пункт меню и чужой автозапуск. Тот же класс, что
+		// уже чинили с GUID установщика в реестре Windows. Своих устаревших
+		// имён у нас нет, чистить нечего — удаление убрано целиком.
 
 		const auto appimagePath = u"file://%1%2"_q.arg(
 			cExeDir(),
