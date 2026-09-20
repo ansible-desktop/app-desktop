@@ -1,9 +1,12 @@
 name: Changelog
 
+# Публикация changelog на GitHub Pages — наследство апстрима. У нашего форка
+# Pages не включены, поэтому шаг deploy падает с 404 «Ensure GitHub Pages has
+# been enabled», а публиковать он стал бы changelog ТЕЛЕГРАМА. Автозапуск снят:
+# после уборки веток dev — рабочая ветка, и каждый пуш, задевающий changelog.txt,
+# давал красный прогон на ровном месте. Включать обратно — только вместе с
+# Pages и своим changelog.
 on:
-  push:
-    branches: [dev]
-    paths: [changelog.txt]
   workflow_dispatch:
 
 permissions:
