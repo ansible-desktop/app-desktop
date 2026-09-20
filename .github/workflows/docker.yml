@@ -1,10 +1,16 @@
 name: Docker.
 
+# Публикация образа сборочного окружения CentOS в реестр пакетов организации.
+# Наследство апстрима: у них этим образом пользуются контрибьюторы, у нас им
+# не пользуется НИКТО — linux.yml собирает тот же образ локально из
+# Telegram/build/docker/centos_env/Dockerfile и в ghcr не ходит.
+#
+# Автозапуск снят: у токена нет права создавать пакет организации, прогон
+# падал на `denied: installation not allowed to Create organization package`
+# и краснел master на ровном месте. Понадобится образ в реестре — включать
+# вместе с правами на packages, а не наоборот.
 on:
-  push:
-    paths:
-      - '.github/workflows/docker.yml'
-      - 'Telegram/build/docker/centos_env/**'
+  workflow_dispatch:
 
 jobs:
   docker:

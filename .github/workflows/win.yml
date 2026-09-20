@@ -173,7 +173,7 @@ jobs:
       - name: Read configuration matrix.
         shell: bash
         run: |
-          ARTIFACT_NAME="Telegram"
+          ARTIFACT_NAME="Ansible"
 
           ARCH=""
           if [ -n "${{ matrix.arch }}" ]; then
@@ -222,6 +222,18 @@ jobs:
         shell: bash
         run: find $LibrariesPath '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -path '*/nv-codec-headers/*' ')' -type f ')' -o -empty ')' -delete
 
+      # 🚨 Debug-сборка не помещается на диск раннера: прогон 20.09.2026 умер
+      # на C1085 «No space left on device», собрав почти всё. Шаг выше чистит
+      # ТОЛЬКО каталог библиотек, а место съедают объектные файлы в out/.
+      # Android SDK ни одному нашему шагу не нужен и весит больше всего.
+      - name: Free up runner disk.
+        shell: bash
+        run: |
+          df -h /c | tail -1
+          rm -rf "/c/Android" "/c/Program Files (x86)/Android" || true
+          rm -rf "/c/Program Files/Google/Chrome SxS" || true
+          df -h /c | tail -1
+
       - name: Telegram Desktop build.
         if: env.ONLY_CACHE == 'false'
         run: |
@@ -246,7 +258,7 @@ jobs:
         run: |
           set OUT=%TBUILD%\%REPO_NAME%\out\Debug
           mkdir artifact
-          move %OUT%\Telegram.exe artifact/
+          move %OUT%\Ansible.exe artifact/
           move %OUT%\Updater.exe artifact/
       - uses: actions/upload-artifact@v7
         name: Upload artifact.
