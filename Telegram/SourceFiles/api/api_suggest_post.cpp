@@ -166,7 +166,7 @@ void ConfirmApproval(
 			text.append("\n\n").append(admin
 				? (scheduleDate
 					? (amount.stars()
-						? tr::lng_suggest_accept_receive_stars
+						? tr::lng_suggest_accept_receive_diamonds
 						: tr::lng_suggest_accept_receive_ton)(
 							tr::now,
 							lt_count_decimal,
@@ -179,7 +179,7 @@ void ConfirmApproval(
 							tr::bold(date),
 							tr::rich)
 					: (amount.stars()
-						? tr::lng_suggest_accept_receive_now_stars
+						? tr::lng_suggest_accept_receive_now_diamonds
 						: tr::lng_suggest_accept_receive_now_ton)(
 							tr::now,
 							lt_count_decimal,
@@ -191,7 +191,7 @@ void ConfirmApproval(
 							tr::rich))
 				: (scheduleDate
 					? (amount.stars()
-						? tr::lng_suggest_accept_pay_stars
+						? tr::lng_suggest_accept_pay_diamonds
 						: tr::lng_suggest_accept_pay_ton)(
 							tr::now,
 							lt_count_decimal,
@@ -200,7 +200,7 @@ void ConfirmApproval(
 							tr::bold(date),
 							tr::rich)
 					: (amount.stars()
-						? tr::lng_suggest_accept_pay_now_stars
+						? tr::lng_suggest_accept_pay_now_diamonds
 						: tr::lng_suggest_accept_pay_now_ton)(
 							tr::now,
 							lt_count_decimal,
@@ -213,7 +213,7 @@ void ConfirmApproval(
 						tr::rich));
 				if (price.stars()) {
 					text.append("\n\n").append(
-						tr::lng_suggest_options_stars_warning(
+						tr::lng_suggest_options_diamonds_warning(
 							tr::now,
 							tr::rich));
 				}

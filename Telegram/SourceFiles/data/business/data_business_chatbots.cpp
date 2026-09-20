@@ -201,7 +201,7 @@ EditFlagsDescriptor<ChatbotsPermissions> ChatbotsPermissionsLabels() {
 		{ Flag::SellGifts, tr::lng_chatbots_sell_gifts(tr::now) },
 		{ Flag::GiftSettings, tr::lng_chatbots_gift_settings(tr::now) },
 		{ Flag::TransferGifts, tr::lng_chatbots_transfer_gifts(tr::now) },
-		{ Flag::TransferStars, tr::lng_chatbots_transfer_stars(tr::now) },
+		{ Flag::TransferStars, tr::lng_chatbots_transfer_diamonds(tr::now) },
 	};
 	auto stories = std::vector<PermissionLabel>{
 		{ Flag::ManageStories, tr::lng_chatbots_manage_stories(tr::now) },

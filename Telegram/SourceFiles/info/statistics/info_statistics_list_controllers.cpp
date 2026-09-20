@@ -571,7 +571,7 @@ QString BoostRow::generateName() {
 	return !PeerListRow::special()
 		? PeerListRow::generateName()
 		: _boost.credits
-		? tr::lng_giveaway_prizes_additional_credits_amount(
+		? tr::lng_giveaway_prizes_additional_diamonds_amount(
 			tr::now,
 			lt_count_decimal,
 			_boost.credits)
@@ -899,7 +899,7 @@ void CreditsRow::init() {
 	_name = (_entry.isLiveStoryReaction() || _entry.paidMessagesCount)
 		? name
 		: _entry.postsSearch
-		? tr::lng_credits_box_history_entry_posts_search(tr::now)
+		? tr::lng_diamonds_box_history_entry_posts_search(tr::now)
 		: (_entry.giftUpgraded && _entry.uniqueGift && !isSpecial)
 		? u"%1 #%2"_q.arg(_entry.uniqueGift->title).arg(Lang::FormatCountDecimal(_entry.uniqueGift->number))
 		: ((!_entry.subscriptionUntil.isNull() && !isSpecial)
@@ -910,14 +910,14 @@ void CreditsRow::init() {
 		: _entry.title;
 	setSkipPeerBadge(true);
 	const auto description = _entry.floodSkip
-		? tr::lng_credits_box_history_entry_floodskip_about(
+		? tr::lng_diamonds_box_history_entry_floodskip_about(
 			tr::now,
 			lt_count_decimal,
 			_entry.floodSkip)
 		: _entry.isLiveStoryReaction()
-		? tr::lng_credits_paid_messages_fee_live_reaction(tr::now)
+		? tr::lng_diamonds_paid_messages_fee_live_reaction(tr::now)
 		: _entry.paidMessagesCount
-		? tr::lng_credits_paid_messages_fee(
+		? tr::lng_diamonds_paid_messages_fee(
 			tr::now,
 			lt_count,
 			_entry.paidMessagesCount)
@@ -930,16 +930,16 @@ void CreditsRow::init() {
 		: _entry.failed
 		? tr::lng_channel_earn_history_failed(tr::now)
 		: !_entry.subscriptionUntil.isNull()
-		? tr::lng_credits_box_history_entry_subscription(tr::now)
+		? tr::lng_diamonds_box_history_entry_subscription(tr::now)
 		: (_entry.peerType
 			== Data::CreditsHistoryEntry::PeerType::PremiumBot)
-		? tr::lng_credits_box_history_entry_via_premium_bot(tr::now)
+		? tr::lng_diamonds_box_history_entry_via_premium_bot(tr::now)
 		: (_entry.peerType == Data::CreditsHistoryEntry::PeerType::Fragment)
-		? tr::lng_credits_box_history_entry_fragment(tr::now)
+		? tr::lng_diamonds_box_history_entry_fragment(tr::now)
 		: (_entry.gift && isSpecial)
-		? tr::lng_credits_box_history_entry_anonymous(tr::now)
+		? tr::lng_diamonds_box_history_entry_anonymous(tr::now)
 		: _entry.giftUpgraded
-		? tr::lng_credits_box_history_entry_gift_upgrade(tr::now)
+		? tr::lng_diamonds_box_history_entry_gift_upgrade(tr::now)
 		: (_name == name)
 		? Ui::GenerateEntryName(_entry).text
 		: name;
@@ -947,10 +947,10 @@ void CreditsRow::init() {
 	PeerListRow::setCustomStatus(langDateTime(_entry.date));
 	if (_subscription) {
 		PeerListRow::setCustomStatus((_subscription.expired
-			? tr::lng_credits_subscription_status_none
+			? tr::lng_diamonds_subscription_status_none
 			: _subscription.cancelled
-			? tr::lng_credits_subscription_status_off
-			: tr::lng_credits_subscription_status_on)(
+			? tr::lng_diamonds_subscription_status_off
+			: tr::lng_diamonds_subscription_status_on)(
 				tr::now,
 				lt_date,
 				langDayOfMonthFull(_subscription.until.date())));
@@ -1048,11 +1048,11 @@ PaintRoundImageCallback CreditsRow::generatePaintUserpicCallback(bool force) {
 
 [[nodiscard]] QString RightActionText(const Data::SubscriptionEntry &s) {
 	return s.cancelledByBot
-		? tr::lng_credits_subscription_status_off_by_bot_right(tr::now)
+		? tr::lng_diamonds_subscription_status_off_by_bot_right(tr::now)
 		: s.cancelled
-		? tr::lng_credits_subscription_status_off_right(tr::now)
+		? tr::lng_diamonds_subscription_status_off_right(tr::now)
 		: s.expired
-		? tr::lng_credits_subscription_status_none_right(tr::now)
+		? tr::lng_diamonds_subscription_status_none_right(tr::now)
 		: QString();
 }
 

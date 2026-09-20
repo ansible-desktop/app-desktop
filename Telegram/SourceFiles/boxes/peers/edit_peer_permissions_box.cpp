@@ -1230,11 +1230,11 @@ void ShowEditPeerPermissionsBox(
 			: 0;
 		charging = inner->add(object_ptr<Ui::SettingsButton>(
 			inner,
-			tr::lng_rights_charge_stars(),
+			tr::lng_rights_charge_diamonds(),
 			st::settingsButtonNoIcon));
 		charging->toggleOn(rpl::single(starsPerMessage > 0));
 		Ui::AddSkip(inner);
-		Ui::AddDividerText(inner, tr::lng_rights_charge_stars_about());
+		Ui::AddDividerText(inner, tr::lng_rights_charge_diamonds_about());
 
 		const auto chargeWrap = inner->add(
 			object_ptr<Ui::SlideWrap<Ui::VerticalLayout>>(

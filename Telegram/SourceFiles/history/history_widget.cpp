@@ -7610,7 +7610,7 @@ void HistoryWidget::updateFieldPlaceholder() {
 		} else if (const auto stars = ephemeralReply
 			? 0
 			: peer->starsPerMessageChecked()) {
-			return tr::lng_message_stars_ph(
+			return tr::lng_message_diamonds_ph(
 				lt_count,
 				rpl::single(stars * 1.));
 		} else if (const auto channel = peer->asChannel()) {

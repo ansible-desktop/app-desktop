@@ -178,7 +178,7 @@ rpl::producer<QString> Credits::title() {
 	if (_creditsType == CreditsType::Ton) {
 		return tr::lng_credits_currency_summary_title();
 	}
-	return tr::lng_credits_summary_title();
+	return tr::lng_diamonds_summary_title();
 }
 
 bool Credits::hasFlexibleTopBar() const {
@@ -216,7 +216,7 @@ void Credits::setupSubscriptions(not_null<Ui::VerticalLayout*> container) {
 		Ui::AddSkip(inner);
 		Ui::AddSubsectionTitle(
 			inner,
-			tr::lng_credits_subscription_section(),
+			tr::lng_diamonds_subscription_section(),
 			{ 0, 0, 0, -st::settingsPremiumOptionsPadding.bottom() });
 
 		const auto fullWrap = inner->add(
@@ -295,16 +295,16 @@ void Credits::setupHistory(not_null<Ui::VerticalLayout*> container) {
 		const auto hasOneTab = inSlice.list.empty() && outSlice.list.empty();
 		const auto hasIn = !inSlice.list.empty();
 		const auto hasOut = !outSlice.list.empty();
-		const auto fullTabText = tr::lng_credits_summary_history_tab_full(
+		const auto fullTabText = tr::lng_diamonds_summary_history_tab_full(
 			tr::now);
-		const auto inTabText = tr::lng_credits_summary_history_tab_in(
+		const auto inTabText = tr::lng_diamonds_summary_history_tab_in(
 			tr::now);
-		const auto outTabText = tr::lng_credits_summary_history_tab_out(
+		const auto outTabText = tr::lng_diamonds_summary_history_tab_out(
 			tr::now);
 		if (hasOneTab) {
 			Ui::AddSubsectionTitle(
 				inner,
-				tr::lng_credits_summary_history_tab_full(),
+				tr::lng_diamonds_summary_history_tab_full(),
 				{ 0, 0, 0, -st::defaultSubsectionTitlePadding.bottom() });
 		}
 
@@ -535,7 +535,7 @@ void Credits::setupContent() {
 				isCurrency
 					? tr::lng_credits_currency_summary_in_button(
 						tr::marked)
-					: tr::lng_credits_topup_button(
+					: tr::lng_diamonds_topup_button(
 						lt_emoji,
 						rpl::single(Ui::Text::SingleCustomEmoji(u"+"_q)),
 						tr::marked)));
@@ -586,7 +586,7 @@ void Credits::setupContent() {
 	content->add(
 		object_ptr<Ui::FlatLabel>(
 			content,
-			tr::lng_credits_balance_me_count(
+			tr::lng_diamonds_balance_me_count(
 				lt_emoji,
 				rpl::single(Ui::MakeCreditsIconEntity()),
 				lt_amount,
@@ -692,7 +692,7 @@ base::weak_qptr<Ui::RpWidget> Credits::createPinnedToTop(
 				.title = title(),
 				.about = (isCurrency
 					? tr::lng_credits_currency_summary_about
-					: tr::lng_credits_summary_about)(
+					: tr::lng_diamonds_summary_about)(
 						TextWithEntities::Simple),
 				.light = true,
 				.use3dStar = !isCurrency,
@@ -963,7 +963,7 @@ void BuildCreditsButtons(
 		});
 		const auto stats = builder.addButton({
 			.id = u"stars/stats"_q,
-			.title = tr::lng_credits_stats_button(),
+			.title = tr::lng_diamonds_stats_button(),
 			.st = &st::settingsCreditsButton,
 			.icon = { &st::menuIconStats },
 			.onClick = [controller, self] {
@@ -981,7 +981,7 @@ void BuildCreditsButtons(
 	if (!isCurrency) {
 		const auto gift = builder.addButton({
 			.id = u"stars/gift"_q,
-			.title = tr::lng_credits_gift_button(),
+			.title = tr::lng_diamonds_gift_button(),
 			.st = &st::settingsCreditsButton,
 			.icon = { &st::settingsButtonIconGift },
 			.onClick = [controller] {
@@ -998,7 +998,7 @@ void BuildCreditsButtons(
 	if (!isCurrency && Info::BotStarRef::Join::Allowed(self)) {
 		const auto earn = builder.addButton({
 			.id = u"stars/earn"_q,
-			.title = tr::lng_credits_earn_button(),
+			.title = tr::lng_diamonds_earn_button(),
 			.st = &st::settingsCreditsButton,
 			.icon = { &st::settingsButtonIconEarn },
 			.onClick = [controller, self] {
@@ -1048,7 +1048,7 @@ void BuildCreditsSectionContent(
 const auto kCreditsBuilderMeta = BuildHelper({
 	.id = Credits::Id(),
 	.parentId = MainId(),
-	.title = &tr::lng_credits_summary_title,
+	.title = &tr::lng_diamonds_summary_title,
 	.icon = &st::menuIconPremium,
 }, [](SectionBuilder &builder) {
 	BuildCreditsButtons(builder, false, nullptr, nullptr, nullptr);
@@ -1114,7 +1114,7 @@ Fn<void()> BuyStarsHandler::handler(
 	const auto optionsBox = [=](not_null<Ui::GenericBox*> box) {
 		box->setStyle(st::giveawayGiftCodeBox);
 		box->setWidth(st::boxWideWidth);
-		box->setTitle(tr::lng_credits_summary_options_subtitle());
+		box->setTitle(tr::lng_diamonds_summary_options_subtitle());
 		const auto inner = box->verticalLayout();
 		const auto self = show->session().user();
 		const auto options = _api

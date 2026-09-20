@@ -1174,7 +1174,7 @@ rpl::producer<CreditsAmount> AddCreditsAction(
 	const auto parentController = controller->parentController();
 	const auto wrapButton = AddActionButton(
 		wrap,
-		tr::lng_manage_peer_bot_balance_credits(),
+		tr::lng_manage_peer_bot_balance_diamonds(),
 		state->balance.value(
 		) | rpl::map(rpl::mappers::_1 > CreditsAmount(0)),
 		[=] { parentController->showSection(Info::BotEarn::Make(user)); },
@@ -1214,7 +1214,7 @@ rpl::producer<CreditsAmount> AddCreditsAction(
 	name->show();
 	rpl::combine(
 		button->widthValue(),
-		tr::lng_manage_peer_bot_balance_credits(),
+		tr::lng_manage_peer_bot_balance_diamonds(),
 		state->balance.value()
 	) | rpl::on_next([=, &st](
 			int width,
@@ -2822,7 +2822,7 @@ void ActionsFiller::addAffiliateProgram(not_null<UserData*> user) {
 
 	inner->add(EditPeerInfoBox::CreateButton(
 		inner,
-		tr::lng_manage_peer_bot_star_ref(),
+		tr::lng_manage_peer_bot_diamond_ref(),
 		rpl::duplicate(commission),
 		recipients->open,
 		st::infoSharedMediaCountButton,
@@ -2830,7 +2830,7 @@ void ActionsFiller::addAffiliateProgram(not_null<UserData*> user) {
 	Ui::AddSkip(inner);
 	Ui::AddDividerText(
 		inner,
-		tr::lng_manage_peer_bot_star_ref_about(
+		tr::lng_manage_peer_bot_diamond_ref_about(
 			lt_bot,
 			rpl::single(TextWithEntities{ user->name() }),
 			lt_amount,

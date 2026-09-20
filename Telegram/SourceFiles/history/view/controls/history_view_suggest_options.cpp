@@ -131,7 +131,7 @@ StarsTonPriceInput AddStarsTonPriceInput(
 
 	Ui::AddSubsectionTitle(
 		starsInner,
-		tr::lng_suggest_options_stars_price(),
+		tr::lng_suggest_options_diamonds_price(),
 		QMargins(
 			added.left(),
 			0,
@@ -364,8 +364,8 @@ void ChooseSuggestPriceBox(
 		.text = Ui::Text::String(
 			st::semiboldTextStyle,
 			(admin
-				? tr::lng_suggest_options_stars_request(tr::now)
-				: tr::lng_suggest_options_stars_offer(tr::now))),
+				? tr::lng_suggest_options_diamonds_request(tr::now)
+				: tr::lng_suggest_options_diamonds_offer(tr::now))),
 		.active = !state->ton.current(),
 	});
 	state->buttons.push_back({
@@ -474,7 +474,7 @@ void ChooseSuggestPriceBox(
 	};
 	const auto youGet = [=](rpl::producer<CreditsAmount> price, bool stars) {
 		return (stars
-			? tr::lng_suggest_options_you_get_stars
+			? tr::lng_suggest_options_you_get_diamonds
 			: tr::lng_suggest_options_you_get_ton)(
 				lt_count_decimal,
 				rpl::duplicate(price) | rpl::map(computePrice),
@@ -484,16 +484,16 @@ void ChooseSuggestPriceBox(
 	auto starsAbout = admin
 		? rpl::combine(
 			youGet(StarsPriceValue(state->price.value()), true),
-			tr::lng_suggest_options_stars_warning(tr::rich)
+			tr::lng_suggest_options_diamonds_warning(tr::rich)
 		) | rpl::map([=](const QString &t1, const TextWithEntities &t2) {
 			return TextWithEntities{ t1 }.append("\n\n").append(t2);
 		})
 		: gift
-		? tr::lng_gift_offer_stars_about(
+		? tr::lng_gift_offer_diamonds_about(
 			lt_name,
 			rpl::single(tr::marked(args.giftName)),
 			tr::rich)
-		: tr::lng_suggest_options_stars_price_about(tr::rich);
+		: tr::lng_suggest_options_diamonds_price_about(tr::rich);
 	auto tonAbout = admin
 		? youGet(
 			TonPriceValue(state->price.value()),

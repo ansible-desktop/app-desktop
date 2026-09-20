@@ -233,7 +233,7 @@ QString MessageAccessibilityName(
 			case Data::GiftType::Credits:
 			case Data::GiftType::StarGift:
 				mediaParts.push_back(
-					tr::lng_sr_message_gift_credits(
+					tr::lng_sr_message_gift_diamonds(
 						tr::now,
 						lt_count,
 						gift->count));
@@ -1061,7 +1061,7 @@ QString MessageSubItemValue(
 				gift->count);
 		case Data::GiftType::Credits:
 		case Data::GiftType::StarGift:
-			return tr::lng_sr_message_gift_credits(
+			return tr::lng_sr_message_gift_diamonds(
 				tr::now,
 				lt_count,
 				gift->count);

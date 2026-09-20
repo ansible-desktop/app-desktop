@@ -1817,7 +1817,7 @@ void Controller::fillManageSection() {
 		};
 		AddButtonWithCount(
 			_controls.buttonsLayout,
-			tr::lng_manage_peer_star_ref(),
+			tr::lng_manage_peer_diamond_ref(),
 			rpl::single(QString()), // Empty count.
 			std::move(callback),
 			{ .icon = &st::menuIconStarRefShare });
@@ -2152,7 +2152,7 @@ void Controller::fillBotCreditsButton() {
 			_controls.buttonsLayout,
 			EditPeerInfoBox::CreateButton(
 				_controls.buttonsLayout,
-				tr::lng_manage_peer_bot_balance_credits(),
+				tr::lng_manage_peer_bot_balance_diamonds(),
 				state->balance.value(),
 				[controller = _navigation->parentController(), peer = _peer] {
 					controller->showSection(Info::BotEarn::Make(peer));
@@ -2208,11 +2208,11 @@ void Controller::fillBotAffiliateProgram() {
 			: 0;
 		return commission
 			? Info::BotStarRef::FormatCommission(commission)
-			: tr::lng_manage_peer_bot_star_ref_off(tr::now);
+			: tr::lng_manage_peer_bot_diamond_ref_off(tr::now);
 	});
 	AddButtonWithCount(
 		_controls.buttonsLayout,
-		tr::lng_manage_peer_bot_star_ref(),
+		tr::lng_manage_peer_bot_diamond_ref(),
 		std::move(label),
 		[controller = _navigation->parentController(), user] {
 			controller->showSection(Info::BotStarRef::Setup::Make(user));

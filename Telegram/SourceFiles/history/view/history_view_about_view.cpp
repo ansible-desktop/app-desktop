@@ -549,7 +549,7 @@ rpl::producer<QString> EmptyChatLockedBox::button() {
 		? nullptr
 		: (_type == Type::PremiumRequired)
 		? tr::lng_send_non_premium_go()
-		: tr::lng_send_charges_stars_go();
+		: tr::lng_send_charges_diamonds_go();
 }
 
 auto EmptyChatLockedBox::buttonMinistars()
@@ -1100,7 +1100,7 @@ AdminLog::OwnedItem AboutView::makeStarsPerMessage(int stars) {
 			| MessageFlag::Local),
 		.from = _history->peer->id,
 	}, PreparedServiceText{ !_history->peer->isMonoforum()
-		? tr::lng_send_charges_stars_text(
+		? tr::lng_send_charges_diamonds_text(
 			tr::now,
 			lt_user,
 			std::move(name),
@@ -1108,7 +1108,7 @@ AdminLog::OwnedItem AboutView::makeStarsPerMessage(int stars) {
 			std::move(cost),
 			tr::rich)
 		: stars
-		? tr::lng_send_charges_stars_channel(
+		? tr::lng_send_charges_diamonds_channel(
 			tr::now,
 			lt_channel,
 			std::move(name),

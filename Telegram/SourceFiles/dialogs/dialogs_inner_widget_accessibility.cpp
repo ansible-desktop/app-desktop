@@ -109,7 +109,7 @@ namespace {
 		for (const auto &reaction : reactions) {
 			QString reactionText;
 			if (reaction.id.paid()) {
-				reactionText = tr::lng_sr_chat_reaction_star(tr::now);
+				reactionText = tr::lng_sr_chat_reaction_diamond(tr::now);
 			} else if (const auto emoji = reaction.id.emoji(); !emoji.isEmpty()) {
 				reactionText = emoji;
 			} else {
@@ -474,7 +474,7 @@ QString SubItemValue(
 		for (const auto &reaction : reactions) {
 			QString reactionText;
 			if (reaction.id.paid()) {
-				reactionText = tr::lng_sr_chat_reaction_star(tr::now);
+				reactionText = tr::lng_sr_chat_reaction_diamond(tr::now);
 			} else if (const auto emoji = reaction.id.emoji(); !emoji.isEmpty()) {
 				reactionText = emoji;
 			} else {

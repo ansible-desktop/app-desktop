@@ -86,7 +86,7 @@ void SuggestBox::prepare() {
 Environment PrepareEnvironment(not_null<Main::Session*> session) {
 	auto result = Environment();
 	result.internalLinksDomain = session->serverConfig().internalLinksDomain;
-	result.aboutTelegram = tr::lng_export_about_telegram(tr::now).toUtf8();
+	result.aboutTelegram = tr::lng_export_about_ansible(tr::now).toUtf8();
 	result.aboutContacts = tr::lng_export_about_contacts(tr::now).toUtf8();
 	result.aboutFrequent = tr::lng_export_about_frequent(tr::now).toUtf8();
 	result.aboutSessions = tr::lng_export_about_sessions(tr::now).toUtf8();

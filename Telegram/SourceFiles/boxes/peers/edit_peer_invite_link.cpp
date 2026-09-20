@@ -981,7 +981,7 @@ void Controller::rowClicked(not_null<PeerListRow*> row) {
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
-				tr::lng_credits_box_subscription_title(),
+				tr::lng_diamonds_box_subscription_title(),
 				st::creditsBoxAboutTitle),
 			style::al_top);
 
@@ -993,7 +993,7 @@ void Controller::rowClicked(not_null<PeerListRow*> row) {
 				st::creditsTopupPrice),
 			style::al_top);
 		subtitle1->setMarkedText(
-			tr::lng_credits_subscription_subtitle(
+			tr::lng_diamonds_subscription_subtitle(
 				tr::now,
 				lt_emoji,
 				_creditsEmoji,
@@ -1010,7 +1010,7 @@ void Controller::rowClicked(not_null<PeerListRow*> row) {
 			channel
 		) | rpl::on_next([=, currency = u"USD"_q](float64 rate) {
 			subtitle2->setText(
-				tr::lng_credits_subscriber_subtitle(
+				tr::lng_diamonds_subscriber_subtitle(
 					tr::now,
 					lt_total,
 					Ui::FillAmountAndCurrency(
@@ -1030,10 +1030,10 @@ void Controller::rowClicked(not_null<PeerListRow*> row) {
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
-				tr::lng_credits_box_out_about(
+				tr::lng_diamonds_box_out_about(
 					lt_link,
 					tr::lng_payments_terms_link(tr::url(
-						tr::lng_credits_box_out_about_link(tr::now))),
+						tr::lng_diamonds_box_out_about_link(tr::now))),
 					tr::marked),
 				st::creditsBoxAboutDivider),
 			style::al_top);

@@ -263,8 +263,8 @@ void InnerWidget::fill() {
 	if (BotStarRef::Join::Allowed(peer()) && !peer()->isSelf()) {
 		const auto button = BotStarRef::AddViewListButton(
 			container,
-			tr::lng_credits_summary_earn_title(),
-			tr::lng_credits_summary_earn_about());
+			tr::lng_diamonds_summary_earn_title(),
+			tr::lng_diamonds_summary_earn_about());
 		button->setClickedCallback([=] {
 			_controller->showSection(BotStarRef::Join::Make(peer()));
 		});
@@ -296,11 +296,11 @@ void InnerWidget::fillHistory() {
 		const auto hasOneTab = inSlice.list.empty() && outSlice.list.empty();
 		const auto hasIn = !inSlice.list.empty();
 		const auto hasOut = !outSlice.list.empty();
-		const auto fullTabText = tr::lng_credits_summary_history_tab_full(
+		const auto fullTabText = tr::lng_diamonds_summary_history_tab_full(
 			tr::now);
-		const auto inTabText = tr::lng_credits_summary_history_tab_in(
+		const auto inTabText = tr::lng_diamonds_summary_history_tab_in(
 			tr::now);
-		const auto outTabText = tr::lng_credits_summary_history_tab_out(
+		const auto outTabText = tr::lng_diamonds_summary_history_tab_out(
 			tr::now);
 		if (hasOneTab) {
 			const auto header = inner->add(

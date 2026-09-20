@@ -221,7 +221,7 @@ void MainWindow::createGlobalMenu() {
 		});
 
 	auto quit = file->addAction(
-		tr::lng_mac_menu_quit_telegram(tr::now, lt_telegram, u"Telegram"_q),
+		tr::lng_mac_menu_quit_ansible(tr::now, lt_telegram, u"Telegram"_q),
 		this,
 		[=] { quitFromTray(); },
 		QKeySequence::Quit);
@@ -417,7 +417,7 @@ void MainWindow::createGlobalMenu() {
 	auto help = psMainMenu->addMenu(tr::lng_linux_menu_help(tr::now));
 
 	auto about = help->addAction(
-		tr::lng_mac_menu_about_telegram(
+		tr::lng_mac_menu_about_ansible(
 			tr::now,
 			lt_telegram,
 			u"Telegram"_q),

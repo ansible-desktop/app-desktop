@@ -267,7 +267,7 @@ struct ResaleTabs {
 					filter.starsOnly = false;
 				});
 			}, &st::menuIconTopics, !starsOnly);
-			actionWithIcon(tr::lng_gift_resale_stars_only(tr::now), [=] {
+			actionWithIcon(tr::lng_gift_resale_diamonds_only(tr::now), [=] {
 				modify([&](ResaleGiftsFilter &filter) {
 					filter.starsOnly = true;
 				});
@@ -560,7 +560,7 @@ void GiftResaleBox(
 	filter->setText(rpl::conditional(
 		state->starsOnly.value(),
 		tr::lng_gift_resale_all_listings(),
-		tr::lng_gift_resale_stars_only()));
+		tr::lng_gift_resale_diamonds_only()));
 
 	box->heightValue() | rpl::on_next([=](int height) {
 		if (height > state->lastMinHeight) {

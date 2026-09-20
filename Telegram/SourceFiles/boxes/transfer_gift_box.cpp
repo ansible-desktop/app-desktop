@@ -691,7 +691,7 @@ base::weak_qptr<Ui::GenericBox> ShowBuyResaleGiftConfirm(
 					std::vector<Ui::SubTabsTab>{
 						{
 							u"stars"_q,
-							tr::lng_gift_buy_resale_pay_stars(
+							tr::lng_gift_buy_resale_pay_diamonds(
 								tr::now,
 								tr::marked),
 						},
@@ -755,7 +755,7 @@ base::weak_qptr<Ui::GenericBox> ShowBuyResaleGiftConfirm(
 					rpl::single(gift->nanoTonForResale
 						/ float64(Ui::kNanosInOne)),
 					tr::bold)
-				: tr::lng_action_gift_for_stars(
+				: tr::lng_action_gift_for_diamonds(
 					lt_count_decimal,
 					rpl::single(gift->starsForResale * 1.),
 					tr::bold);
@@ -846,7 +846,7 @@ void ShowTransferToBox(
 					lt_recipient,
 					rpl::single(tr::bold(peer->shortName())),
 					lt_price,
-					tr::lng_action_gift_for_stars(
+					tr::lng_action_gift_for_diamonds(
 						lt_count,
 						rpl::single(stars * 1.),
 						tr::bold),
@@ -963,7 +963,7 @@ void ShowGiftSaleAcceptBox(
 				tr::now,
 				lt_cost,
 				tr::bold(price.stars()
-					? tr::lng_action_gift_for_stars(
+					? tr::lng_action_gift_for_diamonds(
 						tr::now,
 						lt_count_decimal,
 						receive)

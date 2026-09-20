@@ -2937,7 +2937,7 @@ object_ptr<Ui::BoxContent> StarsExamplesBox(
 		nullptr);
 	const auto raw = controller.get();
 	auto initBox = [=](not_null<PeerListBox*> box) {
-		box->setTitle(tr::lng_credits_box_history_entry_gift_examples());
+		box->setTitle(tr::lng_diamonds_box_history_entry_gift_examples());
 		box->addButton(tr::lng_close(), [=] {
 			box->closeBox();
 		});

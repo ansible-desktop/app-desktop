@@ -32,7 +32,7 @@ CodeWidget::CodeWidget(
 	not_null<Main::Account*> account,
 	not_null<Data*> data)
 : Step(parent, account, data)
-, _noTelegramCode(this, tr::lng_code_no_telegram(tr::now), st::introLink)
+, _noTelegramCode(this, tr::lng_code_no_ansible(tr::now), st::introLink)
 , _code(this)
 , _callTimer([=] { sendCall(); })
 , _callStatus(getData()->callStatus)
@@ -70,7 +70,7 @@ CodeWidget::CodeWidget(
 
 void CodeWidget::refreshLang() {
 	if (_noTelegramCode) {
-		_noTelegramCode->setText(tr::lng_code_no_telegram(tr::now));
+		_noTelegramCode->setText(tr::lng_code_no_ansible(tr::now));
 	}
 	updateDescText();
 	updateControlsGeometry();
@@ -98,7 +98,7 @@ void CodeWidget::updateDescText() {
 			rpl::single(
 				TextWithEntities::Simple(Ui::FormatPhone(getData()->phone))),
 			tr::rich)
-		: (byTelegram ? tr::lng_code_from_telegram : tr::lng_code_desc)(
+		: (byTelegram ? tr::lng_code_from_ansible : tr::lng_code_desc)(
 			tr::rich));
 	if (getData()->codeByTelegram) {
 		_noTelegramCode->show();

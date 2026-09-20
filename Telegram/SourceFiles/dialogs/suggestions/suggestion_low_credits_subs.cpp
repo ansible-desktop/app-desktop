@@ -73,7 +73,7 @@ void Activate(ActivateArgs args) {
 			recompute();
 		});
 		content->setContent(
-			tr::lng_dialogs_suggestions_credits_sub_low_title(
+			tr::lng_dialogs_suggestions_diamonds_sub_low_title(
 				tr::now,
 				lt_count,
 				float64(needed - whole),
@@ -82,7 +82,7 @@ void Activate(ActivateArgs args) {
 				lt_channels,
 				{ peers },
 				tr::bold),
-			tr::lng_dialogs_suggestions_credits_sub_low_about(
+			tr::lng_dialogs_suggestions_diamonds_sub_low_about(
 				tr::now,
 				TextWithEntities::Simple),
 			Ui::MakeCreditsIconContext(

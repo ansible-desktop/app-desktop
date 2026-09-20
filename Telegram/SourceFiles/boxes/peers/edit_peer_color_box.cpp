@@ -105,7 +105,7 @@ base::unique_qptr<Ui::RpWidget> CreateEmptyPlaceholder(
 
 	const auto emptyLabel = Ui::CreateChild<Ui::FlatLabel>(
 		container,
-		tr::lng_gift_stars_tabs_my_empty(),
+		tr::lng_gift_diamonds_tabs_my_empty(),
 		st::giftBoxGiftEmptyLabel);
 	emptyLabel->setTryMakeSimilarLines(true);
 	emptyLabel->resizeToWidth(
@@ -115,7 +115,7 @@ base::unique_qptr<Ui::RpWidget> CreateEmptyPlaceholder(
 	const auto emptyNextLabel = switchToNextTab
 		? Ui::CreateChild<Ui::FlatLabel>(
 			container,
-			tr::lng_gift_stars_tabs_my_empty_next(
+			tr::lng_gift_diamonds_tabs_my_empty_next(
 				lt_emoji,
 				rpl::single(Ui::Text::IconEmoji(&st::textMoreIconEmoji)),
 				tr::link),
@@ -1135,7 +1135,7 @@ ColorGiftTabsResult AddColorGiftTabs(
 		auto tabs = std::vector<Ui::SubTabs::Tab>();
 		tabs.push_back({
 			.id = u"my"_q,
-			.text = tr::lng_gift_stars_tabs_my(tr::now, tr::marked),
+			.text = tr::lng_gift_diamonds_tabs_my(tr::now, tr::marked),
 		});
 		for (const auto &gift : list) {
 			auto text = TextWithEntities();

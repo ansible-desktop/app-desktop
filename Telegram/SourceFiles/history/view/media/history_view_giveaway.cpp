@@ -102,22 +102,22 @@ auto GenerateGiveawayStart(
 		}
 
 		pushText((data->credits && (quantity == 1))
-			? tr::lng_prizes_credits_about_single(
+			? tr::lng_prizes_diamonds_about_single(
 				tr::now,
 				lt_amount,
-				tr::lng_prizes_credits_about_amount(
+				tr::lng_prizes_diamonds_about_amount(
 					tr::now,
 					lt_count,
 					data->credits,
 					tr::rich),
 				tr::rich)
 			: (data->credits && (quantity > 1))
-			? tr::lng_prizes_credits_about(
+			? tr::lng_prizes_diamonds_about(
 				tr::now,
 				lt_count,
 				quantity,
 				lt_amount,
-				tr::lng_prizes_credits_about_amount(
+				tr::lng_prizes_diamonds_about_amount(
 					tr::now,
 					lt_count,
 					data->credits,
@@ -293,12 +293,12 @@ auto GenerateGiveawayResults(
 				st::chatGiveawayNoCountriesTitleMargin);
 		}
 		pushText({ (data->credits && isSingleWinner)
-			? tr::lng_prizes_credits_results_one(
+			? tr::lng_prizes_diamonds_results_one(
 				tr::now,
 				lt_count,
 				data->credits)
 			: (data->credits && !isSingleWinner)
-			? tr::lng_prizes_credits_results_all(
+			? tr::lng_prizes_diamonds_results_all(
 				tr::now,
 				lt_count,
 				data->credits)

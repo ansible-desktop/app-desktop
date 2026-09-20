@@ -519,7 +519,7 @@ void BuildPremiumSection(SectionBuilder &builder) {
 	session->credits().load();
 	builder.addPremiumButton({
 		.id = u"main/credits"_q,
-		.title = tr::lng_settings_credits(),
+		.title = tr::lng_settings_diamonds(),
 		.label = session->credits().balanceValue(
 		) | rpl::map([](CreditsAmount c) {
 			return c
@@ -591,7 +591,7 @@ void BuildHelpSection(SectionBuilder &builder) {
 		.title = tr::lng_settings_features(),
 		.icon = { &st::menuIconEmojiObjects },
 		.onClick = [] {
-			UrlClickHandler::Open(tr::lng_telegram_features_url(tr::now));
+			UrlClickHandler::Open(tr::lng_ansible_features_url(tr::now));
 		},
 		.keywords = { u"tips"_q, u"tutorial"_q },
 	});

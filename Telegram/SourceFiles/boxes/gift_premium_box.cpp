@@ -1114,9 +1114,9 @@ void GiveawayInfoBox(
 				TextWithEntities{ QString::fromUtf8("\xf0\x9f\x8f\x86") }),
 			tr::marked)
 		: (info.credits)
-		? tr::lng_prizes_you_won_credits(
+		? tr::lng_prizes_you_won_diamonds(
 			lt_amount,
-			tr::lng_prizes_you_won_credits_amount(
+			tr::lng_prizes_you_won_diamonds_amount(
 				lt_count,
 				rpl::single(float64(info.credits)),
 				tr::bold),
@@ -1173,13 +1173,13 @@ void GiveawayInfoBox(
 			lt_admins,
 			credits
 				? (group
-					? tr::lng_prizes_credits_admins_group
-					: tr::lng_prizes_credits_admins)(
+					? tr::lng_prizes_diamonds_admins_group
+					: tr::lng_prizes_diamonds_admins)(
 						tr::now,
 						lt_channel,
 						tr::bold(first),
 						lt_amount,
-						tr::lng_prizes_credits_admins_amount(
+						tr::lng_prizes_diamonds_admins_amount(
 							tr::now,
 							lt_count_decimal,
 							float64(credits),
@@ -1514,7 +1514,7 @@ void AddStarGiftTable(
 	if (unique && entry.bareGiftResaleRecipientId) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_peer(),
+			tr::lng_diamonds_box_history_entry_peer(),
 			MakePeerTableValue(
 				table,
 				show,
@@ -1600,7 +1600,7 @@ void AddStarGiftTable(
 			};
 			AddTableRow(
 				table,
-				tr::lng_gift_unique_telegram(),
+				tr::lng_gift_unique_ansible(),
 				MakePeerWithStatusValue(table, show, hostId, handleChange),
 				st::giveawayGiftCodePeerMargin);
 		}
@@ -1608,7 +1608,7 @@ void AddStarGiftTable(
 	} else if (giftToChannel) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_peer_in(),
+			tr::lng_diamonds_box_history_entry_peer_in(),
 			(entry.bareActorId
 				? MakePeerTableValue(table, show, PeerId(entry.bareActorId))
 				: MakeHiddenPeerTableValue(table)),
@@ -1616,7 +1616,7 @@ void AddStarGiftTable(
 		if (entry.bareEntryOwnerId) {
 			AddTableRow(
 				table,
-				tr::lng_credits_box_history_entry_peer(),
+				tr::lng_diamonds_box_history_entry_peer(),
 				MakePeerTableValue(
 					table,
 					show,
@@ -1626,7 +1626,7 @@ void AddStarGiftTable(
 	} else if (entry.auction && entry.bareGiftOwnerId) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_peer(),
+			tr::lng_diamonds_box_history_entry_peer(),
 			MakePeerTableValue(
 				table,
 				show,
@@ -1643,13 +1643,13 @@ void AddStarGiftTable(
 		}) : nullptr;
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_peer_in(),
+			tr::lng_diamonds_box_history_entry_peer_in(),
 			MakePeerTableValue(table, show, peerId, send, handler),
 			st::giveawayGiftCodePeerMargin);
 	} else if (!entry.soldOutInfo && !giftToSelf) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_peer_in(),
+			tr::lng_diamonds_box_history_entry_peer_in(),
 			MakeHiddenPeerTableValue(table),
 			st::giveawayGiftCodePeerMargin);
 	}
@@ -1858,26 +1858,26 @@ void AddCreditsHistoryEntryTable(
 				CreditsAmount{ full });
 			AddTableRow(
 				table,
-				tr::lng_credits_box_history_entry_gift_full_price(),
+				tr::lng_diamonds_box_history_entry_gift_full_price(),
 				rpl::single(value.append(' ' + starsText)));
 		} else if (entry.starrefAmount) {
 			AddTableRow(
 				table,
-				tr::lng_star_ref_commission_title(),
+				tr::lng_diamond_ref_commission_title(),
 				rpl::single(TextWithEntities{
 					QString::number(entry.starrefCommission / 10.) + '%' }));
 		} else {
 			AddTableRow(
 				table,
 				tr::lng_gift_link_label_reason(),
-				tr::lng_credits_box_history_entry_reason_star_ref(
+				tr::lng_diamonds_box_history_entry_reason_diamond_ref(
 					tr::marked));
 		}
 	}
 	if (starrefRecipientId && entry.starrefAmount && !entry.giftResale) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_affiliate(),
+			tr::lng_diamonds_box_history_entry_affiliate(),
 			show,
 			starrefRecipientId);
 	}
@@ -1885,24 +1885,24 @@ void AddCreditsHistoryEntryTable(
 		AddTableRow(
 			table,
 			(entry.giftResale
-				? tr::lng_credits_box_history_entry_gift_sold_to
+				? tr::lng_diamonds_box_history_entry_gift_sold_to
 				: entry.starrefAmount
-				? tr::lng_credits_box_history_entry_referred
-				: tr::lng_credits_box_history_entry_miniapp)(),
+				? tr::lng_diamonds_box_history_entry_referred
+				: tr::lng_diamonds_box_history_entry_miniapp)(),
 			show,
 			peerId);
 	}
 	if (!entry.postsSearch
 		&& (actorId || (!entry.starrefCommission && peerId))) {
 		auto text = entry.starrefCommission
-			? tr::lng_credits_box_history_entry_referred()
+			? tr::lng_diamonds_box_history_entry_referred()
 			: entry.in
-			? tr::lng_credits_box_history_entry_peer_in()
+			? tr::lng_diamonds_box_history_entry_peer_in()
 			: entry.giftResale
-			? tr::lng_credits_box_history_entry_gift_bought_from()
+			? tr::lng_diamonds_box_history_entry_gift_bought_from()
 			: entry.giftUpgraded
-			? tr::lng_credits_box_history_entry_gift_from()
-			: tr::lng_credits_box_history_entry_peer();
+			? tr::lng_diamonds_box_history_entry_gift_from()
+			: tr::lng_diamonds_box_history_entry_peer();
 		const auto targetId = actorId ? actorId : peerId;
 		const auto isPeerDefault = !entry.starrefCommission
 			&& !entry.in
@@ -1948,8 +1948,8 @@ void AddCreditsHistoryEntryTable(
 			AddTableRow(
 				table,
 				(entry.reaction
-					? tr::lng_credits_box_history_entry_message
-					: tr::lng_credits_box_history_entry_media)(),
+					? tr::lng_diamonds_box_history_entry_message
+					: tr::lng_diamonds_box_history_entry_media)(),
 				std::move(label));
 		}
 	}
@@ -1957,35 +1957,35 @@ void AddCreditsHistoryEntryTable(
 	if (entry.peerType == Type::AppStore) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_via(),
-			tr::lng_credits_box_history_entry_app_store(
+			tr::lng_diamonds_box_history_entry_via(),
+			tr::lng_diamonds_box_history_entry_app_store(
 				tr::rich));
 	} else if (entry.peerType == Type::PlayMarket) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_via(),
-			tr::lng_credits_box_history_entry_play_market(
+			tr::lng_diamonds_box_history_entry_via(),
+			tr::lng_diamonds_box_history_entry_play_market(
 				tr::rich));
 	} else if (entry.peerType == Type::Fragment) {
 		AddTableRow(
 			table,
 			(entry.gift
-				? tr::lng_credits_box_history_entry_peer_in
-				: tr::lng_credits_box_history_entry_via)(),
+				? tr::lng_diamonds_box_history_entry_peer_in
+				: tr::lng_diamonds_box_history_entry_via)(),
 			((entry.gift && entry.credits.stars())
-				? tr::lng_credits_box_history_entry_anonymous
-				: tr::lng_credits_box_history_entry_fragment)(
+				? tr::lng_diamonds_box_history_entry_anonymous
+				: tr::lng_diamonds_box_history_entry_fragment)(
 					tr::rich));
 	} else if (entry.peerType == Type::Ads) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_via(),
-			tr::lng_credits_box_history_entry_ads(tr::rich));
+			tr::lng_diamonds_box_history_entry_via(),
+			tr::lng_diamonds_box_history_entry_ads(tr::rich));
 	} else if (entry.peerType == Type::PremiumBot) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_via(),
-			tr::lng_credits_box_history_entry_via_premium_bot(
+			tr::lng_diamonds_box_history_entry_via(),
+			tr::lng_diamonds_box_history_entry_via_premium_bot(
 				tr::rich));
 	}
 	if (entry.bareGiveawayMsgId) {
@@ -1999,7 +1999,7 @@ void AddCreditsHistoryEntryTable(
 		AddTableRow(
 			table,
 			tr::lng_gift_link_label_gift(),
-			tr::lng_gift_stars_title(
+			tr::lng_gift_diamonds_title(
 				lt_count,
 				rpl::single(entry.credits.value()),
 				tr::rich));
@@ -2023,7 +2023,7 @@ void AddCreditsHistoryEntryTable(
 		AddTableRow(
 			table,
 			tr::lng_gift_link_label_reason(),
-			tr::lng_credits_box_history_entry_subscription(
+			tr::lng_diamonds_box_history_entry_subscription(
 				tr::marked));
 	}
 	if (entry.paidMessagesAmount) {
@@ -2033,13 +2033,13 @@ void AddCreditsHistoryEntryTable(
 		const auto starsText = Lang::FormatCreditsAmountDecimal(full);
 		AddTableRow(
 			table,
-			tr::lng_credits_paid_messages_full(),
+			tr::lng_diamonds_paid_messages_full(),
 			rpl::single(value.append(' ' + starsText)));
 	}
 	if (const auto months = entry.premiumMonthsForStars) {
 		AddTableRow(
 			table,
-			tr::lng_credits_premium_gift_duration(),
+			tr::lng_diamonds_premium_gift_duration(),
 			tr::lng_months(
 				lt_count,
 				rpl::single(1. * months),
@@ -2052,7 +2052,7 @@ void AddCreditsHistoryEntryTable(
 				TextForMimeData::Simple(FixupTransactionId(entry.id)));
 			show->showToast({
 				.text = {
-					tr::lng_credits_box_history_entry_id_copied(tr::now),
+					tr::lng_diamonds_box_history_entry_id_copied(tr::now),
 				},
 				.iconLottie = u"toast/copy"_q,
 				.iconLottieSize = st::toastLottieIconSize,
@@ -2061,13 +2061,13 @@ void AddCreditsHistoryEntryTable(
 		});
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_id(),
+			tr::lng_diamonds_box_history_entry_id(),
 			std::move(label));
 	}
 	if (entry.floodSkip) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_floodskip_row(),
+			tr::lng_diamonds_box_history_entry_floodskip_row(),
 			rpl::single(
 				tr::marked(
 					Lang::FormatCountDecimal(entry.floodSkip))));
@@ -2081,13 +2081,13 @@ void AddCreditsHistoryEntryTable(
 	if (!entry.successDate.isNull()) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_success_date(),
+			tr::lng_diamonds_box_history_entry_success_date(),
 			rpl::single(tr::marked(langDateTime(entry.date))));
 	}
 	if (!entry.successLink.isEmpty()) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_success_url(),
+			tr::lng_diamonds_box_history_entry_success_url(),
 			rpl::single(
 				tr::link(entry.successLink, entry.successLink)));
 	}
@@ -2126,16 +2126,16 @@ void AddSubscriptionEntryTable(
 	AddTableRow(
 		table,
 		(!s.title.isEmpty() && user && user->botInfo)
-			? tr::lng_credits_subscription_row_to_bot()
+			? tr::lng_diamonds_subscription_row_to_bot()
 			: (!s.title.isEmpty() && user && !user->botInfo)
-			? tr::lng_credits_subscription_row_to_business()
-			: tr::lng_credits_subscription_row_to(),
+			? tr::lng_diamonds_subscription_row_to_business()
+			: tr::lng_diamonds_subscription_row_to(),
 		show,
 		peerId);
 	if (!s.title.isEmpty()) {
 		AddTableRow(
 			table,
-			tr::lng_credits_subscription_row_to(),
+			tr::lng_diamonds_subscription_row_to(),
 			rpl::single(tr::marked(s.title)));
 	}
 	if (!s.until.isNull()) {
@@ -2152,10 +2152,10 @@ void AddSubscriptionEntryTable(
 		AddTableRow(
 			table,
 			s.expired
-				? tr::lng_credits_subscription_row_next_none()
+				? tr::lng_diamonds_subscription_row_next_none()
 				: s.cancelled
-				? tr::lng_credits_subscription_row_next_off()
-				: tr::lng_credits_subscription_row_next_on(),
+				? tr::lng_diamonds_subscription_row_next_off()
+				: tr::lng_diamonds_subscription_row_next_on(),
 			rpl::single(tr::marked(langDateTime(s.until))));
 	}
 }
@@ -2201,14 +2201,14 @@ void AddCreditsBoostTable(
 	const auto from = show->session().data().peer(peerId);
 	AddTableRow(
 		table,
-		tr::lng_credits_box_history_entry_peer_in(),
+		tr::lng_diamonds_box_history_entry_peer_in(),
 		show,
 		from->id);
 	if (b.credits) {
 		AddTableRow(
 			table,
 			tr::lng_gift_link_label_gift(),
-			tr::lng_gift_stars_title(
+			tr::lng_gift_diamonds_title(
 				lt_count,
 				rpl::single(float64(b.credits)),
 				tr::rich));
@@ -2258,7 +2258,7 @@ void AddChannelEarnTable(
 				TextForMimeData::Simple(FixupTransactionId(entry.id)));
 			show->showToast({
 				.text = {
-					tr::lng_credits_box_history_entry_id_copied(tr::now),
+					tr::lng_diamonds_box_history_entry_id_copied(tr::now),
 				},
 				.iconLottie = u"toast/copy"_q,
 				.iconLottieSize = st::toastLottieIconSize,
@@ -2267,7 +2267,7 @@ void AddChannelEarnTable(
 		});
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_id(),
+			tr::lng_diamonds_box_history_entry_id(),
 			std::move(label));
 	}
 }

@@ -507,7 +507,7 @@ void DeleteMessagesBox::deleteAndClear() {
 		uiShow()->show(Ui::MakeConfirmBox({
 			.text = (ton
 				? tr::lng_suggest_warn_text_ton
-				: tr::lng_suggest_warn_text_stars)(
+				: tr::lng_suggest_warn_text_diamonds)(
 					tr::now,
 					tr::rich),
 			.confirmed = callback,
@@ -515,7 +515,7 @@ void DeleteMessagesBox::deleteAndClear() {
 			.confirmStyle = &st::attentionBoxButton,
 			.title = (ton
 				? tr::lng_suggest_warn_title_ton
-				: tr::lng_suggest_warn_title_stars)(tr::now),
+				: tr::lng_suggest_warn_title_diamonds)(tr::now),
 		}));
 		return;
 	}

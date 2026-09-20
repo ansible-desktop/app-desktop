@@ -95,7 +95,7 @@ namespace {
 						rpl::single(starsPerMessage * 1.))
 					: tr::lng_video_stream_comment_ph())
 				: starsPerMessage
-				? tr::lng_message_stars_ph(
+				? tr::lng_message_diamonds_ph(
 					lt_count,
 					rpl::single(starsPerMessage * 1.))
 				: left

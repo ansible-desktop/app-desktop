@@ -142,7 +142,7 @@ const auto kTopUpPrefix = "cloud_lng_topup_purpose_";
 	const auto phrase = Lang::GetNonDefaultValue(
 		kTopUpPrefix + purpose.toUtf8());
 	return phrase.isEmpty()
-		? tr::lng_credits_small_balance_fallback(tr::rich)
+		? tr::lng_diamonds_small_balance_fallback(tr::rich)
 		: rpl::single(tr::rich(phrase));
 }
 
@@ -268,7 +268,7 @@ void ConvertStarGift(
 		}
 		show->showToast((savedId.chat()
 			? tr::lng_gift_channel_got
-			: tr::lng_gift_got_stars)(
+			: tr::lng_gift_got_diamonds)(
 				tr::now,
 				lt_count,
 				stars,
@@ -602,7 +602,7 @@ void FillCreditOptions(
 				content,
 				object_ptr<Ui::SettingsButton>(
 					content,
-					tr::lng_credits_more_options(),
+					tr::lng_diamonds_more_options(),
 					(dark
 						? st::videoStreamShowMoreButton
 						: st::statisticsShowMoreButton))));
@@ -648,7 +648,7 @@ void FillCreditOptions(
 			}();
 			const auto text = button->lifetime().make_state<Ui::Text::String>(
 				st.style,
-				tr::lng_credits_summary_options_credits(
+				tr::lng_diamonds_summary_options_diamonds(
 					tr::now,
 					lt_count_decimal,
 					option.credits));
@@ -718,11 +718,11 @@ void FillCreditOptions(
 
 		// Footer.
 		{
-			auto text = tr::lng_credits_summary_options_about(
+			auto text = tr::lng_diamonds_summary_options_about(
 				lt_link,
 				rpl::combine(
-					tr::lng_credits_summary_options_about_link(),
-					tr::lng_credits_summary_options_about_url()
+					tr::lng_diamonds_summary_options_about_link(),
+					tr::lng_diamonds_summary_options_about_url()
 				) | rpl::map([](const QString &text, const QString &url) {
 					return tr::link(text, url);
 				}),
@@ -773,10 +773,10 @@ void FillCreditOptions(
 		not_null<Ui::GenericBox*> box) {
 	return object_ptr<Ui::FlatLabel>(
 		box,
-		tr::lng_credits_box_out_about(
+		tr::lng_diamonds_box_out_about(
 			lt_link,
 			tr::lng_payments_terms_link(
-				tr::url(tr::lng_credits_box_out_about_link(tr::now))),
+				tr::url(tr::lng_diamonds_box_out_about_link(tr::now))),
 			tr::marked),
 		st::creditsBoxAboutDivider);
 }
@@ -797,7 +797,7 @@ not_null<Ui::RpWidget*> AddBalanceWidget(
 	const auto state = balance->lifetime().make_state<State>();
 	state->label = Ui::Text::String(
 		st::defaultTextStyle,
-		tr::lng_credits_summary_balance(tr::now));
+		tr::lng_diamonds_summary_balance(tr::now));
 	state->count = Ui::Text::String(
 		st::semiboldTextStyle,
 		tr::lng_contacts_loading(tr::now));
@@ -888,7 +888,7 @@ void BoostCreditsBox(
 	content->add(
 		object_ptr<Ui::FlatLabel>(
 			content,
-			tr::lng_gift_stars_title(
+			tr::lng_gift_diamonds_title(
 				lt_count,
 				rpl::single(float64(b.credits))),
 			st::boxTitle),
@@ -1703,37 +1703,37 @@ void GenericCreditsEntryBody(
 				rpl::single(!s.title.isEmpty()
 					? s.title
 					: !s.until.isNull()
-					? tr::lng_credits_box_subscription_title(tr::now)
+					? tr::lng_diamonds_box_subscription_title(tr::now)
 					: isPrize
-					? tr::lng_credits_box_history_entry_giveaway_name(tr::now)
+					? tr::lng_diamonds_box_history_entry_giveaway_name(tr::now)
 					: (!e.subscriptionUntil.isNull() && e.title.isEmpty())
-					? tr::lng_credits_box_history_entry_subscription(tr::now)
+					? tr::lng_diamonds_box_history_entry_subscription(tr::now)
 					: e.isLiveStoryReaction()
-					? tr::lng_credits_paid_messages_fee_live_reaction(tr::now)
+					? tr::lng_diamonds_paid_messages_fee_live_reaction(tr::now)
 					: e.paidMessagesCount
-					? tr::lng_credits_paid_messages_fee(
+					? tr::lng_diamonds_paid_messages_fee(
 						tr::now,
 						lt_count,
 						e.paidMessagesCount)
 					: e.postsSearch
-					? tr::lng_credits_box_history_entry_posts_search(tr::now)
+					? tr::lng_diamonds_box_history_entry_posts_search(tr::now)
 					: e.premiumMonthsForStars
 					? tr::lng_premium_summary_title(tr::now)
 					: e.giftOffer
-					? tr::lng_credits_box_history_entry_gift_offer(tr::now)
+					? tr::lng_diamonds_box_history_entry_gift_offer(tr::now)
 					: !e.title.isEmpty()
 					? e.title
 					: e.starrefCommission
-					? tr::lng_credits_commission(
+					? tr::lng_diamonds_commission(
 						tr::now,
 						lt_amount,
 						Info::BotStarRef::FormatCommission(e.starrefCommission))
 					: e.soldOutInfo
-					? tr::lng_credits_box_history_entry_gift_unavailable(tr::now)
+					? tr::lng_diamonds_box_history_entry_gift_unavailable(tr::now)
 					: sentStarGift
-					? tr::lng_credits_box_history_entry_gift_sent(tr::now)
+					? tr::lng_diamonds_box_history_entry_gift_sent(tr::now)
 					: e.converted
-					? tr::lng_credits_box_history_entry_gift_converted(tr::now)
+					? tr::lng_diamonds_box_history_entry_gift_converted(tr::now)
 					: (e.giftNumber && !e.giftTitle.isEmpty())
 					? Data::UniqueGiftName(e.giftTitle, e.giftNumber)
 					: (isStarGift && !starGiftCanManage)
@@ -1743,7 +1743,7 @@ void GenericCreditsEntryBody(
 						? tr::lng_action_gift_crafted_subtitle(tr::now)
 						: tr::lng_action_gift_self_subtitle(tr::now))
 					: e.gift
-					? tr::lng_credits_box_history_entry_gift_name(tr::now)
+					? tr::lng_diamonds_box_history_entry_gift_name(tr::now)
 					: (peer && !e.reaction)
 					? peer->name()
 					: Ui::GenerateEntryName(e).text),
@@ -1757,7 +1757,7 @@ void GenericCreditsEntryBody(
 		const auto released = content->add(
 			object_ptr<Ui::FlatLabel>(
 				content,
-				tr::lng_credits_box_history_entry_gift_released(
+				tr::lng_diamonds_box_history_entry_gift_released(
 					lt_name,
 					rpl::single(tr::link('@' + peer->username())),
 					tr::marked),
@@ -1795,11 +1795,11 @@ void GenericCreditsEntryBody(
 		if (e.soldOutInfo) {
 			text->setText(
 				st::defaultTextStyle,
-				tr::lng_credits_box_history_entry_gift_sold_out(tr::now));
+				tr::lng_diamonds_box_history_entry_gift_sold_out(tr::now));
 		} else if (s) {
 			text->setMarkedText(
 				st::defaultTextStyle,
-				tr::lng_credits_subscription_subtitle(
+				tr::lng_diamonds_subscription_subtitle(
 					tr::now,
 					lt_emoji,
 					starEmoji,
@@ -1957,10 +1957,10 @@ void GenericCreditsEntryBody(
 									? tr::lng_action_gift_self_about
 									: giftToChannelCanTransfer
 									? tr::lng_action_gift_channel_about
-									: tr::lng_action_gift_got_stars_text)
+									: tr::lng_action_gift_got_diamonds_text)
 								: (giftToChannel
 									? tr::lng_gift_channel_got
-									: tr::lng_gift_got_stars))(
+									: tr::lng_gift_got_diamonds))(
 									lt_count,
 									rpl::single(e.starsConverted * 1.),
 									tr::rich),
@@ -1993,7 +1993,7 @@ void GenericCreditsEntryBody(
 	} else if (isStarGift) {
 	} else if ((e.gift || isPrize) && e.credits.stars()) {
 		Ui::AddSkip(content);
-		auto link = tr::lng_credits_box_history_entry_gift_about_link(
+		auto link = tr::lng_diamonds_box_history_entry_gift_about_link(
 			lt_emoji,
 			rpl::single(arrow),
 			tr::rich
@@ -2006,13 +2006,13 @@ void GenericCreditsEntryBody(
 			object_ptr<Ui::FlatLabel>(
 				box,
 				(!e.in && peer)
-					? tr::lng_credits_box_history_entry_gift_out_about(
+					? tr::lng_diamonds_box_history_entry_gift_out_about(
 						lt_user,
 						rpl::single(TextWithEntities{ peer->shortName() }),
 						lt_link,
 						std::move(link),
 						tr::rich)
-					: tr::lng_credits_box_history_entry_gift_in_about(
+					: tr::lng_diamonds_box_history_entry_gift_in_about(
 						lt_link,
 						std::move(link),
 						tr::rich),
@@ -2020,7 +2020,7 @@ void GenericCreditsEntryBody(
 			style::al_top);
 	} else if (e.paidMessagesCommission && e.barePeerId) {
 		Ui::AddSkip(content);
-		auto link = tr::lng_credits_paid_messages_fee_about_link(
+		auto link = tr::lng_diamonds_paid_messages_fee_about_link(
 			lt_emoji,
 			rpl::single(arrow),
 			tr::rich
@@ -2033,7 +2033,7 @@ void GenericCreditsEntryBody(
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
-				tr::lng_credits_paid_messages_fee_about(
+				tr::lng_diamonds_paid_messages_fee_about(
 					lt_percent,
 					rpl::single(
 						tr::bold(QString::number(percent) + '%')),
@@ -2301,14 +2301,14 @@ void GenericCreditsEntryBody(
 		auto label = object_ptr<Ui::FlatLabel>(
 			box,
 			((s.cancelledByBot && bot)
-				? tr::lng_credits_subscription_off_by_bot_about(
+				? tr::lng_diamonds_subscription_off_by_bot_about(
 					lt_bot,
 					rpl::single(bot->name()))
 				: toCancel
-				? tr::lng_credits_subscription_on_button()
+				? tr::lng_diamonds_subscription_on_button()
 				: s.cancelled
-				? tr::lng_credits_subscription_off_about()
-				: tr::lng_credits_subscription_on_about(
+				? tr::lng_diamonds_subscription_off_about()
+				: tr::lng_diamonds_subscription_on_about(
 					lt_date,
 					rpl::single(langDayOfMonthFull(s.until.date())))),
 			st::creditsBoxAboutDivider);
@@ -2330,7 +2330,7 @@ void GenericCreditsEntryBody(
 			});
 			label->setMarkedText(
 				tr::link(
-					tr::lng_credits_subscription_on_button(tr::now),
+					tr::lng_diamonds_subscription_on_button(tr::now),
 					u"internal:"_q));
 		} else if (s.cancelled || s.cancelledByBot) {
 			label->setTextColorOverride(st::menuIconAttentionColor->c);
@@ -2362,9 +2362,9 @@ void GenericCreditsEntryBody(
 		state->confirmButtonBusy.value(),
 		rpl::single(QString()),
 		(toRenew
-			? tr::lng_credits_subscription_off_button()
+			? tr::lng_diamonds_subscription_off_button()
 			: toRejoin
-			? tr::lng_credits_subscription_off_rejoin_button()
+			? tr::lng_diamonds_subscription_off_rejoin_button()
 			: e.craftAnotherCallback
 			? tr::lng_gift_craft_another_button()
 			: canUpgradeFree
@@ -2651,7 +2651,7 @@ void UniqueGiftValueBox(
 					lt_platform,
 					(value->lastSaleFragment
 						? tr::lng_gift_value_fragment
-						: tr::lng_gift_value_telegram)(
+						: tr::lng_gift_value_ansible)(
 							tr::marked),
 					tr::rich)
 				: tr::lng_gift_value_about_average(
@@ -2692,7 +2692,7 @@ void UniqueGiftValueBox(
 	if (const auto count = value->forSaleOnTelegram; count > 0) {
 		addAvailability(
 			count,
-			tr::lng_gift_value_telegram
+			tr::lng_gift_value_ansible
 		)->setClickHandlerFilter([=](const auto &...) {
 			if (const auto window = show->resolveWindow()) {
 				state->buyLifetime = Ui::ShowStarGiftResale(
@@ -2743,8 +2743,8 @@ void GiftedCreditsBox(
 	Settings::ReceiptCreditsBox(box, controller, {
 		.id = QString(),
 		.title = (received
-			? tr::lng_credits_box_history_entry_gift_name
-			: tr::lng_credits_box_history_entry_gift_sent)(tr::now),
+			? tr::lng_diamonds_box_history_entry_gift_name
+			: tr::lng_diamonds_box_history_entry_gift_sent)(tr::now),
 		.date = base::unixtime::parse(date),
 		.credits = CreditsAmount(count),
 		.bareMsgId = uint64(),
@@ -3188,7 +3188,7 @@ void SmallBalanceBox(
 				? st::videoStreamStarsCover
 				: st::creditsLowBalancePremiumCover),
 			Ui::Premium::TopBarDescriptor{
-				.title = tr::lng_credits_small_balance_title(
+				.title = tr::lng_diamonds_small_balance_title(
 					lt_count,
 					rpl::duplicate(
 						needed
@@ -3198,17 +3198,17 @@ void SmallBalanceBox(
 						return amount.value();
 					})),
 				.about = (v::is<SmallBalanceSubscription>(source)
-					? tr::lng_credits_small_balance_subscribe(
+					? tr::lng_diamonds_small_balance_subscribe(
 						lt_channel,
 						rpl::single(tr::bold(name)),
 						tr::rich)
 					: v::is<SmallBalanceReaction>(source)
-					? tr::lng_credits_small_balance_reaction(
+					? tr::lng_diamonds_small_balance_reaction(
 						lt_channel,
 						rpl::single(tr::bold(name)),
 						tr::rich)
 					: v::is<SmallBalanceVideoStream>(source)
-					? tr::lng_credits_small_balance_video_stream(
+					? tr::lng_diamonds_small_balance_video_stream(
 						lt_name,
 						rpl::single(tr::bold(name)),
 						tr::rich)
@@ -3216,32 +3216,32 @@ void SmallBalanceBox(
 					? DeepLinkBalanceAbout(
 						v::get<SmallBalanceDeepLink>(source).purpose)
 					: v::is<SmallBalanceStarGift>(source)
-					? tr::lng_credits_small_balance_star_gift(
+					? tr::lng_diamonds_small_balance_diamond_gift(
 						lt_user,
 						rpl::single(tr::bold(name)),
 						tr::rich)
 					: v::is<SmallBalanceForMessage>(source)
 					? (name.isEmpty()
-						? tr::lng_credits_small_balance_for_messages(
+						? tr::lng_diamonds_small_balance_for_messages(
 							tr::rich)
-						: tr::lng_credits_small_balance_for_message(
+						: tr::lng_diamonds_small_balance_for_message(
 							lt_user,
 							rpl::single(tr::bold(name)),
 							tr::rich))
 					: v::is<SmallBalanceForSuggest>(source)
-					? tr::lng_credits_small_balance_for_suggest(
+					? tr::lng_diamonds_small_balance_for_suggest(
 						lt_channel,
 						rpl::single(tr::bold(name)),
 						tr::rich)
 					: v::is<SmallBalanceForOffer>(source)
-					? tr::lng_credits_small_balance_for_offer(tr::rich)
+					? tr::lng_diamonds_small_balance_for_offer(tr::rich)
 					: v::is<SmallBalanceForSearch>(source)
-					? tr::lng_credits_small_balance_for_search(
+					? tr::lng_diamonds_small_balance_for_search(
 						tr::rich)
 					: name.isEmpty()
-					? tr::lng_credits_small_balance_fallback(
+					? tr::lng_diamonds_small_balance_fallback(
 						tr::rich)
-					: tr::lng_credits_small_balance_about(
+					: tr::lng_diamonds_small_balance_about(
 						lt_bot,
 						rpl::single(TextWithEntities{ name }),
 						tr::rich)),
@@ -3259,7 +3259,7 @@ void SmallBalanceBox(
 		credits - show->session().credits().balance(),
 		[=] { show->session().credits().load(true); },
 		box->showFinishes(),
-		tr::lng_credits_summary_options_subtitle(),
+		tr::lng_diamonds_summary_options_subtitle(),
 		{},
 		dark,
 		purposePeerId);
@@ -3614,11 +3614,11 @@ void AddWithdrawalWidget(
 				const auto amount = input->getLastText().toULongLong();
 				const auto min = float64(WithdrawalMin(session));
 				if (amount < min) {
-					auto text = tr::lng_bot_earn_credits_out_minimal(
+					auto text = tr::lng_bot_earn_diamonds_out_minimal(
 						tr::now,
 						lt_link,
 						tr::link(
-							tr::lng_bot_earn_credits_out_minimal_link(
+							tr::lng_bot_earn_diamonds_out_minimal_link(
 								tr::now,
 								lt_count,
 								min),
@@ -3647,8 +3647,8 @@ void AddWithdrawalWidget(
 	auto about = object_ptr<Ui::FlatLabel>(
 		container,
 		(peer->isSelf()
-			? tr::lng_self_earn_learn_credits_out_about
-			: tr::lng_bot_earn_learn_credits_out_about)(
+			? tr::lng_self_earn_learn_diamonds_out_about
+			: tr::lng_bot_earn_learn_diamonds_out_about)(
 				lt_link,
 				tr::lng_channel_earn_about_link(
 					lt_emoji,
@@ -3694,7 +3694,7 @@ void MaybeRequestBalanceIncrease(
 			}
 		} else if (session->appConfig().starsSpendTopupInvoiceDisabled()
 			&& SpendPurposePeerId(&session->data(), source)) {
-			show->showToast(tr::lng_credits_topup_disabled(tr::now));
+			show->showToast(tr::lng_diamonds_topup_disabled(tr::now));
 			if (const auto onstack = done) {
 				onstack(SmallBalanceResult::Blocked);
 			}
@@ -3722,7 +3722,7 @@ void MaybeRequestBalanceIncrease(
 			}, box->lifetime());
 		} else {
 			show->showToast(
-				tr::lng_credits_purchase_blocked(tr::now));
+				tr::lng_diamonds_purchase_blocked(tr::now));
 			if (const auto onstack = done) {
 				onstack(SmallBalanceResult::Blocked);
 			}

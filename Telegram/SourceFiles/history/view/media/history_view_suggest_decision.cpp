@@ -144,10 +144,10 @@ auto GenerateSuggestDecisionMedia(
 					(sublistPeer->isSelf()
 						? (decision->price.ton()
 							? tr::lng_suggest_action_your_not_enough_ton
-							: tr::lng_suggest_action_your_not_enough_stars)
+							: tr::lng_suggest_action_your_not_enough_diamonds)
 						: (decision->price.ton()
 							? tr::lng_suggest_action_his_not_enough_ton
-							: tr::lng_suggest_action_his_not_enough_stars))(
+							: tr::lng_suggest_action_his_not_enough_diamonds))(
 							tr::now,
 							tr::rich)),
 				st::chatSuggestInfoFullMargin,
@@ -218,14 +218,14 @@ auto GenerateSuggestDecisionMedia(
 					).append(Emoji(kMoney)).append(' ').append(
 						(sublistPeer->isSelf()
 							? (price.stars()
-								? tr::lng_suggest_action_your_charged_stars
+								? tr::lng_suggest_action_your_charged_diamonds
 								: tr::lng_suggest_action_your_charged_ton)(
 									tr::now,
 									lt_count_decimal,
 									price.value(),
 									tr::rich)
 							: (price.stars()
-								? tr::lng_suggest_action_his_charged_stars
+								? tr::lng_suggest_action_his_charged_diamonds
 								: tr::lng_suggest_action_his_charged_ton)(
 									tr::now,
 									lt_count_decimal,
@@ -240,7 +240,7 @@ auto GenerateSuggestDecisionMedia(
 					).append(Emoji(kHourglass)).append(' ').append(
 						(price.ton()
 							? tr::lng_suggest_action_agree_receive_ton
-							: tr::lng_suggest_action_agree_receive_stars)(
+							: tr::lng_suggest_action_agree_receive_diamonds)(
 							tr::now,
 							lt_channel,
 							tr::bold(broadcast->name()),
@@ -252,7 +252,7 @@ auto GenerateSuggestDecisionMedia(
 					).append(Emoji(kReload)).append(' ').append(
 						(price.ton()
 							? tr::lng_suggest_action_agree_removed_ton
-							: tr::lng_suggest_action_agree_removed_stars)(
+							: tr::lng_suggest_action_agree_removed_diamonds)(
 							tr::now,
 							lt_channel,
 							tr::bold(broadcast->name()),
@@ -331,7 +331,7 @@ auto GenerateSuggestRequestMedia(
 			tr::bold(!suggest->price
 				? tr::lng_suggest_action_price_free(tr::now)
 				: suggest->price.stars()
-				? tr::lng_suggest_stars_amount(
+				? tr::lng_suggest_diamonds_amount(
 					tr::now,
 					lt_count_decimal,
 					suggest->price.value())

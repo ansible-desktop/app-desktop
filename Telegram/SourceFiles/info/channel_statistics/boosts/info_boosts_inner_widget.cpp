@@ -364,11 +364,11 @@ void InnerWidget::fill() {
 						lt_count,
 						rpl::single(g.quantity) | tr::to_count()),
 				g.credits
-					? tr::lng_boosts_prepaid_giveaway_credits_status(
+					? tr::lng_boosts_prepaid_giveaway_diamonds_status(
 						lt_count,
 						rpl::single(g.quantity) | tr::to_count(),
 						lt_amount,
-						tr::lng_prize_credits_amount(
+						tr::lng_prize_diamonds_amount(
 							lt_count_decimal,
 							rpl::single(g.credits) | tr::to_count()))
 					: tr::lng_boosts_prepaid_giveaway_moths(

@@ -226,7 +226,7 @@ QString FormatCommission(ushort commission) {
 
 QString FormatProgramDuration(int durationMonths) {
 	return !durationMonths
-		? tr::lng_star_ref_duration_forever(tr::now)
+		? tr::lng_diamond_ref_duration_forever(tr::now)
 		: (durationMonths < 12)
 		? tr::lng_months(tr::now, lt_count, durationMonths)
 		: tr::lng_years(tr::now, lt_count, durationMonths / 12);
@@ -235,13 +235,13 @@ QString FormatProgramDuration(int durationMonths) {
 rpl::producer<TextWithEntities> FormatForProgramDuration(
 		int durationMonths) {
 	return !durationMonths
-		? tr::lng_star_ref_one_about_for_forever(tr::rich)
+		? tr::lng_diamond_ref_one_about_for_forever(tr::rich)
 		: (durationMonths < 12)
-		? tr::lng_star_ref_one_about_for_months(
+		? tr::lng_diamond_ref_one_about_for_months(
 			lt_count,
 			rpl::single(durationMonths * 1.),
 			tr::rich)
-		: tr::lng_star_ref_one_about_for_years(
+		: tr::lng_diamond_ref_one_about_for_years(
 			lt_count,
 			rpl::single((durationMonths / 12) * 1.),
 			tr::rich);
@@ -417,7 +417,7 @@ object_ptr<Ui::BoxContent> StarRefLinkBox(
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
-				tr::lng_star_ref_link_title(),
+				tr::lng_diamond_ref_link_title(),
 				st::boxTitle),
 			st::boxRowPadding + st::starrefJoinTitlePadding,
 			style::al_top);
@@ -425,10 +425,10 @@ object_ptr<Ui::BoxContent> StarRefLinkBox(
 			object_ptr<Ui::FlatLabel>(
 				box,
 				(peer->isSelf()
-					? tr::lng_star_ref_link_about_user
+					? tr::lng_diamond_ref_link_about_user
 					: peer->isUser()
-					? tr::lng_star_ref_link_about_user
-					: tr::lng_star_ref_link_about_channel)(
+					? tr::lng_diamond_ref_link_about_user
+					: tr::lng_diamond_ref_link_about_channel)(
 						lt_amount,
 						rpl::single(tr::bold(
 							FormatCommission(program.commission))),
@@ -445,7 +445,7 @@ object_ptr<Ui::BoxContent> StarRefLinkBox(
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
-				tr::lng_star_ref_link_recipient(),
+				tr::lng_diamond_ref_link_recipient(),
 				st::starrefCenteredText),
 			style::al_top);
 		Ui::AddSkip(box->verticalLayout());
@@ -472,7 +472,7 @@ object_ptr<Ui::BoxContent> StarRefLinkBox(
 		};
 		preview->setClickedCallback(copy(false));
 		const auto button = box->addButton(
-			tr::lng_star_ref_link_copy(),
+			tr::lng_diamond_ref_link_copy(),
 			copy(true),
 			st::starrefCopyButton);
 
@@ -481,13 +481,13 @@ object_ptr<Ui::BoxContent> StarRefLinkBox(
 			box,
 			button,
 			(row.state.users > 0
-				? tr::lng_star_ref_link_copy_users(
+				? tr::lng_diamond_ref_link_copy_users(
 					lt_count,
 					rpl::single(row.state.users * 1.),
 					lt_app,
 					rpl::single(name),
 					tr::marked)
-				: tr::lng_star_ref_link_copy_none(
+				: tr::lng_diamond_ref_link_copy_none(
 					lt_app,
 					rpl::single(name),
 					tr::marked)));
@@ -551,14 +551,14 @@ object_ptr<Ui::BoxContent> JoinStarRefBox(
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
-				tr::lng_star_ref_title(),
+				tr::lng_diamond_ref_title(),
 				st::boxTitle),
 			st::boxRowPadding + st::starrefJoinTitlePadding,
 			style::al_top);
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
-				tr::lng_star_ref_one_about(
+				tr::lng_diamond_ref_one_about(
 					lt_app,
 					rpl::single(tr::bold(bot->name())),
 					lt_amount,
@@ -578,7 +578,7 @@ object_ptr<Ui::BoxContent> JoinStarRefBox(
 			layout->add(
 				object_ptr<Ui::FlatLabel>(
 					box,
-					tr::lng_star_ref_one_daily_revenue(
+					tr::lng_diamond_ref_one_daily_revenue(
 						lt_amount,
 						rpl::single(
 							Ui::Text::Wrapped(text, EntityType::Bold)),
@@ -607,7 +607,7 @@ object_ptr<Ui::BoxContent> JoinStarRefBox(
 			box->addRow(
 				object_ptr<Ui::FlatLabel>(
 					box,
-					tr::lng_star_ref_link_recipient(),
+					tr::lng_diamond_ref_link_recipient(),
 					st::starrefCenteredText),
 				style::al_top);
 			Ui::AddSkip(box->verticalLayout());
@@ -690,28 +690,28 @@ object_ptr<Ui::BoxContent> JoinStarRefBox(
 			});
 		};
 		const auto button = box->addButton(
-			tr::lng_star_ref_one_join(),
+			tr::lng_diamond_ref_one_join(),
 			send);
 		AddFullWidthButtonFooter(
 			box,
 			button,
-			tr::lng_star_ref_one_join_text(
+			tr::lng_diamond_ref_one_join_text(
 				lt_terms,
-				tr::lng_star_ref_button_link(
-					tr::url(tr::lng_star_ref_tos_url(tr::now))),
+				tr::lng_diamond_ref_button_link(
+					tr::url(tr::lng_diamond_ref_tos_url(tr::now))),
 				tr::marked));
 	});
 }
 
 object_ptr<Ui::BoxContent> ConfirmEndBox(Fn<void()> finish) {
 	return Box([=](not_null<Ui::GenericBox*> box) {
-		box->setTitle(tr::lng_star_ref_warning_title());
+		box->setTitle(tr::lng_diamond_ref_warning_title());
 		const auto skip = st::defaultVerticalListSkip;
 		const auto margins = st::boxRowPadding + QMargins(0, 0, 0, skip);
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
-				tr::lng_star_ref_warning_if_end(tr::rich),
+				tr::lng_diamond_ref_warning_if_end(tr::rich),
 				st::boxLabel),
 			margins);
 		const auto addPoint = [&](tr::phrase<> text) {
@@ -734,15 +734,15 @@ object_ptr<Ui::BoxContent> ConfirmEndBox(Fn<void()> finish) {
 				p.drawEllipse(0, top, size, size);
 			}, padded->lifetime());
 		};
-		addPoint(tr::lng_star_ref_warning_if_end1);
-		addPoint(tr::lng_star_ref_warning_if_end2);
-		addPoint(tr::lng_star_ref_warning_if_end3);
+		addPoint(tr::lng_diamond_ref_warning_if_end1);
+		addPoint(tr::lng_diamond_ref_warning_if_end2);
+		addPoint(tr::lng_diamond_ref_warning_if_end3);
 		const auto done = [=] {
 			box->closeBox();
 			finish();
 		};
 		box->addButton(
-			tr::lng_star_ref_warning_end(),
+			tr::lng_diamond_ref_warning_end(),
 			done,
 			st::attentionBoxButton);
 		box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
@@ -918,8 +918,8 @@ void ConfirmUpdate(
 		const auto sent = std::make_shared<bool>();
 		Ui::ConfirmBox(box, {
 			.text = (exists
-				? tr::lng_star_ref_warning_change
-				: tr::lng_star_ref_warning_text)(tr::rich),
+				? tr::lng_diamond_ref_warning_change
+				: tr::lng_diamond_ref_warning_text)(tr::rich),
 			.confirmed = [=](Fn<void()> close) {
 				if (*sent) {
 					return;
@@ -933,9 +933,9 @@ void ConfirmUpdate(
 				});
 			},
 			.confirmText = (exists
-				? tr::lng_star_ref_warning_update
-				: tr::lng_star_ref_warning_start)(),
-			.title = tr::lng_star_ref_warning_title(),
+				? tr::lng_diamond_ref_warning_update
+				: tr::lng_diamond_ref_warning_start)(),
+			.title = tr::lng_diamond_ref_warning_title(),
 		});
 
 		auto table = box->addRow(
@@ -960,10 +960,10 @@ void ConfirmUpdate(
 				st::giveawayGiftCodeValueMargin);
 		};
 		addRow(
-			tr::lng_star_ref_commission_title(),
+			tr::lng_diamond_ref_commission_title(),
 			FormatCommission(program.commission));
 		addRow(
-			tr::lng_star_ref_duration_title(),
+			tr::lng_diamond_ref_duration_title(),
 			FormatProgramDuration(program.durationMonths));
 	}));
 }

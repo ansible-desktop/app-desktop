@@ -2635,7 +2635,7 @@ void Widget::checkUpdateStatus() {
 		}
 		_updateTelegram.create(
 			this,
-			tr::lng_update_telegram(tr::now),
+			tr::lng_update_ansible(tr::now),
 			st::dialogsUpdateButton,
 			st::dialogsInstallUpdate,
 			st::dialogsInstallUpdateOver,

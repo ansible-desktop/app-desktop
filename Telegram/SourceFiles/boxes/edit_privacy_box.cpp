@@ -517,7 +517,7 @@ auto PrivacyExceptionsBoxController::createRow(not_null<History*> history)
 	};
 	const auto updateByValue = [=](int value) {
 		current->setText(value > 0
-			? tr::lng_action_gift_for_stars(tr::now, lt_count_decimal, value)
+			? tr::lng_action_gift_for_diamonds(tr::now, lt_count_decimal, value)
 			: tr::lng_manage_monoforum_free(tr::now));
 
 		state->index = 0;

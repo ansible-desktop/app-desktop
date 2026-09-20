@@ -6848,13 +6848,13 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		result.links.push_back(fromLink());
 		result.text = credits
 			? (_history->peer->isMegagroup()
-				? tr::lng_action_giveaway_credits_started_group
-				: tr::lng_action_giveaway_credits_started)(
+				? tr::lng_action_giveaway_diamonds_started_group
+				: tr::lng_action_giveaway_diamonds_started)(
 					tr::now,
 					lt_from,
 					fromLinkText(), // Link 1.
 					lt_amount,
-					tr::lng_action_giveaway_credits_started_amount(
+					tr::lng_action_giveaway_diamonds_started_amount(
 						tr::now,
 						lt_count_decimal,
 						float64(credits),
@@ -6879,11 +6879,11 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 			(!winners
 				? tr::lng_action_giveaway_results_none(tr::now)
 				: (credits && unclaimed)
-				? tr::lng_action_giveaway_results_credits_some(tr::now)
+				? tr::lng_action_giveaway_results_diamonds_some(tr::now)
 				: (!credits && unclaimed)
 				? tr::lng_action_giveaway_results_some(tr::now)
 				: (credits && !unclaimed)
-				? tr::lng_action_giveaway_results_credits(
+				? tr::lng_action_giveaway_results_diamonds(
 					tr::now,
 					lt_count,
 					winners)
@@ -7054,7 +7054,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 			return result;
 		}
 		const auto cost = TextWithEntities{
-			tr::lng_action_gift_for_stars(tr::now, lt_count, stars),
+			tr::lng_action_gift_for_diamonds(tr::now, lt_count, stars),
 		};
 		const auto giftPeer = action.vpeer()
 			? peerFromMTP(*action.vpeer())
@@ -7447,7 +7447,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		auto result = PreparedServiceText();
 		result.links.push_back(_from->createOpenLink());
 		result.text = (price.stars()
-			? tr::lng_action_suggest_success_stars
+			? tr::lng_action_suggest_success_diamonds
 			: tr::lng_action_suggest_success_ton)(
 				tr::now,
 				lt_count_decimal,

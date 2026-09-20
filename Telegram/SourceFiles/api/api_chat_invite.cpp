@@ -302,7 +302,7 @@ void ConfirmSubscriptionBox(
 				lt_channel,
 				rpl::single(tr::bold(name)),
 				lt_price,
-				tr::lng_credits_summary_options_credits(
+				tr::lng_diamonds_summary_options_diamonds(
 					lt_count,
 					rpl::single(amount) | tr::to_count(),
 					tr::bold),

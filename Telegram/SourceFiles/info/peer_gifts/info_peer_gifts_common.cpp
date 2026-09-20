@@ -244,7 +244,7 @@ void GiftButton::setDescriptor(const GiftDescriptor &descriptor, Mode mode) {
 			const auto starsText = Lang::FormatCountDecimal(stars);
 			_byStars.setMarkedText(
 				st::giftBoxByStarsStyle,
-				tr::lng_gift_premium_by_stars(
+				tr::lng_gift_premium_by_diamonds(
 					tr::now,
 					lt_amount,
 					_delegate->ministar().append(' ' + starsText),
@@ -293,8 +293,8 @@ void GiftButton::setDescriptor(const GiftDescriptor &descriptor, Mode mode) {
 				? tr::lng_gift_transfer_button(tr::now, tr::marked)
 				: data.info.auction()
 				? ((data.info.soldOut || upcomingAuction)
-					? tr::lng_gift_stars_auction_view
-					: tr::lng_gift_stars_auction_join)(tr::now, tr::marked)
+					? tr::lng_gift_diamonds_auction_view
+					: tr::lng_gift_diamonds_auction_join)(tr::now, tr::marked)
 				: _delegate->star().append(' ' + format(data.info.stars))),
 			kMarkupTextOptions,
 			_delegate->textContext());
@@ -919,34 +919,34 @@ void GiftButton::paint(QPainter &p, float64 craftProgress) {
 		if (count || pinned) {
 			const auto yourLeft = data.info.perUserTotal
 				? (data.info.perUserRemains
-					? tr::lng_gift_stars_your_left(
+					? tr::lng_gift_diamonds_your_left(
 						tr::now,
 						lt_count,
 						data.info.perUserRemains)
-					: tr::lng_gift_stars_your_finished(tr::now))
+					: tr::lng_gift_diamonds_your_finished(tr::now))
 				: QString();
 			return GiftBadge{
 				.text = (onsale
-					? tr::lng_gift_stars_on_sale(tr::now)
+					? tr::lng_gift_diamonds_on_sale(tr::now)
 					: (unique && (data.resale || pinned || data.mine))
 					? ('#' + Lang::FormatCountDecimal(unique->number))
 					: data.resale
-					? tr::lng_gift_stars_resale(tr::now)
+					? tr::lng_gift_diamonds_resale(tr::now)
 					: soldOut
-					? tr::lng_gift_stars_sold_out(tr::now)
+					? tr::lng_gift_diamonds_sold_out(tr::now)
 					: (!unique && data.info.auction())
 					? (upcomingAuction
-						? tr::lng_gift_stars_auction_soon
-						: tr::lng_gift_stars_auction)(tr::now)
+						? tr::lng_gift_diamonds_auction_soon
+						: tr::lng_gift_diamonds_auction)(tr::now)
 					: (!data.userpic
 						&& !data.info.unique
 						&& data.info.requirePremium)
 					? ((yourLeft.isEmpty() || !_delegate->amPremium())
-						? tr::lng_gift_stars_premium(tr::now)
+						? tr::lng_gift_diamonds_premium(tr::now)
 						: yourLeft)
 					: (!data.userpic && !data.info.unique)
 					? (yourLeft.isEmpty()
-						? tr::lng_gift_stars_limited(tr::now)
+						? tr::lng_gift_diamonds_limited(tr::now)
 						: yourLeft)
 					: (count == 1)
 					? tr::lng_gift_limited_of_one(tr::now)

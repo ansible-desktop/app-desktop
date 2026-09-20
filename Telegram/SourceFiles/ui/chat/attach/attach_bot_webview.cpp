@@ -1237,7 +1237,7 @@ Panel::Panel(Args &&args)
 	rpl::duplicate(
 		args.title
 	) | rpl::on_next([=](const QString &title) {
-		const auto value = tr::lng_credits_box_history_entry_miniapp(tr::now)
+		const auto value = tr::lng_diamonds_box_history_entry_miniapp(tr::now)
 			+ u": "_q
 			+ title;
 		panel->window()->setWindowTitle(value);

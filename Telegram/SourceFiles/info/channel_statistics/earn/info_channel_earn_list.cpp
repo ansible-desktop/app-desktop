@@ -973,8 +973,8 @@ void InnerWidget::fill() {
 	if (Info::BotStarRef::Join::Allowed(_peer)) {
 		const auto button = Info::BotStarRef::AddViewListButton(
 			container,
-			tr::lng_credits_summary_earn_title(),
-			tr::lng_credits_summary_earn_about());
+			tr::lng_diamonds_summary_earn_title(),
+			tr::lng_diamonds_summary_earn_about());
 		button->setClickedCallback([=] {
 			_controller->showSection(Info::BotStarRef::Join::Make(_peer));
 		});
@@ -998,7 +998,7 @@ void InnerWidget::fill() {
 
 		const auto currencyTabText = tr::lng_channel_earn_currency_history(
 			tr::now);
-		const auto creditsTabText = tr::lng_channel_earn_credits_history(
+		const auto creditsTabText = tr::lng_channel_earn_diamonds_history(
 			tr::now);
 
 		const auto slider = listsContainer->add(
@@ -1038,7 +1038,7 @@ void InnerWidget::fill() {
 			} else if (hasCreditsTab) {
 				AddHeader(
 					listsContainer,
-					tr::lng_channel_earn_credits_history);
+					tr::lng_channel_earn_diamonds_history);
 				slider->entity()->setActiveSectionFast(1);
 			}
 		} else {

@@ -345,8 +345,8 @@ void ListController::setupLinkBadge() {
 
 void ListController::prepare() {
 	delegate()->peerListSetTitle((_type == JoinType::Joined)
-		? tr::lng_star_ref_list_my()
-		: tr::lng_star_ref_list_title());
+		? tr::lng_diamond_ref_list_my()
+		: tr::lng_diamond_ref_list_title());
 	loadMoreRows();
 }
 
@@ -447,7 +447,7 @@ void ListController::setupAddForBot() {
 		nullptr,
 		object_ptr<Ui::SettingsButton>(
 			nullptr,
-			tr::lng_star_ref_add_bot(lt_bot, rpl::single(user->name())),
+			tr::lng_diamond_ref_add_bot(lt_bot, rpl::single(user->name())),
 			st::inviteViaLinkButton),
 		style::margins(0, st::membersMarginTop, 0, 0));
 
@@ -601,8 +601,8 @@ void RevokeLink(
 		MTP_string(link)
 	)).done([=] {
 		controller->showToast({
-			.title = tr::lng_star_ref_revoked_title(tr::now),
-			.text = { tr::lng_star_ref_revoked_text(tr::now) },
+			.title = tr::lng_diamond_ref_revoked_title(tr::now),
+			.text = { tr::lng_diamond_ref_revoked_text(tr::now) },
 		});
 		revoked();
 	}).fail([=](const MTP::Error &error) {
@@ -630,11 +630,11 @@ base::unique_qptr<Ui::PopupMenu> ListController::rowContextMenu(
 		_revoked.fire({ bot, state });
 	});
 
-	addAction(tr::lng_star_ref_list_my_open(tr::now), [=] {
+	addAction(tr::lng_diamond_ref_list_my_open(tr::now), [=] {
 		_controller->showPeerHistory(bot);
 	}, &st::menuIconBot);
 	if (!state.link.isEmpty()) {
-		addAction(tr::lng_star_ref_list_my_copy(tr::now), [=] {
+		addAction(tr::lng_diamond_ref_list_my_copy(tr::now), [=] {
 			QApplication::clipboard()->setText(state.link);
 			_controller->showToast({
 				.text = { tr::lng_username_copied(tr::now) },
@@ -649,16 +649,16 @@ base::unique_qptr<Ui::PopupMenu> ListController::rowContextMenu(
 				close();
 			};
 			_controller->show(Ui::MakeConfirmBox({
-				.text = tr::lng_star_ref_revoke_text(
+				.text = tr::lng_diamond_ref_revoke_text(
 					lt_bot,
 					rpl::single(tr::bold(bot->name())),
 					tr::rich),
 				.confirmed = sure,
-				.title = tr::lng_star_ref_revoke_title(),
+				.title = tr::lng_diamond_ref_revoke_title(),
 			}));
 		};
 		addAction({
-			.text = tr::lng_star_ref_list_my_leave(tr::now),
+			.text = tr::lng_diamond_ref_list_my_leave(tr::now),
 			.handler = revoke,
 			.icon = &st::menuIconLeaveAttention,
 			.isAttention = true,
@@ -722,18 +722,18 @@ void InnerWidget::setupInfo() {
 	AddSkip(_container, st::defaultVerticalListSkip * 2);
 
 	_container->add(infoRow(
-		tr::lng_star_ref_reliable_title(),
-		tr::lng_star_ref_reliable_about(),
+		tr::lng_diamond_ref_reliable_title(),
+		tr::lng_diamond_ref_reliable_about(),
 		&st::menuIconAntispam));
 
 	_container->add(infoRow(
-		tr::lng_star_ref_transparent_title(),
-		tr::lng_star_ref_transparent_about(),
+		tr::lng_diamond_ref_transparent_title(),
+		tr::lng_diamond_ref_transparent_about(),
 		&st::menuIconTransparent));
 
 	_container->add(infoRow(
-		tr::lng_star_ref_simple_title(),
-		tr::lng_star_ref_simple_about(),
+		tr::lng_diamond_ref_simple_title(),
+		tr::lng_diamond_ref_simple_about(),
 		&st::menuIconLike));
 }
 
@@ -745,7 +745,7 @@ not_null<ListController*> InnerWidget::setupMy() {
 	const auto inner = wrap->entity();
 
 	Ui::AddSkip(inner);
-	Ui::AddSubsectionTitle(inner, tr::lng_star_ref_list_my());
+	Ui::AddSubsectionTitle(inner, tr::lng_diamond_ref_list_my());
 
 	const auto delegate = lifetime().make_state<
 		PeerListContentDelegateSimple
@@ -778,14 +778,14 @@ not_null<ListController*> InnerWidget::setupMy() {
 void InnerWidget::setupSort(not_null<Ui::RpWidget*> label) {
 	constexpr auto phrase = [](SuggestedSort sort) {
 		return ((sort == SuggestedSort::Profitability)
-			? tr::lng_star_ref_sort_profitability
+			? tr::lng_diamond_ref_sort_profitability
 			: (sort == SuggestedSort::Revenue)
-			? tr::lng_star_ref_sort_revenue
-			: tr::lng_star_ref_sort_date)(tr::now, tr::link);
+			? tr::lng_diamond_ref_sort_revenue
+			: tr::lng_diamond_ref_sort_date)(tr::now, tr::link);
 	};
 	const auto sort = Ui::CreateChild<Ui::FlatLabel>(
 		label->parentWidget(),
-		tr::lng_star_ref_sort_text(lt_sort, _sort.value() | rpl::map(phrase),
+		tr::lng_diamond_ref_sort_text(lt_sort, _sort.value() | rpl::map(phrase),
 		tr::marked),
 		st::defaultFlatLabel);
 	rpl::combine(
@@ -829,7 +829,7 @@ not_null<ListController*> InnerWidget::setupSuggested() {
 	Ui::AddSkip(inner);
 	const auto subtitle = Ui::AddSubsectionTitle(
 		inner,
-		tr::lng_star_ref_list_subtitle());
+		tr::lng_diamond_ref_list_subtitle());
 	setupSort(subtitle);
 
 	const auto delegate = lifetime().make_state<
@@ -948,7 +948,7 @@ bool Widget::showInternal(not_null<ContentMemento*> memento) {
 }
 
 rpl::producer<QString> Widget::title() {
-	return tr::lng_star_ref_list_title();
+	return tr::lng_diamond_ref_list_title();
 }
 
 void Widget::setInternalState(
@@ -992,8 +992,8 @@ void Widget::restoreState(not_null<Memento*> memento) {
 }
 
 std::unique_ptr<Ui::Premium::TopBarAbstract> Widget::setupTop() {
-	auto title = tr::lng_star_ref_list_title();
-	auto about = tr::lng_star_ref_list_about_channel(tr::marked);
+	auto title = tr::lng_diamond_ref_list_title();
+	auto about = tr::lng_diamond_ref_list_about_channel(tr::marked);
 
 	const auto controller = this->controller();
 	const auto weak = base::make_weak(controller->parentController());

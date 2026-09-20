@@ -523,7 +523,7 @@ auto GenerateGiftMedia(
 					? tr::lng_action_gift_self_about
 					: recipient->isBroadcast()
 					? tr::lng_action_gift_channel_about
-					: tr::lng_action_gift_got_stars_text)(
+					: tr::lng_action_gift_got_diamonds_text)(
 						tr::now,
 						lt_count,
 						gift.info.starsConverted,
@@ -607,13 +607,13 @@ auto GenerateGiftMedia(
 			? data.cost
 			: 0;
 		return stars
-			? tr::lng_gift_stars_title(tr::now, lt_count, stars)
+			? tr::lng_gift_diamonds_title(tr::now, lt_count, stars)
 			: FillAmountAndCurrency(data.cost, data.currency, true);
 	}, [&](GiftTypeStars data) {
 		const auto stars = data.info.stars
 			+ (details.upgraded ? data.info.starsToUpgrade : 0);
 		return stars
-			? tr::lng_gift_stars_title(tr::now, lt_count, stars)
+			? tr::lng_gift_diamonds_title(tr::now, lt_count, stars)
 			: QString();
 	});
 	const auto name = recipient->session().user()->shortName();
@@ -927,11 +927,11 @@ void PreviewWrap::paintEvent(QPaintEvent *e) {
 		return Text::String(st::semiboldTextStyle, text);
 	};
 	if (price == kPriceTabAll) {
-		return simple(tr::lng_gift_stars_tabs_all(tr::now));
+		return simple(tr::lng_gift_diamonds_tabs_all(tr::now));
 	} else if (price == kPriceTabMy) {
-		return simple(tr::lng_gift_stars_tabs_my(tr::now));
+		return simple(tr::lng_gift_diamonds_tabs_my(tr::now));
 	} else if (price == kPriceTabCollectibles) {
-		return simple(tr::lng_gift_stars_tabs_collectibles(tr::now));
+		return simple(tr::lng_gift_diamonds_tabs_collectibles(tr::now));
 	}
 	return {};
 }
@@ -1827,7 +1827,7 @@ void GiftBox(
 				? tr::lng_gift_self_title()
 				: peer->isBroadcast()
 				? tr::lng_gift_channel_title()
-				: tr::lng_gift_stars_subtitle()),
+				: tr::lng_gift_diamonds_subtitle()),
 			.about = (peer->isSelf()
 				? tr::lng_gift_self_about(tr::marked)
 				: peer->isBroadcast()
@@ -1837,15 +1837,15 @@ void GiftBox(
 					tr::marked)
 				: rpl::conditional(
 					collectibles->value(),
-					tr::lng_gift_stars_about_collectibles(
+					tr::lng_gift_diamonds_about_collectibles(
 						lt_link,
-						tr::lng_gift_stars_link(tr::link),
+						tr::lng_gift_diamonds_link(tr::link),
 						tr::marked),
-					tr::lng_gift_stars_about(
+					tr::lng_gift_diamonds_about(
 						lt_name,
 						rpl::single(tr::bold(peer->shortName())),
 						lt_link,
-						tr::lng_gift_stars_link(tr::link),
+						tr::lng_gift_diamonds_link(tr::link),
 						tr::marked))),
 			.aboutFilter = starsClickHandlerFilter,
 			.content = MakeStarsGifts(
@@ -2485,7 +2485,7 @@ void ChooseStarGiftRecipient(
 			});
 		const auto controllerRaw = controller.get();
 		auto initBox = [=](not_null<PeerListBox*> box) {
-			box->setTitle(tr::lng_gift_premium_or_stars());
+			box->setTitle(tr::lng_gift_premium_or_diamonds());
 			box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 
 			box->noSearchSubmits() | rpl::on_next([=] {
@@ -3969,7 +3969,7 @@ void PricesBox(
 		box->closeBox();
 	})->setText(rpl::single(Ui::Text::IconEmoji(
 		&st::infoStarsUnderstood
-	).append(' ').append(tr::lng_stars_rating_understood(tr::now))));
+	).append(' ').append(tr::lng_diamonds_rating_understood(tr::now))));
 }
 
 void UpgradeBox(
@@ -5134,7 +5134,7 @@ void SendGiftBox(
 			container->add(
 				object_ptr<SettingsButton>(
 					container,
-					tr::lng_gift_send_pay_with_stars(
+					tr::lng_gift_send_pay_with_diamonds(
 						lt_amount,
 						rpl::single(base::duplicate(star).append(Lang::FormatCountDecimal(byStars))),
 						tr::marked),
@@ -5149,7 +5149,7 @@ void SendGiftBox(
 
 			const auto balance = AddDividerText(
 				container,
-				tr::lng_gift_send_stars_balance(
+				tr::lng_gift_send_diamonds_balance(
 					lt_amount,
 					peer->session().credits().balanceValue(
 					) | rpl::map([=](CreditsAmount amount) {
@@ -5157,7 +5157,7 @@ void SendGiftBox(
 							Lang::FormatCreditsAmountDecimal(amount));
 					}),
 					lt_link,
-					tr::lng_gift_send_stars_balance_link(tr::link),
+					tr::lng_gift_send_diamonds_balance_link(tr::link),
 					tr::marked));
 			struct State {
 				Settings::BuyStarsHandler buyStars;

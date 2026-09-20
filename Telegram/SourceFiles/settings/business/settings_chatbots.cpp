@@ -855,7 +855,7 @@ void Chatbots::refreshDetails() {
 				warn(tr::lng_chatbots_warning_gifts_text);
 			}
 		} else if (enabled & Flag::TransferStars) {
-			warn(tr::lng_chatbots_warning_stars_text);
+			warn(tr::lng_chatbots_warning_diamonds_text);
 		} else if (enabled & Flag::EditUsername) {
 			warn(tr::lng_chatbots_warning_username_text);
 		}

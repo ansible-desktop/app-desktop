@@ -360,18 +360,18 @@ void ShowPaidMediaUnlockedToast(
 		: item->originalSender()
 		? item->originalSender()->asUser()
 		: nullptr;
-	auto text = tr::lng_credits_media_done_title(
+	auto text = tr::lng_diamonds_media_done_title(
 		tr::now,
 		tr::bold
 	).append('\n').append(user
-		? tr::lng_credits_media_done_text_user(
+		? tr::lng_diamonds_media_done_text_user(
 			tr::now,
 			lt_count,
 			invoice->amount,
 			lt_user,
 			tr::bold(user->shortName()),
 			tr::rich)
-		: tr::lng_credits_media_done_text(
+		: tr::lng_diamonds_media_done_text(
 			tr::now,
 			lt_count,
 			invoice->amount,

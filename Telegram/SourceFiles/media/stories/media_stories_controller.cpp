@@ -264,7 +264,7 @@ void Controller::Unsupported::setup(not_null<PeerData*> peer) {
 
 	_button = std::make_unique<Ui::RoundButton>(
 		wrap,
-		tr::lng_update_telegram(),
+		tr::lng_update_ansible(),
 		st::storiesUnsupportedUpdate);
 	_button->show();
 

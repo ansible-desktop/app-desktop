@@ -539,7 +539,7 @@ private:
 				set(
 					state->label,
 					state->labelText,
-					tr::lng_star_ref_start(tr::now));
+					tr::lng_diamond_ref_start(tr::now));
 				raw->clearState();
 				raw->setAttribute(Qt::WA_TransparentForMouseEvents);
 				updatePalette();
@@ -547,7 +547,7 @@ private:
 			set(
 				state->sublabel,
 				state->sublabelText,
-				tr::lng_star_ref_start_disabled(
+				tr::lng_diamond_ref_start_disabled(
 					tr::now,
 					lt_time,
 					FormatTimeLeft(left)));
@@ -564,7 +564,7 @@ private:
 			set(
 				state->label,
 				state->labelText,
-				(exists ? tr::lng_star_ref_update : tr::lng_star_ref_start)(
+				(exists ? tr::lng_diamond_ref_update : tr::lng_diamond_ref_start)(
 					tr::now));
 		}
 	};
@@ -602,24 +602,24 @@ void InnerWidget::setupInfo() {
 	AddSkip(_container, st::defaultVerticalListSkip * 2);
 
 	_container->add(infoRow(
-		tr::lng_star_ref_share_title(),
-		tr::lng_star_ref_share_about(),
+		tr::lng_diamond_ref_share_title(),
+		tr::lng_diamond_ref_share_about(),
 		&st::menuIconStarRefShare));
 
 	_container->add(infoRow(
-		tr::lng_star_ref_launch_title(),
-		tr::lng_star_ref_launch_about(),
+		tr::lng_diamond_ref_launch_title(),
+		tr::lng_diamond_ref_launch_about(),
 		&st::menuIconChannel));
 
 	_container->add(infoRow(
-		tr::lng_star_ref_let_title(),
-		tr::lng_star_ref_let_about(),
+		tr::lng_diamond_ref_let_title(),
+		tr::lng_diamond_ref_let_about(),
 		&st::menuIconStarRefLink));
 }
 
 void InnerWidget::setupCommission() {
 	Ui::AddSkip(_container);
-	Ui::AddSubsectionTitle(_container, tr::lng_star_ref_commission_title());
+	Ui::AddSubsectionTitle(_container, tr::lng_diamond_ref_commission_title());
 
 	const auto appConfig = &_controller->session().appConfig();
 	const auto commissionMin = std::clamp(
@@ -669,12 +669,12 @@ void InnerWidget::setupCommission() {
 	_state.program.commission = commission;
 
 	Ui::AddSkip(_container, st::defaultVerticalListSkip * 2);
-	Ui::AddDividerText(_container, tr::lng_star_ref_commission_about());
+	Ui::AddDividerText(_container, tr::lng_diamond_ref_commission_about());
 }
 
 void InnerWidget::setupDuration() {
 	Ui::AddSkip(_container);
-	Ui::AddSubsectionTitle(_container, tr::lng_star_ref_duration_title());
+	Ui::AddSubsectionTitle(_container, tr::lng_diamond_ref_duration_title());
 
 	const auto durationMonths = ValueForDurationMonths(_state);
 
@@ -712,14 +712,14 @@ void InnerWidget::setupDuration() {
 	_state.program.durationMonths = durationMonths;
 
 	Ui::AddSkip(_container, st::defaultVerticalListSkip * 2);
-	Ui::AddDividerText(_container, tr::lng_star_ref_duration_about());
+	Ui::AddDividerText(_container, tr::lng_diamond_ref_duration_about());
 }
 
 void InnerWidget::setupViewExisting() {
 	const auto button = AddViewListButton(
 		_container,
-		tr::lng_star_ref_existing_title(),
-		tr::lng_star_ref_existing_about());
+		tr::lng_diamond_ref_existing_title(),
+		tr::lng_diamond_ref_existing_about());
 	button->setClickedCallback([=] {
 		const auto window = _controller->parentController();
 		window->show(Join::ProgramsListBox(window, peer()));
@@ -736,7 +736,7 @@ void InnerWidget::setupEnd() {
 	}
 	const auto end = _container->add(object_ptr<Ui::SettingsButton>(
 		_container,
-		tr::lng_star_ref_end(),
+		tr::lng_diamond_ref_end(),
 		st::settingsAttentionButton));
 	end->setClickedCallback([=] {
 		const auto weak = base::make_weak(this);
@@ -755,8 +755,8 @@ void InnerWidget::setupEnd() {
 				} else if ([[maybe_unused]] const auto strong = weak.get()) {
 					_controller->showBackFromStack();
 					window->showToast({
-						.title = tr::lng_star_ref_ended_title(tr::now),
-						.text = tr::lng_star_ref_ended_text(
+						.title = tr::lng_diamond_ref_ended_title(tr::now),
+						.text = tr::lng_diamond_ref_ended_text(
 							tr::now,
 							tr::rich),
 						.duration = Ui::Toast::kDefaultDuration * 3,
@@ -858,7 +858,7 @@ bool Widget::showInternal(not_null<ContentMemento*> memento) {
 }
 
 rpl::producer<QString> Widget::title() {
-	return tr::lng_star_ref_title();
+	return tr::lng_diamond_ref_title();
 }
 
 void Widget::setInternalState(
@@ -902,8 +902,8 @@ void Widget::restoreState(not_null<Memento*> memento) {
 }
 
 std::unique_ptr<Ui::Premium::TopBarAbstract> Widget::setupTop() {
-	auto title = tr::lng_star_ref_title();
-	auto about = tr::lng_star_ref_about(tr::marked);
+	auto title = tr::lng_diamond_ref_title();
+	auto about = tr::lng_diamond_ref_about(tr::marked);
 
 	const auto controller = this->controller();
 	const auto weak = base::make_weak(controller->parentController());
@@ -1019,11 +1019,11 @@ std::unique_ptr<Ui::RpWidget> Widget::setupBottom() {
 		object_ptr<Ui::FlatLabel>(
 			raw,
 			(_state->exists
-				? tr::lng_star_ref_update_info
-				: tr::lng_star_ref_start_info)(
+				? tr::lng_diamond_ref_update_info
+				: tr::lng_diamond_ref_start_info)(
 					lt_terms,
-					tr::lng_star_ref_button_link(
-						tr::url(tr::lng_star_ref_tos_url(tr::now))),
+					tr::lng_diamond_ref_button_link(
+						tr::url(tr::lng_diamond_ref_tos_url(tr::now))),
 					tr::marked),
 			st::boxDividerLabel),
 		QMargins(margins.left(), 0, margins.right(), 0));
@@ -1041,11 +1041,11 @@ std::unique_ptr<Ui::RpWidget> Widget::setupBottom() {
 				}
 				show->showToast({
 					.title = (exists
-						? tr::lng_star_ref_updated_title
-						: tr::lng_star_ref_created_title)(tr::now),
+						? tr::lng_diamond_ref_updated_title
+						: tr::lng_diamond_ref_created_title)(tr::now),
 					.text = (exists
-						? tr::lng_star_ref_updated_text
-						: tr::lng_star_ref_created_text)(
+						? tr::lng_diamond_ref_updated_text
+						: tr::lng_diamond_ref_created_text)(
 							tr::now,
 							tr::rich),
 					.duration = Ui::Toast::kDefaultDuration * 3,

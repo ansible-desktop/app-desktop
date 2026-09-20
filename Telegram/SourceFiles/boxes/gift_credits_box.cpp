@@ -138,7 +138,7 @@ void GiftCreditsBox(
 		2.);
 	{
 		Ui::AddSkip(content);
-		auto link = tr::lng_credits_box_history_entry_gift_about_link(
+		auto link = tr::lng_diamonds_box_history_entry_gift_about_link(
 			lt_emoji,
 			rpl::single(Ui::Text::IconEmoji(&st::textMoreIconEmoji)),
 			tr::rich
@@ -150,7 +150,7 @@ void GiftCreditsBox(
 		content->add(
 			object_ptr<Ui::FlatLabel>(
 				content,
-				tr::lng_credits_box_history_entry_gift_out_about(
+				tr::lng_diamonds_box_history_entry_gift_out_about(
 					lt_user,
 					rpl::single(TextWithEntities{ peer->shortName() }),
 					lt_link,
@@ -175,7 +175,7 @@ void GiftCreditsBox(
 			box->uiShow()->hideLayer();
 		},
 		box->showFinishes(),
-		tr::lng_credits_summary_options_subtitle(),
+		tr::lng_diamonds_summary_options_subtitle(),
 		{});
 
 	box->setPinnedToBottomContent(
@@ -231,7 +231,7 @@ void ShowGiftCreditsBox(
 
 	};
 	auto initBox = [=](not_null<PeerListBox*> peersBox) {
-		peersBox->setTitle(tr::lng_credits_gift_title());
+		peersBox->setTitle(tr::lng_diamonds_gift_title());
 		peersBox->addButton(tr::lng_cancel(), [=] { peersBox->closeBox(); });
 	};
 

@@ -108,7 +108,7 @@ TextWithEntities PremiumGift::title() {
 	} else if (creditsPrize()) {
 		return tr::lng_prize_title(tr::now, tr::marked);
 	} else if (const auto stars = credits()) {
-		return tr::lng_gift_stars_title(tr::now, lt_count_decimal, stars, tr::marked);
+		return tr::lng_gift_diamonds_title(tr::now, lt_count_decimal, stars, tr::marked);
 	}
 	return gift()
 		? tr::lng_action_gift_premium_months(
@@ -147,7 +147,7 @@ TextWithEntities PremiumGift::subtitle() {
 				? tr::lng_action_gift_self_auction(
 					tr::now,
 					lt_cost,
-					tr::lng_action_gift_for_stars(
+					tr::lng_action_gift_for_diamonds(
 						tr::now,
 						lt_count_decimal,
 						_data.starsBid,
@@ -188,12 +188,12 @@ TextWithEntities PremiumGift::subtitle() {
 			: (_data.converted
 				? (toChannel
 					? tr::lng_gift_channel_got
-					: tr::lng_gift_got_stars)
+					: tr::lng_gift_got_diamonds)
 				: _parent->history()->peer->isSelf()
 				? tr::lng_action_gift_self_about
 				: toChannel
 				? tr::lng_action_gift_channel_about
-				: tr::lng_action_gift_got_stars_text)(
+				: tr::lng_action_gift_got_diamonds_text)(
 					tr::now,
 					lt_count,
 					_data.starsConverted,
@@ -202,12 +202,12 @@ TextWithEntities PremiumGift::subtitle() {
 	const auto isCreditsPrize = creditsPrize();
 	if (const auto count = credits(); count && !isCreditsPrize) {
 		return outgoingGift()
-			? tr::lng_gift_stars_outgoing(
+			? tr::lng_gift_diamonds_outgoing(
 				tr::now,
 				lt_user,
 				tr::bold(_parent->history()->peer->shortName()),
 				tr::rich)
-			: tr::lng_gift_stars_incoming(tr::now, tr::marked);
+			: tr::lng_gift_diamonds_incoming(tr::now, tr::marked);
 	} else if (gift()) {
 		return !_data.message.empty()
 			? _data.message
@@ -225,10 +225,10 @@ TextWithEntities PremiumGift::subtitle() {
 			tr::rich);
 	result.append("\n\n");
 	result.append(isCreditsPrize
-		? tr::lng_prize_credits(
+		? tr::lng_prize_diamonds(
 			tr::now,
 			lt_amount,
-			tr::lng_prize_credits_amount(
+			tr::lng_prize_diamonds_amount(
 				tr::now,
 				lt_count_decimal,
 				credits(),

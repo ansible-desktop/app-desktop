@@ -149,30 +149,30 @@ void AddTerms(
 			}
 		}
 
-		auto photosBold = tr::lng_credits_box_out_photos(
+		auto photosBold = tr::lng_diamonds_box_out_photos(
 			lt_count,
 			rpl::single(photos) | tr::to_count(),
 			tr::bold);
-		auto videosBold = tr::lng_credits_box_out_videos(
+		auto videosBold = tr::lng_diamonds_box_out_videos(
 			lt_count,
 			rpl::single(videos) | tr::to_count(),
 			tr::bold);
 		auto media = (!videos)
 				? ((photos > 1)
 					? std::move(photosBold)
-					: tr::lng_credits_box_out_photo(tr::marked))
+					: tr::lng_diamonds_box_out_photo(tr::marked))
 				: (!photos)
 				? ((videos > 1)
 					? std::move(videosBold)
-					: tr::lng_credits_box_out_video(tr::marked))
-				: tr::lng_credits_box_out_both(
+					: tr::lng_diamonds_box_out_video(tr::marked))
+				: tr::lng_diamonds_box_out_both(
 					lt_photo,
 					std::move(photosBold),
 					lt_video,
 					std::move(videosBold),
 					tr::marked);
 		if (const auto user = data.peer->asUser()) {
-			return tr::lng_credits_box_out_media_user(
+			return tr::lng_diamonds_box_out_media_user(
 				lt_count,
 				rpl::single(form->invoice.amount) | tr::to_count(),
 				lt_media,
@@ -181,7 +181,7 @@ void AddTerms(
 				rpl::single(tr::bold(user->shortName())),
 				tr::rich);
 		}
-		return tr::lng_credits_box_out_media(
+		return tr::lng_diamonds_box_out_media(
 			lt_count,
 			rpl::single(form->invoice.amount) | tr::to_count(),
 			lt_media,
@@ -194,8 +194,8 @@ void AddTerms(
 	const auto bot = session->data().user(form->botId);
 	if (form->invoice.subscriptionPeriod) {
 		return (bot->botInfo
-				? tr::lng_credits_box_out_subscription_bot
-				: tr::lng_credits_box_out_subscription_business)(
+				? tr::lng_diamonds_box_out_subscription_bot
+				: tr::lng_diamonds_box_out_subscription_business)(
 			lt_count,
 			rpl::single(form->invoice.amount) | tr::to_count(),
 			lt_title,
@@ -204,7 +204,7 @@ void AddTerms(
 			rpl::single(TextWithEntities{ bot->name() }),
 			tr::rich);
 	}
-	return tr::lng_credits_box_out_sure(
+	return tr::lng_diamonds_box_out_sure(
 		lt_count,
 		rpl::single(form->invoice.amount) | tr::to_count(),
 		lt_text,
@@ -368,7 +368,7 @@ void SendCreditsBox(
 			box,
 			form->invoice.subscriptionPeriod
 				? rpl::single(form->title)
-				: tr::lng_credits_box_out_title(),
+				: tr::lng_diamonds_box_out_title(),
 			st::settingsPremiumUserTitle),
 		style::al_top);
 	if (form->invoice.subscriptionPeriod && form->botId && form->photo) {
@@ -418,7 +418,7 @@ void SendCreditsBox(
 			const auto id = error.type();
 			if (id == u"BOT_PRECHECKOUT_FAILED"_q) {
 				auto error = ::Ui::MakeInformBox(
-					tr::lng_payments_precheckout_stars_failed(tr::now));
+					tr::lng_payments_precheckout_diamonds_failed(tr::now));
 				error->boxClosing() | rpl::on_next([=] {
 					if (const auto paybox = weak.get()) {
 						paybox->closeBox();
@@ -427,7 +427,7 @@ void SendCreditsBox(
 				show->showBox(std::move(error));
 			} else if (id == u"BOT_PRECHECKOUT_TIMEOUT"_q) {
 				show->showToast(
-					tr::lng_payments_precheckout_stars_timeout(tr::now));
+					tr::lng_payments_precheckout_diamonds_timeout(tr::now));
 			} else {
 				show->showToast(id);
 			}
@@ -464,8 +464,8 @@ void SendCreditsBox(
 		button,
 		rpl::combine(
 			(form->invoice.subscriptionPeriod
-				? tr::lng_credits_box_out_subscription_confirm
-				: tr::lng_credits_box_out_confirm)(
+				? tr::lng_diamonds_box_out_subscription_confirm
+				: tr::lng_diamonds_box_out_confirm)(
 					lt_count,
 					rpl::single(form->invoice.amount) | tr::to_count(),
 					lt_emoji,

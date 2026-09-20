@@ -261,7 +261,7 @@ MTPStarsAmount StarsAmountToTL(CreditsAmount amount) {
 
 QString PrepareCreditsAmountText(CreditsAmount amount) {
 	return amount.stars()
-		? tr::lng_action_gift_for_stars(
+		? tr::lng_action_gift_for_diamonds(
 			tr::now,
 			lt_count_decimal,
 			amount.value())

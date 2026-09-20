@@ -225,7 +225,7 @@ PointDetailsWidget::PointDetailsWidget(
 				maxNameTextWidth);
 			if (hasUsdLine) {
 				const auto text = isCredits
-					? tr::lng_channel_earn_chart_overriden_detail_credits
+					? tr::lng_channel_earn_chart_overriden_detail_diamonds
 					: tr::lng_channel_earn_chart_overriden_detail_currency;
 				const auto currency = Ui::Text::String(
 					_textStyle,
@@ -354,7 +354,7 @@ void PointDetailsWidget::setXIndex(int xIndex) {
 			copy.name.setText(
 				_textStyle,
 				(isCredits
-					? tr::lng_channel_earn_chart_overriden_detail_credits
+					? tr::lng_channel_earn_chart_overriden_detail_diamonds
 					: tr::lng_channel_earn_chart_overriden_detail_currency)(
 						tr::now));
 			const auto provided = dataLine.y[xIndex];

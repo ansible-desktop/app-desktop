@@ -178,7 +178,7 @@ void FillRatingLimit(
 		adjustedData
 	) | rpl::map([=](Counters counters) {
 		return (counters.level < 0)
-			? tr::lng_stars_rating_negative_label(tr::now)
+			? tr::lng_diamonds_rating_negative_label(tr::now)
 			: level(counters.level + 1);
 	});
 	Premium::AddLimitRow(
@@ -228,24 +228,24 @@ void AboutRatingBox(
 
 	auto title = rpl::conditional(
 		state->pending.value(),
-		tr::lng_stars_rating_future(),
-		tr::lng_stars_rating_title());
+		tr::lng_diamonds_rating_future(),
+		tr::lng_diamonds_rating_title());
 
 	auto text = !name.isEmpty()
-		? tr::lng_stars_rating_about(
+		? tr::lng_diamonds_rating_about(
 			lt_name,
 			rpl::single(TextWithEntities{ name }),
 			tr::rich) | rpl::type_erased
-		: tr::lng_stars_rating_about_your(
+		: tr::lng_diamonds_rating_about_your(
 			tr::rich) | rpl::type_erased;
 
 	if (data.level < 0) {
 		auto text = (data.stars < 0)
-			? tr::lng_stars_rating_negative_your(
+			? tr::lng_diamonds_rating_negative_your(
 				lt_count_decimal,
 				rpl::single(-data.stars * 1.),
 				tr::rich)
-			: tr::lng_stars_rating_negative(
+			: tr::lng_diamonds_rating_negative(
 				lt_name,
 				rpl::single(TextWithEntities{ name }),
 				tr::rich);
@@ -270,18 +270,18 @@ void AboutRatingBox(
 		const auto days = std::max((pending.date - now + 43200) / 86400, 1);
 		auto text = state->pending.value(
 		) | rpl::map([=](bool value) {
-			return tr::lng_stars_rating_pending(
+			return tr::lng_diamonds_rating_pending(
 				tr::now,
 				lt_count_decimal,
 				pending.value.stars - data.stars,
 				lt_when,
 				TextWithEntities{
-					tr::lng_stars_rating_updates(tr::now, lt_count, days),
+					tr::lng_diamonds_rating_updates(tr::now, lt_count, days),
 				},
 				lt_link,
 				Text::Link((value
-					? tr::lng_stars_rating_pending_back
-					: tr::lng_stars_rating_pending_preview)(
+					? tr::lng_diamonds_rating_pending_back
+					: tr::lng_diamonds_rating_pending_preview)(
 						tr::now,
 						lt_arrow,
 						Text::IconEmoji(&st::textMoreIconEmoji),
@@ -333,29 +333,29 @@ void AboutRatingBox(
 	const auto features = std::vector<FeatureListEntry>{
 		{
 			st::menuIconRatingGifts,
-			tr::lng_stars_title_gifts_telegram(tr::now),
-			tr::lng_stars_about_gifts_telegram(
+			tr::lng_diamonds_title_gifts_ansible(tr::now),
+			tr::lng_diamonds_about_gifts_ansible(
 				tr::now,
 				lt_emoji,
-				makeActive(tr::lng_stars_rating_added(tr::now)),
+				makeActive(tr::lng_diamonds_rating_added(tr::now)),
 				tr::rich),
 		},
 		{
 			st::menuIconRatingUsers,
-			tr::lng_stars_title_gifts_users(tr::now),
-			tr::lng_stars_about_gifts_users(
+			tr::lng_diamonds_title_gifts_users(tr::now),
+			tr::lng_diamonds_about_gifts_users(
 				tr::now,
 				lt_emoji,
-				makeActive(tr::lng_stars_rating_added(tr::now)),
+				makeActive(tr::lng_diamonds_rating_added(tr::now)),
 				tr::rich),
 		},
 		{
 			st::menuIconRatingRefund,
-			tr::lng_stars_title_refunds(tr::now),
-			tr::lng_stars_about_refunds(
+			tr::lng_diamonds_title_refunds(tr::now),
+			tr::lng_diamonds_about_refunds(
 				tr::now,
 				lt_emoji,
-				makeInactive(tr::lng_stars_rating_deducted(tr::now)),
+				makeInactive(tr::lng_diamonds_rating_deducted(tr::now)),
 				tr::rich),
 		},
 	};
@@ -367,7 +367,7 @@ void AboutRatingBox(
 		box->closeBox();
 	})->setText(rpl::single(Text::IconEmoji(
 		&st::infoStarsUnderstood
-	).append(' ').append(tr::lng_stars_rating_understood(tr::now))));
+	).append(' ').append(tr::lng_diamonds_rating_understood(tr::now))));
 }
 
 [[nodiscard]] not_null<const style::LevelShape*> SelectShape(int level) {

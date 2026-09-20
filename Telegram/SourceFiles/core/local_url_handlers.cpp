@@ -1586,12 +1586,12 @@ bool ResolveTopUp(
 					return false;
 				};
 				strong->showToast(Ui::Toast::Config{
-					.text = tr::lng_credits_enough(
+					.text = tr::lng_diamonds_enough(
 						tr::now,
 						lt_link,
 						tr::link(
 							tr::bold(
-								tr::lng_credits_enough_link(tr::now))),
+								tr::lng_diamonds_enough_link(tr::now))),
 						tr::rich),
 					.filter = filter,
 					.duration = 4 * crl::time(1000),

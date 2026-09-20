@@ -325,8 +325,8 @@ void CreateGiveawayBox(
 				: state->typeValue.value() | rpl::map(
 					rpl::mappers::_1 == GiveawayType::Credits),
 			(peer->isMegagroup()
-				? tr::lng_giveaway_credits_new_about_group()
-				: tr::lng_giveaway_credits_new_about()),
+				? tr::lng_giveaway_diamonds_new_about_group()
+				: tr::lng_giveaway_diamonds_new_about()),
 			(peer->isMegagroup()
 				? tr::lng_giveaway_new_about_group()
 				: tr::lng_giveaway_new_about())
@@ -370,11 +370,11 @@ void CreateGiveawayBox(
 				prepaid->credits ? st::colorIndexOrange : prepaid->id,
 				tr::lng_boosts_prepaid_giveaway_single(),
 				prepaid->credits
-					? tr::lng_boosts_prepaid_giveaway_credits_status(
+					? tr::lng_boosts_prepaid_giveaway_diamonds_status(
 						lt_count,
 						rpl::single(prepaid->quantity) | tr::to_count(),
 						lt_amount,
-						tr::lng_prize_credits_amount(
+						tr::lng_prize_diamonds_amount(
 							lt_count_decimal,
 							rpl::single(prepaid->credits) | tr::to_count()))
 					: tr::lng_boosts_prepaid_giveaway_status(
@@ -506,7 +506,7 @@ void CreateGiveawayBox(
 				box,
 				GiveawayType::Credits,
 				st::colorIndexOrange,
-				tr::lng_credits_summary_title(),
+				tr::lng_diamonds_summary_title(),
 				tr::lng_giveaway_create_subtitle(),
 				QImage()));
 		row->addRadio(typeGroup);
@@ -552,7 +552,7 @@ void CreateGiveawayBox(
 		const auto content = randomCreditsWrap->entity();
 		const auto title = Ui::AddSubsectionTitle(
 			content,
-			tr::lng_giveaway_credits_options_title());
+			tr::lng_giveaway_diamonds_options_title());
 
 		const auto rightLabel = Ui::CreateChild<Ui::FlatLabel>(
 			content,
@@ -598,11 +598,11 @@ void CreateGiveawayBox(
 			const auto buttonState = button->lifetime().make_state<State>();
 			buttonState->text.emplace(
 				st.nameStyle,
-				tr::lng_credits_summary_options_credits(
+				tr::lng_diamonds_summary_options_diamonds(
 					tr::now,
 					lt_count_decimal,
 					option.credits));
-			buttonState->status = tr::lng_giveaway_credits_option_status(
+			buttonState->status = tr::lng_giveaway_diamonds_option_status(
 				tr::now,
 				lt_count_decimal,
 				option.credits);
@@ -623,7 +623,7 @@ void CreateGiveawayBox(
 				buttonState->hasStatus = false;
 				for (const auto &winner : option.winners) {
 					if (winner.users == users) {
-						auto status = tr::lng_giveaway_credits_option_status(
+						auto status = tr::lng_giveaway_diamonds_option_status(
 							tr::now,
 							lt_count_decimal,
 							winner.perUserStars);
@@ -715,7 +715,7 @@ void CreateGiveawayBox(
 		}
 
 		Ui::AddSkip(content);
-		Ui::AddDividerText(content, tr::lng_giveaway_credits_options_about());
+		Ui::AddDividerText(content, tr::lng_giveaway_diamonds_options_about());
 		Ui::AddSkip(content);
 	};
 
@@ -746,7 +746,7 @@ void CreateGiveawayBox(
 			sliderContainer,
 			rpl::conditional(
 				rpl::duplicate(creditsValueType),
-				tr::lng_giveaway_credits_quantity_title(),
+				tr::lng_giveaway_diamonds_quantity_title(),
 				tr::lng_giveaway_quantity_title()));
 		const auto rightLabel = Ui::CreateChild<Ui::FlatLabel>(
 			sliderContainer,
@@ -868,7 +868,7 @@ void CreateGiveawayBox(
 			sliderContainer,
 			rpl::conditional(
 				rpl::duplicate(creditsValueType),
-				tr::lng_giveaway_credits_quantity_about(),
+				tr::lng_giveaway_diamonds_quantity_about(),
 				tr::lng_giveaway_quantity_about()));
 		Ui::AddSkip(sliderContainer);
 
@@ -1226,19 +1226,19 @@ void CreateGiveawayBox(
 		) | rpl::map([=](QString prize, int users, int creditsIndex) {
 			const auto credits = creditsOption(creditsIndex).credits;
 			return prize.isEmpty()
-				? tr::lng_giveaway_prizes_just_credits(
+				? tr::lng_giveaway_prizes_just_diamonds(
 					tr::now,
 					lt_count,
 					credits,
 					tr::rich)
-				: tr::lng_giveaway_prizes_additional_credits(
+				: tr::lng_giveaway_prizes_additional_diamonds(
 					tr::now,
 					lt_count,
 					users,
 					lt_prize,
 					TextWithEntities{ prize },
 					lt_amount,
-					tr::lng_giveaway_prizes_additional_credits_amount(
+					tr::lng_giveaway_prizes_additional_diamonds_amount(
 						tr::now,
 						lt_count,
 						credits,
@@ -1259,7 +1259,7 @@ void CreateGiveawayBox(
 					std::move(additionalAbout)),
 				rpl::conditional(
 					rpl::duplicate(creditsValueType),
-					tr::lng_giveaway_additional_credits_about(tr::marked),
+					tr::lng_giveaway_additional_diamonds_about(tr::marked),
 					tr::lng_giveaway_additional_about(tr::marked))));
 		Ui::AddSkip(additionalWrap);
 	}

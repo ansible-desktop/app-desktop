@@ -1180,7 +1180,7 @@ void AuctionGotGiftsBox(
 		// Recipient
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_peer(),
+			tr::lng_diamonds_box_history_entry_peer(),
 			show,
 			entry.to->id);
 

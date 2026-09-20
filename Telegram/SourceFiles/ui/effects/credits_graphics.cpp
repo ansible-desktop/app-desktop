@@ -566,7 +566,7 @@ Fn<PaintRoundImageCallback(Fn<void()>)> PaintPreviewCallback(
 
 TextWithEntities GenerateEntryName(const Data::CreditsHistoryEntry &entry) {
 	return (entry.starrefCommission && !entry.starrefAmount)
-		? tr::lng_credits_commission(
+		? tr::lng_diamonds_commission(
 			tr::now,
 			lt_amount,
 			TextWithEntities{
@@ -574,11 +574,11 @@ TextWithEntities GenerateEntryName(const Data::CreditsHistoryEntry &entry) {
 			},
 			TextWithEntities::Simple)
 		: entry.isLiveStoryReaction()
-		? tr::lng_credits_paid_messages_fee_live_reaction(
+		? tr::lng_diamonds_paid_messages_fee_live_reaction(
 			tr::now,
 			TextWithEntities::Simple)
 		: entry.paidMessagesCount
-		? tr::lng_credits_paid_messages_fee(
+		? tr::lng_diamonds_paid_messages_fee(
 			tr::now,
 			lt_count,
 			entry.paidMessagesCount,
@@ -586,32 +586,32 @@ TextWithEntities GenerateEntryName(const Data::CreditsHistoryEntry &entry) {
 		: (entry.premiumMonthsForStars
 		? tr::lng_premium_summary_title
 		: entry.floodSkip
-		? tr::lng_credits_box_history_entry_api
+		? tr::lng_diamonds_box_history_entry_api
 		: entry.reaction
-		? tr::lng_credits_box_history_entry_reaction_name
+		? tr::lng_diamonds_box_history_entry_reaction_name
 		: entry.giftOffer
-		? tr::lng_credits_box_history_entry_gift_offer
+		? tr::lng_diamonds_box_history_entry_gift_offer
 		: entry.giftResale
 		? (entry.in
-			? tr::lng_credits_box_history_entry_gift_sold
-			: tr::lng_credits_box_history_entry_gift_bought)
+			? tr::lng_diamonds_box_history_entry_gift_sold
+			: tr::lng_diamonds_box_history_entry_gift_bought)
 		: entry.bareGiveawayMsgId
-		? tr::lng_credits_box_history_entry_giveaway_name
+		? tr::lng_diamonds_box_history_entry_giveaway_name
 		: entry.converted
-		? tr::lng_credits_box_history_entry_gift_converted
+		? tr::lng_diamonds_box_history_entry_gift_converted
 		: (entry.gift && !entry.in && entry.uniqueGift)
-		? tr::lng_credits_box_history_entry_gift_transfer
+		? tr::lng_diamonds_box_history_entry_gift_transfer
 		: (entry.starsConverted || (entry.gift && !entry.in))
-		? tr::lng_credits_box_history_entry_gift_sent
+		? tr::lng_diamonds_box_history_entry_gift_sent
 		: entry.gift
-		? tr::lng_credits_box_history_entry_gift_name
+		? tr::lng_diamonds_box_history_entry_gift_name
 		: (entry.peerType == Data::CreditsHistoryEntry::PeerType::Fragment)
-		? tr::lng_credits_box_history_entry_fragment
+		? tr::lng_diamonds_box_history_entry_fragment
 		: (entry.peerType == Data::CreditsHistoryEntry::PeerType::PremiumBot)
-		? tr::lng_credits_box_history_entry_premium_bot
+		? tr::lng_diamonds_box_history_entry_premium_bot
 		: (entry.peerType == Data::CreditsHistoryEntry::PeerType::Ads)
-		? tr::lng_credits_box_history_entry_ads
-		: tr::lng_credits_summary_history_entry_inner_in)(
+		? tr::lng_diamonds_box_history_entry_ads
+		: tr::lng_diamonds_summary_history_entry_inner_in)(
 			tr::now,
 			TextWithEntities::Simple);
 }

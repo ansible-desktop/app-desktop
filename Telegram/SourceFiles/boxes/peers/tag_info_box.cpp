@@ -526,6 +526,6 @@ void TagInfoBox(
 		)->setText(rpl::single(Ui::Text::IconEmoji(
 			&st::infoStarsUnderstood
 		).append(' ').append(
-			tr::lng_stars_rating_understood(tr::now))));
+			tr::lng_diamonds_rating_understood(tr::now))));
 	}
 }

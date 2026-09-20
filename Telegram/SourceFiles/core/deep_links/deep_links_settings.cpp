@@ -1735,7 +1735,7 @@ void RegisterSettingsHandlers(Router &router) {
 	router.add(u"settings"_q, {
 		.path = u"features"_q,
 		.action = CodeBlock{ [](const Context &ctx) {
-			UrlClickHandler::Open(tr::lng_telegram_features_url(tr::now));
+			UrlClickHandler::Open(tr::lng_ansible_features_url(tr::now));
 			return Result::Handled;
 		}},
 		.requiresAuth = false,

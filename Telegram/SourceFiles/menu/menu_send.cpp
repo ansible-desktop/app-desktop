@@ -688,7 +688,7 @@ FillMenuResult FillEditCommentPriceMenu(
 	const auto &icons = iconsOverride
 		? *iconsOverride
 		: st::defaultComposeIcons;
-	menu->addAction(tr::lng_video_stream_edit_stars(tr::now), [=] {
+	menu->addAction(tr::lng_video_stream_edit_diamonds(tr::now), [=] {
 		show->show(Calls::Group::MakeVideoStreamStarsBox({
 			.show = show,
 			.min = int(details.commentPriceMin.value_or(1)),
@@ -705,7 +705,7 @@ FillMenuResult FillEditCommentPriceMenu(
 	if (details.price.value_or(0) > details.commentPriceMin.value_or(0)) {
 		auto copy = details;
 		copy.price = details.commentPriceMin.value_or(0);
-		menu->addAction(tr::lng_video_stream_remove_stars(tr::now), [=] {
+		menu->addAction(tr::lng_video_stream_remove_diamonds(tr::now), [=] {
 			action({ {}, Action::Type::ChangePrice }, copy);
 		}, &icons.menuGifRemove);
 	}
