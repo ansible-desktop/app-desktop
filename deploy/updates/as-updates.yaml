@@ -1,0 +1,138 @@
+# Сервис обновлений Ansible Desktop: отдаёт манифест current2 и пакеты
+# обновлений по https://ansible.su/ad/...
+#
+# Хранилище — Timeweb S3, бакет `ansible-desktop-updates`, публичный на
+# чтение. Под здесь — тонкий проксирующий nginx, своего диска у него нет.
+#
+# Почему нельзя просто дать клиенту ссылку на S3: адрес пакета клиент
+# составляет как <префикс> + link из манифеста (update_checker.cpp,
+# HttpChecker::handleResponse), то есть он ВСЕГДА под https://ansible.su/ad.
+# Абсолютный внешний адрес в link положить нельзя — получится склейка вида
+# `https://ansible.su/adhttps://…`. Отсюда и прокси.
+#
+# Почему бакет публичный, а не ключи в поде: пакеты и так предназначены
+# всем, их целостность держится на подписи Ed25519 (Telegram/Resources/
+# update/root-public.pem вшит в клиент), а ключи Timeweb — ОБЩИЕ НА ВЕСЬ
+# АККАУНТ: одна пара читает и приватный бакет ciphertext нашего CDN.
+# Не класть их в кластер — это минус один способ их потерять.
+#
+# 🚨 Апекс ansible.su делят ТРИ ingress: as-site (путь `/`),
+# as-links-ansible-redirect (регулярки инвайтов) и этот. Правило ниже —
+# префикс `/ad`, он длиннее `/`, поэтому nginx-ingress отдаёт его нам.
+# Без правила запрос уходит на сайт и возвращает его страницу 404 — именно
+# так автообновление и молчало до 20.09.2026.
+#
+# Применение:  kubectl apply -f as-updates.yaml
+# Проверка:    curl -s https://ansible.su/ad/current2
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: as-updates-nginx
+  namespace: ansible-apps
+data:
+  default.conf: |
+    server {
+      listen 8080;
+      server_name _;
+
+      # 🚨 resolver обязателен: имя S3 внешнее, а nginx резолвит адрес в
+      # proxy_pass ОДИН раз при старте, если он задан литералом. Через
+      # переменную — резолвит в рантайме, и смена адреса у Timeweb не
+      # требует перезапуска пода.
+      resolver 10.96.0.10 valid=30s ipv6=off;
+
+      location = /healthz {
+        access_log off;
+        return 200 "ok\n";
+      }
+
+      # Регулярка сразу отдаёт хвост пути в $key, поэтому ни rewrite, ни
+      # map не нужны: /ad/win64/tx64upd3003001 -> объект win64/tx64upd3003001.
+      location ~ ^/ad/(?<key>.+)$ {
+        set $s3host "s3.twcstorage.ru";
+        proxy_pass https://$s3host/ansible-desktop-updates/$key;
+
+        proxy_set_header Host s3.twcstorage.ru;
+        proxy_ssl_server_name on;
+        proxy_http_version 1.1;
+
+        # Пакет — десятки мегабайт, клиент качает его кусками с Range.
+        # Ответы не буферизуем целиком и Range пропускаем как есть.
+        proxy_buffering off;
+        proxy_set_header Range $http_range;
+        proxy_set_header If-Range $http_if_range;
+
+        # Заголовки S3 наружу не отдаём.
+        proxy_hide_header x-amz-request-id;
+        proxy_hide_header x-amz-id-2;
+        proxy_hide_header Set-Cookie;
+      }
+
+      location / {
+        return 404;
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: as-updates
+  namespace: ansible-apps
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: as-updates}
+  template:
+    metadata:
+      labels: {app: as-updates}
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - {name: conf, mountPath: /etc/nginx/conf.d/default.conf, subPath: default.conf}
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            initialDelaySeconds: 3
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+      volumes:
+        - name: conf
+          configMap: {name: as-updates-nginx}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: as-updates
+  namespace: ansible-apps
+spec:
+  selector: {app: as-updates}
+  ports:
+    - {port: 80, targetPort: 8080}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: as-updates
+  namespace: ansible-apps
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ansible.su
+      http:
+        paths:
+          - path: /ad
+            pathType: Prefix
+            backend:
+              service:
+                name: as-updates
+                port: {number: 80}
+  tls:
+    - hosts: [ansible.su]
+      secretName: ansible-su-wildcard-tls
