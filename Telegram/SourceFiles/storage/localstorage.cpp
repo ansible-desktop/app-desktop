@@ -555,7 +555,18 @@ const QString &readAutoupdatePrefixRaw() {
 			return AutoupdatePrefix(value);
 		}
 	}
-	return AutoupdatePrefix("https://ansible.su/td");
+	// `ad` — Ansible Desktop. У апстрима тут было `td` (Telegram Desktop);
+	// префикс попадает в каждый запрос обновления, чужого имени в нём быть
+	// не должно. Полный адрес запроса — <префикс>/current<N>, где N даёт
+	// Platform::AutoUpdateVersion(), на современных платформах это 2.
+	//
+	// 🚨 Это значение по умолчанию, а НЕ последнее слово. Приоритет выше у
+	// файла tdata/prefix, который пишется из ответа help.getConfig — поле
+	// autoupdate_url_prefix (flags.7). Наш бэкенд его сейчас не шлёт ни
+	// разу, поэтому работает строка отсюда; как только поле появится в
+	// config, адрес обновлений станет задаваться СЕРВЕРОМ, и менять его
+	// нужно будет там, а установленные клиенты подхватят сами.
+	return AutoupdatePrefix("https://ansible.su/ad");
 }
 
 void writeAutoupdatePrefix(const QString &prefix) {

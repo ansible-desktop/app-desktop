@@ -84,7 +84,7 @@ See [`docs/upgrading.md`](docs/upgrading.md) for how to move from an
 earlier build and what is preserved.
 
 🚨 **In-app auto-update does not work yet.** The client checks
-`https://ansible.su/td/current2`, and nothing is published there at the
+`https://ansible.su/ad/current2`, and nothing is published there at the
 moment — the request 404s and the app stays on its current version
 without telling you. Update by downloading a new build.
 
