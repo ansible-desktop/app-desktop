@@ -1,99 +1,137 @@
-# [Telegram Desktop][telegram_desktop] – Official Messenger
+# Ansible Desktop
 
-This is the complete source code and the build instructions for the official [Telegram][telegram] messenger desktop client, based on the [Telegram API][telegram_api] and the [MTProto][telegram_proto] secure protocol.
+Desktop client for the [Ansible](https://ansible.su) messaging service —
+Windows, macOS and Linux.
 
-[![Version](https://badge.fury.io/gh/telegramdesktop%2Ftdesktop.svg)](https://github.com/telegramdesktop/tdesktop/releases)
-[![Build Status](https://github.com/telegramdesktop/tdesktop/workflows/Windows./badge.svg)](https://github.com/telegramdesktop/tdesktop/actions)
-[![Build Status](https://github.com/telegramdesktop/tdesktop/workflows/MacOS./badge.svg)](https://github.com/telegramdesktop/tdesktop/actions)
-[![Build Status](https://github.com/telegramdesktop/tdesktop/workflows/Linux./badge.svg)](https://github.com/telegramdesktop/tdesktop/actions)
-[![Built with Depot](https://img.shields.io/badge/Built%20with-Depot.dev-46A75A)](https://depot.dev)
+> **This project is a fork of [Telegram Desktop](https://github.com/telegramdesktop/tdesktop).**
+> It is licensed under [GPL v3 with the OpenSSL exception](LICENSE), the
+> same terms as the upstream project. We are grateful to the Telegram
+> Desktop Authors for their work — without it this fork would not exist.
+>
+> Ansible Desktop is **not affiliated with, endorsed by, or sponsored by
+> Telegram FZ-LLC**. It connects to Ansible servers, not Telegram
+> servers, and cannot be used to access Telegram accounts.
 
-[![Preview of Telegram Desktop][preview_image]][preview_image_url]
+[![License: GPLv3](https://img.shields.io/badge/License-GPLv3%20%2B%20OpenSSL-blue.svg)](LICENSE)
+[![Upstream](https://img.shields.io/badge/forked%20from-tdesktop%207.2.8-orange.svg)](https://github.com/telegramdesktop/tdesktop)
 
-The source code is published under GPLv3 with OpenSSL exception, the license is available [here][license].
+---
 
-## Supported systems
+## What this is
 
-The latest version is available for
+Ansible Desktop is the desktop client for the Ansible messenger, built on
+the Telegram Desktop codebase under GPL v3. Current version **0.3.0**,
+rebased onto upstream **7.2.8** (API layer 229).
 
-* [Windows 7 and above (64 bit)](https://telegram.org/dl/desktop/win64) ([portable](https://telegram.org/dl/desktop/win64_portable))
-* [Windows 7 and above (32 bit)](https://telegram.org/dl/desktop/win) ([portable](https://telegram.org/dl/desktop/win_portable))
-* [macOS 10.13 and above](https://telegram.org/dl/desktop/mac)
-* [Linux static build for 64 bit](https://telegram.org/dl/desktop/linux)
-* [Snap](https://snapcraft.io/telegram-desktop)
-* [Flatpak](https://flathub.org/apps/details/org.telegram.desktop)
+What differs from upstream:
 
-## Old system versions
+- **Servers.** The DC list, the RSA public key used for the handshake and
+  the `api_id` / `api_hash` pair all point at Ansible infrastructure. The
+  client cannot reach Telegram servers and cannot sign in to a Telegram
+  account.
+- **Branding and naming.** Product name, identifiers, installer ids, file
+  associations and user-visible strings are ours.
+- **Own namespace.** Links are `asme.su`, the deep-link scheme is `as://`,
+  animated stickers are `.ass` (`x-ansible-stikers`). Telegram's `t.me`,
+  `tg://` and `.tgs` are **not** recognised — deliberately, this is not a
+  compatibility layer.
+- **Translation keys are ours.** Key names carry no upstream product
+  words: `telegram` → `ansible`, `stars` → `diamonds`, `credits` →
+  `diamonds`. Translations themselves are served by the Ansible backend,
+  not bundled beyond the built-in English.
+- **Crash reports come to us.** The reporter is kept — it is a useful
+  feature — but it posts to `api.ansible.su/crash` instead of upstream.
 
-Version **4.9.9** was the last that supports older systems
+The upstream changelog is not carried in this repository; our own history
+starts in [`changelog.txt`](changelog.txt).
 
-* [macOS 10.12](https://updates.tdesktop.com/tmac/tsetup.4.9.9.dmg)
-* [Linux with glibc < 2.28 static build](https://updates.tdesktop.com/tlinux/tsetup.4.9.9.tar.xz)
+## Relationship to upstream
 
-Version **2.4.4** was the last that supports older systems
+| | Telegram Desktop | Ansible Desktop |
+|---|---|---|
+| License | GPL v3 + OpenSSL exception | same |
+| Backend | Telegram DCs | Ansible servers |
+| Accounts | Telegram accounts | Ansible accounts (separate system) |
+| Links / scheme | `t.me`, `tg://` | `asme.su`, `as://` |
+| Animated stickers | `.tgs` | `.ass` |
+| Source repository | [telegramdesktop/tdesktop](https://github.com/telegramdesktop/tdesktop) | [ansible-desktop/app-desktop](https://github.com/ansible-desktop/app-desktop) |
+| Versioning | upstream `X.Y.Z` | our `0.Y.Z`, see below |
 
-* [OS X 10.10 and 10.11](https://updates.tdesktop.com/tosx/tsetup-osx.2.4.4.dmg)
-* [Linux static build for 32 bit](https://updates.tdesktop.com/tlinux32/tsetup32.2.4.4.tar.xz)
+Upstream changes are **not** merged automatically. Moving to a newer
+upstream base is a deliberate, separate piece of work.
 
-Version **1.8.15** was the last that supports older systems
+## Versioning
 
-* [Windows XP and Vista](https://updates.tdesktop.com/tsetup/tsetup.1.8.15.exe) ([portable](https://updates.tdesktop.com/tsetup/tportable.1.8.15.zip))
-* [OS X 10.8 and 10.9](https://updates.tdesktop.com/tmac/tsetup.1.8.15.dmg)
-* [OS X 10.6 and 10.7](https://updates.tdesktop.com/tmac32/tsetup32.1.8.15.dmg)
+The displayed version is `0.<minor>.<patch>`. Internally tdesktop also
+keeps an integer `AppVersion`, which selects the on-disk data format and
+drives update comparisons — for a `0.x.y` release it is `3000000` plus
+`minor * 1000` plus `patch`, so 0.3.0 is `3003000`.
 
-## Third-party
+🚨 **Never edit a version by hand.** It lives in five files at once
+(`Telegram/build/version`, `Telegram/SourceFiles/core/version.h`, both
+`Telegram/Resources/winrc/*.rc` and the UWP manifest). Use the script,
+which patches all of them and refuses values that would make the app
+misread its own stored data:
 
-* Qt 6 ([LGPL](http://doc.qt.io/qt-6/lgpl.html)) and Qt 5.15 ([LGPL](http://doc.qt.io/qt-5/lgpl.html)) slightly patched
-* OpenSSL 3.2.1 ([Apache License 2.0](https://openssl-library.org/source/license/apache-license-2.0.txt))
-* WebRTC ([New BSD License](https://github.com/desktop-app/tg_owt/blob/master/LICENSE))
-* zlib ([zlib License](http://www.zlib.net/zlib_license.html))
-* LZMA SDK 9.20 ([public domain](http://www.7-zip.org/sdk.html))
-* liblzma ([public domain](http://tukaani.org/xz/))
-* Google Breakpad ([License](https://chromium.googlesource.com/breakpad/breakpad/+/master/LICENSE))
-* Google Crashpad ([Apache License 2.0](https://chromium.googlesource.com/crashpad/crashpad/+/master/LICENSE))
-* GYP ([BSD License](https://github.com/bnoordhuis/gyp/blob/master/LICENSE))
-* Ninja ([Apache License 2.0](https://github.com/ninja-build/ninja/blob/master/COPYING))
-* OpenAL Soft ([LGPL](https://github.com/kcat/openal-soft/blob/master/COPYING))
-* Opus codec ([BSD License](http://www.opus-codec.org/license/))
-* FFmpeg ([LGPL](https://www.ffmpeg.org/legal.html))
-* Guideline Support Library ([MIT License](https://github.com/Microsoft/GSL/blob/master/LICENSE))
-* Range-v3 ([Boost License](https://github.com/ericniebler/range-v3/blob/master/LICENSE.txt))
-* Open Sans font ([Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html))
-* Vazirmatn font ([SIL Open Font License 1.1](https://github.com/rastikerdar/vazirmatn/blob/master/OFL.txt))
-* Emoji alpha codes ([MIT License](https://github.com/emojione/emojione/blob/master/extras/alpha-codes/LICENSE.md))
-* xxHash ([BSD License](https://github.com/Cyan4973/xxHash/blob/dev/LICENSE))
-* QR Code generator ([MIT License](https://github.com/nayuki/QR-Code-generator#license))
-* CMake ([New BSD License](https://github.com/Kitware/CMake/blob/master/Copyright.txt))
-* Hunspell ([LGPL](https://github.com/hunspell/hunspell/blob/master/COPYING.LESSER))
-* Ada ([Apache License 2.0](https://github.com/ada-url/ada/blob/main/LICENSE-APACHE))
+```
+python Telegram/build/set_version.py 0.3.1
+```
 
-## Build instructions
+## Downloads and updating
 
-* [Windows (32-bit and 64-bit)][win]
-* [macOS][mac]
-* [GNU/Linux using Docker][linux]
+Builds are published as GitHub Actions artifacts on this repository.
+See [`docs/upgrading.md`](docs/upgrading.md) for how to move from an
+earlier build and what is preserved.
 
-[//]: # (LINKS)
-[telegram]: https://telegram.org
-[telegram_desktop]: https://desktop.telegram.org
-[telegram_api]: https://core.telegram.org
-[telegram_proto]: https://core.telegram.org/mtproto
-[license]: LICENSE
-[win]: docs/building-win.md
-[mac]: docs/building-mac.md
-[linux]: docs/building-linux.md
-[preview_image]: https://github.com/telegramdesktop/tdesktop/blob/dev/docs/assets/preview.png "Preview of Telegram Desktop"
-[preview_image_url]: https://raw.githubusercontent.com/telegramdesktop/tdesktop/dev/docs/assets/preview.png
+🚨 **In-app auto-update does not work yet.** The client checks
+`https://ansible.su/td/current2`, and nothing is published there at the
+moment — the request 404s and the app stays on its current version
+without telling you. Update by downloading a new build.
 
-## Thanks to
+## Building from source
 
-<a href="https://depot.dev">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://depot.dev/assets/brand/1693758816/depot-logo-horizontal-on-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://depot.dev/assets/brand/1693758816/depot-logo-horizontal-on-light.svg">
-    <img alt="Depot" src="https://depot.dev/assets/brand/1693758816/depot-logo-horizontal-on-light.svg" width="150">
-  </picture>
-</a>
+Build instructions are inherited from upstream and kept current:
 
-CI infrastructure sponsored by [Depot](https://depot.dev) — fast GitHub Actions runners.
+- [Windows](docs/building-win.md)
+- [macOS](docs/building-mac.md)
+- [Linux](docs/building-linux.md)
+- [API credentials](docs/api_credentials.md)
 
+## Branches and CI
+
+| branch | what runs on push |
+|---|---|
+| `master` | the full matrix — Windows, Linux, macOS, macOS Packaged, Snap |
+| `dev` | one fast Windows x64 build (`sccache`, minutes on a warm cache) |
+
+Day-to-day work happens on `dev`; `master` receives it by pull request.
+The workflow files are identical on both branches — each build is bound
+to its branch by an explicit `branches:` list, so nothing diverges on
+merge and a new branch never raises the four-platform matrix by accident.
+
+## License
+
+Ansible Desktop is free software: you can redistribute it and/or modify
+it under the terms of the **GNU General Public License v3** with the
+OpenSSL linking exception, as published by the Free Software Foundation.
+
+- Full license text: [LICENSE](LICENSE)
+- Attribution and copyright notice: [LEGAL](LEGAL)
+
+By contributing to this repository, you agree that your contributions
+will be licensed under the same terms.
+
+## Trademarks
+
+"Telegram" is a trademark of Telegram FZ-LLC. It is used in this README,
+in `LEGAL` and in source file headers solely to identify the upstream
+project from which this fork is derived, as required by the GPL. It is
+**not** used as a trademark of this product.
+
+"Ansible" is a trademark of the Ansible Desktop Authors.
+
+## Contact
+
+- General: <https://ansible.su>
+- Source code questions: open an issue on this repository
+- License compliance: <legal@ansible.su>

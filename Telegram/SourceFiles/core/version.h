@@ -28,11 +28,17 @@ constexpr auto AppFile = "Ansible"_cs;
 // и inlinePlaceholder), а writePeer() всегда пишет современный формат —
 // свой аккаунт после перезапуска показывается ботом.
 //
-// Отображаемая версия — AppVersionStr, она отвязана. Схема:
-//   "0.<minor>.<patch>"  <->  AppVersion = 3000000 + minor*1000 + patch
-// Поднимать ОБА при каждом релизе и синхронизировать с манифестом
-// bh-updates, Telegram.rc и AppxManifest.xml.
-constexpr auto AppVersion = 3002000;
-constexpr auto AppVersionStr = "0.2.0";
+// Отображаемая версия — AppVersionStr, она отвязана. Схема: строке
+// "0.<minor>.<patch>" отвечает целое 3000000 плюс minor*1000 плюс patch.
+//
+// 🚨 РУКАМИ ЗДЕСЬ НИЧЕГО НЕ ПРАВИТЬ. Версию ставит Telegram/build/set_version.py:
+// он патчит СРАЗУ пять файлов — этот, build/version, оба winrc/*.rc и
+// AppxManifest.xml, — и только так они не разъезжаются.
+//
+// 🚨 И ФОРМУЛУ ВЫШЕ НЕ ЗАПИСЫВАТЬ ВИДОМ «AppVersion = <число>»: патчер ищет
+// такую запись регуляркой построчно и переписал бы ЧИСЛО В КОММЕНТАРИИ,
+// молча превратив документацию в ложь. Один раз уже переписал.
+constexpr auto AppVersion = 3003000;
+constexpr auto AppVersionStr = "0.3.0";
 constexpr auto AppBetaVersion = false;
 constexpr auto AppAlphaVersion = TDESKTOP_ALPHA_VERSION;

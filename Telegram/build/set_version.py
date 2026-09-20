@@ -57,12 +57,35 @@ checkVersionPart(versionPatch)
 checkVersionPart(versionAlpha)
 
 versionFull = str(int(versionMajor) * 1000000 + int(versionMinor) * 1000 + int(versionPatch))
+
+# 🚨 СХЕМА ВЕРСИЙ ФОРКА. AppVersion — не отображаемая версия, а ВНУТРЕННЕЕ
+# целое tdesktop: по нему выбирается формат данных на диске и сравниваются
+# версии при обновлении. Апстримовская формула для наших "0.x.y" даёт
+# четырёхзначное число, а всё, что ниже 2008007, уводит readPeer() в
+# legacy-ветку (без flags и inlinePlaceholder), тогда как writePeer() всегда
+# пишет современный формат — свой аккаунт после перезапуска показывается
+# ботом. Этот баг уже чинили; тут он воскресал бы МОЛЧА, одним запуском
+# скрипта. Поэтому у мажора 0 счёт идёт от 3000000, как описано в
+# core/SourceFiles/core/version.h, а ниже стоит жёсткий порог.
+APPVERSION_FLOOR = 2008007
+if int(versionMajor) == 0:
+  versionFull = str(3000000 + int(versionMinor) * 1000 + int(versionPatch))
+if int(versionFull) < APPVERSION_FLOOR:
+  print('[ERROR] AppVersion ' + versionFull + ' < ' + str(APPVERSION_FLOOR)
+        + ': такая сборка прочитает свои же данные как устаревшие.')
+  finish(1)
+
 versionFullAlpha = '0'
 if versionAlpha != '0':
   versionFullAlpha = str(int(versionFull) * 1000 + int(versionAlpha))
 
 versionStr = versionMajor + '.' + versionMinor + '.' + versionPatch
 versionStrSmall = versionStr if versionPatch != '0' else versionMajor + '.' + versionMinor
+if int(versionMajor) == 0:
+  # У апстрима "7.2.0" сокращается до "7.2". Нам сокращать нечего: схема
+  # объявлена как "0.<minor>.<patch>", и "0.3" вместо "0.3.0" разошлось бы
+  # с тем, что показывает приложение и что стоит в манифесте обновлений.
+  versionStrSmall = versionStr
 
 if versionBeta:
   print('Setting version: ' + versionStr + ' beta')
@@ -94,7 +117,12 @@ def replaceInFile(path, replacements):
   content = ''
   foundReplacements = {}
   updated = False
-  with open(path, 'r') as f:
+  # 🚨 Кодировку задавать ЯВНО. Без неё open() берёт локаль системы, а на
+  # русской Windows это cp1251, где байт 0x98 (вторая половина буквы «И»)
+  # не определён. Падает при этом не версия, а чтение КОММЕНТАРИЯ в
+  # version.h — то есть скрипт ломается от правки документации рядом.
+  # Все пять патчимых файлов — UTF-8 без BOM, проверено.
+  with io.open(path, 'r', encoding='utf-8', newline='') as f:
     for line in f:
       for replacement in replacements:
         if re.search(replacement[0], line):
@@ -109,7 +137,7 @@ def replaceInFile(path, replacements):
       print('Could not find "' + replacement[0] + '" in "' + path + '".')
       finish(1)
   if updated:
-    with open(path, 'w') as f:
+    with io.open(path, 'w', encoding='utf-8', newline='') as f:
       f.write(content)
 
 print('Patching build/version...')

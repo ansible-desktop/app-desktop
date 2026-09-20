@@ -13,7 +13,7 @@
   <Identity Name="Ansible.Desktop"
     ProcessorArchitecture="ARCHITECTURE"
     Publisher="CN=D91460C6-1A45-4BA7-9C3B-77CAC5B9DFBB"
-    Version="0.2.0.0" />
+    Version="0.3.0.0" />
   <Properties>
     <DisplayName>Ansible Desktop</DisplayName>
     <PublisherDisplayName>Ansible</PublisherDisplayName>
