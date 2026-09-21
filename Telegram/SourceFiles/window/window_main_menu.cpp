@@ -384,7 +384,7 @@ MainMenu::MainMenu(
 	parentResized();
 
 	_telegram->setMarkedText(tr::link(
-		u"Telegram Desktop"_q,
+		u"Ansible Desktop"_q,
 		u"https://ansible.su"_q));
 	_telegram->setLinksTrusted();
 	// The canary version is too long for the "Version {version}" form.

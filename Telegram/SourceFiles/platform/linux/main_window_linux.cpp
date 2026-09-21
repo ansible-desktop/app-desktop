@@ -221,7 +221,7 @@ void MainWindow::createGlobalMenu() {
 		});
 
 	auto quit = file->addAction(
-		tr::lng_mac_menu_quit_ansible(tr::now, lt_telegram, u"Telegram"_q),
+		tr::lng_mac_menu_quit_ansible(tr::now, lt_telegram, u"Ansible"_q),
 		this,
 		[=] { quitFromTray(); },
 		QKeySequence::Quit);
@@ -420,7 +420,7 @@ void MainWindow::createGlobalMenu() {
 		tr::lng_mac_menu_about_ansible(
 			tr::now,
 			lt_telegram,
-			u"Telegram"_q),
+			u"Ansible"_q),
 		[=] {
 			ensureWindowShown();
 			controller().show(Box(AboutBox));
