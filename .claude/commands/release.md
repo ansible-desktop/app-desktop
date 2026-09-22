@@ -82,7 +82,7 @@ After writing the entry to `changelog.txt` (step 7), tell the user the changelog
 Once approved, run the `set_version` script from the repository root. On Windows:
 
 ```
-.\Telegram\build\set_version.bat <version_arg>
+.\Ansible\build\set_version.bat <version_arg>
 ```
 
 Where `<version_arg>` is formatted as the `set_version` script expects:
