@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mechanical pass over Breakpad stackwalk logs in ~/Telegram/Crashes/all.
+"""Mechanical pass over Breakpad stackwalk logs in ~/Ansible/Crashes/all.
 
 Splits the corpus into (a) reports worth a human/agent look and (b) reports
 that can be dropped without reading them, then clusters (a) by crashed-thread
@@ -85,7 +85,7 @@ def resolve_target(repo, wanted):
     tag, parts = tags[0]
     # Prefer the tagged build/version file over recomputing the encoding.
     base = None
-    blob = git(repo, "show", "%s:Telegram/build/version" % tag)
+    blob = git(repo, "show", "%s:Ansible/build/version" % tag)
     for line in blob.splitlines():
         f = line.split()
         if len(f) == 2 and f[0] == "AppVersion" and f[1].isdigit():
@@ -511,7 +511,7 @@ def cmd_claim(args):
 # ledger: what earlier runs already decided
 # --------------------------------------------------------------------------
 
-DEFAULT_LEDGER = "~/Telegram/Crashes/triage-ledger.json"
+DEFAULT_LEDGER = "~/Ansible/Crashes/triage-ledger.json"
 
 
 def stable_key(raw_key):
@@ -625,8 +625,8 @@ class RepoIndex(object):
             return None, False
         # Prefer app sources over third-party copies of the same file name.
         paths = sorted(paths, key=lambda p: (
-            0 if p.startswith("Telegram/SourceFiles/") else
-            1 if p.startswith("Telegram/lib_") else 2, len(p)))
+            0 if p.startswith("Ansible/SourceFiles/") else
+            1 if p.startswith("Ansible/lib_") else 2, len(p)))
         path = paths[0] if len(paths) == 1 else "|".join(paths[:3])
         touched = any(p in self.changed for p in paths)
         return path, touched
@@ -963,7 +963,7 @@ def main():
     sub = p.add_subparsers(dest="cmd")
 
     s = sub.add_parser("scan", help="classify and cluster the run folder")
-    s.add_argument("--crashes", default="~/Telegram/Crashes/all")
+    s.add_argument("--crashes", default="~/Ansible/Crashes/all")
     s.add_argument("--repo", default=".")
     s.add_argument("--version", default=None,
                    help="7.1.2 / 7001002; default = newest v*.*.* tag")
@@ -971,7 +971,7 @@ def main():
     s.add_argument("--claim", action="store_true",
                    help="first rotate all/ into a fresh backup run folder and "
                         "scan that, so the next run only sees new reports")
-    s.add_argument("--backups", default="~/Telegram/Crashes/backup")
+    s.add_argument("--backups", default="~/Ansible/Crashes/backup")
     s.add_argument("--against", default="HEAD",
                    help="branch fixes land on; used to flag files that already "
                         "moved since the tag (default HEAD)")
@@ -993,8 +993,8 @@ def main():
     s.set_defaults(func=cmd_record)
 
     s = sub.add_parser("claim", help="rotate all/ into a fresh run folder")
-    s.add_argument("--crashes", default="~/Telegram/Crashes/all")
-    s.add_argument("--backups", default="~/Telegram/Crashes/backup")
+    s.add_argument("--crashes", default="~/Ansible/Crashes/all")
+    s.add_argument("--backups", default="~/Ansible/Crashes/backup")
     s.add_argument("--new", action="store_true",
                    help="always start a new run folder, even if nothing is new")
     s.set_defaults(func=cmd_claim)

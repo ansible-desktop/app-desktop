@@ -2,12 +2,12 @@
 Debug/
 Release/
 /ThirdParty/
-/Telegram/build/target
-/Telegram/build/ai-machine-tag
-/Telegram/tests/
-/Telegram/gyp/tests/*.test
-/Telegram/out/
-/Telegram/*.user
+/Ansible/build/target
+/Ansible/build/ai-machine-tag
+/Ansible/tests/
+/Ansible/gyp/tests/*.test
+/Ansible/out/
+/Ansible/*.user
 *.vcxproj*
 *.sln
 *.suo
@@ -23,12 +23,12 @@ ipch/
 .cache/
 compile_commands.json
 
-/Telegram/log.txt
-/Telegram/data
-/Telegram/data_config
-/Telegram/DebugLogs/
-/Telegram/tdata/
-/Telegram/tdumps/
+/Ansible/log.txt
+/Ansible/data
+/Ansible/data_config
+/Ansible/DebugLogs/
+/Ansible/tdata/
+/Ansible/tdumps/
 
 .DS_Store
 ._*
@@ -48,11 +48,11 @@ stage
 __pycache__/
 *.pyc
 
-/Telegram/*.user.*
+/Ansible/*.user.*
 *.txt.user
 *.pro.user
 /Linux/
-/Telegram/Makefile
+/Ansible/Makefile
 *.*~
 .idea/
 cmake-build-debug/

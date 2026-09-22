@@ -23,7 +23,7 @@ python3 .agents/skills/process-inbox/scripts/workspace.py prepare
 
 Use `python` or `py -3` when that is the host's Python 3 command. The helper:
 
-- reads `Telegram/build/ai-machine-tag`;
+- reads `Ansible/build/ai-machine-tag`;
 - combines it with the checkout folder, for example `macbook-twork`;
 - locates the sibling `ai-tdesktop` and `ai-tdesktop-worktrees` directories,
   with `AI_TDESKTOP_ROOT` and `AI_TDESKTOP_WORKTREES_ROOT` as overrides;
@@ -222,7 +222,7 @@ Never write an acceptance criterion that can only be satisfied by adding
 debug machinery to production code — `#ifdef _DEBUG` blocks, debug-only
 types, observation structs, counters, or hooks in product translation units.
 Observability belongs to the disposable overlay and the permanent
-`Telegram/SourceFiles/test/` helpers (see "Debug-Only Code" in the source
+`Ansible/SourceFiles/test/` helpers (see "Debug-Only Code" in the source
 checkout's `AGENTS.md`). A request whose proof seems to demand production
 instrumentation is misdesigned: route the product behavior, and let the
 performer's harness own how it is observed.

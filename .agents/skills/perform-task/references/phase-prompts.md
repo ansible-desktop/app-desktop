@@ -958,7 +958,7 @@ leaf and must not delegate.
 Read the task, final diff, plan.md, test-design.md, test.md, every prior recovery
 plan, the raw evidence for the latest run, and the universal evidence-loop
 directness rules. When an app overlay is involved, also read its saved inventory
-and Telegram/SourceFiles/test/README.md.
+and Ansible/SourceFiles/test/README.md.
 
 The latest failure signature is:
 <FAILURE_SIGNATURE>

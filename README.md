@@ -68,13 +68,13 @@ drives update comparisons — for a `0.x.y` release it is `3000000` plus
 `minor * 1000` plus `patch`, so 0.3.0 is `3003000`.
 
 🚨 **Never edit a version by hand.** It lives in five files at once
-(`Telegram/build/version`, `Telegram/SourceFiles/core/version.h`, both
-`Telegram/Resources/winrc/*.rc` and the UWP manifest). Use the script,
+(`Ansible/build/version`, `Ansible/SourceFiles/core/version.h`, both
+`Ansible/Resources/winrc/*.rc` and the UWP manifest). Use the script,
 which patches all of them and refuses values that would make the app
 misread its own stored data:
 
 ```
-python Telegram/build/set_version.py 0.3.1
+python Ansible/build/set_version.py 0.3.1
 ```
 
 ## Downloads and updating

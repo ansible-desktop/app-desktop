@@ -240,7 +240,7 @@ class WorkspaceTest(unittest.TestCase):
 			source = root / "twork"
 			source.mkdir()
 			git(source, "init", "--initial-branch=master")
-			build = source / "Telegram" / "build"
+			build = source / "Ansible" / "build"
 			build.mkdir(parents=True)
 			(build / "ai-machine-tag").write_text("macbook\n", encoding="utf-8")
 			main = root / "ai-main"
@@ -1605,7 +1605,7 @@ def plant_leftover_crash_state(live):
 def source_repo_with_task(root, kind="implement"):
 	source = root / "source"
 	git_repo(source)
-	(source / "Telegram" / "build").mkdir(parents=True)
+	(source / "Ansible" / "build").mkdir(parents=True)
 	tracked = source / "tracked.txt"
 	tracked.write_text("base\n", encoding="utf-8")
 	git(source, "add", "tracked.txt")
@@ -1660,7 +1660,7 @@ def run_test_run(exe, run_dir, **overrides):
 class MechanicsTest(unittest.TestCase):
 	def test_build_lock_recovery_selects_only_exact_owned_processes(self):
 		build = Path(
-			"C:/Telegram/twin/out" if os.name == "nt" else "/Telegram/twin/out"
+			"C:/Ansible/twin/out" if os.name == "nt" else "/Ansible/twin/out"
 		)
 		exe = build / "Debug/Telegram.exe"
 		records = [
@@ -1811,7 +1811,7 @@ class MechanicsTest(unittest.TestCase):
 			)
 			exe = debug / "Telegram.exe"
 			exe.write_bytes(b"exe")
-			outside = source / "Telegram" / "outside.obj"
+			outside = source / "Ansible" / "outside.obj"
 			outside.write_bytes(b"obj")
 			with self.assertRaisesRegex(
 				workspace.WorkspaceError,
@@ -1883,7 +1883,7 @@ class MechanicsTest(unittest.TestCase):
 		with tempfile.TemporaryDirectory() as temporary:
 			root = Path(temporary)
 			debug = make_portable_root(root)
-			exe = write_complete_markers_exe(debug / "Telegram")
+			exe = write_complete_markers_exe(debug / "Ansible")
 			result = run_test_run(exe, root / "run1", env=["EXTRA_FLAG=1"])
 			self.assertEqual(result["outcome"], "exited")
 			self.assertEqual(result["verdict_hint"], "complete")
@@ -1934,7 +1934,7 @@ class MechanicsTest(unittest.TestCase):
 		with tempfile.TemporaryDirectory() as temporary:
 			root = Path(temporary)
 			debug = make_portable_root(root)
-			exe = write_fake_exe(debug / "Telegram", (
+			exe = write_fake_exe(debug / "Ansible", (
 				'LOG="$TDESKTOP_TEST_EVIDENCE_DIR/test_log.txt"\n'
 				'echo "TEST_RESULT: PASS: row painted" >> "$LOG"\n'
 				'echo "TEST_COMPLETE" >> "$LOG"\n'
@@ -1964,7 +1964,7 @@ class MechanicsTest(unittest.TestCase):
 				/ workspace.CRASHPAD_COMPLETED_DIR / "both.dmp"
 			)
 			exe = write_dump_after_complete_exe(
-				debug / "Telegram", fresh, "exit 11\n", "exit /b 11\n",
+				debug / "Ansible", fresh, "exit 11\n", "exit /b 11\n",
 			)
 			result = run_test_run(exe, root / "run1")
 			self.assertEqual(result["verdict_hint"], "died-after-complete")
@@ -1984,7 +1984,7 @@ class MechanicsTest(unittest.TestCase):
 				/ workspace.CRASHPAD_COMPLETED_DIR / "fresh.dmp"
 			)
 			exe = write_dump_after_complete_exe(
-				debug / "Telegram", fresh, "exit 0\n", "exit /b 0\n",
+				debug / "Ansible", fresh, "exit 0\n", "exit /b 0\n",
 			)
 			result = run_test_run(exe, root / "run1")
 			self.assertEqual(result["outcome"], "exited")
@@ -2004,7 +2004,7 @@ class MechanicsTest(unittest.TestCase):
 				/ "breakpad.dmp"
 			)
 			exe = write_dump_after_complete_exe(
-				debug / "Telegram", fresh, "exit 0\n", "exit /b 0\n",
+				debug / "Ansible", fresh, "exit 0\n", "exit /b 0\n",
 			)
 			result = run_test_run(exe, root / "run1")
 			self.assertEqual(result["outcome"], "exited")
@@ -2027,7 +2027,7 @@ class MechanicsTest(unittest.TestCase):
 			completed.mkdir(parents=True)
 			old = completed / "old.dmp"
 			old.write_bytes(b"MDMP old minidump\n")
-			exe = write_complete_markers_exe(debug / "Telegram")
+			exe = write_complete_markers_exe(debug / "Ansible")
 			run_dir = root / "run1"
 			result = run_test_run(exe, run_dir)
 			self.assertEqual(result["account"], "reused-marked-live")
@@ -2045,7 +2045,7 @@ class MechanicsTest(unittest.TestCase):
 			debug = make_portable_root(root)
 			live_tdata = debug / workspace.PORTABLE_LIVE / "tdata"
 			live_working = live_tdata / "working"
-			exe = write_fake_exe(debug / "Telegram", (
+			exe = write_fake_exe(debug / "Ansible", (
 				'LOG="$TDESKTOP_TEST_EVIDENCE_DIR/test_log.txt"\n'
 				'echo "TEST_STEP: about to crash" >> "$LOG"\n'
 				f'mkdir -p "{live_tdata}"\n'
@@ -2074,7 +2074,7 @@ class MechanicsTest(unittest.TestCase):
 			report, dump = plant_leftover_crash_state(live)
 			report_payload = report.read_bytes()
 			dump_payload = dump.read_bytes()
-			exe = write_fake_exe(debug / "Telegram", (
+			exe = write_fake_exe(debug / "Ansible", (
 				f'echo "Assertion: fresh boom" > "{report}"\n'
 				"exit 0\n"
 			), (
@@ -2121,7 +2121,7 @@ class MechanicsTest(unittest.TestCase):
 			root = Path(temporary)
 			debug = make_portable_root(root)
 			exe = write_fake_exe(
-				debug / "Telegram", "sleep 30\n", ":loop\ngoto loop\n",
+				debug / "Ansible", "sleep 30\n", ":loop\ngoto loop\n",
 			)
 			result = run_test_run(
 				exe, root / "run1", deadline=2.0, quiet=30.0,
@@ -2134,7 +2134,7 @@ class MechanicsTest(unittest.TestCase):
 		with tempfile.TemporaryDirectory() as temporary:
 			root = Path(temporary)
 			debug = make_portable_root(root)
-			exe = write_fake_exe(debug / "Telegram", (
+			exe = write_fake_exe(debug / "Ansible", (
 				'LOG="$TDESKTOP_TEST_EVIDENCE_DIR/test_log.txt"\n'
 				'echo "TEST_COMPLETE" >> "$LOG"\n'
 				"sleep 30\n"
@@ -2158,7 +2158,7 @@ class MechanicsTest(unittest.TestCase):
 				"NOTE: mtp: rpc retry code=500 type=TEST_COMPLETE"
 				" request=0x0000002d"
 			)
-			exe = write_fake_exe(debug / "Telegram", (
+			exe = write_fake_exe(debug / "Ansible", (
 				'LOG="$TDESKTOP_TEST_EVIDENCE_DIR/test_log.txt"\n'
 				f'echo "{line}" >> "$LOG"\n'
 				"sleep 30\n"
@@ -2191,7 +2191,7 @@ class MechanicsTest(unittest.TestCase):
 				/ workspace.CRASHPAD_COMPLETED_DIR / "grace.dmp"
 			)
 			exe = write_dump_after_complete_exe(
-				debug / "Telegram", dump, "sleep 30\n", ":loop\ngoto loop\n",
+				debug / "Ansible", dump, "sleep 30\n", ":loop\ngoto loop\n",
 			)
 			result = run_test_run(exe, root / "run1", grace=1.0)
 			self.assertEqual(result["outcome"], "killed-after-complete")
@@ -2215,7 +2215,7 @@ class MechanicsTest(unittest.TestCase):
 			report, dump = plant_leftover_crash_state(live)
 			report_payload = report.read_bytes()
 			dump_payload = dump.read_bytes()
-			exe = write_complete_markers_exe(debug / "Telegram")
+			exe = write_complete_markers_exe(debug / "Ansible")
 			run_dir = root / "run1"
 			result = run_test_run(exe, run_dir)
 			stale = run_dir / workspace.STALE_CRASH_DIR
@@ -2265,7 +2265,7 @@ class MechanicsTest(unittest.TestCase):
 			root = Path(temporary)
 			debug = make_portable_root(root)
 			self.assertEqual(workspace.setup_test_account(debug), "fresh-copy")
-			exe = write_complete_markers_exe(debug / "Telegram")
+			exe = write_complete_markers_exe(debug / "Ansible")
 			run_dir = root / "run1"
 			result = run_test_run(exe, run_dir)
 			self.assertEqual(result["account"], "reused-marked-live")
@@ -2287,7 +2287,7 @@ class MechanicsTest(unittest.TestCase):
 			(live / "tdata" / "working").write_bytes(b"user crash\n")
 			(live / "tdata" / "dumps" / "user.dmp").write_bytes(b"user dump\n")
 			(live / "tdata" / "user_file").write_text("mine\n", encoding="utf-8")
-			exe = write_complete_markers_exe(debug / "Telegram")
+			exe = write_complete_markers_exe(debug / "Ansible")
 			run_dir = root / "run1"
 			result = run_test_run(exe, run_dir)
 			real = debug / workspace.PORTABLE_REAL
@@ -2330,7 +2330,7 @@ class MechanicsTest(unittest.TestCase):
 			dump.write_bytes(b"MDMP old minidump\n")
 			for path in (report, dump):
 				os.utime(path, (1600000000, 1600000000))
-			exe = write_complete_markers_exe(debug / "Telegram")
+			exe = write_complete_markers_exe(debug / "Ansible")
 			result = run_test_run(exe, root / "run1")
 			live = debug / workspace.PORTABLE_LIVE
 			working = live / "tdata" / "working"
@@ -2353,7 +2353,7 @@ class MechanicsTest(unittest.TestCase):
 			live = debug / workspace.PORTABLE_LIVE
 			report, dump = plant_leftover_crash_state(live)
 			report_payload = report.read_bytes()
-			exe = write_complete_markers_exe(debug / "Telegram")
+			exe = write_complete_markers_exe(debug / "Ansible")
 			run_dir = root / "run1"
 			with mock.patch.object(
 				workspace.shutil, "move", side_effect=OSError("locked"),
@@ -2372,7 +2372,7 @@ class MechanicsTest(unittest.TestCase):
 			live = debug / workspace.PORTABLE_LIVE
 			report, dump = plant_leftover_crash_state(live)
 			dump_payload = dump.read_bytes()
-			exe = write_complete_markers_exe(debug / "Telegram")
+			exe = write_complete_markers_exe(debug / "Ansible")
 			run_dir = root / "run1"
 			real_move = workspace.shutil.move
 
@@ -2417,7 +2417,7 @@ class MechanicsTest(unittest.TestCase):
 			live = debug / workspace.PORTABLE_LIVE
 			report, dump = plant_leftover_crash_state(live)
 			report_payload = report.read_bytes()
-			exe = write_complete_markers_exe(debug / "Telegram")
+			exe = write_complete_markers_exe(debug / "Ansible")
 			run_dir = root / "run1"
 
 			def write_then_fail(source, target):
@@ -2440,7 +2440,7 @@ class MechanicsTest(unittest.TestCase):
 			root = Path(temporary)
 			binary = (
 				root / "out" / "Debug" / "Telegram.app"
-				/ "Contents" / "MacOS" / "Telegram"
+				/ "Contents" / "MacOS" / "Ansible"
 			)
 			binary.parent.mkdir(parents=True)
 			binary.write_text("", encoding="utf-8")
@@ -2949,7 +2949,7 @@ class MechanicsTest(unittest.TestCase):
 			(source / "tracked.txt").write_text("dirty\n", encoding="utf-8")
 			(source / "unrelated.txt").write_text("stray\n", encoding="utf-8")
 			debug = make_portable_root(root)
-			exe = write_fake_exe(debug / "Telegram", "exit 0\n", "exit /b 0\n")
+			exe = write_fake_exe(debug / "Ansible", "exit 0\n", "exit /b 0\n")
 			with mock.patch.object(
 				workspace, "task_action_config", return_value=(config, slot),
 			):
@@ -3062,7 +3062,7 @@ Checkout: source-state-retained
 			slot = Path(config["slot_worktree"])
 			source = root / "source"
 			git_repo(source)
-			(source / "Telegram" / "build").mkdir(parents=True)
+			(source / "Ansible" / "build").mkdir(parents=True)
 			(source / "tracked.txt").write_text("base\n", encoding="utf-8")
 			git(source, "add", "-A")
 			git(source, "commit", "-m", "Create baseline")

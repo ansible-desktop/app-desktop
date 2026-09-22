@@ -378,10 +378,10 @@ How TEST verifies it (numbers over eyes):
 ## Telegram overlay mechanics
 
 The repository carries a permanent test harness under
-`Telegram/SourceFiles/test/` — always compiled, runtime-gated on `-testagent`
+`Ansible/SourceFiles/test/` — always compiled, runtime-gated on `-testagent`
 (`Test::Active()`), with all of its `#ifdef`s inside the harness itself:
 
-**Read `Telegram/SourceFiles/test/README.md` completely before designing,
+**Read `Ansible/SourceFiles/test/README.md` completely before designing,
 authoring, or recovering an overlay.** It is the decision guide for stage
 semantics, exact-object publication, input targeting, capture selection, the
 specialized helpers, and first-run diagnostics. Then read the headers for the
@@ -569,7 +569,7 @@ bypass it with hand-built relative paths.
 ### Git mechanics for the overlay (no stash)
 
 - The inventory in `<WORK_DIR>/test-overlay.paths` normally starts with
-  `Telegram/SourceFiles/test/test_scenario.cpp` and then lists every in-situ injection or
+  `Ansible/SourceFiles/test/test_scenario.cpp` and then lists every in-situ injection or
   `Test::Fire` path. It may name any tracked file in the source checkout or an initialized
   submodule; no unrelated or untracked path may be used. After building, save the overlay with the
   workspace helper's `overlay-save` command: it verifies every dirty path against the inventory,

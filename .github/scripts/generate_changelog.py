@@ -315,7 +315,7 @@ def main():
     out.write_text(html_content, encoding="utf-8")
 
     # Copy favicon files from resources
-    icons_src = repo / "Telegram" / "Resources" / "art"
+    icons_src = repo / "Ansible" / "Resources" / "art"
     for name in ("icon16.png", "icon32.png"):
         icon = icons_src / name
         if icon.exists():

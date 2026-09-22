@@ -226,7 +226,7 @@ jobs:
           while IFS=' ' read -r name value; do
             [ "$name" = "AppVersion" ] && BASE="$value"
             [ "$name" = "AppVersionStr" ] && VERSION_STR="$value"
-          done < Telegram/build/version
+          done < Ansible/build/version
           # File names always carry all three components (7.0.0, never
           # 7.0): that is AppVersionStr, while AppVersionStrSmall drops a
           # zero patch.
@@ -328,7 +328,7 @@ jobs:
       signed: ${{ steps.sign.outputs.signed }}
 
     env:
-      PREPARE_PATH: "Telegram/build/prepare/prepare.py"
+      PREPARE_PATH: "Ansible/build/prepare/prepare.py"
 
     defaults:
       run:
@@ -680,16 +680,16 @@ jobs:
             -version $BASE \
             -channel canary-${{ needs.version.outputs.channel }} \
             -counter $CANARY_COUNTER \
-            -keys-loc ../../Telegram/Resources/update \
+            -keys-loc ../../Ansible/Resources/update \
             -emit-signing-input signing-input.bin
           if [ "${{ needs.version.outputs.publish }}" = "true" ]; then
-            python3 ../../Telegram/build/sign_update.py \
+            python3 ../../Ansible/build/sign_update.py \
               --input signing-input.bin \
               --output canary.sig \
               --az-vault "${{ secrets.AZURE_KEYVAULT_NAME }}" \
               --az-key "$CANARY_AZ_KEY"
             ./Packer.exe -channel canary-${{ needs.version.outputs.channel }} \
-              -keys-loc ../../Telegram/Resources/update \
+              -keys-loc ../../Ansible/Resources/update \
               -unsigned td-update-win-x64-$BASE$CANARY_SUFFIX.unsigned \
               -embed-signatures $CANARY_KEY_ID:canary.sig
             rm td-update-win-x64-$BASE$CANARY_SUFFIX.unsigned signing-input.bin canary.sig
@@ -750,7 +750,7 @@ jobs:
         arch: [x86_64, arm64]
 
     env:
-      PREPARE_PATH: "Telegram/build/prepare/prepare.py"
+      PREPARE_PATH: "Ansible/build/prepare/prepare.py"
 
     steps:
       - name: Get repository name.
@@ -805,7 +805,7 @@ jobs:
 
       - name: Libraries.
         run: |
-          ./$REPO_NAME/Telegram/build/prepare/mac.sh silent
+          ./$REPO_NAME/Ansible/build/prepare/mac.sh silent
 
       - name: Generate a stub DesktopPrivate.
         run: |
@@ -1038,7 +1038,7 @@ jobs:
           for BUNDLE in Telegram.x86_64.app Telegram.arm64.app Telegram.app; do
             codesign --force --deep --timestamp --options runtime \
               --sign "$SIGN_IDENTITY" \
-              --entitlements ../../Telegram/Telegram/Telegram.entitlements \
+              --entitlements ../../Ansible/Ansible/Ansible.entitlements \
               "$BUNDLE"
             codesign --verify --deep --strict "$BUNDLE"
             ditto -c -k --keepParent "$BUNDLE" notarize.zip
@@ -1081,16 +1081,16 @@ jobs:
               -version $BASE \
               -channel canary-${{ needs.version.outputs.channel }} \
               -counter $CANARY_COUNTER \
-              -keys-loc ../../../Telegram/Resources/update \
+              -keys-loc ../../../Ansible/Resources/update \
               -emit-signing-input signing-input.bin
             if [ "${{ needs.version.outputs.publish }}" = "true" ]; then
-              python3 ../../../Telegram/build/sign_update.py \
+              python3 ../../../Ansible/build/sign_update.py \
                 --input signing-input.bin \
                 --output canary.sig \
                 --az-vault "${{ secrets.AZURE_KEYVAULT_NAME }}" \
                 --az-key "$CANARY_AZ_KEY"
               ./Packer -channel canary-${{ needs.version.outputs.channel }} \
-                -keys-loc ../../../Telegram/Resources/update \
+                -keys-loc ../../../Ansible/Resources/update \
                 -unsigned td-update-mac-$SHORT-$BASE$CANARY_SUFFIX.unsigned \
                 -embed-signatures $CANARY_KEY_ID:canary.sig
               rm td-update-mac-$SHORT-$BASE$CANARY_SUFFIX.unsigned signing-input.bin canary.sig
@@ -1197,7 +1197,7 @@ jobs:
           # from an unpinned URL runs in a job that later signs.
           sudo apt update
           sudo apt install -y python3-jinja2
-          cd Telegram/build/docker/centos_env
+          cd Ansible/build/docker/centos_env
           DOCKERFILE=$(DEBUG= python3 gen_dockerfile.py)
           echo "$DOCKERFILE" > Dockerfile
           rm -rf __pycache__
@@ -1225,7 +1225,7 @@ jobs:
           path: |
             ${{ runner.temp }}/.buildx-cache
             ${{ runner.temp }}/.mount-cache
-          key: ${{ runner.OS }}-libsrel-${{ hashFiles('Telegram/build/docker/centos_env/**') }}
+          key: ${{ runner.OS }}-libsrel-${{ hashFiles('Ansible/build/docker/centos_env/**') }}
           restore-keys: ${{ runner.OS }}-libsrel-
 
       - name: Restore Docker cache mounts.
@@ -1233,7 +1233,7 @@ jobs:
         with:
           builder: ${{ steps.setup-buildx.outputs.name }}
           cache-dir: ${{ runner.temp }}/.mount-cache
-          dockerfile: Telegram/build/docker/centos_env/Dockerfile
+          dockerfile: Ansible/build/docker/centos_env/Dockerfile
           skip-extraction: ${{ steps.cache-libs.outputs.cache-hit }}
 
       - name: Libraries.
@@ -1243,7 +1243,7 @@ jobs:
           # artifact and breaks a download-all of the run's artifacts.
           DOCKER_BUILD_RECORD_UPLOAD: false
         with:
-          context: Telegram/build/docker/centos_env
+          context: Ansible/build/docker/centos_env
           load: true
           tags: ${{ env.IMAGE_TAG }}
           cache-from: type=local,src=${{ runner.temp }}/.buildx-cache
@@ -1289,7 +1289,7 @@ jobs:
           -e CONFIG=Release \
           -e KEEP_GOING=1 \
           $IMAGE_TAG \
-          /usr/src/tdesktop/Telegram/build/docker/centos_env/build.sh \
+          /usr/src/tdesktop/Ansible/build/docker/centos_env/build.sh \
           -D CMAKE_CONFIGURATION_TYPES=Release \
           -D DESKTOP_APP_ENABLE_LTO=ON \
           -D TDESKTOP_API_ID=${{ secrets.CANARY_API_ID }} \
@@ -1319,7 +1319,7 @@ jobs:
             mv $MODULE.sym symbols/$MODULE/$DEBUG_ID/
           done
           # TODO(canary-infra): upload symbols/ to R2 (see the Windows job).
-          ../../Telegram/build/minidebug.sh Telegram
+          ../../Ansible/build/minidebug.sh Telegram
 
       - name: Verify the update trust chain.
         run: |
@@ -1327,7 +1327,7 @@ jobs:
           # against the exact binaries built for this canary, including
           # the committed trust files against the pinned root.
           out/Release/test_update_verify
-          Telegram/build/canary_test_fixtures.sh out/Release/Packer "$RUNNER_TEMP/fixtures"
+          Ansible/build/canary_test_fixtures.sh out/Release/Packer "$RUNNER_TEMP/fixtures"
 
       - name: Azure login for update signing.
         if: needs.version.outputs.publish == 'true'
@@ -1344,16 +1344,16 @@ jobs:
             -version ${{ needs.version.outputs.base }} \
             -channel canary-${{ needs.version.outputs.channel }} \
             -counter $CANARY_COUNTER \
-            -keys-loc ../../Telegram/Resources/update \
+            -keys-loc ../../Ansible/Resources/update \
             -emit-signing-input signing-input.bin
           if [ "${{ needs.version.outputs.publish }}" = "true" ]; then
-            python3 ../../Telegram/build/sign_update.py \
+            python3 ../../Ansible/build/sign_update.py \
               --input signing-input.bin \
               --output canary.sig \
               --az-vault "${{ secrets.AZURE_KEYVAULT_NAME }}" \
               --az-key "$CANARY_AZ_KEY"
             ./Packer -channel canary-${{ needs.version.outputs.channel }} \
-              -keys-loc ../../Telegram/Resources/update \
+              -keys-loc ../../Ansible/Resources/update \
               -unsigned td-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX.unsigned \
               -embed-signatures $CANARY_KEY_ID:canary.sig
             rm td-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX.unsigned signing-input.bin canary.sig
@@ -1469,7 +1469,7 @@ jobs:
           VERSION_STR: ${{ needs.version.outputs.version_str }}
           PREVIOUS: ${{ needs.version.outputs.previous }}
           SIGNED: ${{ needs.windows.outputs.signed }}
-          KEYS_LOC: Telegram/Resources/update
+          KEYS_LOC: Ansible/Resources/update
           UPDATE_DIR: artifacts/update
           PORTABLE_DIR: artifacts/portable
         run: |
@@ -1478,7 +1478,7 @@ jobs:
           else
             export MSG_ID="$PRIVATE_MSG_ID"
           fi
-          Telegram/build/canary_publish.sh
+          Ansible/build/canary_publish.sh
 
   publish-mac:
     name: Publish mac (${{ needs.version.outputs.channel }})
@@ -1537,7 +1537,7 @@ jobs:
           # spctl --assess on every bundle; this is the publish-side
           # witness. TODO(canary-infra): pin an apple-codesign (rcodesign)
           # release for full signature + staple verification on Linux:
-          #   rcodesign verify /tmp/macapp/Telegram/Telegram.app
+          #   rcodesign verify /tmp/macapp/Ansible/Telegram.app
           unzip -q artifacts/portable/td-portable-mac-*.zip -d /tmp/macapp
           if [ ! -d "/tmp/macapp/${{ needs.version.outputs.folder }}/Telegram.app/Contents/_CodeSignature" ]; then
             echo "::error::The portable Telegram.app has no code signature."
@@ -1557,7 +1557,7 @@ jobs:
           VERSION_STR: ${{ needs.version.outputs.version_str }}
           PREVIOUS: ${{ needs.version.outputs.previous }}
           SIGNED: ${{ needs.macos.outputs.signed }}
-          KEYS_LOC: Telegram/Resources/update
+          KEYS_LOC: Ansible/Resources/update
           UPDATE_DIR: artifacts/update
           PORTABLE_DIR: artifacts/portable
         run: |
@@ -1566,7 +1566,7 @@ jobs:
           else
             export MSG_ID="$PRIVATE_MSG_ID"
           fi
-          Telegram/build/canary_publish.sh
+          Ansible/build/canary_publish.sh
 
   publish-linux:
     name: Publish linux (${{ needs.version.outputs.channel }})
@@ -1631,7 +1631,7 @@ jobs:
           VERSION_STR: ${{ needs.version.outputs.version_str }}
           PREVIOUS: ${{ needs.version.outputs.previous }}
           SIGNED: true
-          KEYS_LOC: Telegram/Resources/update
+          KEYS_LOC: Ansible/Resources/update
           UPDATE_DIR: artifacts/update
           PORTABLE_DIR: artifacts/portable
         run: |
@@ -1640,4 +1640,4 @@ jobs:
           else
             export MSG_ID="$PRIVATE_MSG_ID"
           fi
-          Telegram/build/canary_publish.sh
+          Ansible/build/canary_publish.sh

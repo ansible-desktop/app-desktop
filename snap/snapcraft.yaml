@@ -1,6 +1,6 @@
 name: ansible-desktop
 adopt-info: ansible
-icon: Telegram/Resources/art/icon512@2x.png
+icon: Ansible/Resources/art/icon512@2x.png
 
 base: core24
 grade: stable
@@ -53,7 +53,7 @@ parts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/usr
       # 🚨 Здесь стояли УЧЁТНЫЕ ДАННЫЕ ТЕЛЕГРАМА (api_id 611335) и явными -D
-      # перекрывали наш дефолт из Telegram/cmake/telegram_options.cmake.
+      # перекрывали наш дефолт из Ansible/cmake/ansible_options.cmake.
       # Серверный контроль у нас идёт по sessions.api_id — баны, троттлинг,
       # гейты, — так что snap-сборка попадала не в свою корзину, а в списке
       # активных сеансов пользователь видел чужое приложение. Ничего не
@@ -61,7 +61,7 @@ parts:
     override-pull: |
       craftctl default
 
-      version_file=Telegram/build/version
+      version_file=Ansible/build/version
       version=$(sed -n "s/AppVersionStr[ ]\+\(.*\)\+/\1/p" $version_file)
       beta=$(sed -n "s/BetaChannel[ ]\+\(.*\)\+/\1/p" $version_file)
 
@@ -74,7 +74,7 @@ parts:
       craftctl set version="$version"
     override-build: |
       craftctl default
-      "$CRAFT_PART_SRC/Telegram/build/minidebug.sh" "$CRAFT_PART_INSTALL/usr/bin/Ansible"
+      "$CRAFT_PART_SRC/Ansible/build/minidebug.sh" "$CRAFT_PART_INSTALL/usr/bin/Ansible"
       mv "$CRAFT_PART_INSTALL"/usr/bin/{Ansible,ansible-desktop}
 
       APP_ID=com.ansible.desktop

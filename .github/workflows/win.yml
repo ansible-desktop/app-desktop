@@ -30,13 +30,13 @@ on:
       - '!.github/workflows/win.yml'
       - 'lib/xdg/**'
       - 'snap/**'
-      - 'Telegram/build/docker/**'
-      - 'Telegram/Resources/uwp/**'
-      - 'Telegram/SourceFiles/platform/linux/**'
-      - 'Telegram/SourceFiles/platform/mac/**'
-      - 'Telegram/Telegram/**'
-      - 'Telegram/configure.sh'
-      - 'Telegram/Telegram.plist'
+      - 'Ansible/build/docker/**'
+      - 'Ansible/Resources/uwp/**'
+      - 'Ansible/SourceFiles/platform/linux/**'
+      - 'Ansible/SourceFiles/platform/mac/**'
+      - 'Ansible/Ansible/**'
+      - 'Ansible/configure.sh'
+      - 'Ansible/Ansible.plist'
   pull_request:
     paths-ignore:
       - 'docs/**'
@@ -49,13 +49,13 @@ on:
       - '!.github/workflows/win.yml'
       - 'lib/xdg/**'
       - 'snap/**'
-      - 'Telegram/build/docker/**'
-      - 'Telegram/Resources/uwp/**'
-      - 'Telegram/SourceFiles/platform/linux/**'
-      - 'Telegram/SourceFiles/platform/mac/**'
-      - 'Telegram/Telegram/**'
-      - 'Telegram/configure.sh'
-      - 'Telegram/Telegram.plist'
+      - 'Ansible/build/docker/**'
+      - 'Ansible/Resources/uwp/**'
+      - 'Ansible/SourceFiles/platform/linux/**'
+      - 'Ansible/SourceFiles/platform/mac/**'
+      - 'Ansible/Ansible/**'
+      - 'Ansible/configure.sh'
+      - 'Ansible/Ansible.plist'
 
 jobs:
 
@@ -77,7 +77,7 @@ jobs:
     env:
       UPLOAD_ARTIFACT: "true"
       ONLY_CACHE: "false"
-      PREPARE_PATH: "Telegram/build/prepare/prepare.py"
+      PREPARE_PATH: "Ansible/build/prepare/prepare.py"
 
     defaults:
       run:

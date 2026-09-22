@@ -27,7 +27,7 @@ import json
 import sys
 
 #: имя файла пакета по платформе — так его называет упаковщик
-#: (Telegram/SourceFiles/_other/packer.cpp)
+#: (Ansible/SourceFiles/_other/packer.cpp)
 PACK = {
     "win": "tupdate%d",
     "win64": "tx64upd%d",

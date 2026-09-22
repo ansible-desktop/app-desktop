@@ -30,12 +30,12 @@ on:
       - '!.github/workflows/mac_packaged.yml'
       - 'lib/xdg/**'
       - 'snap/**'
-      - 'Telegram/build/**'
-      - 'Telegram/Resources/uwp/**'
-      - 'Telegram/Resources/winrc/**'
-      - 'Telegram/SourceFiles/platform/win/**'
-      - 'Telegram/SourceFiles/platform/linux/**'
-      - 'Telegram/configure.bat'
+      - 'Ansible/build/**'
+      - 'Ansible/Resources/uwp/**'
+      - 'Ansible/Resources/winrc/**'
+      - 'Ansible/SourceFiles/platform/win/**'
+      - 'Ansible/SourceFiles/platform/linux/**'
+      - 'Ansible/configure.bat'
   pull_request:
     paths-ignore:
       - 'docs/**'
@@ -47,12 +47,12 @@ on:
       - '!.github/workflows/mac_packaged.yml'
       - 'lib/xdg/**'
       - 'snap/**'
-      - 'Telegram/build/**'
-      - 'Telegram/Resources/uwp/**'
-      - 'Telegram/Resources/winrc/**'
-      - 'Telegram/SourceFiles/platform/win/**'
-      - 'Telegram/SourceFiles/platform/linux/**'
-      - 'Telegram/configure.bat'
+      - 'Ansible/build/**'
+      - 'Ansible/Resources/uwp/**'
+      - 'Ansible/Resources/winrc/**'
+      - 'Ansible/SourceFiles/platform/win/**'
+      - 'Ansible/SourceFiles/platform/linux/**'
+      - 'Ansible/configure.bat'
 
 jobs:
 

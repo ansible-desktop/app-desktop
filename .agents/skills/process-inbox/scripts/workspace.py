@@ -113,13 +113,13 @@ def absolute_git_dir(path):
 def source_root(value):
 	start = Path(value).expanduser().resolve() if value else Path.cwd()
 	root = git_root(start)
-	if not (root / "Telegram" / "build").is_dir():
+	if not (root / "Ansible" / "build").is_dir():
 		raise WorkspaceError(f"Not a Telegram Desktop checkout: {root}")
 	return root
 
 
 def read_machine_tag(root):
-	path = root / "Telegram" / "build" / "ai-machine-tag"
+	path = root / "Ansible" / "build" / "ai-machine-tag"
 	if not path.is_file():
 		raise WorkspaceError(
 			f"Missing {path}. Create it with a stable lowercase machine tag."

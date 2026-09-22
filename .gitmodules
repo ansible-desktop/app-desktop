@@ -1,105 +1,105 @@
-[submodule "Telegram/ThirdParty/GSL"]
-	path = Telegram/ThirdParty/GSL
+[submodule "Ansible/ThirdParty/GSL"]
+	path = Ansible/ThirdParty/GSL
 	url = https://github.com/ansible-desktop/GSL.git
-[submodule "Telegram/ThirdParty/xxHash"]
-	path = Telegram/ThirdParty/xxHash
+[submodule "Ansible/ThirdParty/xxHash"]
+	path = Ansible/ThirdParty/xxHash
 	url = https://github.com/ansible-desktop/xxHash.git
-[submodule "Telegram/ThirdParty/lz4"]
-	path = Telegram/ThirdParty/lz4
+[submodule "Ansible/ThirdParty/lz4"]
+	path = Ansible/ThirdParty/lz4
 	url = https://github.com/ansible-desktop/lz4.git
-[submodule "Telegram/lib_crl"]
-	path = Telegram/lib_crl
+[submodule "Ansible/lib_crl"]
+	path = Ansible/lib_crl
 	url = https://github.com/ansible-desktop/lib_crl.git
-[submodule "Telegram/lib_rpl"]
-	path = Telegram/lib_rpl
+[submodule "Ansible/lib_rpl"]
+	path = Ansible/lib_rpl
 	url = https://github.com/ansible-desktop/lib_rpl.git
-[submodule "Telegram/lib_base"]
-	path = Telegram/lib_base
+[submodule "Ansible/lib_base"]
+	path = Ansible/lib_base
 	url = https://github.com/ansible-desktop/lib_base.git
-[submodule "Telegram/codegen"]
-	path = Telegram/codegen
+[submodule "Ansible/codegen"]
+	path = Ansible/codegen
 	url = https://github.com/ansible-desktop/codegen.git
-[submodule "Telegram/lib_ui"]
-	path = Telegram/lib_ui
+[submodule "Ansible/lib_ui"]
+	path = Ansible/lib_ui
 	url = https://github.com/ansible-desktop/lib_ui.git
-[submodule "Telegram/lib_lottie"]
-	path = Telegram/lib_lottie
+[submodule "Ansible/lib_lottie"]
+	path = Ansible/lib_lottie
 	url = https://github.com/ansible-desktop/lib_lottie.git
-[submodule "Telegram/lib_tl"]
-	path = Telegram/lib_tl
+[submodule "Ansible/lib_tl"]
+	path = Ansible/lib_tl
 	url = https://github.com/ansible-desktop/lib_tl.git
-[submodule "Telegram/lib_spellcheck"]
-	path = Telegram/lib_spellcheck
+[submodule "Ansible/lib_spellcheck"]
+	path = Ansible/lib_spellcheck
 	url = https://github.com/ansible-desktop/lib_spellcheck.git
-[submodule "Telegram/lib_storage"]
-	path = Telegram/lib_storage
+[submodule "Ansible/lib_storage"]
+	path = Ansible/lib_storage
 	url = https://github.com/ansible-desktop/lib_storage.git
 [submodule "cmake"]
 	path = cmake
 	url = https://github.com/ansible-desktop/cmake_helpers.git
-[submodule "Telegram/ThirdParty/expected"]
-	path = Telegram/ThirdParty/expected
+[submodule "Ansible/ThirdParty/expected"]
+	path = Ansible/ThirdParty/expected
 	url = https://github.com/ansible-desktop/expected.git
-[submodule "Telegram/ThirdParty/QR"]
-	path = Telegram/ThirdParty/QR
+[submodule "Ansible/ThirdParty/QR"]
+	path = Ansible/ThirdParty/QR
 	url = https://github.com/ansible-desktop/QR-Code-generator.git
-[submodule "Telegram/lib_qr"]
-	path = Telegram/lib_qr
+[submodule "Ansible/lib_qr"]
+	path = Ansible/lib_qr
 	url = https://github.com/ansible-desktop/lib_qr.git
-[submodule "Telegram/ThirdParty/hunspell"]
-	path = Telegram/ThirdParty/hunspell
+[submodule "Ansible/ThirdParty/hunspell"]
+	path = Ansible/ThirdParty/hunspell
 	url = https://github.com/ansible-desktop/hunspell.git
-[submodule "Telegram/ThirdParty/range-v3"]
-	path = Telegram/ThirdParty/range-v3
+[submodule "Ansible/ThirdParty/range-v3"]
+	path = Ansible/ThirdParty/range-v3
 	url = https://github.com/ansible-desktop/range-v3.git
-[submodule "Telegram/ThirdParty/nimf"]
-	path = Telegram/ThirdParty/nimf
+[submodule "Ansible/ThirdParty/nimf"]
+	path = Ansible/ThirdParty/nimf
 	url = https://github.com/ansible-desktop/nimf.git
-[submodule "Telegram/ThirdParty/hime"]
-	path = Telegram/ThirdParty/hime
+[submodule "Ansible/ThirdParty/hime"]
+	path = Ansible/ThirdParty/hime
 	url = https://github.com/ansible-desktop/hime.git
-[submodule "Telegram/ThirdParty/fcitx5-qt"]
-	path = Telegram/ThirdParty/fcitx5-qt
+[submodule "Ansible/ThirdParty/fcitx5-qt"]
+	path = Ansible/ThirdParty/fcitx5-qt
 	url = https://github.com/ansible-desktop/fcitx5-qt.git
-[submodule "Telegram/lib_webrtc"]
-	path = Telegram/lib_webrtc
+[submodule "Ansible/lib_webrtc"]
+	path = Ansible/lib_webrtc
 	url = https://github.com/ansible-desktop/lib_webrtc.git
-[submodule "Telegram/ThirdParty/tgcalls"]
-	path = Telegram/ThirdParty/tgcalls
+[submodule "Ansible/ThirdParty/tgcalls"]
+	path = Ansible/ThirdParty/tgcalls
 	url = https://github.com/ansible-desktop/tgcalls.git
-[submodule "Telegram/lib_webview"]
-	path = Telegram/lib_webview
+[submodule "Ansible/lib_webview"]
+	path = Ansible/lib_webview
 	url = https://github.com/ansible-desktop/lib_webview.git
-[submodule "Telegram/ThirdParty/kimageformats"]
-	path = Telegram/ThirdParty/kimageformats
+[submodule "Ansible/ThirdParty/kimageformats"]
+	path = Ansible/ThirdParty/kimageformats
 	url = https://github.com/ansible-desktop/kimageformats.git
-[submodule "Telegram/ThirdParty/kcoreaddons"]
-	path = Telegram/ThirdParty/kcoreaddons
+[submodule "Ansible/ThirdParty/kcoreaddons"]
+	path = Ansible/ThirdParty/kcoreaddons
 	url = https://github.com/ansible-desktop/kcoreaddons.git
-[submodule "Telegram/ThirdParty/cld3"]
-	path = Telegram/ThirdParty/cld3
+[submodule "Ansible/ThirdParty/cld3"]
+	path = Ansible/ThirdParty/cld3
 	url = https://github.com/ansible-desktop/cld3.git
-[submodule "Telegram/ThirdParty/libprisma"]
-	path = Telegram/ThirdParty/libprisma
+[submodule "Ansible/ThirdParty/libprisma"]
+	path = Ansible/ThirdParty/libprisma
 	url = https://github.com/ansible-desktop/libprisma.git
-[submodule "Telegram/ThirdParty/xdg-desktop-portal"]
-	path = Telegram/ThirdParty/xdg-desktop-portal
+[submodule "Ansible/ThirdParty/xdg-desktop-portal"]
+	path = Ansible/ThirdParty/xdg-desktop-portal
 	url = https://github.com/ansible-desktop/xdg-desktop-portal.git
-[submodule "Telegram/lib_translate"]
-	path = Telegram/lib_translate
+[submodule "Ansible/lib_translate"]
+	path = Ansible/lib_translate
 	url = https://github.com/ansible-desktop/lib_translate.git
-[submodule "Telegram/ThirdParty/cmark-gfm"]
-	path = Telegram/ThirdParty/cmark-gfm
+[submodule "Ansible/ThirdParty/cmark-gfm"]
+	path = Ansible/ThirdParty/cmark-gfm
 	url = https://github.com/ansible-desktop/cmark-gfm.git
-[submodule "Telegram/ThirdParty/MicroTeX"]
-	path = Telegram/ThirdParty/MicroTeX
+[submodule "Ansible/ThirdParty/MicroTeX"]
+	path = Ansible/ThirdParty/MicroTeX
 	url = https://github.com/ansible-desktop/MicroTeX.git
-[submodule "Telegram/ThirdParty/TooManyCooks"]
-	path = Telegram/ThirdParty/TooManyCooks
+[submodule "Ansible/ThirdParty/TooManyCooks"]
+	path = Ansible/ThirdParty/TooManyCooks
 	url = https://github.com/ansible-desktop/TooManyCooks.git
-[submodule "Telegram/ThirdParty/libcbor"]
-	path = Telegram/ThirdParty/libcbor
+[submodule "Ansible/ThirdParty/libcbor"]
+	path = Ansible/ThirdParty/libcbor
 	url = https://github.com/ansible-desktop/libcbor.git
-[submodule "Telegram/ThirdParty/libfido2"]
-	path = Telegram/ThirdParty/libfido2
+[submodule "Ansible/ThirdParty/libfido2"]
+	path = Ansible/ThirdParty/libfido2
 	url = https://github.com/ansible-desktop/libfido2.git

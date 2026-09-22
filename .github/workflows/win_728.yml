@@ -38,7 +38,7 @@ jobs:
     runs-on: windows-2022
 
     env:
-      PREPARE_PATH: "Telegram/build/prepare/prepare.py"
+      PREPARE_PATH: "Ansible/build/prepare/prepare.py"
       # sccache's GHA cache backend uses the DEPRECATED Actions Cache API which
       # GitHub has shut down (permanent "services aren't available" error), so we
       # back sccache with a LOCAL DISK cache persisted via actions/cache@v5 (the

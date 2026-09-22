@@ -614,15 +614,15 @@ The server must provide all of these before the separate test plan can pass:
 
 Core transport:
 
-- `Telegram/SourceFiles/mtproto/web_proxy/web_proxy_frame.{h,cpp}`
-- `Telegram/SourceFiles/mtproto/web_proxy/web_proxy_transport.{h,cpp}`
-- `Telegram/SourceFiles/mtproto/web_proxy/web_proxy_webview.{h,cpp}`
-- `Telegram/SourceFiles/mtproto/details/mtproto_web_proxy_socket.{h,cpp}`
+- `Ansible/SourceFiles/mtproto/web_proxy/web_proxy_frame.{h,cpp}`
+- `Ansible/SourceFiles/mtproto/web_proxy/web_proxy_transport.{h,cpp}`
+- `Ansible/SourceFiles/mtproto/web_proxy/web_proxy_webview.{h,cpp}`
+- `Ansible/SourceFiles/mtproto/details/mtproto_web_proxy_socket.{h,cpp}`
 
 Native WebView support:
 
-- `Telegram/lib_webview/webview/webview_common.h`
-- `Telegram/lib_webview/webview/webview_embed.{h,cpp}`
+- `Ansible/lib_webview/webview/webview_common.h`
+- `Ansible/lib_webview/webview/webview_embed.{h,cpp}`
 - the macOS, Windows WebView2, and WebKitGTK platform backends
 
 Integration:
@@ -631,7 +631,7 @@ Integration:
 - `connection_tcp.cpp`, `session.cpp`, `session_private.cpp`, `proxy_check.cpp`
 - `application.cpp`, `main_account.cpp`
 - `boxes/connection_box.{h,cpp}`, `lang.strings`
-- `Telegram/CMakeLists.txt`
+- `Ansible/CMakeLists.txt`
 
 The client-side implementation is complete without the hosted server. Remaining
 verification is the hosted protocol, native-WebView/platform matrix, and explicit

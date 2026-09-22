@@ -3,7 +3,7 @@ name: Docker.
 # Публикация образа сборочного окружения CentOS в реестр пакетов организации.
 # Наследство апстрима: у них этим образом пользуются контрибьюторы, у нас им
 # не пользуется НИКТО — linux.yml собирает тот же образ локально из
-# Telegram/build/docker/centos_env/Dockerfile и в ghcr не ходит.
+# Ansible/build/docker/centos_env/Dockerfile и в ghcr не ходит.
 #
 # Автозапуск снят: у токена нет права создавать пакет организации, прогон
 # падал на `denied: installation not allowed to Create organization package`
@@ -40,7 +40,7 @@ jobs:
 
       - name: Docker image build.
         run: |
-          cd Telegram/build/docker/centos_env
+          cd Ansible/build/docker/centos_env
           poetry install
           DEBUG= LTO= poetry run gen_dockerfile | DOCKER_BUILDKIT=1 docker build -t $IMAGE_TAG -
 

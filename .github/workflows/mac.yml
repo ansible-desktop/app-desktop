@@ -29,12 +29,12 @@ on:
       - '!.github/workflows/mac.yml'
       - 'lib/xdg/**'
       - 'snap/**'
-      - 'Telegram/build/docker/**'
-      - 'Telegram/Resources/uwp/**'
-      - 'Telegram/Resources/winrc/**'
-      - 'Telegram/SourceFiles/platform/win/**'
-      - 'Telegram/SourceFiles/platform/linux/**'
-      - 'Telegram/configure.bat'
+      - 'Ansible/build/docker/**'
+      - 'Ansible/Resources/uwp/**'
+      - 'Ansible/Resources/winrc/**'
+      - 'Ansible/SourceFiles/platform/win/**'
+      - 'Ansible/SourceFiles/platform/linux/**'
+      - 'Ansible/configure.bat'
   pull_request:
     paths-ignore:
       - 'docs/**'
@@ -46,12 +46,12 @@ on:
       - '!.github/workflows/mac.yml'
       - 'lib/xdg/**'
       - 'snap/**'
-      - 'Telegram/build/docker/**'
-      - 'Telegram/Resources/uwp/**'
-      - 'Telegram/Resources/winrc/**'
-      - 'Telegram/SourceFiles/platform/win/**'
-      - 'Telegram/SourceFiles/platform/linux/**'
-      - 'Telegram/configure.bat'
+      - 'Ansible/build/docker/**'
+      - 'Ansible/Resources/uwp/**'
+      - 'Ansible/Resources/winrc/**'
+      - 'Ansible/SourceFiles/platform/win/**'
+      - 'Ansible/SourceFiles/platform/linux/**'
+      - 'Ansible/configure.bat'
 
 jobs:
 
@@ -66,7 +66,7 @@ jobs:
     env:
       UPLOAD_ARTIFACT: "true"
       ONLY_CACHE: "false"
-      PREPARE_PATH: "Telegram/build/prepare/prepare.py"
+      PREPARE_PATH: "Ansible/build/prepare/prepare.py"
 
     steps:
       - name: Get repository name.
@@ -105,7 +105,7 @@ jobs:
 
       - name: Libraries.
         run: |
-          ./$REPO_NAME/Telegram/build/prepare/mac.sh skip-release silent
+          ./$REPO_NAME/Ansible/build/prepare/mac.sh skip-release silent
 
       - name: Free up some disk space.
         run: find Libraries '(' '(' ! '(' -name '*.a' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -perm +111 ')' -type f ')' -o -empty ')' -delete

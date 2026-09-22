@@ -5,7 +5,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent, Workflow, AskUserQues
 
 # Process Crash Reports
 
-Triage `~/Telegram/Crashes/all` for the newest published tag, one distinct
+Triage `~/Ansible/Crashes/all` for the newest published tag, one distinct
 crash at a time, and land the fixes that are simple enough to land.
 
 A run can face several hundred reports of which most are duplicates or belong
@@ -46,12 +46,12 @@ $ARGUMENTS
    ```
 
    With no `--version`, the target is the newest `v<x>.<y>.<z>` tag and its
-   `AppVersion` from `Telegram/build/version` at that tag, plus the matching
+   `AppVersion` from `Ansible/build/version` at that tag, plus the matching
    closed-alpha encoding (`AppVersion * 1000`). Pass `--version` only if
    `$ARGUMENTS` named one.
 
    `--claim` moves every complete report triple out of `all/` into
-   `~/Telegram/Crashes/backup/<stamp>-crashes/` and scans that folder, so the
+   `~/Ansible/Crashes/backup/<stamp>-crashes/` and scans that folder, so the
    next run sees only reports that arrived after this one. Half-written triples
    stay behind. With `--no-claim`, pass `--crashes <previous run folder>` and
    drop `--claim`.

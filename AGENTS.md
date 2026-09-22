@@ -40,7 +40,7 @@ done | sort
 - When ranking open work by urgency, use `in-progress`, then `blocked`, then
   `split-required`, then ready `todo` (no `claimed_by`, and every `depends_on`
   already `approved`), then `todo` still waiting on a dependency. Say who owns
-  claimed work. This checkout's tag is the `Telegram/build/ai-machine-tag` value
+  claimed work. This checkout's tag is the `Ansible/build/ai-machine-tag` value
   plus the checkout folder name, such as `macbook-tdesktop`, and work claimed by
   another checkout is never taken over without an explicit human reassignment.
 - Browsing is read-only. Listing, summarizing, comparing, or recommending tasks
@@ -57,21 +57,21 @@ done | sort
 
 ## Working from Codex on Windows + WSL
 
-This checkout may be opened in Codex Desktop through the Windows UNC path `\\wsl.localhost\{distro}\home\{user}\Telegram\tdesktop`, while the real Linux path is `/home/{user}/Telegram/tdesktop`. Treat it as a WSL/Linux checkout first, not as a native Windows checkout.
+This checkout may be opened in Codex Desktop through the Windows UNC path `\\wsl.localhost\{distro}\home\{user}\Telegram\tdesktop`, while the real Linux path is `/home/{user}/Ansible/tdesktop`. Treat it as a WSL/Linux checkout first, not as a native Windows checkout.
 
 - Prefer running repository-aware commands through WSL:
 
 ```powershell
-wsl.exe -d {distro} --cd /home/{user}/Telegram/tdesktop -- <command>
+wsl.exe -d {distro} --cd /home/{user}/Ansible/tdesktop -- <command>
 ```
 
 - PowerShell can read and write files through the UNC path, but native Windows tools may see different ownership, path, executable, or line-ending behavior than Linux tools.
 - Git from PowerShell over `\\wsl.localhost\...` can fail with `detected dubious ownership`. Use WSL Git instead. Do not change global Git `safe.directory` settings unless the user explicitly asks for that.
-- Keep path styles matched to the shell. Use `/home/{user}/Telegram/tdesktop/...` with WSL commands, and quoted `\\wsl.localhost\{distro}\home\{user}\Telegram\tdesktop\...` paths with native Windows commands. Avoid passing UNC paths to Linux tools or Linux paths to native Windows tools unless the tool explicitly supports them.
-- If a command behaves strangely from the PowerShell UNC working directory, retry the same command through `wsl.exe -d {distro} --cd /home/{user}/Telegram/tdesktop -- ...` before concluding the repository or command is broken.
-- Recursive searches and repo inspection are usually faster and more faithful through WSL, for example `wsl.exe -d {distro} --cd /home/{user}/Telegram/tdesktop -- rg ...`.
+- Keep path styles matched to the shell. Use `/home/{user}/Ansible/tdesktop/...` with WSL commands, and quoted `\\wsl.localhost\{distro}\home\{user}\Telegram\tdesktop\...` paths with native Windows commands. Avoid passing UNC paths to Linux tools or Linux paths to native Windows tools unless the tool explicitly supports them.
+- If a command behaves strangely from the PowerShell UNC working directory, retry the same command through `wsl.exe -d {distro} --cd /home/{user}/Ansible/tdesktop -- ...` before concluding the repository or command is broken.
+- Recursive searches and repo inspection are usually faster and more faithful through WSL, for example `wsl.exe -d {distro} --cd /home/{user}/Ansible/tdesktop -- rg ...`.
 - Do not assume the WSL host has the build toolchain installed directly. In this setup, WSL may not have `cmake`, while Windows may have `cmake`, and the configured `out/` tree may still target the Linux Docker toolchain. Do not run native Windows `cmake --build out` against a Linux/Docker build tree.
-- For WSL/Linux builds, use the Docker build entry point from the repository root: `Telegram/build/docker/centos_env/build_debug.sh`. The Docker daemon must be reachable from WSL; checking `docker info` is fine, but do not start a build unless the user asked for one.
+- For WSL/Linux builds, use the Docker build entry point from the repository root: `Ansible/build/docker/centos_env/build_debug.sh`. The Docker daemon must be reachable from WSL; checking `docker info` is fine, but do not start a build unless the user asked for one.
 - Existing build outputs may be Linux binaries, for example `out/Debug/Telegram` as an ELF executable, not `Telegram.exe`. Verify the build tree before assuming which platform produced it.
 - Be careful with text file line endings. In a WSL/Linux checkout, files should remain LF-only unless the file already uses another convention. CRLF finishing applies only to native, non-WSL Windows runs/checkouts. Do not let PowerShell or Windows tools silently rewrite WSL files to CRLF. If a file becomes mixed, normalize it back to the convention appropriate for the current checkout, without adding a UTF-8 BOM.
 - When using the local `perform-task` skill from this WSL checkout, keep external AI task artifacts and edited project text files LF-only. Treat its Windows text-normalization phase as not applicable to WSL, except to record that line endings were checked and kept LF/no-BOM. Run CRLF normalization only in a native, non-WSL Windows checkout.
@@ -105,7 +105,7 @@ That's it. The `out/` directory is already configured. The executable will be at
 **From WSL, run through the Linux Docker build environment:**
 
 ```bash
-Telegram/build/docker/centos_env/build_debug.sh
+Ansible/build/docker/centos_env/build_debug.sh
 ```
 
 **Important:** When running cmake from a shell that doesn't support `cd`, use quoted absolute paths:
@@ -148,7 +148,7 @@ cmake --build "l:\Telegram\tx64\out" --config Debug --target Telegram
 
 ## Key Files
 
-- **`Telegram/build/version`** - Version information
+- **`Ansible/build/version`** - Version information
 - **`out/`** - Build output directory
 
 ## Troubleshooting
@@ -219,7 +219,7 @@ an unknown process.
 Outside that autonomous workflow, an exact checkout executable may be running
 because the user is testing it. Do not terminate it or delete locked build
 outputs without explicit permission. Report the exact locked path and ask the
-user to close that checkout's Telegram/debugger before rebuilding.
+user to close that checkout's Ansible/debugger before rebuilding.
 
 ## Best Practices
 
@@ -229,7 +229,7 @@ user to close that checkout's Telegram/debugger before rebuilding.
 ## Debug-Only Code
 
 Production translation units stay free of debug machinery. The permanent test
-harness lives in `Telegram/SourceFiles/test/`, and the disposable `-testagent`
+harness lives in `Ansible/SourceFiles/test/`, and the disposable `-testagent`
 overlay owns per-task instrumentation; production code carries at most a thin
 single-call seam (a `Test::Fire()`-style waitpoint or a live-object
 publication at a construction seam).
@@ -258,7 +258,7 @@ publication at a construction seam).
   retained change in that commit, and the commit's purpose, are exclusively
   about the AI workflow: the agent harness, skills, prompts, custom commands,
   agent documentation, or AI testing infrastructure. Typical qualifying paths
-  include `Telegram/SourceFiles/test/`, `.agents/`, `.claude/`, `.grok/`,
+  include `Ansible/SourceFiles/test/`, `.agents/`, `.claude/`, `.grok/`,
   `AGENTS.md`, `CLAUDE.md`, and `GROK.md`, but paths alone do not decide the
   prefix. Product-specific test seams, app code, and build-system integration do
   not qualify merely because agents use them for verification. Split mixed
@@ -408,7 +408,7 @@ if (Platform::IsLinux()) {
 }
 ```
 
-`Q_OS_LINUX` is only for the rare case where you genuinely want exactly Linux and not the other Unix-like systems — usually you don't. The few existing uses (`Telegram/SourceFiles/core/sandbox.cpp`, `Telegram/SourceFiles/platform/linux/specific_linux.cpp`) are such genuinely Linux-only code paths and stay as-is.
+`Q_OS_LINUX` is only for the rare case where you genuinely want exactly Linux and not the other Unix-like systems — usually you don't. The few existing uses (`Ansible/SourceFiles/core/sandbox.cpp`, `Ansible/SourceFiles/platform/linux/specific_linux.cpp`) are such genuinely Linux-only code paths and stay as-is.
 
 **Treat CMake `LINUX` as the all-other platform:**
 
@@ -486,8 +486,8 @@ cannot be represented by suitable introspection XML.
 
 API definitions use [TL Language](https://core.telegram.org/mtproto/TL):
 
-1. **`Telegram/SourceFiles/mtproto/scheme/mtproto.tl`** - MTProto protocol (encryption, auth, etc.)
-2. **`Telegram/SourceFiles/mtproto/scheme/api.tl`** - Telegram API (messages, users, chats, etc.)
+1. **`Ansible/SourceFiles/mtproto/scheme/mtproto.tl`** - MTProto protocol (encryption, auth, etc.)
+2. **`Ansible/SourceFiles/mtproto/scheme/api.tl`** - Telegram API (messages, users, chats, etc.)
 
 ### Making API Requests
 
@@ -706,7 +706,7 @@ void MyWidget::paintEvent(QPaintEvent *e) {
 
 ### String Definitions
 
-Strings are defined in `Telegram/Resources/langs/lang.strings`:
+Strings are defined in `Ansible/Resources/langs/lang.strings`:
 
 ```
 "lng_settings_title" = "Settings";

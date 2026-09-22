@@ -53,7 +53,7 @@ assessment selects only the instruments the task needs:
 
 ```text
 native Windows: cmake --build ./out --config Debug --target Telegram
-WSL/Linux:      Telegram/build/docker/centos_env/build_debug.sh
+WSL/Linux:      Ansible/build/docker/centos_env/build_debug.sh
 macOS/other:    AGENTS.md and the configured Debug tree
 
 EXE candidates:
@@ -615,7 +615,7 @@ whole task and not from the temporary test overlay. Start the subject with
 exactly `[ai] ` only when every retained change in that commit, and the commit's
 purpose, are exclusively about the AI workflow: the agent harness, skills,
 prompts, custom commands, agent documentation, or AI testing infrastructure.
-Typical qualifying paths include `Telegram/SourceFiles/test/`, `.agents/`,
+Typical qualifying paths include `Ansible/SourceFiles/test/`, `.agents/`,
 `.claude/`, `.grok/`, `AGENTS.md`, `CLAUDE.md`, and `GROK.md`, but paths alone
 do not decide the prefix. Product-specific test seams, app code, and build-system
 integration do not qualify merely because agents use them for verification.
@@ -671,14 +671,14 @@ Before an instrument runs, gate only its own prerequisites:
   `Unverified:` exposure, not simulated by an unrelated local command.
 
 When a Telegram overlay or app launch is selected, read
-`Telegram/SourceFiles/test/README.md` completely and then the chosen helper
+`Ansible/SourceFiles/test/README.md` completely and then the chosen helper
 headers. Read `references/computer-use-testing.md` when selecting or operating
 a UI driver. Retain all shared task-derived oracle, layout measurement,
 watchdog, crash/assertion, hang, account, and evidence rules, with these
 external-task adaptations:
 
 - Prefer an overlay in
-  `Telegram/SourceFiles/test/test_scenario.cpp`, but place disposable probes
+  `Ansible/SourceFiles/test/test_scenario.cpp`, but place disposable probes
   or direct entry points in any relevant tracked source or initialized
   submodule when that is more direct. Inventory every path in
   `work/test-overlay.paths`; never add an untracked source file or commit the

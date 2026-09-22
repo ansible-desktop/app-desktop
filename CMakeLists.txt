@@ -10,7 +10,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 include(cmake/validate_special_target.cmake)
 include(cmake/version.cmake)
-desktop_app_parse_version(Telegram/build/version)
+desktop_app_parse_version(Ansible/build/version)
 
 if (NOT DEFINED CMAKE_CONFIGURATION_TYPES)
     set(configuration_types_init 1)
@@ -35,8 +35,8 @@ endif()
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Telegram)
 
-get_filename_component(third_party_loc "Telegram/ThirdParty" REALPATH)
-get_filename_component(submodules_loc "Telegram" REALPATH)
+get_filename_component(third_party_loc "Ansible/ThirdParty" REALPATH)
+get_filename_component(submodules_loc "Ansible" REALPATH)
 get_filename_component(cmake_helpers_loc "cmake" REALPATH)
 
 if (NOT DESKTOP_APP_USE_PACKAGED AND WIN32)
@@ -63,4 +63,4 @@ set(desktop_app_skip_libs
 )
 
 add_subdirectory(cmake)
-add_subdirectory(Telegram)
+add_subdirectory(Ansible)
