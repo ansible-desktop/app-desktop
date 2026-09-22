@@ -72,6 +72,10 @@ jobs:
       CMAKE_BUILD_PARALLEL_LEVEL: ""
       CMAKE_PREFIX_PATH: "/opt/homebrew/opt/ffmpeg@6:/opt/homebrew/opt/openal-soft"
       TDE2E: "51743dfd01dff6179e2d8f7095729caa4e2222e9"
+      # Держать в синхроне с Ansible/build/prepare/prepare.py:
+      # стадия tlottie (ревизия) и rustToolchain (версия cargo).
+      TLOTTIE: "4b940c7942"
+      RUST_TOOLCHAIN: "1.96.1"
       UPLOAD_ARTIFACT: "true"
       ONLY_CACHE: "false"
       MANUAL_CACHING: "1"
@@ -169,6 +173,38 @@ jobs:
           cmake --build build
           cmake --install build
 
+      - name: tlottie cache.
+        id: cache-tlottie
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.LibrariesPath }}/local/tlottie
+          key: ${{ runner.OS }}-tlottie-${{ env.TLOTTIE }}-${{ env.RUST_TOOLCHAIN }}-${{ env.CACHE_KEY }}
+      - name: tlottie.
+        if: steps.cache-tlottie.outputs.cache-hit != 'true'
+        run: |
+          cd $LibrariesPath
+
+          rustup toolchain install $RUST_TOOLCHAIN --profile minimal
+          rustup target add --toolchain $RUST_TOOLCHAIN $(rustc -vV | sed -n "s/^host: //p")
+
+          git clone $GIT/dkaraush/tlottie.git
+          cd tlottie
+          git checkout $TLOTTIE
+
+          # Только дуга раннера: этот вариант всё равно линкуется с
+          # однодуговыми библиотеками Homebrew. prepare.py делает lipo из
+          # двух дуг для релиза, здесь это лишняя половина времени.
+          HOST=$(rustc -vV | sed -n "s/^host: //p")
+          rustup run $RUST_TOOLCHAIN cargo rustc --lib --release --locked \
+            --features c-api --crate-type staticlib \
+            --target $HOST \
+            -- --print native-static-libs
+
+          PREFIX=$LibrariesPath/local/tlottie
+          mkdir -p $PREFIX/lib $PREFIX/include/tlottie
+          cp target/$HOST/release/libtlottie.a $PREFIX/lib/libtlottie.a
+          cp include/tlottie.h $PREFIX/include/tlottie/tlottie.h
+
       - name: Telegram Desktop build.
         if: env.ONLY_CACHE == 'false'
         run: |
@@ -179,22 +215,22 @@ jobs:
           if [ -n "${{ matrix.defines }}" ]; then
             DEFINE="-D ${{ matrix.defines }}=ON"
             echo Define from matrix: $DEFINE
-            echo "ARTIFACT_NAME=Telegram ${{ matrix.defines }}" >> $GITHUB_ENV
+            echo "ARTIFACT_NAME=Ansible ${{ matrix.defines }}" >> $GITHUB_ENV
           else
-            echo "ARTIFACT_NAME=Telegram" >> $GITHUB_ENV
+            echo "ARTIFACT_NAME=Ansible" >> $GITHUB_ENV
           fi
 
           cmake -Bbuild . -DTDESKTOP_API_TEST=ON $DEFINE
           cmake --build build
-          macdeployqt build/Telegram.app
-          codesign --remove-signature build/Telegram.app
+          macdeployqt build/Ansible.app
+          codesign --remove-signature build/Ansible.app
 
       - name: Move artifact.
         if: env.UPLOAD_ARTIFACT == 'true'
         run: |
           cd $REPO_NAME/build
           mkdir artifact
-          mv Telegram.app artifact/
+          mv Ansible.app artifact/
       - uses: actions/upload-artifact@v7
         if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.
