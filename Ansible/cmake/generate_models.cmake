@@ -10,7 +10,7 @@
 # so new models just need to be dropped in next to the existing ones.
 #
 # Usage: include(cmake/generate_models.cmake)
-# Requires: target "Telegram" and function "nice_target_sources" to exist.
+# Requires: target "Ansible" and function "nice_target_sources" to exist.
 
 set(_models_art_dir "${CMAKE_CURRENT_SOURCE_DIR}/Resources/art")
 file(GLOB_RECURSE _model_sources "${_models_art_dir}/*.obj")
@@ -60,9 +60,9 @@ endif()
 set_source_files_properties("${_qrc_path}" PROPERTIES
     QRC_GENERATED_FROM "${_models_script};${_model_sources}")
 add_custom_target(bake_models DEPENDS ${_model_outputs})
-nice_target_sources(Telegram ${_models_out_dir}
+nice_target_sources(Ansible ${_models_out_dir}
 PRIVATE
     models.qrc
 )
-add_dependencies(Telegram bake_models)
+add_dependencies(Ansible bake_models)
 message(STATUS "Models: will bake ${_models_art_dir}/**/*.obj -> .binobj")

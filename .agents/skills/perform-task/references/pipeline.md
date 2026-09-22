@@ -52,7 +52,7 @@ desktop target as one consistent platform inventory. These are candidates;
 assessment selects only the instruments the task needs:
 
 ```text
-native Windows: cmake --build ./out --config Debug --target Telegram
+native Windows: cmake --build ./out --config Debug --target Ansible
 WSL/Linux:      Ansible/build/docker/centos_env/build_debug.sh
 macOS/other:    AGENTS.md and the configured Debug tree
 

@@ -331,8 +331,8 @@ if [ "$BuildTarget" == "mac" ] || [ "$BuildTarget" == "macstore" ]; then
       if [ -f "$ReleasePath/$BinaryName.app/Contents/Info.plist" ]; then
         rm "$ReleasePath/$BinaryName.app/Contents/Info.plist"
       fi
-      if [ -f "$ProjectPath/Ansible/CMakeFiles/Telegram.dir/Info.plist" ]; then
-        rm "$ProjectPath/Ansible/CMakeFiles/Telegram.dir/Info.plist"
+      if [ -f "$ProjectPath/Ansible/CMakeFiles/Ansible.dir/Info.plist" ]; then
+        rm "$ProjectPath/Ansible/CMakeFiles/Ansible.dir/Info.plist"
       fi
       rm -rf "$ReleasePath/$BinaryName.app/Contents/_CodeSignature"
       rm -rf "$ReleasePath/Updater"
@@ -340,7 +340,7 @@ if [ "$BuildTarget" == "mac" ] || [ "$BuildTarget" == "macstore" ]; then
       ./configure.sh -D DESKTOP_APP_MAC_ARCH="arm64;x86_64" -DDESKTOP_APP_ENABLE_LTO=ON
 
       cd $ProjectPath
-      cmake --build . --config Release --target Telegram
+      cmake --build . --config Release --target Ansible
     fi
 
     if [ ! -d "$ReleasePath/$BinaryName.app" ]; then

@@ -54,7 +54,7 @@ configure_file(
     ${fido2_gen}/cbor/configuration.h)
 # file(CONFIGURE), not file(WRITE): the latter rewrites the header on every
 # cmake run even when nothing changed, and a fresh mtime here recompiles all of
-# libcbor/libfido2 and webauthn_common.cpp, then relinks Telegram.
+# libcbor/libfido2 and webauthn_common.cpp, then relinks Ansible.
 file(CONFIGURE OUTPUT ${fido2_gen}/cbor/cbor_export.h CONTENT "#ifndef CBOR_EXPORT_H
 #define CBOR_EXPORT_H
 #define CBOR_EXPORT

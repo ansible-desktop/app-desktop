@@ -237,7 +237,7 @@ Under `--dry-run`, do phases 1–2 and record nothing, commit nothing.
 Build **once**, after the last wave, not per fix:
 
 ```bash
-cmake --build out --config Debug --target Telegram
+cmake --build out --config Debug --target Ansible
 ```
 
 If it fails, fix the fallout and amend the commit that caused it. Then write

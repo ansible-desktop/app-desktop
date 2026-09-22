@@ -1,7 +1,7 @@
 # Compile QRhi shaders (.vert/.frag/.comp -> .qsb) at build time.
 #
 # Usage: include(cmake/qrhi_shaders.cmake)
-# Requires: target "Telegram" and function "nice_target_sources" to exist.
+# Requires: target "Ansible" and function "nice_target_sources" to exist.
 
 if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
     return()
@@ -85,9 +85,9 @@ endif()
 set_source_files_properties("${_qrc_path}" PROPERTIES
     QRC_GENERATED_FROM "${_shader_sources}")
 add_custom_target(compile_shaders DEPENDS ${_qsb_outputs})
-nice_target_sources(Telegram ${_qsb_out_dir}
+nice_target_sources(Ansible ${_qsb_out_dir}
 PRIVATE
     shaders.qrc
 )
-add_dependencies(Telegram compile_shaders)
+add_dependencies(Ansible compile_shaders)
 message(STATUS "QSB: found ${QSB_EXECUTABLE}, will compile ${_shader_dir}/*.vert/*.frag/*.comp")

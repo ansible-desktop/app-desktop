@@ -35,24 +35,24 @@ if (TDESKTOP_API_ID STREQUAL "0" OR TDESKTOP_API_ID STREQUAL "" OR TDESKTOP_API_
 endif()
 
 if (DESKTOP_APP_DISABLE_AUTOUPDATE)
-    target_compile_definitions(Telegram PRIVATE TDESKTOP_DISABLE_AUTOUPDATE)
+    target_compile_definitions(Ansible PRIVATE TDESKTOP_DISABLE_AUTOUPDATE)
 endif()
 
 if (DESKTOP_APP_DISABLE_CRASH_REPORTS)
-    target_compile_definitions(Telegram PRIVATE TDESKTOP_DISABLE_CRASH_REPORTS)
+    target_compile_definitions(Ansible PRIVATE TDESKTOP_DISABLE_CRASH_REPORTS)
 endif()
 
 if (DESKTOP_APP_USE_PACKAGED)
-    target_compile_definitions(Telegram PRIVATE TDESKTOP_USE_PACKAGED)
+    target_compile_definitions(Ansible PRIVATE TDESKTOP_USE_PACKAGED)
 endif()
 
 if (DESKTOP_APP_SPECIAL_TARGET)
-    target_compile_definitions(Telegram PRIVATE TDESKTOP_ALLOW_CLOSED_ALPHA)
+    target_compile_definitions(Ansible PRIVATE TDESKTOP_ALLOW_CLOSED_ALPHA)
 endif()
 
 option(DESKTOP_APP_DISABLE_SWIFT6 "Disable local on-device translation (build without Swift 6 on macOS)." OFF)
 if (DESKTOP_APP_DISABLE_SWIFT6)
-    target_compile_definitions(Telegram PRIVATE TDESKTOP_DISABLE_SWIFT6)
+    target_compile_definitions(Ansible PRIVATE TDESKTOP_DISABLE_SWIFT6)
 endif()
 
 set(TDESKTOP_UPDATE_CHANNEL "stable" CACHE STRING "Compile-time update channel (stable, beta, canary-public, canary-private).")
@@ -96,7 +96,7 @@ elseif (NOT TDESKTOP_CANARY_COUNTER EQUAL 0)
     message(FATAL_ERROR "TDESKTOP_CANARY_COUNTER requires a canary TDESKTOP_UPDATE_CHANNEL.")
 endif()
 
-target_compile_definitions(Telegram
+target_compile_definitions(Ansible
 PRIVATE
     TDESKTOP_UPDATE_CHANNEL=${tdesktop_update_channel_value}
     TDESKTOP_CANARY_COUNTER=${TDESKTOP_CANARY_COUNTER}
@@ -104,8 +104,8 @@ PRIVATE
     TDESKTOP_CANARY_METADATA_MSG_ID=${TDESKTOP_CANARY_METADATA_MSG_ID}
 )
 if (NOT TDESKTOP_CANARY_COMMIT STREQUAL "")
-    target_compile_definitions(Telegram PRIVATE TDESKTOP_CANARY_COMMIT=${TDESKTOP_CANARY_COMMIT})
+    target_compile_definitions(Ansible PRIVATE TDESKTOP_CANARY_COMMIT=${TDESKTOP_CANARY_COMMIT})
 endif()
 if (NOT TDESKTOP_CANARY_PUBLIC_CHANNEL STREQUAL "")
-    target_compile_definitions(Telegram PRIVATE TDESKTOP_CANARY_PUBLIC_CHANNEL=${TDESKTOP_CANARY_PUBLIC_CHANNEL})
+    target_compile_definitions(Ansible PRIVATE TDESKTOP_CANARY_PUBLIC_CHANNEL=${TDESKTOP_CANARY_PUBLIC_CHANNEL})
 endif()

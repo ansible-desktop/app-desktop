@@ -68,7 +68,7 @@ if building:
 
     os.chdir('../out')
     if uuid == '':
-        result = subprocess.call('cmake --build . --config ' + conf + ' --target Telegram', shell=True)
+        result = subprocess.call('cmake --build . --config ' + conf + ' --target Ansible', shell=True)
         if result != 0:
             finish(1, 'While building Telegram.')
 

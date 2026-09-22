@@ -54,7 +54,7 @@ an incompatible bridge.
 1. Build the exact candidate commit in Debug:
 
    ```bash
-   cmake --build out --config Debug --target Telegram
+   cmake --build out --config Debug --target Ansible
    ```
 
 2. Record the commit, build timestamp, OS version, native WebView engine/version,

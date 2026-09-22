@@ -39,7 +39,7 @@ PRIVATE
 
 set_target_properties(test_text PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_dependencies(Telegram test_text)
+add_dependencies(Ansible test_text)
 
 target_prepare_qrc(test_text)
 

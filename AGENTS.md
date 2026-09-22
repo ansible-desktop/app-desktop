@@ -97,7 +97,7 @@ Dependencies are located relative to the repository: `../Libraries`, `../win64/L
 **From repository root, run:**
 
 ```bash
-cmake --build out --config Debug --target Telegram
+cmake --build out --config Debug --target Ansible
 ```
 
 That's it. The `out/` directory is already configured. The executable will be at `out/Debug/Telegram.exe`.
@@ -110,7 +110,7 @@ Ansible/build/docker/centos_env/build_debug.sh
 
 **Important:** When running cmake from a shell that doesn't support `cd`, use quoted absolute paths:
 ```bash
-cmake --build "l:\Telegram\tx64\out" --config Debug --target Telegram
+cmake --build "l:\Telegram\tx64\out" --config Debug --target Ansible
 ```
 
 **Never build Release** - it's extremely heavy and not needed for testing changes.
@@ -195,7 +195,7 @@ one full Xcode Debug clean and rebuild:
 
 ```bash
 cmake --build out --config Debug --target clean
-cmake --build out --config Debug --target Telegram
+cmake --build out --config Debug --target Ansible
 ```
 
 Afterward, restore a portable folder from the backup only when its original

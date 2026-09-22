@@ -29,7 +29,7 @@ fi
 ./configure.sh -DDESKTOP_APP_ENABLE_LTO=ON
 
 cd $ProjectPath
-cmake --build . --config Release --target Telegram
+cmake --build . --config Release --target Ansible
 cd $ReleasePath
 
 echo "$BinaryName build complete!"

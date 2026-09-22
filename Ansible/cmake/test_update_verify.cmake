@@ -34,4 +34,4 @@ PRIVATE
 
 set_target_properties(test_update_verify PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_dependencies(Telegram test_update_verify)
+add_dependencies(Ansible test_update_verify)

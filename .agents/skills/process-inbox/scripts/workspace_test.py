@@ -1735,7 +1735,7 @@ class MechanicsTest(unittest.TestCase):
 				encoding="utf-8",
 			)
 			exe = debug / "Telegram.exe"
-			obj = build / "Telegram.dir" / "locked.obj"
+			obj = build / "Ansible.dir" / "locked.obj"
 			obj.parent.mkdir(parents=True)
 			exe.write_bytes(b"exe")
 			obj.write_bytes(b"obj")

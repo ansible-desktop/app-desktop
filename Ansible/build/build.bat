@@ -243,7 +243,7 @@ cd "%HomePath%"
 call configure.bat -DDESKTOP_APP_ENABLE_LTO=ON || goto error
 
 cd "%SolutionPath%"
-call cmake --build . --config Release --target Telegram || goto error
+call cmake --build . --config Release --target Ansible || goto error
 
 echo.
 echo Version %AppVersionStrFull% build successfull. Preparing..
