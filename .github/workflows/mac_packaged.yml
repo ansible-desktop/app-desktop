@@ -184,8 +184,17 @@ jobs:
         run: |
           cd $LibrariesPath
 
+          # 🚨 Архитектуру берём у uname, а НЕ у `rustc -vV`: на раннере
+          # rustup стоит без активного тулчейна, rustc в PATH нет, и
+          # подстановка молча давала пустую строку — `rustup target add`
+          # падал на «required arguments were not provided». Хостовая цель у
+          # только что поставленного тулчейна и так есть, добавлять не нужно.
           rustup toolchain install $RUST_TOOLCHAIN --profile minimal
-          rustup target add --toolchain $RUST_TOOLCHAIN $(rustc -vV | sed -n "s/^host: //p")
+          case "$(uname -m)" in
+            arm64|aarch64) HOST=aarch64-apple-darwin ;;
+            *)             HOST=x86_64-apple-darwin ;;
+          esac
+          echo "tlottie target: $HOST"
 
           git clone $GIT/dkaraush/tlottie.git
           cd tlottie
@@ -194,7 +203,6 @@ jobs:
           # Только дуга раннера: этот вариант всё равно линкуется с
           # однодуговыми библиотеками Homebrew. prepare.py делает lipo из
           # двух дуг для релиза, здесь это лишняя половина времени.
-          HOST=$(rustc -vV | sed -n "s/^host: //p")
           rustup run $RUST_TOOLCHAIN cargo rustc --lib --release --locked \
             --features c-api --crate-type staticlib \
             --target $HOST \
