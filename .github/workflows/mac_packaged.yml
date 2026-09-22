@@ -196,6 +196,16 @@ jobs:
           esac
           echo "tlottie target: $HOST"
 
+          # 🚨 Шимы rustup должны быть на PATH, иначе cargo запустится, а
+          # внутри не найдёт rustc: «could not execute process `rustc -vV`
+          # (never executed)» — сообщение про cargo, причина в PATH.
+          # RUSTUP_TOOLCHAIN закрепляет версию без смены глобального
+          # умолчания раннера. Ровно так это делает prepare.py.
+          export CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
+          export PATH="$CARGO_HOME/bin:$PATH"
+          export RUSTUP_TOOLCHAIN="$RUST_TOOLCHAIN"
+          rustc -vV
+
           git clone $GIT/dkaraush/tlottie.git
           cd tlottie
           git checkout $TLOTTIE
@@ -203,7 +213,7 @@ jobs:
           # Только дуга раннера: этот вариант всё равно линкуется с
           # однодуговыми библиотеками Homebrew. prepare.py делает lipo из
           # двух дуг для релиза, здесь это лишняя половина времени.
-          rustup run $RUST_TOOLCHAIN cargo rustc --lib --release --locked \
+          cargo rustc --lib --release --locked \
             --features c-api --crate-type staticlib \
             --target $HOST \
             -- --print native-static-libs
