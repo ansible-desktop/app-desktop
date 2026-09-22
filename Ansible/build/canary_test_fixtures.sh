@@ -74,9 +74,9 @@ EOF
 openssl pkeyutl -sign -inkey root-private.pem -rawin \
   -in keys/manifest.min.json -out keys/manifest.sig
 
-echo "dummy binary $(date)" > app/Telegram
+echo "dummy binary $(date)" > app/Ansible
 echo "dummy updater" > app/Updater
-chmod +x app/Telegram
+chmod +x app/Ansible
 
 echo
 echo "=== One-pass Ed25519 signing (stable) ==="

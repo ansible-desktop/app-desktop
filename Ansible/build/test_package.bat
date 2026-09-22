@@ -17,7 +17,7 @@ set "SignAppxPath=%HomePath%\..\..\DesktopPrivate\AppxSign.bat"
 set "ResourcesPath=%HomePath%\Resources"
 set "SolutionPath=%HomePath%\.."
 set "ReleasePath=%HomePath%\..\out\Debug"
-set "BinaryName=Telegram"
+set "BinaryName=Ansible"
 
 if exist %ReleasePath%\AppX\ (
   echo Result folder out\Debug\AppX already exists!
@@ -30,7 +30,7 @@ call gyp\refresh.bat
 if %errorlevel% neq 0 goto error
 
 cd "%SolutionPath%"
-call ninja -C out/Debug Telegram
+call ninja -C out/Debug Ansible
 if %errorlevel% neq 0 goto error
 
 cd "%HomePath%"
