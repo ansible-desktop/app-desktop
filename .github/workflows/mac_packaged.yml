@@ -196,15 +196,18 @@ jobs:
           esac
           echo "tlottie target: $HOST"
 
-          # 🚨 Шимы rustup должны быть на PATH, иначе cargo запустится, а
-          # внутри не найдёт rustc: «could not execute process `rustc -vV`
-          # (never executed)» — сообщение про cargo, причина в PATH.
-          # RUSTUP_TOOLCHAIN закрепляет версию без смены глобального
-          # умолчания раннера. Ровно так это делает prepare.py.
-          export CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
-          export PATH="$CARGO_HOME/bin:$PATH"
-          export RUSTUP_TOOLCHAIN="$RUST_TOOLCHAIN"
+          # 🚨 Каталог с rustc и cargo СПРАШИВАЕМ У RUSTUP, а не угадываем.
+          # На раннере стоит rustup из Homebrew («self-update is disabled for
+          # this build»), он не создаёт шимы в ~/.cargo/bin, поэтому и
+          # `rustup run`, и добавление CARGO_HOME/bin в PATH дали
+          # «rustc: command not found» — каждый раз на шаг позже.
+          # `rustup which --toolchain` работает без активного тулчейна и
+          # отвечает абсолютным путём, какой бы ни была раскладка.
+          TOOLCHAIN_BIN="$(dirname "$(rustup which --toolchain $RUST_TOOLCHAIN rustc)")"
+          export PATH="$TOOLCHAIN_BIN:$PATH"
+          echo "toolchain bin: $TOOLCHAIN_BIN"
           rustc -vV
+          cargo -V
 
           git clone $GIT/dkaraush/tlottie.git
           cd tlottie
