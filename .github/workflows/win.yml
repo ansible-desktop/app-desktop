@@ -61,9 +61,19 @@ jobs:
 
   windows:
     name: Windows
-    runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-arm' || ((github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/nightly') && 'depot-windows-latest-16' || 'windows-latest') }}
+    # 🚨 windows-2022, а не windows-latest. Образ latest уехал на VS 18, и его
+    # C++/WinRT (2.0.250303.5) разошёлся с тем, которым собран Qt в общем кеше
+    # (2.0.250303.1) — линковка кодогенератора падает с LNK2038/LNK1319 ещё до
+    # компиляции клиента. Кеш Qt делится с win_728.yml, который собирается на
+    # windows-2022 и зелёный, поэтому дешевле привести к нему, чем пересобирать
+    # Qt под новый образ. Вернуть latest можно только вместе с инвалидацией
+    # кеша Qt, и это часы сборки.
+    runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-arm' || ((github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/nightly') && 'depot-windows-latest-16' || 'windows-2022') }}
 
     strategy:
+      # Без fail-fast: первый отказ отменял семь остальных, и один прогон
+      # матрицы отвечал ровно на один вопрос. Нам нужен полный срез.
+      fail-fast: false
       matrix:
         arch: [x64_x86, x64, arm64]
         qt: ["", qt6]
