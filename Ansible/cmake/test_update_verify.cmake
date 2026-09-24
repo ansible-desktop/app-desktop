@@ -24,7 +24,7 @@ PRIVATE
 )
 
 target_include_directories(test_update_verify PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/gen)
-add_dependencies(test_update_verify Telegram_update_keys)
+add_dependencies(test_update_verify Ansible_update_keys)
 
 target_link_libraries(test_update_verify
 PRIVATE
