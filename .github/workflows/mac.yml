@@ -113,7 +113,7 @@ jobs:
       - name: Telegram Desktop build.
         if: env.ONLY_CACHE == 'false'
         run: |
-          cd $REPO_NAME/Telegram
+          cd $REPO_NAME/Ansible
 
           DEFINE=""
           if [ -n "${{ matrix.defines }}" ]; then
