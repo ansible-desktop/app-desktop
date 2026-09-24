@@ -139,25 +139,25 @@ if %AlphaVersion% neq 0 (
   exit /b 1
 )
 if %Build64% neq 0 (
-  set "UpdateFile=td-update-win-x64-%AppVersion%%ArtifactSuffix%"
-  set "SetupFile=td-setup-win-x64-%AppVersionStr%%ArtifactSuffix%.exe"
-  set "PortableFile=td-portable-win-x64-%AppVersionStr%%ArtifactSuffix%.zip"
+  set "UpdateFile=ansible-update-win-x64-%AppVersion%%ArtifactSuffix%"
+  set "SetupFile=ansible-setup-win-x64-%AppVersionStr%%ArtifactSuffix%.exe"
+  set "PortableFile=ansible-portable-win-x64-%AppVersionStr%%ArtifactSuffix%.zip"
   set "DeployFolder=win-x64"
-  set "IsccNameParam=/dMyOutputBaseFilename=td-setup-win-x64-%AppVersionStr%%ArtifactSuffix%"
+  set "IsccNameParam=/dMyOutputBaseFilename=ansible-setup-win-x64-%AppVersionStr%%ArtifactSuffix%"
   set "DumpSymsPath=%SolutionPath%\..\..\Libraries\win64\breakpad\src\tools\windows\dump_syms\Release\dump_syms.exe"
 ) else if %BuildARM% neq 0 (
-  set "UpdateFile=td-update-win-arm-%AppVersion%%ArtifactSuffix%"
-  set "SetupFile=td-setup-win-arm-%AppVersionStr%%ArtifactSuffix%.exe"
-  set "PortableFile=td-portable-win-arm-%AppVersionStr%%ArtifactSuffix%.zip"
+  set "UpdateFile=ansible-update-win-arm-%AppVersion%%ArtifactSuffix%"
+  set "SetupFile=ansible-setup-win-arm-%AppVersionStr%%ArtifactSuffix%.exe"
+  set "PortableFile=ansible-portable-win-arm-%AppVersionStr%%ArtifactSuffix%.zip"
   set "DeployFolder=win-arm"
-  set "IsccNameParam=/dMyOutputBaseFilename=td-setup-win-arm-%AppVersionStr%%ArtifactSuffix%"
+  set "IsccNameParam=/dMyOutputBaseFilename=ansible-setup-win-arm-%AppVersionStr%%ArtifactSuffix%"
   set "DumpSymsPath=%SolutionPath%\..\..\Libraries\breakpad\src\tools\windows\dump_syms\Release\dump_syms.exe"
 ) else (
-  set "UpdateFile=td-update-win-x86-%AppVersion%%ArtifactSuffix%"
-  set "SetupFile=td-setup-win-x86-%AppVersionStr%%ArtifactSuffix%.exe"
-  set "PortableFile=td-portable-win-x86-%AppVersionStr%%ArtifactSuffix%.zip"
+  set "UpdateFile=ansible-update-win-x86-%AppVersion%%ArtifactSuffix%"
+  set "SetupFile=ansible-setup-win-x86-%AppVersionStr%%ArtifactSuffix%.exe"
+  set "PortableFile=ansible-portable-win-x86-%AppVersionStr%%ArtifactSuffix%.zip"
   set "DeployFolder=win-x86"
-  set "IsccNameParam=/dMyOutputBaseFilename=td-setup-win-x86-%AppVersionStr%%ArtifactSuffix%"
+  set "IsccNameParam=/dMyOutputBaseFilename=ansible-setup-win-x86-%AppVersionStr%%ArtifactSuffix%"
   set "DumpSymsPath=%SolutionPath%\..\..\Libraries\breakpad\src\tools\windows\dump_syms\Release\dump_syms.exe"
 )
 set "ReleasePath=%SolutionPath%\Release"

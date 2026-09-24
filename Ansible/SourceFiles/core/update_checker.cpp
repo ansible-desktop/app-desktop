@@ -352,7 +352,7 @@ QString FindUpdateFile() {
 			QRegularExpression::CaseInsensitiveOption
 		);
 		static const auto RegExpV2 = QRegularExpression(
-			"^td-update-(win|mac|linux)-(x86|x64|arm)-\\d+"
+			"^ansible-update-(win|mac|linux)-(x86|x64|arm)-\\d+"
 			"(-beta|-canary-\\d+(-private)?)?$",
 			QRegularExpression::CaseInsensitiveOption
 		);

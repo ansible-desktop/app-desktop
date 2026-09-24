@@ -124,8 +124,8 @@ echo ""
 HomePath="$FullScriptPath/.."
 if [ "$BuildTarget" == "linux" ]; then
   echo "Building version $AppVersionStrFull for Linux 64bit.."
-  UpdateFile="td-update-linux-x64-$AppVersion$ArtifactSuffix"
-  SetupFile="td-setup-linux-x64-$AppVersionStr$ArtifactSuffix.tar.xz"
+  UpdateFile="ansible-update-linux-x64-$AppVersion$ArtifactSuffix"
+  SetupFile="ansible-setup-linux-x64-$AppVersionStr$ArtifactSuffix.tar.xz"
   ProjectPath="$HomePath/../out"
   ReleasePath="$ProjectPath/Release"
   BinaryName="Ansible"
@@ -152,8 +152,8 @@ elif [ "$BuildTarget" == "mac" ] ; then
   if [ "$AC_USERNAME" == "" ]; then
     Error "AC_USERNAME not found!"
   fi
-  UpdateFileAMD64="td-update-mac-x64-$AppVersion$ArtifactSuffix"
-  UpdateFileARM64="td-update-mac-arm-$AppVersion$ArtifactSuffix"
+  UpdateFileAMD64="ansible-update-mac-x64-$AppVersion$ArtifactSuffix"
+  UpdateFileARM64="ansible-update-mac-arm-$AppVersion$ArtifactSuffix"
   if [ "$MacArch" == "arm64" ]; then
     UpdateFile="$UpdateFileARM64"
   elif [ "$MacArch" == "x86_64" ]; then
@@ -165,13 +165,13 @@ elif [ "$BuildTarget" == "mac" ] ; then
   if [ "$MacArch" != "" ]; then
     BundleName="$BinaryName.$MacArch.app"
     if [ "$MacArch" == "arm64" ]; then
-      SetupFile="td-setup-mac-arm-$AppVersionStr$ArtifactSuffix.dmg"
+      SetupFile="ansible-setup-mac-arm-$AppVersionStr$ArtifactSuffix.dmg"
     else
-      SetupFile="td-setup-mac-x64-$AppVersionStr$ArtifactSuffix.dmg"
+      SetupFile="ansible-setup-mac-x64-$AppVersionStr$ArtifactSuffix.dmg"
     fi
   else
     BundleName="$BinaryName.app"
-    SetupFile="td-setup-mac-$AppVersionStr$ArtifactSuffix.dmg"
+    SetupFile="ansible-setup-mac-$AppVersionStr$ArtifactSuffix.dmg"
   fi
 elif [ "$BuildTarget" == "macstore" ]; then
   if [ "$AlphaVersion" != "0" ]; then

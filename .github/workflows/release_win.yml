@@ -1,0 +1,227 @@
+name: Release Windows.
+
+# Собирает РЕЛИЗНУЮ винду, пакует подписанное обновление и публикует его в
+# хранилище, откуда его раздаёт https://ansible.su/ad (см. deploy/updates).
+#
+# 🚨 Отличия от быстрой сборки win_728.yml, и каждое обязательно:
+#   * Release, а не Debug — пользователю уезжает именно этот бинарь;
+#   * DESKTOP_APP_SPECIAL_TARGET=win64 — БЕЗ него цель Packer не создаётся
+#     вовсе (Ansible/CMakeLists.txt: add_executable(Packer) под этим условием),
+#     то есть паковать было бы нечем;
+#   * библиотеки собираются БЕЗ skip-release. Наши кеши до сих пор содержали
+#     только отладочные варианты, поэтому ПЕРВЫЙ прогон соберёт релизные Qt и
+#     прочее — это часы. Дальше берётся из кеша, ключ у него отдельный, чтобы
+#     не смешивать с отладочным.
+#
+# 🚨 Нужны два секрета, и без них шаги останавливаются с внятным сообщением,
+# а не роняют сборку где-то в середине:
+#   UPDATES_SIGNING_KEY — приватный Ed25519 ключа канала as-stable-2026a,
+#     в PEM. Публичная половина объявлена в Ansible/Resources/update/
+#     manifest.min.json. Корневым ключом здесь НЕ подписывают ничего.
+#   TIMEWEB_S3_KEY_ID / TIMEWEB_S3_SECRET — доступ к бакету обновлений.
+#
+# 🚨 Порядок публикации: сперва ПАКЕТ, потом манифест. Манифест, объявивший
+# версию, файла которой ещё нет, отправляет клиентов за несуществующим
+# объектом, а S3 отвечает на это 403 — при разборе выглядит как проблема
+# доступа, хотя файла просто нет.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch / tag / SHA to build.'
+        required: false
+        type: string
+      publish:
+        description: 'Publish to the update service (off = build and sign only).'
+        required: false
+        default: false
+        type: boolean
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: ansible-release-win
+  cancel-in-progress: false
+
+jobs:
+
+  release-windows:
+    name: Release Windows x64
+    runs-on: windows-2022
+
+    env:
+      PREPARE_PATH: "Ansible/build/prepare/prepare.py"
+      S3_ENDPOINT: "https://s3.twcstorage.ru"
+      S3_BUCKET: "ansible-desktop-updates"
+      CHANNEL_KEY_ID: "as-stable-2026a"
+
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - name: Resolve ref.
+        shell: bash
+        run: |
+          REF="${{ inputs.ref }}"
+          [ -z "$REF" ] && REF="${GITHUB_REF#refs/*/}"
+          echo "BUILD_REF=$REF" >> $GITHUB_ENV
+
+      - name: Prepare directories.
+        run: |
+          mkdir %userprofile%\TBuild\Libraries
+          mklink /d %GITHUB_WORKSPACE%\TBuild %userprofile%\TBuild
+          echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
+          echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
+
+      - name: Get repository name.
+        shell: bash
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+
+      - name: Clone.
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          ref: ${{ env.BUILD_REF }}
+          path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
+
+      - name: First set up.
+        shell: bash
+        run: |
+          DOCPATH=$TBUILD/$REPO_NAME/docs/building-win.md
+          SDK="$(grep "SDK version" $DOCPATH | sed -r 's/.*\*\*(.*)\*\* SDK version.*/\1/')"
+          echo "SDK=$SDK" >> $GITHUB_ENV
+
+          echo "$(sha256sum $TBUILD/$REPO_NAME/$PREPARE_PATH | awk '{ print $1 }')" >> CACHE_KEY.txt
+          echo "$SDK" >> CACHE_KEY.txt
+          echo "CACHE_KEY=$(sha256sum CACHE_KEY.txt | awk '{ print $1 }')" >> $GITHUB_ENV
+
+          git config --global user.email "you@example.com"
+          git config --global user.name "Sample"
+
+      - uses: ilammy/msvc-dev-cmd@v1.13.0
+        name: Native Tools Command Prompt.
+        with:
+          arch: x64
+          sdk: ${{ env.SDK }}
+
+      - name: NuGet sources.
+        run: |
+          nuget sources Disable -Name "Microsoft Visual Studio Offline Packages"
+          nuget sources Add -Source https://api.nuget.org/v3/index.json & exit 0
+
+      - name: ThirdParty cache.
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.TBUILD }}\ThirdParty
+          key: ${{ runner.OS }}-${{ runner.arch }}-third-party-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-${{ runner.arch }}-third-party-
+
+      # 🚨 Свой ключ кеша: здесь лежат РЕЛИЗНЫЕ варианты библиотек, и мешать
+      # их с отладочными из win.yml/win_728.yml нельзя.
+      - name: Libraries cache (release).
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ env.LibrariesPath }}\*
+            !${{ env.LibrariesPath }}\cache_keys
+          key: ${{ runner.OS }}-x64-libs-release-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-libs-release-
+
+      - name: Libraries.
+        env:
+          GYP_MSVS_OVERRIDE_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\'
+          GYP_MSVS_VERSION: 2022
+        run: |
+          %TBUILD%\%REPO_NAME%\Ansible\build\prepare\win.bat silent qt6
+
+      - name: Build and pack.
+        run: |
+          cd %TBUILD%\%REPO_NAME%\Ansible
+
+          call configure.bat ^
+          -G "Ninja Multi-Config" ^
+          qt6 ^
+          -D CMAKE_CONFIGURATION_TYPES=Release ^
+          -D DESKTOP_APP_SPECIAL_TARGET=win64 ^
+          -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
+          -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF
+
+          cmake --build ..\out --config Release --target Ansible Packer
+
+      - name: Read version.
+        shell: bash
+        run: |
+          V=$(grep '^AppVersion ' $TBUILD/$REPO_NAME/Ansible/build/version | awk '{print $2}')
+          S=$(grep '^AppVersionStr ' $TBUILD/$REPO_NAME/Ansible/build/version | awk '{print $2}')
+          echo "APP_VERSION=$V" >> $GITHUB_ENV
+          echo "APP_VERSION_STR=$S" >> $GITHUB_ENV
+          echo "Packing update for $S (AppVersion $V)"
+
+      - name: Sign the update.
+        shell: bash
+        env:
+          SIGNING_KEY: ${{ secrets.UPDATES_SIGNING_KEY }}
+        run: |
+          if [ -z "$SIGNING_KEY" ]; then
+            echo "::error::secret UPDATES_SIGNING_KEY is not set — nothing can be signed."
+            echo "::error::It is the private Ed25519 half of $CHANNEL_KEY_ID; see deploy/updates/README.md."
+            exit 1
+          fi
+          cd "$TBUILD/$REPO_NAME/out/Release"
+          printf '%s\n' "$SIGNING_KEY" > channel-key.pem
+          # 🚨 Каталог -keys-loc ждёт РОВНО три имени, они захардкожены в
+          # упаковщике: root-public.pem, manifest.min.json, manifest.sig.
+          ./Packer.exe \
+            -path Ansible.exe -path Updater.exe \
+            -target win64 \
+            -version "$APP_VERSION" \
+            -channel stable \
+            -keys-loc ../../Ansible/Resources/update \
+            -local-key channel-key.pem \
+            -local-key-id "$CHANNEL_KEY_ID"
+          shred -u channel-key.pem 2>/dev/null || rm -f channel-key.pem
+          ls -la ansible-update-win-x64-$APP_VERSION
+
+      - name: Upload artifact.
+        uses: actions/upload-artifact@v7
+        with:
+          name: Ansible-release-x64-${{ env.APP_VERSION_STR }}
+          path: |
+            ${{ env.TBUILD }}\${{ env.REPO_NAME }}\out\Release\Ansible.exe
+            ${{ env.TBUILD }}\${{ env.REPO_NAME }}\out\Release\Updater.exe
+            ${{ env.TBUILD }}\${{ env.REPO_NAME }}\out\Release\ansible-update-win-x64-${{ env.APP_VERSION }}
+          if-no-files-found: error
+
+      - name: Publish to the update service.
+        if: inputs.publish == true || startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.TIMEWEB_S3_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TIMEWEB_S3_SECRET }}
+        run: |
+          if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+            echo "::error::secrets TIMEWEB_S3_KEY_ID / TIMEWEB_S3_SECRET are not set."
+            exit 1
+          fi
+          cd "$TBUILD/$REPO_NAME"
+          PKG="out/Release/ansible-update-win-x64-$APP_VERSION"
+
+          # 🚨 Пакет РАНЬШЕ манифеста. Манифест, объявивший версию без файла,
+          # отправляет клиентов за несуществующим объектом.
+          aws s3 cp "$PKG" "s3://$S3_BUCKET/win64/ansible-update-win-x64-$APP_VERSION" \
+            --endpoint-url "$S3_ENDPOINT" \
+            --cache-control "public, max-age=31536000, immutable"
+
+          python deploy/updates/make_current.py \
+            --version "$APP_VERSION_STR" --platform win64 > current2
+          aws s3 cp current2 "s3://$S3_BUCKET/current2" \
+            --endpoint-url "$S3_ENDPOINT" \
+            --content-type application/json \
+            --cache-control "public, max-age=60"
+
+          echo "Published. Verify from outside, not from this log:"
+          echo "  curl -s https://ansible.su/ad/current2"
+          echo "  curl -sI https://ansible.su/ad/win64/ansible-update-win-x64-$APP_VERSION"

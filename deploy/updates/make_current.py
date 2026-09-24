@@ -26,16 +26,24 @@ import argparse
 import json
 import sys
 
-#: имя файла пакета по платформе — так его называет упаковщик
-#: (Ansible/SourceFiles/_other/packer.cpp)
+#: имя файла пакета по платформе.
+#: 🚨 Это формат v2 — тот, что РЕАЛЬНО создаёт упаковщик (packer.cpp,
+#: V2FileName): ansible-update-{os}-{arch}-{версия}. Раньше здесь стояли
+#: имена схемы v1 (tx64upd…), и манифест ссылался на файл, которого
+#: упаковщик не создаёт ни при каких условиях.
+#: Ключ платформы приходит от клиента (Platform::AutoUpdateKey), а os и arch
+#: — то, чем их называет сам упаковщик (Core::Updates::OsName/ArchName).
 PACK = {
-    "win": "tupdate%d",
-    "win64": "tx64upd%d",
-    "winarm": "tarm64upd%d",
-    "mac": "tmacupd%d",
-    "armac": "tarmacupd%d",
-    "linux": "tlinuxupd%d",
+    "win":    ("win", "x86"),
+    "win64":  ("win", "x64"),
+    "winarm": ("win", "arm"),
+    "mac":    ("mac", "x64"),
+    "armac":  ("mac", "arm"),
+    "linux":  ("linux", "x64"),
 }
+
+#: суффикс канала — его упаковщик приклеивает к имени сам
+SUFFIX = {"stable": "", "beta": "-beta"}
 
 
 def app_version(text):
@@ -55,7 +63,7 @@ def main():
     p.add_argument("--platform", action="append", required=True,
                    choices=sorted(PACK), help="можно указывать несколько раз")
     p.add_argument("--channel", default="stable",
-                   choices=["stable", "beta", "alpha"])
+                   choices=sorted(SUFFIX))
     a = p.parse_args()
 
     version = app_version(a.version)
@@ -64,7 +72,8 @@ def main():
         out[plat] = {
             a.channel: {
                 "released": version,
-                "link": "/%s/%s" % (plat, PACK[plat] % version),
+                "link": "/%s/ansible-update-%s-%s-%d%s" % (
+                plat, PACK[plat][0], PACK[plat][1], version, SUFFIX[a.channel]),
             }
         }
     json.dump(out, sys.stdout, ensure_ascii=False, indent=1, sort_keys=True)

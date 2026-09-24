@@ -208,42 +208,42 @@ def appendFile(name, backup_folder, mime, label):
   })
 
 appendFile(
-  'td-setup-win-x86-' + version + artifact_suffix + '.exe',
+  'ansible-setup-win-x86-' + version + artifact_suffix + '.exe',
   'win-x86',
   'application/octet-stream',
   'Windows 32 bit: Installer')
 appendFile(
-  'td-portable-win-x86-' + version + artifact_suffix + '.zip',
+  'ansible-portable-win-x86-' + version + artifact_suffix + '.zip',
   'win-x86',
   'application/zip',
   'Windows 32 bit: Portable')
 appendFile(
-  'td-setup-win-x64-' + version + artifact_suffix + '.exe',
+  'ansible-setup-win-x64-' + version + artifact_suffix + '.exe',
   'win-x64',
   'application/octet-stream',
   'Windows 64 bit: Installer')
 appendFile(
-  'td-portable-win-x64-' + version + artifact_suffix + '.zip',
+  'ansible-portable-win-x64-' + version + artifact_suffix + '.zip',
   'win-x64',
   'application/zip',
   'Windows 64 bit: Portable')
 appendFile(
-  'td-setup-win-arm-' + version + artifact_suffix + '.exe',
+  'ansible-setup-win-arm-' + version + artifact_suffix + '.exe',
   'win-arm',
   'application/octet-stream',
   'Windows on ARM: Installer')
 appendFile(
-  'td-portable-win-arm-' + version + artifact_suffix + '.zip',
+  'ansible-portable-win-arm-' + version + artifact_suffix + '.zip',
   'win-arm',
   'application/zip',
   'Windows on ARM: Portable')
 appendFile(
-  'td-setup-mac-' + version + artifact_suffix + '.dmg',
+  'ansible-setup-mac-' + version + artifact_suffix + '.dmg',
   'mac',
   'application/octet-stream',
   'macOS 10.13+: Installer')
 appendFile(
-  'td-setup-linux-x64-' + version + artifact_suffix + '.tar.xz',
+  'ansible-setup-linux-x64-' + version + artifact_suffix + '.tar.xz',
   'linux-x64',
   'application/octet-stream',
   'Linux 64 bit: Binary')

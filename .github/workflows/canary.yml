@@ -268,8 +268,8 @@ jobs:
           fi
           COUNTER=$((GITHUB_RUN_NUMBER + ${COUNTER_BASE:-0}))
 
-          # File names: td-update-{os}-{arch}-{base}{suffix} and
-          # td-portable-{os}[-{arch}]-{version_str}{suffix}.{ext}, with the
+          # File names: ansible-update-{os}-{arch}-{base}{suffix} and
+          # ansible-portable-{os}[-{arch}]-{version_str}{suffix}.{ext}, with the
           # archive's top-level folder named after the lane.
           SUFFIX="-canary-$COUNTER"
           FOLDER="td-canary"
@@ -690,13 +690,13 @@ jobs:
               --az-key "$CANARY_AZ_KEY"
             ./Packer.exe -channel canary-${{ needs.version.outputs.channel }} \
               -keys-loc ../../Ansible/Resources/update \
-              -unsigned td-update-win-x64-$BASE$CANARY_SUFFIX.unsigned \
+              -unsigned ansible-update-win-x64-$BASE$CANARY_SUFFIX.unsigned \
               -embed-signatures $CANARY_KEY_ID:canary.sig
-            rm td-update-win-x64-$BASE$CANARY_SUFFIX.unsigned signing-input.bin canary.sig
-            UPDATE=td-update-win-x64-$BASE$CANARY_SUFFIX
+            rm ansible-update-win-x64-$BASE$CANARY_SUFFIX.unsigned signing-input.bin canary.sig
+            UPDATE=ansible-update-win-x64-$BASE$CANARY_SUFFIX
           else
             echo "::warning::No publish secrets, keeping the unsigned envelope only."
-            UPDATE=td-update-win-x64-$BASE$CANARY_SUFFIX.unsigned
+            UPDATE=ansible-update-win-x64-$BASE$CANARY_SUFFIX.unsigned
           fi
 
           # The first-install artifact is a portable-style archive (like
@@ -704,7 +704,7 @@ jobs:
           # canary's tdata next to the binary, never touching a normal
           # installation. The .keep file stops unpackers that skip empty
           # folders from dropping it.
-          PORTABLE=td-portable-win-x64-$CANARY_VERSION$CANARY_SUFFIX.zip
+          PORTABLE=ansible-portable-win-x64-$CANARY_VERSION$CANARY_SUFFIX.zip
           rm -rf portable
           mkdir -p portable/$CANARY_FOLDER/AnsibleForcePortable
           touch portable/$CANARY_FOLDER/AnsibleForcePortable/.keep
@@ -1091,13 +1091,13 @@ jobs:
                 --az-key "$CANARY_AZ_KEY"
               ./Packer -channel canary-${{ needs.version.outputs.channel }} \
                 -keys-loc ../../../Ansible/Resources/update \
-                -unsigned td-update-mac-$SHORT-$BASE$CANARY_SUFFIX.unsigned \
+                -unsigned ansible-update-mac-$SHORT-$BASE$CANARY_SUFFIX.unsigned \
                 -embed-signatures $CANARY_KEY_ID:canary.sig
-              rm td-update-mac-$SHORT-$BASE$CANARY_SUFFIX.unsigned signing-input.bin canary.sig
-              mv td-update-mac-$SHORT-$BASE$CANARY_SUFFIX ../
+              rm ansible-update-mac-$SHORT-$BASE$CANARY_SUFFIX.unsigned signing-input.bin canary.sig
+              mv ansible-update-mac-$SHORT-$BASE$CANARY_SUFFIX ../
             else
               echo "::warning::No publish secrets, keeping the unsigned envelope only."
-              mv td-update-mac-$SHORT-$BASE$CANARY_SUFFIX.unsigned ../
+              mv ansible-update-mac-$SHORT-$BASE$CANARY_SUFFIX.unsigned ../
             fi
             cd ..
             rm -rf update_pack
@@ -1107,7 +1107,7 @@ jobs:
           # universal app, with tdata forced next to the bundle. The
           # .keep file stops unpackers that skip empty folders from
           # dropping AnsibleForcePortable.
-          PORTABLE=td-portable-mac-$CANARY_VERSION$CANARY_SUFFIX.zip
+          PORTABLE=ansible-portable-mac-$CANARY_VERSION$CANARY_SUFFIX.zip
           rm -rf portable
           mkdir -p portable/$CANARY_FOLDER/AnsibleForcePortable
           touch portable/$CANARY_FOLDER/AnsibleForcePortable/.keep
@@ -1115,7 +1115,7 @@ jobs:
           (cd portable && zip -q -r ../$PORTABLE $CANARY_FOLDER)
 
           mkdir -p artifact/update artifact/portable
-          mv td-update-mac-*-$BASE$CANARY_SUFFIX* artifact/update/
+          mv ansible-update-mac-*-$BASE$CANARY_SUFFIX* artifact/update/
           mv $PORTABLE artifact/portable/
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -1354,19 +1354,19 @@ jobs:
               --az-key "$CANARY_AZ_KEY"
             ./Packer -channel canary-${{ needs.version.outputs.channel }} \
               -keys-loc ../../Ansible/Resources/update \
-              -unsigned td-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX.unsigned \
+              -unsigned ansible-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX.unsigned \
               -embed-signatures $CANARY_KEY_ID:canary.sig
-            rm td-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX.unsigned signing-input.bin canary.sig
-            UPDATE=td-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX
+            rm ansible-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX.unsigned signing-input.bin canary.sig
+            UPDATE=ansible-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX
           else
             echo "::warning::No publish secrets, keeping the unsigned envelope only."
-            UPDATE=td-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX.unsigned
+            UPDATE=ansible-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX.unsigned
           fi
 
           # Portable-style first-install archive, tdata forced next to
           # the binary. The .keep file stops unpackers that skip empty
           # folders from dropping AnsibleForcePortable.
-          PORTABLE=td-portable-linux-x64-$CANARY_VERSION$CANARY_SUFFIX.tar.xz
+          PORTABLE=ansible-portable-linux-x64-$CANARY_VERSION$CANARY_SUFFIX.tar.xz
           rm -rf portable
           mkdir -p portable/$CANARY_FOLDER/AnsibleForcePortable
           touch portable/$CANARY_FOLDER/AnsibleForcePortable/.keep
@@ -1450,7 +1450,7 @@ jobs:
           # job; here the portable's Ansible.exe is re-checked as the
           # publish-side witness.
           sudo apt-get update && sudo apt-get install -y osslsigncode
-          unzip -q artifacts/portable/td-portable-win-x64-*.zip -d /tmp/winapp
+          unzip -q artifacts/portable/ansible-portable-win-x64-*.zip -d /tmp/winapp
           if ! osslsigncode verify /tmp/winapp/${{ needs.version.outputs.folder }}/Ansible.exe; then
             echo "::error::The portable Ansible.exe is not Authenticode-signed."
             exit 1
@@ -1538,7 +1538,7 @@ jobs:
           # witness. TODO(canary-infra): pin an apple-codesign (rcodesign)
           # release for full signature + staple verification on Linux:
           #   rcodesign verify /tmp/macapp/Ansible/Ansible.app
-          unzip -q artifacts/portable/td-portable-mac-*.zip -d /tmp/macapp
+          unzip -q artifacts/portable/ansible-portable-mac-*.zip -d /tmp/macapp
           if [ ! -d "/tmp/macapp/${{ needs.version.outputs.folder }}/Ansible.app/Contents/_CodeSignature" ]; then
             echo "::error::The portable Ansible.app has no code signature."
             exit 1

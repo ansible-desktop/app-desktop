@@ -51,19 +51,19 @@ if [ "$CHANNEL" = "private" ]; then SUFFIX="$SUFFIX-private"; fi
 
 update_file() {
   case "$1" in
-    win64) echo "td-update-win-x64-$BASE$SUFFIX" ;;
-    mac) echo "td-update-mac-x64-$BASE$SUFFIX" ;;
-    armac) echo "td-update-mac-arm-$BASE$SUFFIX" ;;
-    linux) echo "td-update-linux-x64-$BASE$SUFFIX" ;;
+    win64) echo "ansible-update-win-x64-$BASE$SUFFIX" ;;
+    mac) echo "ansible-update-mac-x64-$BASE$SUFFIX" ;;
+    armac) echo "ansible-update-mac-arm-$BASE$SUFFIX" ;;
+    linux) echo "ansible-update-linux-x64-$BASE$SUFFIX" ;;
     *) echo "::error::Unknown platform '$1'." >&2; return 1 ;;
   esac
 }
 
 portable_file() {
   case "$1" in
-    win64) echo "td-portable-win-x64-$VERSION_STR$SUFFIX.zip" ;;
-    mac|armac) echo "td-portable-mac-$VERSION_STR$SUFFIX.zip" ;;
-    linux) echo "td-portable-linux-x64-$VERSION_STR$SUFFIX.tar.xz" ;;
+    win64) echo "ansible-portable-win-x64-$VERSION_STR$SUFFIX.zip" ;;
+    mac|armac) echo "ansible-portable-mac-$VERSION_STR$SUFFIX.zip" ;;
+    linux) echo "ansible-portable-linux-x64-$VERSION_STR$SUFFIX.tar.xz" ;;
   esac
 }
 
