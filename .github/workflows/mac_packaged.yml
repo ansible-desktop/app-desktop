@@ -228,7 +228,7 @@ jobs:
           cp target/$HOST/release/libtlottie.a $PREFIX/lib/libtlottie.a
           cp include/tlottie.h $PREFIX/include/tlottie/tlottie.h
 
-      - name: Telegram Desktop build.
+      - name: Ansible build.
         if: env.ONLY_CACHE == 'false'
         run: |
           cd $REPO_NAME

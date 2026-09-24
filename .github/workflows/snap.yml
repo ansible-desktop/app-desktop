@@ -84,7 +84,7 @@ jobs:
           enable-lvm-span: true
           lvm-span-mountpoint: /var/snap/lxd/common/lxd/storage-pools/default/containers
 
-      - name: Telegram Desktop snap build.
+      - name: Ansible snap build.
         run: sudo -u $USER snap run snapcraft --verbosity=debug
 
       - name: Move artifact.

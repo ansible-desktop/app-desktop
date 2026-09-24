@@ -253,7 +253,7 @@ jobs:
           rm -rf "/c/Program Files/Google/Chrome SxS" || true
           df -h /c | tail -1
 
-      - name: Telegram Desktop build.
+      - name: Ansible build.
         if: env.ONLY_CACHE == 'false'
         run: |
           cd %TBUILD%\%REPO_NAME%\Ansible

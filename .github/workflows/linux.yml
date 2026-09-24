@@ -133,7 +133,7 @@ jobs:
           rm -rf ${{ runner.temp }}/.buildx-cache
           mv ${{ runner.temp }}/.buildx-cache{-new,}
 
-      - name: Restore Telegram Desktop cache.
+      - name: Restore Ansible cache.
         id: cache-tdesktop
         if: env.ONLY_CACHE == 'false'
         uses: actions/cache/restore@v6
@@ -142,7 +142,7 @@ jobs:
           key: ${{ runner.OS }}-tdesktop-${{ matrix.defines || 'null' }}-${{ github.run_id }}
           restore-keys: ${{ runner.OS }}-tdesktop-${{ matrix.defines || 'null' }}-
 
-      - name: Telegram Desktop build.
+      - name: Ansible build.
         if: env.ONLY_CACHE == 'false'
         run: |
           DEFINE=""
@@ -182,14 +182,14 @@ jobs:
           echo "misses=$MISSES" >> $GITHUB_OUTPUT
           echo "ccache misses this run: $MISSES"
 
-      - name: Trim Telegram Desktop cache.
+      - name: Trim Ansible cache.
         if: >
           env.ONLY_CACHE == 'false'
             && github.ref_name == github.event.repository.default_branch
             && fromJSON(steps.ccache-stats.outputs.misses) > 300
         run: ccache --evict-older-than 1d
 
-      - name: Save Telegram Desktop cache.
+      - name: Save Ansible cache.
         if: >
           env.ONLY_CACHE == 'false'
             && github.ref_name == github.event.repository.default_branch

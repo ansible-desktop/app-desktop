@@ -20,7 +20,7 @@
 #   vars.CANARY_CHANNEL
 #       Optional lane override, see above. Normally left unset.
 #   secrets.CANARY_API_ID / secrets.CANARY_API_HASH
-#       Production Telegram API credentials for the canary app builds.
+#       Production Ansible API credentials for the canary app builds.
 #   secrets.CANARY_BOT_TOKEN
 #       Bot admin in this lane's channel (posts files, edits metadata).
 #   secrets.AZURE_CLIENT_ID / secrets.AZURE_TENANT_ID
@@ -587,7 +587,7 @@ jobs:
             ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
           key: ${{ steps.cache-qt.outputs.cache-primary-key }}
 
-      - name: Telegram Desktop build.
+      - name: Ansible build.
         run: |
           cd %TBUILD%\%REPO_NAME%\Ansible
 
@@ -614,7 +614,7 @@ jobs:
           cd $TBUILD/$REPO_NAME/out/Release
           DUMP=$TBUILD/Libraries/win64/breakpad/src/tools/windows/dump_syms/Release/dump_syms.exe
           mkdir -p symbols
-          for MODULE in Telegram Updater; do
+          for MODULE in Ansible Updater; do
             "$DUMP" $MODULE.pdb > $MODULE.sym
             DEBUG_ID=$(head -n 1 $MODULE.sym | awk '{ print $4 }')
             mkdir -p symbols/$MODULE.pdb/$DEBUG_ID
@@ -649,12 +649,12 @@ jobs:
           # the account exists. The signing itself is:
           echo "$SM_CLIENT_CERT_FILE_B64" | base64 -d > /tmp/keylocker.p12
           export SM_CLIENT_CERT_FILE=/tmp/keylocker.p12
-          smctl sign --keypair-alias "$SM_KEYPAIR_ALIAS" --input Telegram.exe
+          smctl sign --keypair-alias "$SM_KEYPAIR_ALIAS" --input Ansible.exe
           smctl sign --keypair-alias "$SM_KEYPAIR_ALIAS" --input Updater.exe
           # Both binaries are verified here, on the exact bytes that get
           # packed: Updater.exe travels only inside the update envelope,
-          # the publish job can re-check just the portable's Telegram.exe.
-          signtool verify /pa /all Telegram.exe
+          # the publish job can re-check just the portable's Ansible.exe.
+          signtool verify /pa /all Ansible.exe
           signtool verify /pa /all Updater.exe
           echo "signed=true" >> $GITHUB_OUTPUT
 
@@ -675,7 +675,7 @@ jobs:
           # the release copy is a pinned known-good build for Windows 7,
           # while CI would grab whatever the runner's SDK ships. Canary
           # machines use the system compiler dll.
-          ./Packer.exe -path Telegram.exe -path Updater.exe \
+          ./Packer.exe -path Ansible.exe -path Updater.exe \
             -target win64 \
             -version $BASE \
             -channel canary-${{ needs.version.outputs.channel }} \
@@ -700,15 +700,15 @@ jobs:
           fi
 
           # The first-install artifact is a portable-style archive (like
-          # the alpha builds): the TelegramForcePortable folder keeps the
+          # the alpha builds): the AnsibleForcePortable folder keeps the
           # canary's tdata next to the binary, never touching a normal
           # installation. The .keep file stops unpackers that skip empty
           # folders from dropping it.
           PORTABLE=td-portable-win-x64-$CANARY_VERSION$CANARY_SUFFIX.zip
           rm -rf portable
-          mkdir -p portable/$CANARY_FOLDER/TelegramForcePortable
-          touch portable/$CANARY_FOLDER/TelegramForcePortable/.keep
-          cp Telegram.exe portable/$CANARY_FOLDER/
+          mkdir -p portable/$CANARY_FOLDER/AnsibleForcePortable
+          touch portable/$CANARY_FOLDER/AnsibleForcePortable/.keep
+          cp Ansible.exe portable/$CANARY_FOLDER/
           (cd portable && 7z a -mx9 ../$PORTABLE $CANARY_FOLDER/)
 
           mkdir -p artifact/update artifact/portable
@@ -831,9 +831,9 @@ jobs:
             ThirdParty
           key: ${{ steps.cache-libs.outputs.cache-primary-key }}
 
-      - name: Telegram Desktop build.
+      - name: Ansible build.
         run: |
-          cd $REPO_NAME/Telegram
+          cd $REPO_NAME/Ansible
 
           # Report every failing file in one run rather than the first.
           defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool YES
@@ -866,10 +866,10 @@ jobs:
           cd $REPO_NAME/out/Release
           DUMP=../../../Libraries/breakpad/src/tools/mac/dump_syms/build/Release/dump_syms
           mkdir -p symbols
-          for MODULE in Telegram Updater; do
-            BINARY=Telegram.app/Contents/MacOS/Telegram
+          for MODULE in Ansible Updater; do
+            BINARY=Ansible.app/Contents/MacOS/Ansible
             if [ "$MODULE" = "Updater" ]; then
-              BINARY=Telegram.app/Contents/Frameworks/Updater
+              BINARY=Ansible.app/Contents/Frameworks/Updater
             fi
             "$DUMP" -a ${{ matrix.arch }} "$BINARY" > $MODULE.sym 2>/dev/null
             DEBUG_ID=$(head -n 1 $MODULE.sym | awk '{ print $4 }')
@@ -881,7 +881,7 @@ jobs:
       - name: Pack the half for transport.
         run: |
           cd $REPO_NAME/out/Release
-          for ENTRY in Telegram.app Packer; do
+          for ENTRY in Ansible.app Packer; do
             if [ ! -e "$ENTRY" ]; then
               echo "::error::$ENTRY not found after the build."
               exit 1
@@ -889,14 +889,14 @@ jobs:
           done
 
           # Stripped here: the universal app is lipo'd from these.
-          for BINARY in MacOS/Telegram Frameworks/Updater Helpers/crashpad_handler; do
-            strip Telegram.app/Contents/$BINARY
+          for BINARY in MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler; do
+            strip Ansible.app/Contents/$BINARY
           done
 
           # A tar, because upload-artifact resolves symlinks and drops
           # the executable bit, and an .app bundle survives neither.
           mkdir -p transport
-          tar -cf transport/mac-${{ matrix.arch }}.tar Telegram.app Packer
+          tar -cf transport/mac-${{ matrix.arch }}.tar Ansible.app Packer
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         name: Upload the half.
@@ -969,10 +969,10 @@ jobs:
           # universal app installs, the thin ones become the updates.
           cd $REPO_NAME/out/Release
           for ARCH in x86_64 arm64; do
-            rm -rf unpack.$ARCH Telegram.$ARCH.app
+            rm -rf unpack.$ARCH Ansible.$ARCH.app
             mkdir unpack.$ARCH
             tar -xf transport/mac-$ARCH.tar -C unpack.$ARCH
-            mv unpack.$ARCH/Telegram.app Telegram.$ARCH.app
+            mv unpack.$ARCH/Ansible.app Ansible.$ARCH.app
           done
 
           # Packer runs here, so do not bet on the runner architecture.
@@ -982,13 +982,13 @@ jobs:
 
           # Same Mach-O list as build.sh, everything else is the same in
           # both halves, so the arm64 bundle is the template.
-          BINARIES="MacOS/Telegram Frameworks/Updater Helpers/crashpad_handler"
-          rm -rf Telegram.app
-          cp -R Telegram.arm64.app Telegram.app
+          BINARIES="MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler"
+          rm -rf Ansible.app
+          cp -R Ansible.arm64.app Ansible.app
           for BINARY in $BINARIES; do
-            lipo -create Telegram.arm64.app/Contents/$BINARY \
-              Telegram.x86_64.app/Contents/$BINARY \
-              -output Telegram.app/Contents/$BINARY
+            lipo -create Ansible.arm64.app/Contents/$BINARY \
+              Ansible.x86_64.app/Contents/$BINARY \
+              -output Ansible.app/Contents/$BINARY
           done
 
           # A new Mach-O outside that list would silently stay arm64-only
@@ -1002,7 +1002,7 @@ jobs:
                 exit 1
                 ;;
             esac
-          done < <(find Telegram.app -type f -perm +111 -print0)
+          done < <(find Ansible.app -type f -perm +111 -print0)
 
       - name: Sign and notarize.
         id: sign
@@ -1035,7 +1035,7 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: \
             -s -k "$KEYCHAIN_PASSWORD" build.keychain
 
-          for BUNDLE in Telegram.x86_64.app Telegram.arm64.app Telegram.app; do
+          for BUNDLE in Ansible.x86_64.app Ansible.arm64.app Ansible.app; do
             codesign --force --deep --timestamp --options runtime \
               --sign "$SIGN_IDENTITY" \
               --entitlements ../../Ansible/Ansible/Ansible.entitlements \
@@ -1073,10 +1073,10 @@ jobs:
             # so the file paths inside the update match the install.
             rm -rf update_pack
             mkdir update_pack
-            cp -R Telegram.$ARCH.app update_pack/Telegram.app
+            cp -R Ansible.$ARCH.app update_pack/Ansible.app
             cp Packer update_pack/
             cd update_pack
-            ./Packer -path Telegram.app \
+            ./Packer -path Ansible.app \
               -arch $ARCH \
               -version $BASE \
               -channel canary-${{ needs.version.outputs.channel }} \
@@ -1106,12 +1106,12 @@ jobs:
           # Portable-style first-install archive from the stapled
           # universal app, with tdata forced next to the bundle. The
           # .keep file stops unpackers that skip empty folders from
-          # dropping TelegramForcePortable.
+          # dropping AnsibleForcePortable.
           PORTABLE=td-portable-mac-$CANARY_VERSION$CANARY_SUFFIX.zip
           rm -rf portable
-          mkdir -p portable/$CANARY_FOLDER/TelegramForcePortable
-          touch portable/$CANARY_FOLDER/TelegramForcePortable/.keep
-          cp -R Telegram.app portable/$CANARY_FOLDER/
+          mkdir -p portable/$CANARY_FOLDER/AnsibleForcePortable
+          touch portable/$CANARY_FOLDER/AnsibleForcePortable/.keep
+          cp -R Ansible.app portable/$CANARY_FOLDER/
           (cd portable && zip -q -r ../$PORTABLE $CANARY_FOLDER)
 
           mkdir -p artifact/update artifact/portable
@@ -1280,7 +1280,7 @@ jobs:
           printf 'static const char *AlphaPrivateKey = "%s";\n' \
             "$(random_key)" > ../DesktopPrivate/alpha_private.h
 
-      - name: Telegram Desktop build.
+      - name: Ansible build.
         run: |
           docker run --rm \
           -u $(id -u) \
@@ -1308,7 +1308,7 @@ jobs:
           # dump_syms is built into the centos_env image (breakpad), so
           # it runs there against the same binaries mounted from the
           # host; the release flow copies the tool out by hand instead.
-          for MODULE in Telegram Updater; do
+          for MODULE in Ansible Updater; do
             docker run --rm \
               -u $(id -u) \
               -v $PWD:/out -w /out \
@@ -1319,7 +1319,7 @@ jobs:
             mv $MODULE.sym symbols/$MODULE/$DEBUG_ID/
           done
           # TODO(canary-infra): upload symbols/ to R2 (see the Windows job).
-          ../../Ansible/build/minidebug.sh Telegram
+          ../../Ansible/build/minidebug.sh Ansible
 
       - name: Verify the update trust chain.
         run: |
@@ -1340,7 +1340,7 @@ jobs:
       - name: Pack v2 update.
         run: |
           cd out/Release
-          ./Packer -path Telegram -path Updater \
+          ./Packer -path Ansible -path Updater \
             -version ${{ needs.version.outputs.base }} \
             -channel canary-${{ needs.version.outputs.channel }} \
             -counter $CANARY_COUNTER \
@@ -1365,12 +1365,12 @@ jobs:
 
           # Portable-style first-install archive, tdata forced next to
           # the binary. The .keep file stops unpackers that skip empty
-          # folders from dropping TelegramForcePortable.
+          # folders from dropping AnsibleForcePortable.
           PORTABLE=td-portable-linux-x64-$CANARY_VERSION$CANARY_SUFFIX.tar.xz
           rm -rf portable
-          mkdir -p portable/$CANARY_FOLDER/TelegramForcePortable
-          touch portable/$CANARY_FOLDER/TelegramForcePortable/.keep
-          cp Telegram Updater portable/$CANARY_FOLDER/
+          mkdir -p portable/$CANARY_FOLDER/AnsibleForcePortable
+          touch portable/$CANARY_FOLDER/AnsibleForcePortable/.keep
+          cp Ansible Updater portable/$CANARY_FOLDER/
           tar -cJf $PORTABLE -C portable $CANARY_FOLDER
 
           mkdir -p artifact/update artifact/portable
@@ -1447,12 +1447,12 @@ jobs:
           # Publishing unsigned binaries is never allowed: this is a hard
           # gate, not a warning. Both binaries inside the update envelope
           # were verified with signtool right after signing in the build
-          # job; here the portable's Telegram.exe is re-checked as the
+          # job; here the portable's Ansible.exe is re-checked as the
           # publish-side witness.
           sudo apt-get update && sudo apt-get install -y osslsigncode
           unzip -q artifacts/portable/td-portable-win-x64-*.zip -d /tmp/winapp
-          if ! osslsigncode verify /tmp/winapp/${{ needs.version.outputs.folder }}/Telegram.exe; then
-            echo "::error::The portable Telegram.exe is not Authenticode-signed."
+          if ! osslsigncode verify /tmp/winapp/${{ needs.version.outputs.folder }}/Ansible.exe; then
+            echo "::error::The portable Ansible.exe is not Authenticode-signed."
             exit 1
           fi
 
@@ -1537,10 +1537,10 @@ jobs:
           # spctl --assess on every bundle; this is the publish-side
           # witness. TODO(canary-infra): pin an apple-codesign (rcodesign)
           # release for full signature + staple verification on Linux:
-          #   rcodesign verify /tmp/macapp/Ansible/Telegram.app
+          #   rcodesign verify /tmp/macapp/Ansible/Ansible.app
           unzip -q artifacts/portable/td-portable-mac-*.zip -d /tmp/macapp
-          if [ ! -d "/tmp/macapp/${{ needs.version.outputs.folder }}/Telegram.app/Contents/_CodeSignature" ]; then
-            echo "::error::The portable Telegram.app has no code signature."
+          if [ ! -d "/tmp/macapp/${{ needs.version.outputs.folder }}/Ansible.app/Contents/_CodeSignature" ]; then
+            echo "::error::The portable Ansible.app has no code signature."
             exit 1
           fi
 
