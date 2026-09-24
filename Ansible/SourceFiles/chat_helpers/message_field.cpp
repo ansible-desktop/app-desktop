@@ -1645,12 +1645,12 @@ Ui::InputField::MimeDataHook WrappedMessageFieldMimeHook(
 	return [field, originalHook = std::move(original)](
 			not_null<const QMimeData*> data,
 			Ui::InputField::MimeAction action) {
-		if (data->hasFormat(u"application/x-telegram-input-field"_q)) {
+		if (data->hasFormat(u"application/x-ansible-input-field"_q)) {
 			if (action == Ui::InputField::MimeAction::Check) {
 				return true;
 			}
 			const auto text = QString::fromUtf8(
-				data->data(u"application/x-telegram-input-field"_q));
+				data->data(u"application/x-ansible-input-field"_q));
 			field->textCursor().insertText(text);
 			return true;
 		}

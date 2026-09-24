@@ -2068,13 +2068,13 @@ void InnerWidget::performDrag() {
 		return data;
 	}();
 	mimeData->setData(
-		u"application/x-telegram-dialog"_q,
+		u"application/x-ansible-dialog"_q,
 		std::move(byteArray));
 
 	if (const auto u = history->peer->username(); !u.isEmpty()) {
 		mimeData->setText(history->peer->session().createInternalLinkFull(u));
 		mimeData->setData(
-			u"application/x-telegram-input-field"_q,
+			u"application/x-ansible-input-field"_q,
 			('@' + u).toUtf8());
 	}
 

@@ -508,7 +508,7 @@ bool FillChooseFilterWithAdminedGroupsMenu(
 History *HistoryFromMimeData(
 		const QMimeData *mime,
 		not_null<Main::Session*> session) {
-	const auto mimeFormat = u"application/x-telegram-dialog"_q;
+	const auto mimeFormat = u"application/x-ansible-dialog"_q;
 	if (mime->hasFormat(mimeFormat)) {
 		auto peerId = int64(-1);
 		auto isTestMode = false;

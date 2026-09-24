@@ -633,7 +633,7 @@ Widget::Widget(
 	_search->setMimeDataHook([=](
 			not_null<const QMimeData*> data,
 			Ui::InputField::MimeAction action) {
-		if (data->hasFormat(u"application/x-telegram-dialog"_q)) {
+		if (data->hasFormat(u"application/x-ansible-dialog"_q)) {
 			if (const auto history = HistoryFromMimeData(data, &session())) {
 				if (action != Ui::InputField::MimeAction::Check) {
 					controller->searchInChat(history);

@@ -39,9 +39,9 @@ constexpr auto kQuerySettingsEachMs = crl::time(1000);
 constexpr auto kCacheExpirationWeeks = 5;
 constexpr auto kCacheExpirationSeconds = kCacheExpirationWeeks * 7 * 24 * 60 * 60;
 
-NSString *const kTelegramMarkAsReadText = @"TelegramMarkAsReadText";
-NSString *const kTelegramMarkAsReadTimestamp = @"TelegramMarkAsReadTimestamp";
-NSString *const kTelegramMarkAsReadLanguageCode = @"TelegramMarkAsReadLanguageCode";
+NSString *const kTelegramMarkAsReadText = @"AnsibleMarkAsReadText";
+NSString *const kTelegramMarkAsReadTimestamp = @"AnsibleMarkAsReadTimestamp";
+NSString *const kTelegramMarkAsReadLanguageCode = @"AnsibleMarkAsReadLanguageCode";
 
 crl::time LastSettingsQueryMs/* = 0*/;
 bool DoNotDisturbEnabled/* = false*/;
