@@ -84,7 +84,7 @@ void AboutBox(not_null<Ui::GenericBox*> box) {
 			st::boxRowPadding.bottom()));
 	version->setClickedCallback([=] {
 		if (cRealAlphaVersion()) {
-			auto url = u"https://tdesktop.com/"_q;
+			auto url = u"https://adesktop.su/"_q;
 			if (Platform::IsWindows32Bit()) {
 				url += u"win/%1.zip"_q;
 			} else if (Platform::IsWindows64Bit()) {

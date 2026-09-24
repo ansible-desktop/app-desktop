@@ -29,14 +29,14 @@ void SendToBannedHelp(const QString &phone) {
 
 	const auto body = qsl("\
 I'm trying to use my mobile phone number: ") + phone + qsl("\n\
-But Telegram says it's banned. Please help.\n\
+But Ansible says it's banned. Please help.\n\
 \n\
 App version: ") + version + qsl("\n\
 OS version: ") + ::Platform::SystemVersionPretty() + qsl("\n\
 Locale: ") + ::Platform::SystemLanguage();
 
 	const auto url = "mailto:?to="
-		+ qthelp::url_encode("login@stel.com")
+		+ qthelp::url_encode("recover@ansible.su")
 		+ "&subject="
 		+ qthelp::url_encode(subject)
 		+ "&body="
