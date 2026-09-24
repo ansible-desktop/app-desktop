@@ -304,7 +304,7 @@ bool CheckAppTranslocation() {
 	const auto portable = !state.original.isEmpty()
 		&& QFileInfo(state.original + u"/Contents/Info.plist"_q).isFile()
 		&& QDir(QFileInfo(state.original).path()
-			+ u"/TelegramForcePortable"_q).exists();
+			+ u"/AnsibleForcePortable"_q).exists();
 	if (!relaunched
 		&& portable
 		&& RemoveQuarantineRecursively(state.original)

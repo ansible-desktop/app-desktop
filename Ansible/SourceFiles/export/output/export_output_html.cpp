@@ -4137,7 +4137,7 @@ auto HtmlWriter::Wrap::pushMessage(
 		return serviceFrom
 			+ " sent you a gift for "
 			+ data.cost
-			+ ": Telegram Premium for "
+			+ ": Ansible Premium for "
 			+ QString::number(data.days).toUtf8()
 			+ " days.";
 	}, [&](const ActionTopicCreate &data) {
@@ -4171,22 +4171,22 @@ auto HtmlWriter::Wrap::pushMessage(
 				: " set a new background for this chat");
 	}, [&](const ActionGiftCode &data) {
 		return data.unclaimed
-			? ("This is an unclaimed Telegram Premium for "
+			? ("This is an unclaimed Ansible Premium for "
 				+ NumberToString(data.days)
 				+ (data.days > 1 ? " days" : " day")
 				+ " prize in a giveaway organized by a channel.")
 			: data.viaGiveaway
-			? ("You won a Telegram Premium for "
+			? ("You won a Ansible Premium for "
 				+ NumberToString(data.days)
 				+ (data.days > 1 ? " days" : " day")
 				+ " prize in a giveaway organized by a channel.")
-			: ("You've received a Telegram Premium for "
+			: ("You've received a Ansible Premium for "
 				+ NumberToString(data.days)
 				+ (data.days > 1 ? " days" : " day")
 				+ " gift from a channel.");
 	}, [&](const ActionGiveawayLaunch &data) {
 		return serviceFrom + " just started a giveaway "
-			"of Telegram Premium subscriptions to its followers.";
+			"of Ansible Premium subscriptions to its followers.";
 	}, [&](const ActionGiveawayResults &data) {
 		return !data.winners
 			? "No winners of the giveaway could be selected."
@@ -4198,9 +4198,9 @@ auto HtmlWriter::Wrap::pushMessage(
 				"Telegram and received private messages with giftcodes."
 			: (data.credits && !data.unclaimed)
 			? NumberToString(data.winners) + " of the giveaway was randomly "
-				"selected by Telegram and received their prize."
+				"selected by Ansible and received their prize."
 			: NumberToString(data.winners) + " of the giveaway was randomly "
-				"selected by Telegram and received private messages with "
+				"selected by Ansible and received private messages with "
 				"giftcodes.";
 	}, [&](const ActionBoostApply &data) {
 		return serviceFrom
@@ -5212,8 +5212,8 @@ QByteArray HtmlWriter::Wrap::pushGiveaway(
 			+ Data::NumberToString(data.quantity)
 			+ "</b> "
 			+ SerializeString((data.quantity > 1)
-				? "Telegram Premium Subscriptions"
-				: "Telegram Premium Subscription")
+				? "Ansible Premium Subscriptions"
+				: "Ansible Premium Subscription")
 			+ " for <b>" + Data::NumberToString(data.months) + "</b> "
 			+ (data.months > 1 ? "months." : "month."));
 	}
@@ -5334,7 +5334,7 @@ QByteArray HtmlWriter::Wrap::pushGiveaway(
 		+ SerializeString((data.winnersCount > 1) ? "winners" : "winner")
 		+ " of the "
 		+ wrapMessageLink(data.launchId, "Giveaway")
-		+ " was randomly selected by Telegram.");
+		+ " was randomly selected by Ansible.");
 	result.append(popTag());
 
 	result.append(pushDiv("section_title bold"));

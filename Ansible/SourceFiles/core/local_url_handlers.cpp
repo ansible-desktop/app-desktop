@@ -632,9 +632,10 @@ bool ResolveUsernameOrPhone(
 	const auto validPhone = [](const QString &phone) {
 		return qthelp::regex_match(u"^[0-9]+$"_q, phone, {}).valid();
 	};
-	if (domain == u"telegrampassport"_q) {
-		return ShowPassportForm(controller, params);
-	} else if (!validDomain(domain) && !validPhone(phone)) {
+	// Легаси-псевдоним апстрима `domain=telegrampassport` убран: это
+	// старая форма ссылки Telegram Passport, современная — `passport?…`,
+	// и чужие ссылки мы не разбираем принципиально.
+	if (!validDomain(domain) && !validPhone(phone)) {
 		return false;
 	}
 	using ResolveType = Window::ResolveType;
@@ -2145,8 +2146,7 @@ bool InternalPassportLink(const QString &url) {
 		u"^passport/?\\?(.+)(#|$)"_q,
 		result.command,
 		matchOptions);
-	const auto authLegacy = (result.username == u"telegrampassport"_q);
-	return authMatch->hasMatch() || authLegacy;
+	return authMatch->hasMatch();
 }
 
 bool InternalPassportOrOAuthLink(const QString &url) {
