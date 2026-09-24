@@ -2435,13 +2435,27 @@ PRIVATE
     G_LOG_DOMAIN="Ansible"
 )
 
-# 🚨 Бинарь всегда кладём в КОРЕНЬ каталога сборки. У апстрима здесь стояло
-# условие «имя вывода отличается от имени по умолчанию», и оно молча решало,
-# класть ли в bin/. После того как output_name стал Ansible, а цель — тоже
-# Ansible, сравнение перевернулось бы и бинарь уехал в bin/, сломав и
-# проверку `out/Debug/Ansible` в linux.yml, и скрипты упаковки. Условия
-# больше нет: поведение зафиксировано тем, на которое всё и рассчитано.
-set(output_folder ${CMAKE_BINARY_DIR})
+# 🚨 Ветка с bin/ здесь НЕ косметика — она разводит имя бинаря и имя
+# двоичного подкаталога. `add_subdirectory(Ansible)` создаёт
+# ${CMAKE_BINARY_DIR}/Ansible/, и цель тоже зовётся Ansible: у
+# одноконфигурационного генератора без суффикса конфигурации бинарь лёг бы
+# ровно на этот каталог —
+#   ld: cannot open output file Ansible: Is a directory
+# Так падал snap (Release, один конфиг). У многоконфигурационных (наши
+# Windows и Linux) путь идёт через ${output_folder}/<Config>/, столкновения
+# нет, поэтому они собирались зелёными и проблему не показывали.
+#
+# У апстрима условие сравнивало имя вывода с именем каталога, и до
+# переименования Telegram -> Ansible они не совпадали. Теперь совпадают,
+# и ветка bin/ нужна по прямому назначению.
+get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if (APPLE
+    OR is_multi_config
+    OR NOT CMAKE_EXECUTABLE_SUFFIX STREQUAL "")
+    set(output_folder ${CMAKE_BINARY_DIR})
+else()
+    set(output_folder ${CMAKE_BINARY_DIR}/bin)
+endif()
 
 set_target_properties(Ansible PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${output_folder})
 
