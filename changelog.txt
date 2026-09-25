@@ -1,26 +1,64 @@
-0.3.0 (20.09.26)
+0.3.0 (25.09.26)
+
+Base and protocol
 
 - Rebase onto upstream Telegram Desktop 7.2.8, API layer 229.
-- Russian interface, served by the Ansible backend: 7683 of 7683 strings.
-- Rebrand user-visible English strings to Ansible.
-- Rebrand translation key names: telegram to ansible, stars to diamonds,
-  star to diamond, credits to diamonds. 368 keys, applied to the client
-  and to the language packs in one wave.
-- Crash reporting is enabled again and now reports to our own receiver at
-  api.ansible.su/crash instead of upstream.
-- Keep the star shape in the photo editor and the Gram balance strings
-  under their own names: those are not the diamond currency.
 - Single data centre and our own RSA key for the handshake; own api_id.
+  The snap build no longer carries someone else's credentials.
 - Links are asme.su, deep links are as://, animated stickers are .ass.
-  Telegram's t.me, tg:// and .tgs are no longer recognised.
+  Telegram's t.me, tg:// and .tgs are not recognised, by decision.
+
+Language
+
+- Russian interface, served by the Ansible backend: 7683 of 7683 strings.
+- User-visible English strings rebranded.
+- Translation key names rebranded: telegram to ansible, stars to diamonds,
+  star to diamond, credits to diamonds. 368 keys, client and language packs
+  moved in one wave. The star shape in the photo editor and the Gram balance
+  strings keep their names - those are not the diamond currency.
+
+Naming
+
+- The source tree no longer carries the upstream name: the Telegram
+  directory, the CMake target, the resource files and the package names are
+  all Ansible now.
+- The hardcoded name is gone from the interface too, including the first
+  screen and the watermark burned into every round video message.
+
+Updates
+
+- Auto-update has a root of trust of its own. Until now the client trusted
+  Telegram's root key for its own updates and nobody but them could sign one.
+- Update packages are built, signed and published by a release lane of ours;
+  the client fetches them from ansible.su/ad.
+- The update feed lives under /ad rather than /td.
+
+Crash reports
+
+- Crash reporting is enabled again and reports to api.ansible.su/crash.
+  Previous builds were compiled with dumps disabled, so a crash left no
+  trace at all.
+
+Fixes that were changing behaviour, not just wording
+
+- Applying an update on macOS could never work: the updater was looked up
+  inside a bundle named after the upstream product.
+- The Windows updater rewrote the installed-program entry back to the
+  upstream name and publisher after every single update.
+- Laying out our launcher on Linux deleted the real Telegram Desktop's menu
+  entry and autostart, if it was installed alongside. The Windows shortcut
+  cleanup had the same defect and never found our own shortcut.
+- Portable mode migrated the upstream alpha folders into ours, taking data
+  that is not ours.
+- The autostart toggle in the Store build queried a task that was never
+  registered, so it did nothing.
 - Forums are available in any group, without the member threshold.
-- Accept a phone number typed with spaces, brackets or dashes.
-- Drop the legacy ~/.TelegramDesktop lookup on Linux: a leftover folder
-  from Telegram Desktop is no longer read.
-- Own installer identifier, so Ansible Desktop and Telegram Desktop no
-  longer overwrite each other's install entry on Windows.
-- Version is now set from one place and cannot drift between the
-  executable, the installer and the running application.
+- A phone number typed with spaces, brackets or dashes is accepted.
+- The legacy ~/.TelegramDesktop lookup on Linux is gone.
+- Our own installer identifier, so the two applications no longer overwrite
+  each other's install entry on Windows.
+- The version is set from one place and cannot drift between the executable,
+  the installer and the running application.
 
 Earlier releases are listed at
 https://github.com/ansible-desktop/app-desktop/releases
