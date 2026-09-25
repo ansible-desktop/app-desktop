@@ -1,3 +1,9 @@
+0.2.0 (19.09.26)
+
+- Test build used to verify that a client below 0.3.0 sees the update,
+  downloads it and applies it. Not a release: this entry exists only on
+  the throwaway branch that produces that build.
+
 0.3.0 (25.09.26)
 
 Base and protocol

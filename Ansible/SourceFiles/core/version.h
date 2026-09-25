@@ -38,7 +38,7 @@ constexpr auto AppFile = "Ansible"_cs;
 // 🚨 И ФОРМУЛУ ВЫШЕ НЕ ЗАПИСЫВАТЬ ВИДОМ «AppVersion = <число>»: патчер ищет
 // такую запись регуляркой построчно и переписал бы ЧИСЛО В КОММЕНТАРИИ,
 // молча превратив документацию в ложь. Один раз уже переписал.
-constexpr auto AppVersion = 3003000;
-constexpr auto AppVersionStr = "0.3.0";
+constexpr auto AppVersion = 3002000;
+constexpr auto AppVersionStr = "0.2.0";
 constexpr auto AppBetaVersion = false;
 constexpr auto AppAlphaVersion = TDESKTOP_ALPHA_VERSION;
