@@ -2611,6 +2611,18 @@ if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_wins
             target_compile_definitions(Packer PRIVATE PACKER_USE_PACKAGED)
         endif()
 
+        # 🚨 Без этого упаковщик не собирается вовсе: packer.cpp включает
+        # ../../../../DesktopPrivate/{packer_private,alpha_private}.h, а этого
+        # каталога у нас нет и не будет — там лежали приватные RSA-ключи
+        # апстрима для схемы v1. Ветка #else в самом packer.cpp написана ровно
+        # под наш случай: «V2 packing needs no DesktopPrivate keys».
+        #
+        # Путь v1 нам всё равно закрыт: в packer.cpp вшиты ПУБЛИЧНЫЕ ключи
+        # апстрима, и после подписи он проверяет её ими же — нашим ключом
+        # подпись не сойдётся. Мы подписываем только по v2, ключом канала из
+        # Ansible/Resources/update/manifest.min.json.
+        target_compile_definitions(Packer PRIVATE PACKER_DISABLE_PRIVATE)
+
         set_target_properties(Packer PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${output_folder})
     endif()
 elseif (build_winstore)
