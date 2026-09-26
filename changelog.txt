@@ -1,3 +1,11 @@
+0.3.1 (27.09.26)
+
+- No functional changes. Cut to verify auto-update end to end on a real
+  installation: a client on 0.3.0 should see this version, fetch the
+  package from ansible.su/ad, check its signature against our own root
+  and apply it on restart. Identical code is deliberate - it isolates the
+  update machinery from anything else that could fail.
+
 0.3.0 (25.09.26)
 
 Base and protocol
