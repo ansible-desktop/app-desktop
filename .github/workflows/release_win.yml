@@ -24,6 +24,14 @@ name: Release Windows.
 # версию, файла которой ещё нет, отправляет клиентов за несуществующим
 # объектом, а S3 отвечает на это 403 — при разборе выглядит как проблема
 # доступа, хотя файла просто нет.
+#
+# 🚨 Имя объекта манифеста задаёт КЛИЕНТ, и оно РАЗНОЕ по платформам:
+# `Platform::AutoUpdateVersion()` (lib_base/base/platform/*/base_info_*) —
+# win = 6, mac = 2, linux = 2, а адрес складывается как `/current<N>`
+# (update_checker.cpp, HttpChecker::start). То есть винда спрашивает
+# `/ad/current6`, и если лежит только `current2`, клиент получает 403 и пишет
+# в лог `Update Error: could not get current version 201` — выглядит как
+# проблема доступа, хотя объекта просто нет. Публикуем ОБА имени.
 
 on:
   workflow_dispatch:
@@ -50,6 +58,10 @@ jobs:
   release-windows:
     name: Release Windows x64
     runs-on: windows-2022
+
+    # Нужно, чтобы прикрепить файлы к релизу GitHub тем же GITHUB_TOKEN.
+    permissions:
+      contents: write
 
     env:
       PREPARE_PATH: "Ansible/build/prepare/prepare.py"
@@ -196,6 +208,26 @@ jobs:
             ${{ env.TBUILD }}\${{ env.REPO_NAME }}\out\Release\ansible-update-win-x64-${{ env.APP_VERSION }}
           if-no-files-found: error
 
+      # 🚨 Артефакт прогона живёт 90 дней и виден только залогиненным — это НЕ
+      # раздача. Скачать сборку люди идут на страницу релиза, и до 0.3.1 там
+      # не лежало ни одного файла: шаг выше кладёт всё в прогон и на этом всё.
+      - name: Attach binaries to the GitHub release.
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd "$TBUILD/$REPO_NAME/out/Release"
+          ZIP="ansible-portable-win-x64-$APP_VERSION_STR.zip"
+          7z a -tzip "$ZIP" Ansible.exe Updater.exe >/dev/null
+          gh release upload "${GITHUB_REF#refs/tags/}" \
+            "$ZIP" \
+            "ansible-update-win-x64-$APP_VERSION" \
+            --repo "$GITHUB_REPOSITORY" --clobber
+          echo "Attached to release ${GITHUB_REF#refs/tags/}:"
+          echo "  $ZIP"
+          echo "  ansible-update-win-x64-$APP_VERSION"
+
       - name: Publish to the update service.
         if: inputs.publish == true || startsWith(github.ref, 'refs/tags/v')
         shell: bash
@@ -217,12 +249,20 @@ jobs:
             --cache-control "public, max-age=31536000, immutable"
 
           python deploy/updates/make_current.py \
-            --version "$APP_VERSION_STR" --platform win64 > current2
-          aws s3 cp current2 "s3://$S3_BUCKET/current2" \
-            --endpoint-url "$S3_ENDPOINT" \
-            --content-type application/json \
-            --cache-control "public, max-age=60"
+            --version "$APP_VERSION_STR" --platform win64 > current.json
+
+          # 🚨 Оба имени, содержимое одинаковое: винда ходит за current6,
+          # mac и linux — за current2 (см. шапку файла). Клиент выбирает свою
+          # ветку по ключу платформы внутри манифеста, так что лишних он не
+          # видит, а недостающее имя = 403 и «обновлений нет».
+          for NAME in current2 current6; do
+            aws s3 cp current.json "s3://$S3_BUCKET/$NAME" \
+              --endpoint-url "$S3_ENDPOINT" \
+              --content-type application/json \
+              --cache-control "public, max-age=60"
+          done
 
           echo "Published. Verify from outside, not from this log:"
-          echo "  curl -s https://ansible.su/ad/current2"
+          echo "  curl -s https://ansible.su/ad/current6   # windows"
+          echo "  curl -s https://ansible.su/ad/current2   # mac, linux"
           echo "  curl -sI https://ansible.su/ad/win64/ansible-update-win-x64-$APP_VERSION"

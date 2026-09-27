@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Сборка манифеста current2 для сервиса обновлений.
+"""Сборка манифеста выпусков для сервиса обновлений.
 
     python make_current.py --version 0.3.1 \
-        --platform win64 --platform linux > current2
+        --platform win64 --platform linux > current.json
+
+Один и тот же файл выкладывается под ДВУМЯ именами: `current6` (за ним ходит
+Windows) и `current2` (macOS и Linux). Имя задаёт клиент — `/current<N>`, где
+N = Platform::AutoUpdateVersion(); см. deploy/updates/README.md.
 
 Формат снят с клиента (core/update_checker.cpp, ParseCommonMap):
 

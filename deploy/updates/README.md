@@ -5,17 +5,41 @@
 ```
 клиент                    ansible.su/ad          Timeweb S3
   |                         (as-updates)     ansible-desktop-updates
-  |  GET /ad/current2  ------->  proxy  ------->  current2
+  |  GET /ad/current6  ------->  proxy  ------->  current6
   |  <--- {"win64":{"stable":{"released":3003001,"link":"/win64/…"}}}
   |
   |  своё AppVersion = 3003000, пришло 3003001 -> обновление есть
   |
-  |  GET /ad/win64/tx64upd3003001 -->  proxy  --> объект win64/tx64upd3003001
+  |  GET /ad/win64/ansible-update-win-x64-3003001
+  |                    ------->  proxy  ------->  объект win64/ansible-…
   |  <--- пакет (качается кусками, Range)
   |
   |  проверяет подпись Ed25519, распаковывает в tupdates/ready
   |  при следующем запуске Updater.exe подменяет файлы
 ```
+
+🚨 **Имя манифеста задаёт клиент, и оно РАЗНОЕ по платформам.** Адрес
+складывается в `HttpChecker::start` (`core/update_checker.cpp`) как
+`/current<N>`, где `N` — `Platform::AutoUpdateVersion()`
+(`lib_base/base/platform/*/base_info_*`):
+
+| платформа | `AutoUpdateVersion()` | объект |
+|---|---|---|
+| Windows | 6 | `current6` |
+| macOS | 2 | `current2` |
+| Linux | 2 | `current2` |
+
+Выкладывать надо **оба** имени с одинаковым содержимым — клиент сам выбирает
+свою ветку по ключу платформы внутри манифеста. Если нужного имени нет, S3
+отвечает 403, и в логе клиента это выглядит как проблема доступа, а не как
+отсутствие файла:
+
+```
+Update Error: could not get current version 201
+```
+
+(201 — это `QNetworkReply::ContentAccessDenied`.) Обновление при этом просто
+не предлагается, без единого сообщения в интерфейсе.
 
 ## Из чего состоит
 
@@ -24,8 +48,8 @@
 | раздача | под `as-updates` в namespace `ansible-apps`, тонкий nginx-прокси |
 | маршрут | ingress `as-updates`, путь `/ad` на хосте `ansible.su` |
 | хранилище | Timeweb S3, бакет `ansible-desktop-updates`, публичный на чтение |
-| манифест | объект `current2` в том же бакете |
-| пакеты | объекты `<платформа>/<имя>`, например `win64/tx64upd3003001` |
+| манифест | объекты `current2` и `current6` в том же бакете, содержимое одинаковое |
+| пакеты | объекты `<платформа>/<имя>`, например `win64/ansible-update-win-x64-3003001` |
 
 Манифесты кластера — [`as-updates.yaml`](as-updates.yaml), применяются
 `kubectl apply -f`. Генератор манифеста выпусков — [`make_current.py`](make_current.py).
@@ -97,7 +121,9 @@ Ed25519, а путь v1 закрыт вшитыми в упаковщик пуб
 1. `python Ansible/build/set_version.py 0.3.1` и запись в `changelog.txt`.
 2. Запустить Release Windows. Он соберёт релиз, соберёт упаковщик, подпишет
    пакет ключом канала и выложит сперва пакет, потом манифест.
-3. Проверить СНАРУЖИ, а не по логу заливки:
+3. Проверить СНАРУЖИ, а не по логу заливки, и именно `current6` — за ним
+   ходит Windows:
+   `curl -s https://ansible.su/ad/current6`,
    `curl -s https://ansible.su/ad/current2` и
    `curl -sI https://ansible.su/ad/win64/ansible-update-win-x64-3003001`.
 
@@ -131,9 +157,12 @@ Ed25519, а путь v1 закрыт вшитыми в упаковщик пуб
    собирает всю матрицу. Скачать артефакт.
 
 3. **Упаковать и подписать.** Упаковщик — `Ansible/SourceFiles/_other/packer.cpp`,
-   цель `Packer` в сборке. Он берёт каталог с готовыми файлами и приватный
-   ключ (`ansible-desktop/updates_keys/updates_private.pem`, вне этого
-   репозитория) и пишет пакет с именем вида `tx64upd3003001`.
+   цель `Packer`. 🚨 Цель существует ТОЛЬКО при `DESKTOP_APP_SPECIAL_TARGET`
+   (для нас `win64`) — без него её просто нет в сборке. Упаковщик берёт файлы
+   (`-path`), каталог доверия (`-keys-loc Ansible/Resources/update`, там ровно
+   три имени: `root-public.pem`, `manifest.min.json`, `manifest.sig`) и
+   приватную половину ключа канала `as-stable-2026a` (`-local-key`), а пишет
+   пакет с именем вида `ansible-update-win-x64-3003001`.
 
    🚨 Версия в имени — **целое** `AppVersion`, а не строка «0.3.1»: 0.3.1
    это 3003001. Схема — `3000000 + minor*1000 + patch`.
@@ -141,28 +170,37 @@ Ed25519, а путь v1 закрыт вшитыми в упаковщик пуб
 4. **Залить пакет** в бакет под ключом `<платформа>/<имя пакета>`:
 
    ```
-   win64/tx64upd3003001
+   win64/ansible-update-win-x64-3003001
    ```
 
    Заливать с `Cache-Control: public, max-age=31536000, immutable` — пакет
    на конкретной версии неизменяем.
 
-5. **Обновить манифест** — и только ПОСЛЕ того, как пакет уже лежит:
+5. **Обновить манифест** — и только ПОСЛЕ того, как пакет уже лежит. Имён
+   ДВА, содержимое одинаковое (см. таблицу `AutoUpdateVersion` выше):
 
    ```
    python deploy/updates/make_current.py --version 0.3.1 \
-       --platform win64 --platform linux > current2
+       --platform win64 --platform linux > current.json
+   # залить один и тот же файл под обоими именами
+   #   current6  — за ним ходит Windows
+   #   current2  — за ним ходят macOS и Linux
    ```
 
-   Залить `current2` с `Content-Type: application/json` и
+   Заливать с `Content-Type: application/json` и
    `Cache-Control: public, max-age=60`.
 
 6. **Проверить снаружи**, а не по логу заливки:
 
    ```
+   curl -s https://ansible.su/ad/current6
    curl -s https://ansible.su/ad/current2
-   curl -sI https://ansible.su/ad/win64/tx64upd3003001
+   curl -sI https://ansible.su/ad/win64/ansible-update-win-x64-3003001
    ```
+
+7. **Прикрепить файлы к релизу GitHub.** Артефакт прогона живёт 90 дней и
+   виден только залогиненным — это не раздача. Воркфлоу делает это сам на
+   пуше тега; вручную — `gh release upload <тег> <файлы> --clobber`.
 
 🚨 **Порядок шагов 4 и 5 менять нельзя.** Манифест, объявивший версию,
 пакета которой ещё нет, отправляет клиентов за файлом, которого нет; S3
@@ -182,10 +220,15 @@ Ed25519, а путь v1 закрыт вшитыми в упаковщик пуб
 - **Нет объекта — S3 отвечает `403`, а не `404`.** Так устроен публичный
   бакет без права листинга. При разборе «почему не обновляется» это читается
   как проблема доступа, хотя на деле файла просто нет.
-- **Имена пакетов достались от апстрима**: `tupdate`, `tx64upd`, `tmacupd`,
-  `tlinuxupd` — буква `t` здесь от Telegram. Имя берётся из `link`, так что
-  клиенту оно безразлично; переименовать можно, но одновременно в упаковщике
-  (`packer.cpp`) и в `make_current.py`.
+- **Имена `current<N>` не наши** — их задаёт клиент, и на Windows это `6`, а
+  не `2`. Пока лежало только `current2`, установленный клиент молча не видел
+  ни одного выпуска: `Update Error: could not get current version 201`.
+  Кнопки «обновиться» при этом не появляется, и по интерфейсу отличить это от
+  «обновлений нет» невозможно.
+- **Имена пакетов v1 достались от апстрима**: `tupdate`, `tx64upd`, `tmacupd`,
+  `tlinuxupd` — буква `t` здесь от Telegram. Мы выпускаем формат v2, и там имя
+  уже своё (`V2FileName` в `packer.cpp`): `ansible-update-{os}-{arch}-{версия}`.
+  Имя всё равно берётся из `link`, так что клиенту оно безразлично.
 - **Адрес обновлений может задаваться сервером.** Поле
   `autoupdate_url_prefix` (flags.7) в `help.getConfig` пишется клиентом в
   `tdata/prefix` и перебивает вшитое значение. Наш бэкенд его сейчас не
