@@ -153,17 +153,38 @@ void Changelogs::addBetaLog(int changeVersion, const char *changes) {
 	addLocalLog(log);
 }
 
+// 🚨 Обратная сторона схемы из core/version.h: строке "0.<minor>.<patch>"
+// отвечает целое 3000000 плюс minor*1000 плюс patch. Апстримовский разбор
+// (major = version / 1000000) читает наши номера как 3.x.y — 3003001 у него
+// «3.3.1» вместо «0.3.1». Одним местом это не ограничивается: тем же
+// FormatVersionDisplay подписывается версия в tdata/version распакованного
+// обновления, а Updater.exe кладёт эту строку в DisplayVersion реестра.
+//
+// Держим минимум 2008007 (см. version.h), так что верхний диапазон 3xxxxxx
+// в форке занят только нами, и разобрать его по своей схеме безопасно.
+namespace {
+
+[[nodiscard]] int ForkVersionMajor(int version) {
+	return (version >= 3000000 && version < 4000000) ? 0 : (version / 1000000);
+}
+
+[[nodiscard]] int ForkVersionMinor(int version) {
+	return (version % 1000000) / 1000;
+}
+
+} // namespace
+
 QString FormatVersionDisplay(int version) {
-	return QString::number(version / 1000000)
-		+ '.' + QString::number((version % 1000000) / 1000)
+	return QString::number(ForkVersionMajor(version))
+		+ '.' + QString::number(ForkVersionMinor(version))
 		+ ((version % 1000)
 			? ('.' + QString::number(version % 1000))
 			: QString());
 }
 
 QString FormatVersionPrecise(int version) {
-	return QString::number(version / 1000000)
-		+ '.' + QString::number((version % 1000000) / 1000)
+	return QString::number(ForkVersionMajor(version))
+		+ '.' + QString::number(ForkVersionMinor(version))
 		+ '.' + QString::number(version % 1000);
 }
 
