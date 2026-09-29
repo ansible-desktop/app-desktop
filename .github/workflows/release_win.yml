@@ -220,11 +220,22 @@ jobs:
           cd "$TBUILD/$REPO_NAME/out/Release"
           ZIP="ansible-portable-win-x64-$APP_VERSION_STR.zip"
           7z a -tzip "$ZIP" Ansible.exe Updater.exe >/dev/null
-          gh release upload "${GITHUB_REF#refs/tags/}" \
+          TAG="${GITHUB_REF#refs/tags/}"
+
+          # 🚨 Пуш тега создаёт ТЕГ, а не релиз, а `gh release upload` в
+          # несуществующий релиз падает — и падает последним шагом, после
+          # многочасовой сборки. У v0.3.1 релиз был заведён руками, поэтому
+          # раньше это не всплыло. Заводим сам, если его нет.
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --verify-tag --title "$TAG" --notes-from-tag
+          fi
+
+          gh release upload "$TAG" \
             "$ZIP" \
             "ansible-update-win-x64-$APP_VERSION" \
             --repo "$GITHUB_REPOSITORY" --clobber
-          echo "Attached to release ${GITHUB_REF#refs/tags/}:"
+          echo "Attached to release $TAG:"
           echo "  $ZIP"
           echo "  ansible-update-win-x64-$APP_VERSION"
 

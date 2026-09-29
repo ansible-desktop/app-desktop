@@ -83,7 +83,12 @@ if not os.path.isdir(os.path.join(thirdPartyDir, keysLoc)):
     pathlib.Path(os.path.join(thirdPartyDir, keysLoc)).mkdir(parents=True, exist_ok=True)
 
 pathPrefixes = [
-    'ThirdParty\\msys64\\mingw64\\bin',
+    # 🚨 ucrt64, а не mingw64: MSYS2 объявил окружение MINGW64 (MSVCRT)
+    # устаревшим 15.03.2026 и перестал собирать под него пакеты. Всё, что
+    # ставит стадия msys64, лежит теперь в ucrt64 — и bin тоже там. Это
+    # host-утилиты сборки (diff, perl, gperf, pkgconf), в наши бинарники они
+    # не линкуются, так что смена рантайма самих утилит продукт не трогает.
+    'ThirdParty\\msys64\\ucrt64\\bin',
     'ThirdParty\\jom',
     'ThirdParty\\gyp',
 ] if win else [
@@ -476,13 +481,19 @@ win:
     del msys64.exe
 
     bash -c "pacman-key --init; pacman-key --populate; pacman -Syu --noconfirm"
+    rem WARNING: ucrt64 package names, not mingw64. MSYS2 deprecated the
+    rem MINGW64 (MSVCRT) environment on 2026-03-15 and stopped building
+    rem packages for it, so mingw-w64-x86_64-diffutils does not exist any
+    rem more and pacman aborts the whole stage with "target not found".
+    rem Only a COLD cache reaches this code: with a warm ThirdParty cache
+    rem the stage is skipped, which is why a release build hit it first.
     pacman -Syu --noconfirm ^
         make ^
-        mingw-w64-x86_64-diffutils ^
-        mingw-w64-x86_64-gperf ^
-        mingw-w64-x86_64-nasm ^
-        mingw-w64-x86_64-perl ^
-        mingw-w64-x86_64-pkgconf
+        mingw-w64-ucrt-x86_64-diffutils ^
+        mingw-w64-ucrt-x86_64-gperf ^
+        mingw-w64-ucrt-x86_64-nasm ^
+        mingw-w64-ucrt-x86_64-perl ^
+        mingw-w64-ucrt-x86_64-pkgconf
 
     rem WARNING: msys2 ships nasm 3.x, whose COFF objects MSVC's linker
     rem rejects as "invalid or corrupt file" (LNK1136) when building libvpx,
@@ -495,7 +506,7 @@ win:
     rem character aborts prepare.py with UnicodeEncodeError.
     powershell -Command "iwr -OutFile ./nasm-pin.zip https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/win64/nasm-2.16.03-win64.zip"
     powershell -Command "Expand-Archive -Force -Path ./nasm-pin.zip -DestinationPath ./nasm-pin"
-    copy /Y nasm-pin\\nasm-2.16.03\\nasm.exe msys64\\mingw64\\bin\\nasm.exe
+    copy /Y nasm-pin\\nasm-2.16.03\\nasm.exe msys64\\ucrt64\\bin\\nasm.exe
     del nasm-pin.zip
 """, 'ThirdParty')
 
