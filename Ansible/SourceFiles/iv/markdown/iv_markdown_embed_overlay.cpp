@@ -156,7 +156,7 @@ enum class LayoutMode {
 [[nodiscard]] QByteArray EmbedInitScript() {
 	return QByteArray(
 		"(function(){"
-		"window.TelegramWebviewProxy={"
+		"var proxy={"
 		"postEvent:function(eventType,eventData){"
 		"if(window.external&&typeof window.external.invoke==='function'){"
 		"try{"
@@ -165,6 +165,9 @@ enum class LayoutMode {
 		"}"
 		"}"
 		"};"
+		"window.AnsibleWebviewProxy=proxy;"
+		// Alias for third-party embeds built against the Telegram JS SDK.
+		"window.TelegramWebviewProxy=proxy;"
 		"})();");
 }
 

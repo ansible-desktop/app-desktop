@@ -72,6 +72,15 @@ const auto SupportCommands = base::flat_set<Command>{
 };
 
 const auto CommandByName = base::flat_map<QString, Command>{
+	{ u"close_ansible"_q                 , Command::Close },
+	{ u"lock_ansible"_q                  , Command::Lock },
+	{ u"minimize_ansible"_q              , Command::Minimize },
+	{ u"quit_ansible"_q                  , Command::Quit },
+
+	// Прежние имена читаются и дальше: у кого-то уже лежит свой
+	// shortcuts-custom.json. CommandNames() строит обратную карту через
+	// emplace, а flat_map отдаёт ключи по алфавиту, поэтому записывается
+	// наше имя, а эти остаются только на чтение.
 	{ u"close_telegram"_q                , Command::Close },
 	{ u"lock_telegram"_q                 , Command::Lock },
 	{ u"minimize_telegram"_q             , Command::Minimize },

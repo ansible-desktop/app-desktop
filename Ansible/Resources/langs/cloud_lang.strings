@@ -11,7 +11,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 "cloud_lng_forwarded_psa_covid" = "COVID-19 Notification from {channel}";
 "cloud_lng_tooltip_psa_covid" = "This message provides you with a public service announcement in relation to the ongoing COVID-19 pandemic. Learn more about this initiative at https://telegram.org/blog/coronavirus";
 
-"cloud_lng_topup_purpose_subs" = "Buy **Stars** to keep your channel subscriptions.";
+"cloud_lng_topup_purpose_subs" = "Buy **Diamonds** to keep your channel subscriptions.";
 
 "cloud_lng_age_verify_about_gb#one" = "To access such content, you must confirm that you are at least **{count}** year old as required by UK law.";
 "cloud_lng_age_verify_about_gb#other" = "To access such content, you must confirm that you are at least **{count}** years old as required by UK law.";

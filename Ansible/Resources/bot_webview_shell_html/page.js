@@ -46,7 +46,7 @@
 		verifiedBadge: null,
 		menuPalette: null
 	};
-	const shellToken = TDESKTOP_SHELL_TOKEN_PLACEHOLDER;
+	const shellToken = ANSIBLE_SHELL_TOKEN_PLACEHOLDER;
 	const nativeMessageType = 'tdesktop_external_bot_webapp';
 	const frameSandbox = [
 		'allow-scripts',
@@ -1139,7 +1139,7 @@
 			scheduleViewport();
 		}
 	};
-	Object.defineProperty(window, 'TelegramDesktopShell', {
+	Object.defineProperty(window, 'AnsibleDesktopShell', {
 		value: Object.freeze(api),
 		configurable: false,
 		writable: false

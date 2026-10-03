@@ -58,7 +58,7 @@ rpl::producer<TextWithEntities> Text2() {
 rpl::producer<TextWithEntities> Text3() {
 	return tr::lng_about_text3(
 		lt_faq_link,
-		tr::lng_about_text3_faq(tr::url(telegramFaqLink())),
+		tr::lng_about_text3_faq(tr::url(ansibleFaqLink())),
 		tr::marked);
 }
 
@@ -133,7 +133,7 @@ void AboutBox(not_null<Ui::GenericBox*> box) {
 	box->setWidth(st::aboutWidth);
 }
 
-QString telegramFaqLink() {
+QString ansibleFaqLink() {
 	const auto result = u"https://core.ansible.su/faq"_q;
 	const auto langpacked = [&](const char *language) {
 		return result + '/' + language;

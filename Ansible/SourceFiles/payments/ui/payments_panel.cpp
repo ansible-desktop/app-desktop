@@ -624,13 +624,20 @@ bool Panel::createWebview(const Webview::ThemeParams &params) {
 	});
 
 	raw->init(R"(
-window.TelegramWebviewProxy = {
+(function() {
+var proxy = {
 postEvent: function(eventType, eventData) {
 	if (window.external && window.external.invoke) {
 		window.external.invoke(JSON.stringify([eventType, eventData]));
 	}
 }
-};)");
+};
+window.AnsibleWebviewProxy = proxy;
+/* Alias kept on purpose: a mini app built against the Telegram JS SDK calls
+   window.TelegramWebviewProxy.postEvent by name, so dropping the name breaks
+   every third-party app. Ours is the name to use from now on. */
+window.TelegramWebviewProxy = proxy;
+})();)");
 
 	if (!_webview) {
 		return false;
@@ -941,8 +948,9 @@ void Panel::updateThemeParams(const Webview::ThemeParams &params) {
 		params.scrollBarBg,
 		params.scrollBarBgOver);
 	_webview->window.eval(R"(
-if (window.TelegramGameProxy) {
-	window.TelegramGameProxy.receiveEvent(
+var gameProxy = window.AnsibleGameProxy || window.TelegramGameProxy;
+if (gameProxy) {
+	gameProxy.receiveEvent(
 		"theme_changed",
 		{ "theme_params": )" + params.json + R"( });
 }

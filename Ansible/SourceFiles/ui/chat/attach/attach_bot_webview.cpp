@@ -2528,13 +2528,20 @@ bool Panel::createWebview(const Webview::ThemeParams &params) {
 	}
 
 	auto initScript = QByteArray(R"(
-window.TelegramWebviewProxy = {
+(function() {
+var proxy = {
 postEvent: function(eventType, eventData) {
 	if (window.external && window.external.invoke) {
 		window.external.invoke(JSON.stringify([eventType, eventData]));
 	}
 }
-};)");
+};
+window.AnsibleWebviewProxy = proxy;
+/* Alias kept on purpose: a mini app built against the Telegram JS SDK calls
+   window.TelegramWebviewProxy.postEvent by name, so dropping the name breaks
+   every third-party app. Ours is the name to use from now on. */
+window.TelegramWebviewProxy = proxy;
+})();)");
 		raw->init(initScript);
 
 	if (!_webview) {
@@ -3752,8 +3759,9 @@ void Panel::postEvent(const QString &event, EventData data) {
 		: QJsonDocument(
 			v::get<QJsonObject>(data)).toJson(QJsonDocument::Compact);
 	_webview->window.eval(R"(
-if (window.TelegramGameProxy) {
-window.TelegramGameProxy.receiveEvent(
+var gameProxy = window.AnsibleGameProxy || window.TelegramGameProxy;
+if (gameProxy) {
+gameProxy.receiveEvent(
 		")"
 		+ event.toUtf8()
 		+ '"' + (written.isEmpty() ? QByteArray() : ", " + written)

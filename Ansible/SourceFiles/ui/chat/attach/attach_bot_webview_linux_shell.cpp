@@ -69,15 +69,15 @@ QByteArray InstallScript(const QString &shellToken) {
 	const auto body = QString::fromUtf8(BodyHtml());
 	auto pageJs = PageJs();
 	pageJs.replace(
-		QByteArray("TDESKTOP_SHELL_TOKEN_PLACEHOLDER"),
+		QByteArray("ANSIBLE_SHELL_TOKEN_PLACEHOLDER"),
 		JsonValue(shellToken));
 
 	auto script = QByteArray();
 	script += "if (window === window.top && ";
 	script += kShellOriginCheck;
-	script += " && !window.TelegramDesktopShell"
-		" && !window.TelegramDesktopShellInstalling) {"
-		"window.TelegramDesktopShellInstalling = true;"
+	script += " && !window.AnsibleDesktopShell"
+		" && !window.AnsibleDesktopShellInstalling) {"
+		"window.AnsibleDesktopShellInstalling = true;"
 		"try {"
 		"if (!document.head) {"
 		"document.documentElement.insertBefore("
@@ -88,7 +88,7 @@ QByteArray InstallScript(const QString &shellToken) {
 		"document.documentElement.appendChild("
 		"document.createElement('body'));"
 		"}"
-		"document.title = 'Telegram';"
+		"document.title = 'Ansible';"
 		"const metaRobots = document.createElement('meta');"
 		"metaRobots.name = 'robots';"
 		"metaRobots.content = 'noindex, nofollow';"
@@ -107,7 +107,7 @@ QByteArray InstallScript(const QString &shellToken) {
 	script += ");";
 	script += pageJs;
 	script += "} finally {"
-		"window.TelegramDesktopShellInstalling = false;"
+		"window.AnsibleDesktopShellInstalling = false;"
 		"}"
 		"}";
 	return script;
@@ -123,10 +123,10 @@ QByteArray MethodCallScript(
 	script.reserve(method.size() * 2 + payload.size() + token.size() + 256);
 	script += "if (window === window.top && ";
 	script += kShellOriginCheck;
-	script += " && window.TelegramDesktopShell"
-		" && window.TelegramDesktopShell.";
+	script += " && window.AnsibleDesktopShell"
+		" && window.AnsibleDesktopShell.";
 	script += method;
-	script += ") { window.TelegramDesktopShell.";
+	script += ") { window.AnsibleDesktopShell.";
 	script += method;
 	script += "(";
 	script += payload;
@@ -146,8 +146,8 @@ QByteArray EventScript(
 	auto script = QByteArray();
 	script += "if (window === window.top && ";
 	script += kShellOriginCheck;
-	script += " && window.TelegramDesktopShell) {"
-		"window.TelegramDesktopShell.nativeEvent(";
+	script += " && window.AnsibleDesktopShell) {"
+		"window.AnsibleDesktopShell.nativeEvent(";
 	script += eventValue;
 	script += ", ";
 	script += payload;

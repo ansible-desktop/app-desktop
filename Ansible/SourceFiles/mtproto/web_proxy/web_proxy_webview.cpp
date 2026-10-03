@@ -75,7 +75,7 @@ window.external.invoke('d'+(ok?'1':'0'));
 
 [[nodiscard]] QByteArray BridgeScript() {
 	return R"JS((()=>{
-if(window!==window.top||Object.prototype.hasOwnProperty.call(window,'TelegramWebProxy'))return;
+if(window!==window.top||Object.prototype.hasOwnProperty.call(window,'AnsibleWebProxy'))return;
 let receiver=null;
 const send=value=>window.external.invoke(value);
 const encode=value=>{
@@ -111,7 +111,7 @@ const bridge={
  get onmessage(){return receiver},
  set onmessage(value){receiver=typeof value==='function'?value:null}
 };
-Object.defineProperty(window,'TelegramWebProxy',{
+Object.defineProperty(window,'AnsibleWebProxy',{
  value:Object.freeze(bridge),configurable:false,writable:false
 });
 send('h');
@@ -212,7 +212,7 @@ void WebviewCarrier::close() {
 		_window->setNavigationDoneHandler(nullptr);
 		if (_adopted && !_failed) {
 			_window->eval(
-				"window.TelegramWebProxy?.receiveControl(0,'{\"t\":\"close\"}')");
+				"window.AnsibleWebProxy?.receiveControl(0,'{\"t\":\"close\"}')");
 		}
 	}
 }
@@ -434,7 +434,7 @@ void WebviewCarrier::drain() {
 	const auto base64 = _inFlight.frame.toBase64();
 	_writeTimer->start(kWriteTimeout);
 	_window->eval(
-		"window.TelegramWebProxy?.receive("
+		"window.AnsibleWebProxy?.receive("
 		+ QByteArray::number(_writeSequence)
 		+ ",'"
 		+ base64
