@@ -1,3 +1,21 @@
+0.3.3 (04.10.26)
+
+- The currency is a diamond. The icon, the palette and the paid reaction
+  badges follow the brand gem instead of the star, and the built-in English
+  says Diamonds everywhere the keys already did.
+
+- The photo editor draws a diamond where it used to draw a five-pointed
+  star, matching Android and iOS.
+
+- Local data lives in adata, next to aupdates. The folder is moved on first
+  launch, so nothing is lost and no one is signed out.
+
+- Theme files are .adesktop-theme and .adesktop-palette. Themes saved or
+  downloaded earlier still open.
+
+- Mini apps get our own bridge name, with the previous one kept as an alias
+  so existing apps keep working.
+
 0.3.2 (29.09.26)
 
 - The version is read back by our own numbering. 3003002 is 0.3.2, not

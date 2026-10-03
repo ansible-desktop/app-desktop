@@ -166,7 +166,6 @@ enum class LayoutMode {
 		"}"
 		"};"
 		"window.AnsibleWebviewProxy=proxy;"
-		// Alias for third-party embeds built against the Telegram JS SDK.
 		"window.TelegramWebviewProxy=proxy;"
 		"})();");
 }
