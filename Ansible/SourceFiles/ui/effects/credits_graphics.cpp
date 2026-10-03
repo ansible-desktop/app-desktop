@@ -92,6 +92,7 @@ PaintRoundImageCallback MultiThumbnail(
 
 QByteArray CreditsIconSvg(int strokeWidth) {
 	auto colorized = qs(Premium::ColorizedSvg(
+		Premium::DiamondSvg(),
 		Premium::CreditsIconGradientStops()));
 	colorized.replace(
 		u"stroke=\"none\""_q,

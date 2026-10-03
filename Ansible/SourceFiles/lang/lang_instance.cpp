@@ -23,7 +23,7 @@ namespace {
 
 const auto kSerializeVersionTag = u"#new"_q;
 constexpr auto kSerializeVersion = 1;
-constexpr auto kCloudLangPackName = "tdesktop"_cs;
+constexpr auto kCloudLangPackName = "adesktop"_cs;
 constexpr auto kCustomLanguage = "#custom"_cs;
 constexpr auto kLangValuesLimit = 20000;
 

@@ -415,8 +415,18 @@ QString Svg() {
 	return u":/gui/icons/settings/star.svg"_q;
 }
 
+QString DiamondSvg() {
+	return u":/gui/icons/settings/diamond.svg"_q;
+}
+
 QByteArray ColorizedSvg(const QGradientStops &gradientStops) {
-	auto f = QFile(Svg());
+	return ColorizedSvg(Svg(), gradientStops);
+}
+
+QByteArray ColorizedSvg(
+		const QString &path,
+		const QGradientStops &gradientStops) {
+	auto f = QFile(path);
 	if (!f.open(QIODevice::ReadOnly)) {
 		return QByteArray();
 	}

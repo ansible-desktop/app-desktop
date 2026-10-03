@@ -42,7 +42,11 @@ namespace Premium {
 inline constexpr auto kLimitRowRatio = 0.5;
 
 [[nodiscard]] QString Svg();
+[[nodiscard]] QString DiamondSvg();
 [[nodiscard]] QByteArray ColorizedSvg(const QGradientStops &gradientStops);
+[[nodiscard]] QByteArray ColorizedSvg(
+	const QString &path,
+	const QGradientStops &gradientStops);
 [[nodiscard]] QImage GenerateStarForLightTopBar(QRectF rect);
 
 void AddLimitRow(

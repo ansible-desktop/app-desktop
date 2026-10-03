@@ -427,7 +427,7 @@ darkEditStarsBox: Box(paidReactBox) {
 		align: align(top);
 	}
 }
-paidReactBubbleIcon: icon{{ "settings/premium/star", premiumButtonFg }};
+paidReactBubbleIcon: icon{{ "settings/premium/diamond", premiumButtonFg }};
 paidReactBubbleTop: 5px;
 paidReactSliderTop: 5px;
 paidReactSlider: MediaSlider(defaultContinuousSlider) {

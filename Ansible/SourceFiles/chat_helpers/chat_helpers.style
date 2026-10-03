@@ -1740,7 +1740,7 @@ editStickerSetNameLoading: InfiniteRadialAnimation(defaultInfiniteRadialAnimatio
 	thickness: 2px;
 }
 
-paidStarIcon: icon {{ "settings/premium/star", creditsBg1 }};
+paidStarIcon: icon {{ "settings/premium/diamond", creditsBg1 }};
 paidStarIconTop: 7px;
 paidAmountAbout: FlatLabel(defaultFlatLabel) {
 	minWidth: 256px;
