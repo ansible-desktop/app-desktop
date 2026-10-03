@@ -113,7 +113,7 @@ auto GenerateCodes() {
 		}
 	});
 	codes.emplace(u"loadcolors"_q, [](SessionController *window) {
-		FileDialog::GetOpenPath(Core::App().getFileDialogParent(), "Open palette file", "Palette (*.tdesktop-palette)", [](const FileDialog::OpenResult &result) {
+		FileDialog::GetOpenPath(Core::App().getFileDialogParent(), "Open palette file", "Palette (*.adesktop-palette *.tdesktop-palette)", [](const FileDialog::OpenResult &result) {
 			if (!result.paths.isEmpty()) {
 				Window::Theme::Apply(result.paths.front());
 			}

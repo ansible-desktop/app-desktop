@@ -1854,7 +1854,9 @@ bool DocumentData::isGifv() const {
 }
 
 bool DocumentData::isTheme() const {
-	return _filename.endsWith(u".tdesktop-theme"_q, Qt::CaseInsensitive)
+	return _filename.endsWith(u".adesktop-theme"_q, Qt::CaseInsensitive)
+		|| _filename.endsWith(u".adesktop-palette"_q, Qt::CaseInsensitive)
+		|| _filename.endsWith(u".tdesktop-theme"_q, Qt::CaseInsensitive)
 		|| _filename.endsWith(u".tdesktop-palette"_q, Qt::CaseInsensitive)
 		|| (hasMimeType(u"application/x-tgtheme-tdesktop"_q)
 			&& (_filename.isEmpty()

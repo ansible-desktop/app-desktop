@@ -964,10 +964,10 @@ void PhotoEditorControls::showShapesMenu() {
 		&st::photoEditorShapeRectangle,
 		&st::photoEditorShapeRectangleFill);
 	add(
-		tr::lng_photo_editor_shape_star(tr::now),
-		ShapeType::Star,
-		&st::photoEditorShapeStar,
-		&st::photoEditorShapeStarFill);
+		tr::lng_photo_editor_shape_diamond(tr::now),
+		ShapeType::Diamond,
+		&st::photoEditorShapeDiamond,
+		&st::photoEditorShapeDiamondFill);
 	add(
 		tr::lng_photo_editor_shape_bubble(tr::now),
 		ShapeType::Bubble,

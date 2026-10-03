@@ -101,8 +101,8 @@ photoEditorShapeCircle: icon {{ "photo_editor/shape_circle-24x24", mediaviewMenu
 photoEditorShapeCircleFill: icon {{ "photo_editor/shape_circle_fill-24x24", mediaviewMenuFg }};
 photoEditorShapeRectangle: icon {{ "photo_editor/shape_rectangle-24x24", mediaviewMenuFg }};
 photoEditorShapeRectangleFill: icon {{ "photo_editor/shape_rectangle_fill-24x24", mediaviewMenuFg }};
-photoEditorShapeStar: icon {{ "photo_editor/shape_star-24x24", mediaviewMenuFg }};
-photoEditorShapeStarFill: icon {{ "photo_editor/shape_star_fill-24x24", mediaviewMenuFg }};
+photoEditorShapeDiamond: icon {{ "photo_editor/shape_diamond-24x24", mediaviewMenuFg }};
+photoEditorShapeDiamondFill: icon {{ "photo_editor/shape_diamond_fill-24x24", mediaviewMenuFg }};
 photoEditorShapeBubble: icon {{ "photo_editor/shape_bubble-24x24", mediaviewMenuFg }};
 photoEditorShapeBubbleFill: icon {{ "photo_editor/shape_bubble_fill-24x24", mediaviewMenuFg }};
 photoEditorShapeArrow: icon {{ "photo_editor/shape_arrow-24x24", mediaviewMenuFg }};

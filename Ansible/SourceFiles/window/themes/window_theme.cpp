@@ -53,7 +53,7 @@ namespace {
 
 constexpr auto kThemeFileSizeLimit = 5 * 1024 * 1024;
 constexpr auto kBackgroundSizeLimit = 25 * 1024 * 1024;
-constexpr auto kNightThemeFile = ":/gui/night.tdesktop-theme"_cs;
+constexpr auto kNightThemeFile = ":/gui/night.adesktop-theme"_cs;
 constexpr auto kDarkValueThreshold = 0.5;
 
 struct Applying {
@@ -298,14 +298,25 @@ bool LoadTheme(
 	if (file.error() == UNZ_OK) {
 		auto schemeContent = editedPalette.value_or(QByteArray());
 		if (schemeContent.isEmpty()) {
+			schemeContent = file.readFileContent("colors.adesktop-theme", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
+		}
+		if (schemeContent.isEmpty()) {
+			// Тема, скачанная до переименования, держит палитру под старым
+			// именем: читаем оба, иначе чужие и прежние темы перестанут
+			// открываться.
+			file.clearError();
 			schemeContent = file.readFileContent("colors.tdesktop-theme", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
+		}
+		if (schemeContent.isEmpty()) {
+			file.clearError();
+			schemeContent = file.readFileContent("colors.adesktop-palette", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
 		}
 		if (schemeContent.isEmpty()) {
 			file.clearError();
 			schemeContent = file.readFileContent("colors.tdesktop-palette", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
 		}
 		if (file.error() != UNZ_OK) {
-			LOG(("Theme Error: could not read 'colors.tdesktop-theme' or 'colors.tdesktop-palette' in the theme file."));
+			LOG(("Theme Error: could not read 'colors.adesktop-theme' or 'colors.adesktop-palette' in the theme file."));
 			return false;
 		}
 		if (!loadColorScheme(schemeContent, paletteColorizer, out)) {
@@ -1521,7 +1532,7 @@ rpl::producer<bool> IsThemeDarkValue() {
 }
 
 QString EditingPalettePath() {
-	return cWorkingDir() + "adata/editing-theme.tdesktop-palette";
+	return cWorkingDir() + "adata/editing-theme.adesktop-palette";
 }
 
 bool ReadPaletteValues(const QByteArray &content, Fn<bool(QLatin1String name, QLatin1String value)> callback) {

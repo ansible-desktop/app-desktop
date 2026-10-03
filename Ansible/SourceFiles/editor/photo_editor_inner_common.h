@@ -73,7 +73,7 @@ struct TextPrefs {
 enum class ShapeType : uchar {
 	Circle,
 	Rectangle,
-	Star,
+	Diamond,
 	Bubble,
 	Arrow,
 };

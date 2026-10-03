@@ -18,7 +18,10 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace Editor {
 namespace {
 
-constexpr auto kStarInnerRatio = 0.4316;
+//: доли силуэта алмаза, см. shapePath(): где начинается площадка
+//: сверху и на какой высоте проходит пояс — самая широкая линия.
+constexpr auto kDiamondTableLeft = 0.26;
+constexpr auto kDiamondGirdleRatio = 0.3;
 constexpr auto kRoundingRatio = 0.234;
 constexpr auto kBubbleBodyRatio = 2. / 2.25;
 constexpr auto kBubbleTailRatio = 0.75;
@@ -27,8 +30,8 @@ constexpr auto kArrowHeadStrokeFactor = 2.5;
 constexpr auto kArrowHeadAngle = 30. * M_PI / 180.;
 constexpr auto kArrowMaxBendRatio = 0.35;
 constexpr auto kMinShapeSide = 1.;
-constexpr auto kStarBoxWidth = 1.902113;
-constexpr auto kStarBoxHeight = 1.809017;
+constexpr auto kDiamondBoxWidth = 1.;
+constexpr auto kDiamondBoxHeight = 0.9;
 
 } // namespace
 
@@ -43,8 +46,8 @@ ItemShape::ItemShape(
 , _color(color)
 , _strokeWidth(strokeWidth)
 , _fill(fill) {
-	if (_shape == ShapeType::Star) {
-		setAspectRatio(kStarBoxHeight / kStarBoxWidth);
+	if (_shape == ShapeType::Diamond) {
+		setAspectRatio(kDiamondBoxHeight / kDiamondBoxWidth);
 	} else if (_shape == ShapeType::Arrow) {
 		setVerticalMinimumEnabled(false);
 		updateArrowFrame();
@@ -117,8 +120,8 @@ void ItemShape::setBend(float64 bend) {
 }
 
 float64 ItemShape::defaultAspectRatio() const {
-	return (_shape == ShapeType::Star)
-		? (kStarBoxHeight / kStarBoxWidth)
+	return (_shape == ShapeType::Diamond)
+		? (kDiamondBoxHeight / kDiamondBoxWidth)
 		: 1.;
 }
 
@@ -174,29 +177,21 @@ QPainterPath ItemShape::shapePath() const {
 		path.addRoundedRect(rect, rounding, rounding);
 		break;
 	}
-	case ShapeType::Star: {
-		const auto outer = std::min(
-			rect.width() / kStarBoxWidth,
-			rect.height() / kStarBoxHeight);
-		const auto inner = outer * kStarInnerRatio;
-		const auto center = rect::center(rect)
-			- QPointF(0., kStarBoxHeight * outer / 2. - outer);
-		for (auto i = 0; i != 5; ++i) {
-			const auto angle = -M_PI_2 + i * 2. * M_PI / 5.;
-			const auto innerAngle = angle + M_PI / 5.;
-			const auto outerPoint = center + QPointF(
-				outer * std::cos(angle),
-				outer * std::sin(angle));
-			const auto innerPoint = center + QPointF(
-				inner * std::cos(innerAngle),
-				inner * std::sin(innerAngle));
-			if (!i) {
-				path.moveTo(outerPoint);
-			} else {
-				path.lineTo(outerPoint);
-			}
-			path.lineTo(innerPoint);
-		}
+	case ShapeType::Diamond: {
+		// Силуэт огранённого камня: площадка сверху, пояс в верхней трети,
+		// из него две длинные грани сходятся в нижнюю точку. Доли сняты с
+		// фирменного алмаза, поэтому фигура, иконка и валюта совпадают.
+		const auto x = [&](float64 ratio) {
+			return rect.x() + rect.width() * ratio;
+		};
+		const auto y = [&](float64 ratio) {
+			return rect.y() + rect.height() * ratio;
+		};
+		path.moveTo(x(kDiamondTableLeft), y(0.));
+		path.lineTo(x(1. - kDiamondTableLeft), y(0.));
+		path.lineTo(x(1.), y(kDiamondGirdleRatio));
+		path.lineTo(x(0.5), y(1.));
+		path.lineTo(x(0.), y(kDiamondGirdleRatio));
 		path.closeSubpath();
 		break;
 	}

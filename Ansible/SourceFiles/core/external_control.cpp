@@ -530,10 +530,12 @@ void RestoreTheme(const Window::Theme::Object &object) {
 		|| ranges::any_of(path, [](QChar ch) { return ch.unicode() < 0x20; });
 	if (broken) {
 		return Error(u"theme path must be base64 of a UTF-8 path"_q);
-	} else if (!path.endsWith(u".tdesktop-theme"_q, Qt::CaseInsensitive)
+	} else if (!path.endsWith(u".adesktop-theme"_q, Qt::CaseInsensitive)
+		&& !path.endsWith(u".adesktop-palette"_q, Qt::CaseInsensitive)
+		&& !path.endsWith(u".tdesktop-theme"_q, Qt::CaseInsensitive)
 		&& !path.endsWith(u".tdesktop-palette"_q, Qt::CaseInsensitive)) {
 		return Error(u"theme file name must end with "
-			u".tdesktop-theme or .tdesktop-palette"_q);
+			u".adesktop-theme or .adesktop-palette"_q);
 	}
 	const auto info = QFileInfo(path);
 	if (path.startsWith(u":"_q) || !info.isAbsolute()) {

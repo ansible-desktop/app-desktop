@@ -1089,7 +1089,8 @@ void FileLoadTask::process(ProcessArgs &&args) {
 				}
 			}
 			thumbnail = PrepareFileThumbnail(std::move(video->thumbnail));
-		} else if (filemime == u"application/x-tdesktop-theme"_q
+		} else if (filemime == u"application/x-adesktop-theme"_q
+			|| filemime == u"application/x-tdesktop-theme"_q
 			|| filemime == u"application/x-tgtheme-tdesktop"_q) {
 			goodThumbnail = Window::Theme::GeneratePreview(_content, _filepath);
 			if (!goodThumbnail.isNull()) {

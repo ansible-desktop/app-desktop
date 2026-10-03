@@ -23,6 +23,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "media/view/media_view_open_common.h"
 #include "lang/lang_keys.h"
 #include "apiwrap.h"
+#include "core/version.h"
 
 namespace Data {
 namespace {
@@ -236,7 +237,7 @@ CloudTheme CloudTheme::Parse(
 }
 
 QString CloudThemes::Format() {
-	static const auto kResult = QString::fromLatin1("tdesktop");
+	static const auto kResult = QString::fromLatin1(ApiPlatformName);
 	return kResult;
 }
 

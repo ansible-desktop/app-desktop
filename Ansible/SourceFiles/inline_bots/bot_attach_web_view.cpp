@@ -31,6 +31,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "core/local_url_handlers.h"
 #include "core/shortcuts.h"
 #include "core/ui_integration.h" // TextContext
+#include "core/version.h"
 #include "data/components/ephemeral_messages.h"
 #include "data/components/location_pickers.h"
 #include "data/data_bot_app.h"
@@ -1221,7 +1222,7 @@ void WebViewInstance::requestButton() {
 		MTP_bytes(_button.url),
 		MTP_string(_button.startCommand),
 		MTP_dataJSON(MTP_bytes(botThemeParams().json)),
-		MTP_string("tdesktop"),
+		MTP_string(ApiPlatformName),
 		action.mtpReplyTo(),
 		(action.options.sendAs
 			? action.options.sendAs->input()
@@ -1256,7 +1257,7 @@ void WebViewInstance::requestSimple() {
 		MTP_bytes(_button.url),
 		MTP_string(_button.startCommand),
 		MTP_dataJSON(MTP_bytes(botThemeParams().json)),
-		MTP_string("tdesktop")
+		MTP_string(ApiPlatformName)
 	)).done([=](const MTPWebViewResult &result) {
 		show({
 			.result = ParseWebViewResult(result),
@@ -1284,7 +1285,7 @@ void WebViewInstance::requestMain() {
 		_bot->inputUser(),
 		MTP_string(_button.startCommand),
 		MTP_dataJSON(MTP_bytes(botThemeParams().json)),
-		MTP_string("tdesktop")
+		MTP_string(ApiPlatformName)
 	)).done([=](const MTPWebViewResult &result) {
 		show({
 			.result = ParseWebViewResult(result),
@@ -1312,7 +1313,7 @@ void WebViewInstance::requestApp(bool allowWrite) {
 		MTP_inputBotAppID(MTP_long(app->id), MTP_long(app->accessHash)),
 		MTP_string(_appStartParam),
 		MTP_dataJSON(MTP_bytes(botThemeParams().json)),
-		MTP_string("tdesktop")
+		MTP_string(ApiPlatformName)
 	)).done([=](const MTPWebViewResult &result) {
 		_requestId = 0;
 		show({
@@ -1335,7 +1336,7 @@ void WebViewInstance::requestChatJoin() {
 		MTP_flags(Flag::f_theme_params),
 		MTP_long(join.queryId),
 		MTP_dataJSON(MTP_bytes(botThemeParams().json)),
-		MTP_string("tdesktop")
+		MTP_string(ApiPlatformName)
 	)).done([=](const MTPWebViewResult &result) {
 		_requestId = 0;
 		show({

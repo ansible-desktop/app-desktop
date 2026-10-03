@@ -683,7 +683,7 @@ void ChooseFromFile(
 		not_null<Window::SessionController*> controller,
 		not_null<QWidget*> parent) {
 	auto filters = QStringList(
-		u"Theme files (*.tdesktop-theme *.tdesktop-palette *"_q
+		u"Theme files (*.adesktop-theme *.adesktop-palette *.tdesktop-theme *.tdesktop-palette *"_q
 		+ Ui::ImageExtensions().join(u" *"_q)
 		+ u")"_q);
 	filters.push_back(FileDialog::AllFilesFilter());
@@ -698,8 +698,8 @@ void ChooseFromFile(
 			const auto hasExtension = [&](QLatin1String extension) {
 				return filePath.endsWith(extension, Qt::CaseInsensitive);
 			};
-			if (hasExtension(qstr(".tdesktop-theme"))
-				|| hasExtension(qstr(".tdesktop-palette"))) {
+			if (hasExtension(qstr(".adesktop-theme"))
+				|| hasExtension(qstr(".adesktop-palette"))) {
 				Window::Theme::Apply(filePath);
 				return;
 			}

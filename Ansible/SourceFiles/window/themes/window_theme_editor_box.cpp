@@ -271,7 +271,7 @@ void ImportFromFile(
 		not_null<Main::Session*> session,
 		not_null<QWidget*> parent) {
 	auto filters = QStringList(
-		u"Theme files (*.tdesktop-theme *.tdesktop-palette)"_q);
+		u"Theme files (*.adesktop-theme *.adesktop-palette *.tdesktop-theme *.tdesktop-palette)"_q);
 	filters.push_back(FileDialog::AllFilesFilter());
 	const auto callback = crl::guard(session, [=](
 		const FileDialog::OpenResult &result) {
@@ -386,7 +386,7 @@ bool CopyColorsToPalette(
 		parsed.background.constData(),
 		parsed.background.size());
 	zip.closeFile();
-	const auto scheme = "colors.tdesktop-theme";
+	const auto scheme = "colors.adesktop-theme";
 	zip.openNewFile(
 		scheme,
 		&zfi,
@@ -446,7 +446,7 @@ std::shared_ptr<FilePrepareResult> PrepareThemeMedia(
 
 	const auto id = base::RandomValue<DocumentId>();
 	const auto filename = base::FileNameFromUserString(name)
-		+ u".tdesktop-theme"_q;
+		+ u".adesktop-theme"_q;
 	auto attributes = QVector<MTPDocumentAttribute>(
 		1,
 		MTP_documentAttributeFilename(MTP_string(filename)));
@@ -990,13 +990,24 @@ ParsedTheme ParseTheme(
 	if (file.error() != UNZ_OK) {
 		return result();
 	}
-	raw.palette = file.readFileContent("colors.tdesktop-theme", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
+	raw.palette = file.readFileContent("colors.adesktop-theme", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
+	if (file.error() == UNZ_END_OF_LIST_OF_FILE) {
+		file.clearError();
+		raw.palette = file.readFileContent("colors.adesktop-palette", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
+	}
+	// Тема, сохранённая до переименования, держит палитру под старыми
+	// именами — читаем и их, иначе редактор перестанет открывать
+	// собственные прежние темы.
+	if (file.error() == UNZ_END_OF_LIST_OF_FILE) {
+		file.clearError();
+		raw.palette = file.readFileContent("colors.tdesktop-theme", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
+	}
 	if (file.error() == UNZ_END_OF_LIST_OF_FILE) {
 		file.clearError();
 		raw.palette = file.readFileContent("colors.tdesktop-palette", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
 	}
 	if (file.error() != UNZ_OK) {
-		LOG(("Theme Error: could not read 'colors.tdesktop-theme' or 'colors.tdesktop-palette' in the theme file."));
+		LOG(("Theme Error: could not read 'colors.adesktop-theme' or 'colors.adesktop-palette' in the theme file."));
 		return ParsedTheme();
 	} else if (onlyPalette) {
 		return result();

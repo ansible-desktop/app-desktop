@@ -124,9 +124,16 @@ WebPageCollage ExtractCollage(
 } // namespace
 
 WebPageType ParseWebPageType(
-		const QString &type,
+		const QString &rawType,
 		const QString &embedUrl,
 		bool hasIV) {
+	// 🚨 Тип приходит ОТ СЕРВЕРА, и переименование идёт волнами: пока бэкенд
+	// не перевыложен, в ответе стоит прежнее имя. Приводим к нашему до
+	// разбора — иначе ни одна ветка не совпадёт, и предпросмотр канала или
+	// темы молча станет обычной ссылкой.
+	const auto type = rawType.startsWith(u"telegram_"_q)
+		? (u"ansible_"_q + rawType.mid(9))
+		: rawType;
 	if (type == u"video"_q || type == u"gif"_q || !embedUrl.isEmpty()) {
 		return WebPageType::Video;
 	} else if (type == u"photo"_q) {
@@ -135,55 +142,55 @@ WebPageType ParseWebPageType(
 		return WebPageType::Document;
 	} else if (type == u"profile"_q) {
 		return WebPageType::Profile;
-	} else if (type == u"telegram_background"_q) {
+	} else if (type == u"ansible_background"_q) {
 		return WebPageType::WallPaper;
-	} else if (type == u"telegram_theme"_q) {
+	} else if (type == u"ansible_theme"_q) {
 		return WebPageType::Theme;
-	} else if (type == u"telegram_story"_q) {
+	} else if (type == u"ansible_story"_q) {
 		return WebPageType::Story;
-	} else if (type == u"telegram_channel"_q) {
+	} else if (type == u"ansible_channel"_q) {
 		return WebPageType::Channel;
-	} else if (type == u"telegram_channel_request"_q) {
+	} else if (type == u"ansible_channel_request"_q) {
 		return WebPageType::ChannelWithRequest;
-	} else if (type == u"telegram_megagroup"_q
-		|| type == u"telegram_chat"_q) {
+	} else if (type == u"ansible_megagroup"_q
+		|| type == u"ansible_chat"_q) {
 		return WebPageType::Group;
-	} else if (type == u"telegram_megagroup_request"_q
-		|| type == u"telegram_chat_request"_q) {
+	} else if (type == u"ansible_megagroup_request"_q
+		|| type == u"ansible_chat_request"_q) {
 		return WebPageType::GroupWithRequest;
-	} else if (type == u"telegram_album"_q) {
+	} else if (type == u"ansible_album"_q) {
 		return WebPageType::Album;
-	} else if (type == u"telegram_message"_q) {
+	} else if (type == u"ansible_message"_q) {
 		return WebPageType::Message;
-	} else if (type == u"telegram_bot"_q) {
+	} else if (type == u"ansible_bot"_q) {
 		return WebPageType::Bot;
-	} else if (type == u"telegram_voicechat"_q) {
+	} else if (type == u"ansible_voicechat"_q) {
 		return WebPageType::VoiceChat;
-	} else if (type == u"telegram_livestream"_q) {
+	} else if (type == u"ansible_livestream"_q) {
 		return WebPageType::Livestream;
-	} else if (type == u"telegram_call"_q) {
+	} else if (type == u"ansible_call"_q) {
 		return WebPageType::ConferenceCall;
-	} else if (type == u"telegram_user"_q) {
+	} else if (type == u"ansible_user"_q) {
 		return WebPageType::User;
-	} else if (type == u"telegram_botapp"_q) {
+	} else if (type == u"ansible_botapp"_q) {
 		return WebPageType::BotApp;
-	} else if (type == u"telegram_channel_boost"_q) {
+	} else if (type == u"ansible_channel_boost"_q) {
 		return WebPageType::ChannelBoost;
-	} else if (type == u"telegram_group_boost"_q) {
+	} else if (type == u"ansible_group_boost"_q) {
 		return WebPageType::GroupBoost;
-	} else if (type == u"telegram_giftcode"_q) {
+	} else if (type == u"ansible_giftcode"_q) {
 		return WebPageType::Giftcode;
-	} else if (type == u"telegram_stickerset"_q) {
+	} else if (type == u"ansible_stickerset"_q) {
 		return WebPageType::StickerSet;
-	} else if (type == u"telegram_story_album"_q) {
+	} else if (type == u"ansible_story_album"_q) {
 		return WebPageType::StoryAlbum;
-	} else if (type == u"telegram_collection"_q) {
+	} else if (type == u"ansible_collection"_q) {
 		return WebPageType::GiftCollection;
-	} else if (type == u"telegram_auction"_q) {
+	} else if (type == u"ansible_auction"_q) {
 		return WebPageType::Auction;
-	} else if (type == u"telegram_newbot"_q) {
+	} else if (type == u"ansible_newbot"_q) {
 		return WebPageType::NewBot;
-	} else if (type == u"telegram_aicomposetone"_q) {
+	} else if (type == u"ansible_aicomposetone"_q) {
 		return WebPageType::ComposeAiTone;
 	} else if (hasIV) {
 		return WebPageType::ArticleWithIV;

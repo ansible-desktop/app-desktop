@@ -23,8 +23,8 @@ namespace Theme {
 namespace {
 
 constexpr auto kMaxAccentColors = 3;
-constexpr auto kDayBaseFile = ":/gui/day-custom-base.tdesktop-theme"_cs;
-constexpr auto kNightBaseFile = ":/gui/night-custom-base.tdesktop-theme"_cs;
+constexpr auto kDayBaseFile = ":/gui/day-custom-base.adesktop-theme"_cs;
+constexpr auto kNightBaseFile = ":/gui/night-custom-base.adesktop-theme"_cs;
 
 const auto kColorizeIgnoredKeys = base::flat_set<QLatin1String>{ {
 	qstr("boxTextFgGood"),
@@ -256,7 +256,7 @@ std::vector<EmbeddedScheme> EmbeddedThemes() {
 			qColor("d7f0ff"),
 			qColor("ffffff"),
 			name(tr::lng_settings_theme_day),
-			":/gui/day-blue.tdesktop-theme",
+			":/gui/day-blue.adesktop-theme",
 			qColor("40a7e3")
 		},
 		EmbeddedScheme{
@@ -267,7 +267,7 @@ std::vector<EmbeddedScheme> EmbeddedThemes() {
 			qColor("6b808d"),
 			qColor("5ca7d4"),
 			name(tr::lng_settings_theme_tinted),
-			":/gui/night.tdesktop-theme",
+			":/gui/night.adesktop-theme",
 			qColor("5288c1")
 		},
 		EmbeddedScheme{
@@ -278,7 +278,7 @@ std::vector<EmbeddedScheme> EmbeddedThemes() {
 			qColor("6b808d"),
 			qColor("75bfb5"),
 			name(tr::lng_settings_theme_night),
-			":/gui/night-green.tdesktop-theme",
+			":/gui/night-green.adesktop-theme",
 			qColor("3fc1b0")
 		},
 	};

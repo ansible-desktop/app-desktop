@@ -763,8 +763,8 @@ void Editor::showMenu() {
 
 void Editor::exportTheme() {
 	auto caption = tr::lng_theme_editor_choose_name(tr::now);
-	auto filter = "Themes (*.tdesktop-theme)";
-	auto name = "awesome.tdesktop-theme";
+	auto filter = "Themes (*.adesktop-theme)";
+	auto name = "awesome.adesktop-theme";
 	FileDialog::GetWritePath(this, caption, filter, name, crl::guard(this, [=](const QString &path) {
 		const auto result = CollectForExport(_inner->paletteContent());
 		QFile f(path);
@@ -784,7 +784,7 @@ void Editor::exportTheme() {
 
 void Editor::importTheme() {
 	auto filters = QStringList(
-		u"Theme files (*.tdesktop-theme *.tdesktop-palette)"_q);
+		u"Theme files (*.adesktop-theme *.adesktop-palette *.tdesktop-theme *.tdesktop-palette)"_q);
 	filters.push_back(FileDialog::AllFilesFilter());
 	const auto callback = crl::guard(this, [=](
 		const FileDialog::OpenResult &result) {

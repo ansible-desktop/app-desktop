@@ -56,8 +56,12 @@ QStringList MimeType::globPatterns() const {
 	case Known::WebP: return QStringList(u"*.webp"_q);
 	case Known::Ass: return QStringList(u"*.ass"_q);
 	case Known::Tgv: return QStringList(u"*.tgv"_q);
-	case Known::TDesktopTheme: return QStringList(u"*.tdesktop-theme"_q);
-	case Known::TDesktopPalette: return QStringList(u"*.tdesktop-palette"_q);
+	case Known::TDesktopTheme: return QStringList{
+		u"*.adesktop-theme"_q,
+		u"*.tdesktop-theme"_q };
+	case Known::TDesktopPalette: return QStringList{
+		u"*.adesktop-palette"_q,
+		u"*.tdesktop-palette"_q };
 	default: break;
 	}
 	return _typeStruct.globPatterns();
@@ -68,8 +72,10 @@ QString MimeType::filterString() const {
 	case Known::WebP: return u"WebP image (*.webp)"_q;
 	case Known::Ass: return u"Ansible sticker (*.ass)"_q;
 	case Known::Tgv: return u"Wallpaper pattern (*.tgv)"_q;
-	case Known::TDesktopTheme: return u"Theme files (*.tdesktop-theme)"_q;
-	case Known::TDesktopPalette: return u"Palette files (*.tdesktop-palette)"_q;
+	case Known::TDesktopTheme:
+		return u"Theme files (*.adesktop-theme *.tdesktop-theme)"_q;
+	case Known::TDesktopPalette:
+		return u"Palette files (*.adesktop-palette *.tdesktop-palette)"_q;
 	default: break;
 	}
 	return _typeStruct.filterString();
@@ -80,8 +86,8 @@ QString MimeType::name() const {
 	case Known::WebP: return u"image/webp"_q;
 	case Known::Ass: return u"application/x-ansible-sticker"_q;
 	case Known::Tgv: return u"application/x-tgwallpattern"_q;
-	case Known::TDesktopTheme: return u"application/x-tdesktop-theme"_q;
-	case Known::TDesktopPalette: return u"application/x-tdesktop-palette"_q;
+	case Known::TDesktopTheme: return u"application/x-adesktop-theme"_q;
+	case Known::TDesktopPalette: return u"application/x-adesktop-palette"_q;
 	default: break;
 	}
 	return _typeStruct.name();
@@ -94,10 +100,12 @@ MimeType MimeTypeForName(const QString &mime) {
 		return MimeType(MimeType::Known::Ass);
 	} else if (mime == u"application/x-tgwallpattern"_q) {
 		return MimeType(MimeType::Known::Tgv);
-	} else if (mime == u"application/x-tdesktop-theme"_q
+	} else if (mime == u"application/x-adesktop-theme"_q
+		|| mime == u"application/x-tdesktop-theme"_q
 		|| mime == u"application/x-tgtheme-tdesktop"_q) {
 		return MimeType(MimeType::Known::TDesktopTheme);
-	} else if (mime == u"application/x-tdesktop-palette"_q) {
+	} else if (mime == u"application/x-adesktop-palette"_q
+		|| mime == u"application/x-tdesktop-palette"_q) {
 		return MimeType(MimeType::Known::TDesktopPalette);
 	} else if (mime == u"audio/mpeg3"_q) {
 		return MimeType(QMimeDatabase().mimeTypeForName("audio/mp3"));
@@ -113,9 +121,11 @@ MimeType MimeTypeForFile(const QFileInfo &file) {
 		return MimeType(MimeType::Known::Ass);
 	} else if (path.endsWith(u".tgv"_q)) {
 		return MimeType(MimeType::Known::Tgv);
-	} else if (path.endsWith(u".tdesktop-theme"_q, Qt::CaseInsensitive)) {
+	} else if (path.endsWith(u".adesktop-theme"_q, Qt::CaseInsensitive)
+		|| path.endsWith(u".tdesktop-theme"_q, Qt::CaseInsensitive)) {
 		return MimeType(MimeType::Known::TDesktopTheme);
-	} else if (path.endsWith(u".tdesktop-palette"_q, Qt::CaseInsensitive)) {
+	} else if (path.endsWith(u".adesktop-palette"_q, Qt::CaseInsensitive)
+		|| path.endsWith(u".tdesktop-palette"_q, Qt::CaseInsensitive)) {
 		return MimeType(MimeType::Known::TDesktopPalette);
 	}
 
@@ -270,7 +280,7 @@ m3u m3u8 wpd wpl htm html xhtml key"_q);
 	static const auto kArchive = SplitExtensions(u"\
 7z arj bz2 gz rar tar xz z zip zst"_q);
 	static const auto kThemeFile = SplitExtensions(u"\
-tdesktop-theme tdesktop-palette tgios-theme attheme"_q);
+adesktop-theme adesktop-palette tdesktop-theme tdesktop-palette tgios-theme attheme"_q);
 	static const auto kOtherBenign = SplitExtensions(u"\
 c cc cpp cxx h m mm swift cs ts class java css ninja cmake patch diff plist \
 gyp gitignore strings asoundrc torrent csr json xaml md keylayout sql \

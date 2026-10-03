@@ -224,7 +224,7 @@ void BackgroundBox::prepare() {
 void BackgroundBox::chooseFromFile() {
 	const auto filterStart = _forPeer
 		? u"Image files (*"_q
-		: u"Theme files (*.tdesktop-theme *.tdesktop-palette *"_q;
+		: u"Theme files (*.adesktop-theme *.adesktop-palette *.tdesktop-theme *.tdesktop-palette *"_q;
 	auto filters = QStringList(
 		filterStart
 		+ Ui::ImageExtensions().join(u" *"_q)
@@ -240,8 +240,8 @@ void BackgroundBox::chooseFromFile() {
 			const auto hasExtension = [&](QLatin1String extension) {
 				return filePath.endsWith(extension, Qt::CaseInsensitive);
 			};
-			if (hasExtension(qstr(".tdesktop-theme"))
-				|| hasExtension(qstr(".tdesktop-palette"))) {
+			if (hasExtension(qstr(".adesktop-theme"))
+				|| hasExtension(qstr(".adesktop-palette"))) {
 				Window::Theme::Apply(filePath);
 				return;
 			}
