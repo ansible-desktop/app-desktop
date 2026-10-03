@@ -157,7 +157,7 @@ void Changelogs::addBetaLog(int changeVersion, const char *changes) {
 // отвечает целое 3000000 плюс minor*1000 плюс patch. Апстримовский разбор
 // (major = version / 1000000) читает наши номера как 3.x.y — 3003001 у него
 // «3.3.1» вместо «0.3.1». Одним местом это не ограничивается: тем же
-// FormatVersionDisplay подписывается версия в tdata/version распакованного
+// FormatVersionDisplay подписывается версия в adata/version распакованного
 // обновления, а Updater.exe кладёт эту строку в DisplayVersion реестра.
 //
 // Держим минимум 2008007 (см. version.h), так что верхний диапазон 3xxxxxx

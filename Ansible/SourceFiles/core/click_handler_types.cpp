@@ -169,7 +169,7 @@ void ExportToCalendar(TimeId date, const QString &messageText) {
 			.arg(summary)
 			.arg(description)
 			.arg(uid, 0, 16);
-	const auto dir = cWorkingDir() + u"tdata/temp"_q;
+	const auto dir = cWorkingDir() + u"adata/temp"_q;
 	QDir().mkpath(dir);
 	const auto path = u"%1/event_%2.ics"_q
 		.arg(dir)

@@ -133,7 +133,7 @@ WebviewCarrier::WebviewCarrier(
 	nullptr,
 	Webview::WindowConfig{
 		.storageId = {
-			.path = cWorkingDir() + u"tdata/wvproxy"_q,
+			.path = cWorkingDir() + u"adata/wvproxy"_q,
 			.token = QByteArray::fromHex(
 				"ec5f15fe14864faaa018d270aa2a0df8"),
 		},

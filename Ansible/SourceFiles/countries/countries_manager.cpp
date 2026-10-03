@@ -146,7 +146,7 @@ auto ProcessAlternativeName(Info &&info) {
 } // namespace
 
 Manager::Manager(not_null<Main::Domain*> domain)
-: _path(cWorkingDir() + "tdata/countries") {
+: _path(cWorkingDir() + "adata/countries") {
 	read();
 
 	const auto mtpLifetime = _lifetime.make_state<rpl::lifetime>();

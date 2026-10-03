@@ -108,7 +108,7 @@ void FilteredCommandLineArguments::pushArgument(const char *text) {
 }
 
 QString DebugModeSettingPath() {
-	return cWorkingDir() + u"tdata/withdebug"_q;
+	return cWorkingDir() + u"adata/withdebug"_q;
 }
 
 void WriteDebugModeSetting() {
@@ -164,7 +164,7 @@ void ComputeExternalUpdater() {
 }
 
 QString InstallBetaVersionsSettingPath() {
-	return cWorkingDir() + u"tdata/devversion"_q;
+	return cWorkingDir() + u"adata/devversion"_q;
 }
 
 void WriteInstallBetaVersionsSetting() {
@@ -190,7 +190,7 @@ void ComputeInstallBetaVersions() {
 
 void ComputeInstallationTag() {
 	InstallationTag = 0;
-	auto file = QFile(cWorkingDir() + u"tdata/usertag"_q);
+	auto file = QFile(cWorkingDir() + u"adata/usertag"_q);
 	if (file.open(QIODevice::ReadOnly)) {
 		const auto result = file.read(
 			reinterpret_cast<char*>(&InstallationTag),
@@ -230,12 +230,20 @@ bool CheckPortableVersionFolder() {
 	}
 
 	const auto portable = cExeDir() + u"AnsibleForcePortable"_q;
-	QFile key(portable + u"/tdata/alpha"_q);
+	// Каталог переименован в adata; у портативной установки, собранной
+	// до переименования, ключ лежит под старым именем, а перенос
+	// каталога делается позже — в Logs::start().
+	const auto keyPath = QFileInfo::exists(portable + u"/adata/alpha"_q)
+		? (portable + u"/adata/alpha"_q)
+		: QFileInfo::exists(portable + u"/tdata/alpha"_q)
+		? (portable + u"/tdata/alpha"_q)
+		: (portable + u"/adata/alpha"_q);
+	QFile key(keyPath);
 	if (cAlphaVersion()) {
 		Assert(*AlphaPrivateKey != 0);
 
 		cForceWorkingDir(portable);
-		QDir().mkpath(cWorkingDir() + u"tdata"_q);
+		QDir().mkpath(cWorkingDir() + u"adata"_q);
 		cSetAlphaPrivateKey(QByteArray(AlphaPrivateKey));
 		if (!key.open(QIODevice::WriteOnly)) {
 			LOG(("FATAL: Could not open '%1' for writing private key!"
@@ -373,7 +381,7 @@ int Launcher::exec() {
 
 	// Must be started before Platform is started.
 	Logs::start();
-	base::options::init(cWorkingDir() + "tdata/experimental_options.json");
+	base::options::init(cWorkingDir() + "adata/experimental_options.json");
 
 	// Must be called after options are inited.
 	initHighDpi();
@@ -406,7 +414,7 @@ int Launcher::exec() {
 	if (!UpdaterDisabled() && cRestartingUpdate()) {
 		DEBUG_LOG(("Sandbox Info: executing updater to install update."));
 		if (!launchUpdater(UpdaterLaunch::PerformUpdate)) {
-			base::Platform::DeleteDirectory(cWorkingDir() + u"tupdates/temp"_q);
+			base::Platform::DeleteDirectory(cWorkingDir() + u"aupdates/temp"_q);
 		}
 	} else if (cRestarting()) {
 		DEBUG_LOG(("Sandbox Info: executing Telegram because of restart."));

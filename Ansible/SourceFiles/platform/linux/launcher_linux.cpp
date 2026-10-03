@@ -74,7 +74,7 @@ bool Launcher::launchUpdater(UpdaterLaunch action) {
 			? "run0"
 			: "pkexec");
 		argumentsList.push_back(
-			cWorkingDir().toStdString() + "tupdates/temp/Updater");
+			cWorkingDir().toStdString() + "aupdates/temp/Updater");
 	} else {
 		argumentsList.push_back(cExeDir().toStdString() + "Updater");
 	}

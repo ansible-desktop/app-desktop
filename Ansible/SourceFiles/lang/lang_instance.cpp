@@ -36,6 +36,20 @@ std::vector<QString> PrepareDefaultValues() {
 	return result;
 }
 
+// Прежние имена тегов. Пак, собранный до переименования, присылает {stars} и
+// {telegram}, а значение с НЕИЗВЕСТНЫМ тегом readTag отбрасывает ЦЕЛИКОМ:
+// строка уезжает на встроенный английский, и в релизной сборке об этом не
+// остаётся даже записи в журнале. Принимаем оба имени, пока все паки не
+// пересобраны; выкинуть этот список можно будет после волны паков.
+[[nodiscard]] QLatin1String RenamedTag(QLatin1String tag) {
+	if (tag == QLatin1String("stars")) {
+		return QLatin1String("diamonds");
+	} else if (tag == QLatin1String("telegram")) {
+		return QLatin1String("ansible");
+	}
+	return QLatin1String();
+}
+
 class ValueParser {
 public:
 	ValueParser(
@@ -123,6 +137,16 @@ bool ValueParser::readTag() {
 	}
 
 	_currentTagIndex = GetTagIndex(_currentTag);
+	if (_currentTagIndex == kTagsCount
+		|| !IsTagReplaced(_keyIndex, _currentTagIndex)) {
+		const auto renamed = RenamedTag(_currentTag);
+		if (renamed.size() > 0) {
+			const auto index = GetTagIndex(renamed);
+			if (index != kTagsCount && IsTagReplaced(_keyIndex, index)) {
+				_currentTagIndex = index;
+			}
+		}
+	}
 	if (_currentTagIndex == kTagsCount) {
 		return logError("Unknown tag");
 	}

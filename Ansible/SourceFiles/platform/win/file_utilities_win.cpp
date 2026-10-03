@@ -364,7 +364,7 @@ void InitLastPath() {
 	}
 
 	if (cDialogHelperPath().isEmpty()) {
-		QDir temppath(cWorkingDir() + "tdata/tdummy/");
+		QDir temppath(cWorkingDir() + "adata/tdummy/");
 		if (!temppath.exists()) {
 			temppath.mkpath(temppath.absolutePath());
 		}

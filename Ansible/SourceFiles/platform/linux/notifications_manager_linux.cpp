@@ -338,7 +338,7 @@ void Create(Window::Notifications::System *system) {
 Manager::Private::Private(not_null<Manager*> manager)
 : _manager(manager)
 , _application(Gio::Application::get_default())
-, _sounds(cWorkingDir() + u"tdata/audio_cache"_q) {
+, _sounds(cWorkingDir() + u"adata/audio_cache"_q) {
 	const auto &serverInformation = CurrentServerInformation;
 
 	if (!serverInformation.name.empty()) {

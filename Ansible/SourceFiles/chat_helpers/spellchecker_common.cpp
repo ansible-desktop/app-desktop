@@ -408,7 +408,7 @@ QString DictPathByLangId(int langId) {
 }
 
 QString DictionariesPath() {
-	return cWorkingDir() + u"tdata/dictionaries"_q;
+	return cWorkingDir() + u"adata/dictionaries"_q;
 }
 
 bool UnpackDictionary(const QString &path, int langId) {

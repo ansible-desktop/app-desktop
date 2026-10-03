@@ -260,7 +260,7 @@ UNManager::Private::Private(UNManager *manager)
 , _managerIdString(QString::number(_managerId))
 , _manager(manager)
 , _sounds(ResolveSoundsFolder()) {
-	QDir().mkpath(cWorkingDir() + u"tdata/temp"_q);
+	QDir().mkpath(cWorkingDir() + u"adata/temp"_q);
 	if (@available(macOS 10.14, *)) {
 		_delegate = [[UserNotificationsDelegate alloc]
 			initWithManager:manager
@@ -405,7 +405,7 @@ void UNManager::Private::showNotification(
 		}
 
 		if (!info.options.hideNameAndPhoto) {
-			const auto path = u"%1tdata/temp/%2.png"_q.arg(
+			const auto path = u"%1adata/temp/%2.png"_q.arg(
 				cWorkingDir(),
 				QString::number(base::RandomValue<uint64>(), 16));
 			if (Window::Notifications::GenerateUserpic(peer, userpicView)

@@ -706,7 +706,7 @@ bool Manager::Private::showNotification(
 
 std::wstring Manager::Private::ensureSendButtonIcon() {
 	if (_sendButtonIconPath.empty()) {
-		const auto path = cWorkingDir() + u"tdata/temp/fast_reply.png"_q;
+		const auto path = cWorkingDir() + u"adata/temp/fast_reply.png"_q;
 		st::historySendIcon.instance(Qt::white, 300).save(path, "PNG");
 		_sendButtonIconPath = path.toStdWString();
 	}

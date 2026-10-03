@@ -33,7 +33,7 @@ QImage GenerateUserpic(not_null<PeerData*> peer, Ui::PeerUserpicView &view) {
 
 CachedUserpics::CachedUserpics()
 : _clearTimer([=] { clear(); }) {
-	QDir().mkpath(cWorkingDir() + u"tdata/temp"_q);
+	QDir().mkpath(cWorkingDir() + u"adata/temp"_q);
 }
 
 CachedUserpics::~CachedUserpics() {
@@ -43,7 +43,7 @@ CachedUserpics::~CachedUserpics() {
 		}
 
 		// This works about 1200ms on Windows for a folder with one image O_o
-		//base::Platform::DeleteDirectory(cWorkingDir() + u"tdata/temp"_q);
+		//base::Platform::DeleteDirectory(cWorkingDir() + u"adata/temp"_q);
 	}
 }
 
@@ -66,7 +66,7 @@ QString CachedUserpics::get(
 		} else {
 			v.until = 0;
 		}
-		v.path = u"%1tdata/temp/%2.png"_q.arg(
+		v.path = u"%1adata/temp/%2.png"_q.arg(
 			cWorkingDir(),
 			QString::number(base::RandomValue<uint64>(), 16));
 		if (key.first || key.second) {

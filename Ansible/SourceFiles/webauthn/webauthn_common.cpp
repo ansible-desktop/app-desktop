@@ -327,7 +327,7 @@ void CloseBox(const std::shared_ptr<State> &state) {
 		state.ceremony->setDevice(dev);
 
 		auto assert = fido_assert_new();
-		fido_assert_set_clientdata(
+		fido_assert_set_clienadata(
 			assert,
 			reinterpret_cast<const unsigned char*>(clientData.data()),
 			clientData.size());
@@ -422,7 +422,7 @@ void CloseBox(const std::shared_ptr<State> &state) {
 
 	auto cred = fido_cred_new();
 	fido_cred_set_type(cred, PreferredAlgorithm(state.data.pubKeyCredParams));
-	fido_cred_set_clientdata(
+	fido_cred_set_clienadata(
 		cred,
 		reinterpret_cast<const unsigned char*>(clientData.data()),
 		clientData.size());

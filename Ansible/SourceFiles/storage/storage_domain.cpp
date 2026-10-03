@@ -21,7 +21,7 @@ namespace {
 using namespace details;
 
 [[nodiscard]] QString BaseGlobalPath() {
-	return cWorkingDir() + u"tdata/"_q;
+	return cWorkingDir() + u"adata/"_q;
 }
 
 [[nodiscard]] QString ComputeKeyName(const QString &dataName) {

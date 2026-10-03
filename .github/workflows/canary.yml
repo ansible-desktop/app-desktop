@@ -701,7 +701,7 @@ jobs:
 
           # The first-install artifact is a portable-style archive (like
           # the alpha builds): the AnsibleForcePortable folder keeps the
-          # canary's tdata next to the binary, never touching a normal
+          # canary's adata next to the binary, never touching a normal
           # installation. The .keep file stops unpackers that skip empty
           # folders from dropping it.
           PORTABLE=ansible-portable-win-x64-$CANARY_VERSION$CANARY_SUFFIX.zip
@@ -1104,7 +1104,7 @@ jobs:
           done
 
           # Portable-style first-install archive from the stapled
-          # universal app, with tdata forced next to the bundle. The
+          # universal app, with adata forced next to the bundle. The
           # .keep file stops unpackers that skip empty folders from
           # dropping AnsibleForcePortable.
           PORTABLE=ansible-portable-mac-$CANARY_VERSION$CANARY_SUFFIX.zip
@@ -1363,7 +1363,7 @@ jobs:
             UPDATE=ansible-update-linux-x64-${{ needs.version.outputs.base }}$CANARY_SUFFIX.unsigned
           fi
 
-          # Portable-style first-install archive, tdata forced next to
+          # Portable-style first-install archive, adata forced next to
           # the binary. The .keep file stops unpackers that skip empty
           # folders from dropping AnsibleForcePortable.
           PORTABLE=ansible-portable-linux-x64-$CANARY_VERSION$CANARY_SUFFIX.tar.xz

@@ -2296,7 +2296,7 @@ void AddUniqueGiftValueTable(
 		table,
 		tr::lng_gift_value_initial_price(),
 		tr::lng_gift_value_initial_price_value(
-			lt_stars,
+			lt_diamonds,
 			rpl::single(starIcon.append(' ').append(
 				Lang::FormatCreditsAmountDecimal(value->initialPriceStars)
 			)),

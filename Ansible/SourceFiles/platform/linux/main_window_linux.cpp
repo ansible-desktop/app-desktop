@@ -221,7 +221,7 @@ void MainWindow::createGlobalMenu() {
 		});
 
 	auto quit = file->addAction(
-		tr::lng_mac_menu_quit_ansible(tr::now, lt_telegram, u"Ansible"_q),
+		tr::lng_mac_menu_quit_ansible(tr::now, lt_ansible, u"Ansible"_q),
 		this,
 		[=] { quitFromTray(); },
 		QKeySequence::Quit);
@@ -419,7 +419,7 @@ void MainWindow::createGlobalMenu() {
 	auto about = help->addAction(
 		tr::lng_mac_menu_about_ansible(
 			tr::now,
-			lt_telegram,
+			lt_ansible,
 			u"Ansible"_q),
 		[=] {
 			ensureWindowShown();

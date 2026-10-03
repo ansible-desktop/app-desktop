@@ -72,7 +72,7 @@ namespace {
 constexpr auto kUpdaterTimeout = 10 * crl::time(1000);
 constexpr auto kMaxResponseSize = 1024 * 1024;
 
-// tdata/version marker for installed v2 canary packages, holding the full
+// adata/version marker for installed v2 canary packages, holding the full
 // 64-bit (base << 32 | counter) version. 0x7FFFFFFF is the alpha marker.
 constexpr auto kVersionFileCanaryMarker = quint32(0x7FFFFFFE);
 
@@ -326,7 +326,7 @@ std::shared_ptr<Updater> GetUpdaterInstance() {
 }
 
 QString UpdatesFolder() {
-	return cWorkingDir() + u"tupdates"_q;
+	return cWorkingDir() + u"aupdates"_q;
 }
 
 void ClearAll() {
@@ -548,8 +548,8 @@ QString ExtractFilename(const QString &url) {
 		quint32 version,
 		quint64 alphaVersion,
 		quint64 canaryVersion) {
-	// create tdata/version file
-	tempDir.mkdir(QDir(tempDirPath + u"/tdata"_q).absolutePath());
+	// create adata/version file
+	tempDir.mkdir(QDir(tempDirPath + u"/adata"_q).absolutePath());
 	std::wstring versionString = FormatVersionDisplay(version).toStdWString();
 
 	const auto versionNum = canaryVersion
@@ -559,7 +559,7 @@ QString ExtractFilename(const QString &url) {
 	VersionChar versionStr[32];
 	memcpy(versionStr, versionString.c_str(), versionLen);
 
-	QFile fVersion(tempDirPath + u"/tdata/version"_q);
+	QFile fVersion(tempDirPath + u"/adata/version"_q);
 	if (!fVersion.open(QIODevice::WriteOnly)) {
 		LOG(("Update Error: cant write version file '%1'").arg(tempDirPath + u"/version"_q));
 		return false;
@@ -629,13 +629,13 @@ QString ExtractFilename(const QString &url) {
 		});
 	}
 
-	const auto tempDirPath = cWorkingDir() + u"tupdates/temp"_q;
-	const auto readyFilePath = cWorkingDir() + u"tupdates/temp/ready"_q;
+	const auto tempDirPath = cWorkingDir() + u"aupdates/temp"_q;
+	const auto readyFilePath = cWorkingDir() + u"aupdates/temp/ready"_q;
 	base::Platform::DeleteDirectory(tempDirPath);
 
 	QDir tempDir(tempDirPath);
 	if (tempDir.exists() || QFile(readyFilePath).exists()) {
-		LOG(("Update Error: cant clear tupdates/temp dir!"));
+		LOG(("Update Error: cant clear aupdates/temp dir!"));
 		return false;
 	}
 
@@ -741,12 +741,12 @@ bool UnpackUpdate(const QString &filepath) {
 		return false;
 	}
 
-	QString tempDirPath = cWorkingDir() + u"tupdates/temp"_q, readyFilePath = cWorkingDir() + u"tupdates/temp/ready"_q;
+	QString tempDirPath = cWorkingDir() + u"aupdates/temp"_q, readyFilePath = cWorkingDir() + u"aupdates/temp/ready"_q;
 	base::Platform::DeleteDirectory(tempDirPath);
 
 	QDir tempDir(tempDirPath);
 	if (tempDir.exists() || QFile(readyFilePath).exists()) {
-		LOG(("Update Error: cant clear tupdates/temp dir!"));
+		LOG(("Update Error: cant clear aupdates/temp dir!"));
 		return false;
 	}
 
@@ -2245,16 +2245,16 @@ bool UpdateChecker::percent() const {
 //}
 
 bool checkReadyUpdate() {
-	QString readyFilePath = cWorkingDir() + u"tupdates/temp/ready"_q, readyPath = cWorkingDir() + u"tupdates/temp"_q;
+	QString readyFilePath = cWorkingDir() + u"aupdates/temp/ready"_q, readyPath = cWorkingDir() + u"aupdates/temp"_q;
 	if (!QFile(readyFilePath).exists() || cExeName().isEmpty()) {
-		if (QDir(cWorkingDir() + u"tupdates/ready"_q).exists() || QDir(cWorkingDir() + u"tupdates/temp"_q).exists()) {
+		if (QDir(cWorkingDir() + u"aupdates/ready"_q).exists() || QDir(cWorkingDir() + u"aupdates/temp"_q).exists()) {
 			ClearAll();
 		}
 		return false;
 	}
 
 	// check ready version
-	QString versionPath = readyPath + u"/tdata/version"_q;
+	QString versionPath = readyPath + u"/adata/version"_q;
 	{
 		QFile fVersion(versionPath);
 		if (!fVersion.open(QIODevice::ReadOnly)) {
@@ -2306,7 +2306,7 @@ bool checkReadyUpdate() {
 
 #ifdef Q_OS_WIN
 	QString curUpdater = (cExeDir() + u"Updater.exe"_q);
-	QFileInfo updater(cWorkingDir() + u"tupdates/temp/Updater.exe"_q);
+	QFileInfo updater(cWorkingDir() + u"aupdates/temp/Updater.exe"_q);
 #elif defined Q_OS_MAC // Q_OS_WIN
 	QString curUpdater = (cExeDir() + cExeName() + u"/Contents/Frameworks/Updater"_q);
 	// 🚨 Бандл распакованного обновления называется так же, как наш — сейчас
@@ -2316,10 +2316,10 @@ bool checkReadyUpdate() {
 	// что дальше идёт ветка «апдейтера нет». Берём имя из cExeName(), как
 	// строкой выше для текущего бандла: тогда оно не разъедется при следующем
 	// переименовании.
-	QFileInfo updater(cWorkingDir() + u"tupdates/temp/"_q + cExeName() + u"/Contents/Frameworks/Updater"_q);
+	QFileInfo updater(cWorkingDir() + u"aupdates/temp/"_q + cExeName() + u"/Contents/Frameworks/Updater"_q);
 #else // Q_OS_MAC
 	QString curUpdater = (cExeDir() + u"Updater"_q);
-	QFileInfo updater(cWorkingDir() + u"tupdates/temp/Updater"_q);
+	QFileInfo updater(cWorkingDir() + u"aupdates/temp/Updater"_q);
 #endif // else for Q_OS_WIN || Q_OS_MAC
 	if (!updater.exists()) {
 		QFileInfo current(curUpdater);

@@ -55,7 +55,7 @@ void VideoStreamStarsBox(
 			: (sending
 				? tr::lng_paid_reaction_button
 				: tr::lng_paid_comment_button)(
-					lt_stars,
+					lt_diamonds,
 					std::move(nice),
 					tr::rich);
 	};

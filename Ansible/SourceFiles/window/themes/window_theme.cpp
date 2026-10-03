@@ -1521,7 +1521,7 @@ rpl::producer<bool> IsThemeDarkValue() {
 }
 
 QString EditingPalettePath() {
-	return cWorkingDir() + "tdata/editing-theme.tdesktop-palette";
+	return cWorkingDir() + "adata/editing-theme.tdesktop-palette";
 }
 
 bool ReadPaletteValues(const QByteArray &content, Fn<bool(QLatin1String name, QLatin1String value)> callback) {

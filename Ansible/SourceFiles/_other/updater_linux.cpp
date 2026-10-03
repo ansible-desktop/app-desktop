@@ -201,7 +201,7 @@ bool equal(string a, string b) {
 }
 
 void delFolder() {
-	string delPathOld = workDir + "tupdates/ready", delPath = workDir + "tupdates/temp", delFolder = workDir + "tupdates";
+	string delPathOld = workDir + "aupdates/ready", delPath = workDir + "aupdates/temp", delFolder = workDir + "aupdates";
 	writeLog("Fully clearing old path '%s'..", delPathOld.c_str());
 	if (!remove_directory(delPathOld)) {
 		writeLog("Failed to clear old path! :( New path was used?..");
@@ -216,17 +216,42 @@ void delFolder() {
 bool update() {
 	writeLog("Update started..");
 
-	string updDir = workDir + "tupdates/temp", readyFilePath = workDir + "tupdates/temp/ready", tdataDir = workDir + "tupdates/temp/tdata";
-	{
-		FILE *readyFile = fopen(readyFilePath.c_str(), "rb");
+	// 🚨 Оба имени каталогов (aupdates/adata и прежние tupdates/tdata),
+	// новое первым: пакет раскладывает клиент, а
+	// применяет установленный апдейтер — сборки разные (см. updater_win.cpp).
+	const char *layouts[][2] = {
+		{ "aupdates", "adata" },
+		{ "tupdates", "tdata" },
+	};
+
+	string updDir, readyFilePath, adataDir;
+	for (const auto &layout : layouts) {
+		const string root = string(layout[0]);
+		const string ready = workDir + root + "/temp/ready";
+		string dir = workDir + root + "/temp";
+		string data = dir + "/" + layout[1];
+		FILE *readyFile = fopen(ready.c_str(), "rb");
 		if (readyFile) {
 			fclose(readyFile);
-			writeLog("Ready file found! Using new path '%s'..", updDir.c_str());
 		} else {
-			updDir = workDir + "tupdates/ready"; // old
-			tdataDir = workDir + "tupdates/ready/tdata";
-			writeLog("Ready file not found! Using old path '%s'..", updDir.c_str());
+			dir = workDir + root + "/ready"; // old
+			data = dir + "/" + layout[1];
 		}
+		FILE *check = fopen((data + "/version").c_str(), "rb");
+		if (check) {
+			fclose(check);
+			updDir = dir;
+			readyFilePath = ready;
+			adataDir = data;
+			writeLog("Using update layout '%s' at '%s'..", root.c_str(), dir.c_str());
+			break;
+		}
+	}
+	if (updDir.empty()) {
+		updDir = workDir + string(layouts[0][0]) + "/temp";
+		readyFilePath = updDir + "/ready";
+		adataDir = updDir + "/" + layouts[0][1];
+		writeLog("No ready update found, using '%s'..", updDir.c_str());
 	}
 
 	deque<string> dirs;
@@ -257,8 +282,8 @@ bool update() {
 
 			string fname = dir + '/' + p->d_name;
 			struct stat statbuf;
-			if (fname.substr(0, tdataDir.size()) == tdataDir && (fname.size() <= tdataDir.size() || fname.at(tdataDir.size()) == '/')) {
-				writeLog("Skipping 'tdata' path '%s'", fname.c_str());
+			if (fname.substr(0, adataDir.size()) == adataDir && (fname.size() <= adataDir.size() || fname.at(adataDir.size()) == '/')) {
+				writeLog("Skipping 'adata' path '%s'", fname.c_str());
 			} else if (!stat(fname.c_str(), &statbuf)) {
 				if (S_ISDIR(statbuf.st_mode)) {
 					dirs.push_back(fname);
@@ -427,7 +452,7 @@ int main(int argc, char *argv[]) {
 				writeLog("Using updater binary dir.", exePath.c_str());
 			}
 			if (needupdate) {
-				if (workDir.empty()) { // old app launched, update prepared in tupdates/ready (not in tupdates/temp)
+				if (workDir.empty()) { // old app launched, update prepared in aupdates/ready (not in aupdates/temp)
 					customWorkingDir = false;
 
 					writeLog("No workdir, trying to figure it out");
@@ -435,8 +460,8 @@ int main(int argc, char *argv[]) {
 					if (pw && pw->pw_dir && strlen(pw->pw_dir)) {
 						string tryDir = pw->pw_dir + string("/.TelegramDesktop/");
 						struct stat statbuf;
-						writeLog("Trying to use '%s' as workDir, getting stat() for tupdates/ready", tryDir.c_str());
-						if (!stat((tryDir + "tupdates/ready").c_str(), &statbuf)) {
+						writeLog("Trying to use '%s' as workDir, getting stat() for aupdates/ready", tryDir.c_str());
+						if (!stat((tryDir + "aupdates/ready").c_str(), &statbuf)) {
 							writeLog("Stat got");
 							if (S_ISDIR(statbuf.st_mode)) {
 								writeLog("It is directory, using home work dir");
@@ -448,8 +473,8 @@ int main(int argc, char *argv[]) {
 						workDir = exePath;
 
 						struct stat statbuf;
-						writeLog("Trying to use current as workDir, getting stat() for tupdates/ready");
-						if (!stat("tupdates/ready", &statbuf)) {
+						writeLog("Trying to use current as workDir, getting stat() for aupdates/ready");
+						if (!stat("aupdates/ready", &statbuf)) {
 							writeLog("Stat got");
 							if (S_ISDIR(statbuf.st_mode)) {
 								writeLog("It is directory, using current dir");

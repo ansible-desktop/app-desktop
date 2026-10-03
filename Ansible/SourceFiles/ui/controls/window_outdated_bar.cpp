@@ -98,7 +98,7 @@ void Bar::paintEvent(QPaintEvent *e) {
 }
 
 [[nodiscard]] QString LastHiddenPath(const QString &workingDir) {
-	return workingDir + u"tdata/outdated_hidden"_q;
+	return workingDir + u"adata/outdated_hidden"_q;
 }
 
 [[nodiscard]] bool Skip(const QDate &date, const QString &workingDir) {

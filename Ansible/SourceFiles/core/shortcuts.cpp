@@ -234,11 +234,11 @@ private:
 };
 
 QString DefaultFilePath() {
-	return cWorkingDir() + u"tdata/shortcuts-default.json"_q;
+	return cWorkingDir() + u"adata/shortcuts-default.json"_q;
 }
 
 QString CustomFilePath() {
-	return cWorkingDir() + u"tdata/shortcuts-custom.json"_q;
+	return cWorkingDir() + u"adata/shortcuts-custom.json"_q;
 }
 
 bool DefaultFileIsValid() {

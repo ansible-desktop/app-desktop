@@ -113,11 +113,11 @@ const auto kBadPrefix = u"http://"_q;
 }
 
 [[nodiscard]] QString OpenGLCheckFilePath() {
-	return cWorkingDir() + "tdata/opengl_crash_check";
+	return cWorkingDir() + "adata/opengl_crash_check";
 }
 
 [[nodiscard]] QString ANGLEBackendFilePath() {
-	return cWorkingDir() + "tdata/angle_backend";
+	return cWorkingDir() + "adata/angle_backend";
 }
 
 [[nodiscard]] Ui::Text::FormattedDateResult FormatDateRelative(TimeId date) {
@@ -281,11 +281,11 @@ void UiIntegration::unregisterLeaveSubscription(not_null<QWidget*> widget) {
 }
 
 QString UiIntegration::emojiCacheFolder() {
-	return cWorkingDir() + "tdata/emoji";
+	return cWorkingDir() + "adata/emoji";
 }
 
 QString UiIntegration::fontsCacheFolder() {
-	return cWorkingDir() + "tdata/fonts";
+	return cWorkingDir() + "adata/fonts";
 }
 
 QString UiIntegration::openglCheckFilePath() {

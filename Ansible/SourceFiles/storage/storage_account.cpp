@@ -125,7 +125,7 @@ auto EmptyMessageDraftSources()
 }
 
 [[nodiscard]] QString BaseGlobalPath() {
-	return cWorkingDir() + u"tdata/"_q;
+	return cWorkingDir() + u"adata/"_q;
 }
 
 [[nodiscard]] QString ComputeDatabasePath(const QString &dataName) {
@@ -137,7 +137,7 @@ auto EmptyMessageDraftSources()
 }
 
 [[nodiscard]] QString LegacyTempDirectory() {
-	return cWorkingDir() + u"tdata/tdld/"_q;
+	return cWorkingDir() + u"adata/tdld/"_q;
 }
 
 [[nodiscard]] std::pair<quint64, quint64> SerializeSuggest(

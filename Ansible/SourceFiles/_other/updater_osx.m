@@ -62,15 +62,15 @@ void RemoveQuarantineFromBundle(NSString *path) {
 }
 
 void delFolder() {
-	writeLog([@"Fully clearing old path: " stringByAppendingString:[workDir stringByAppendingString:@"tupdates/ready"]]);
-	if (![[NSFileManager defaultManager] removeItemAtPath:[workDir stringByAppendingString:@"tupdates/ready"] error:nil]) {
+	writeLog([@"Fully clearing old path: " stringByAppendingString:[workDir stringByAppendingString:@"aupdates/ready"]]);
+	if (![[NSFileManager defaultManager] removeItemAtPath:[workDir stringByAppendingString:@"aupdates/ready"] error:nil]) {
 		writeLog(@"Failed to clear old path! :( New path was used?..");
 	}
-	writeLog([@"Fully clearing new path: " stringByAppendingString:[workDir stringByAppendingString:@"tupdates/temp"]]);
-	if (![[NSFileManager defaultManager] removeItemAtPath:[workDir stringByAppendingString:@"tupdates/temp"] error:nil]) {
+	writeLog([@"Fully clearing new path: " stringByAppendingString:[workDir stringByAppendingString:@"aupdates/temp"]]);
+	if (![[NSFileManager defaultManager] removeItemAtPath:[workDir stringByAppendingString:@"aupdates/temp"] error:nil]) {
 		writeLog(@"Error: failed to clear new path! :(");
 	}
-	rmdir([[workDir stringByAppendingString:@"tupdates"] fileSystemRepresentation]);
+	rmdir([[workDir stringByAppendingString:@"aupdates"] fileSystemRepresentation]);
 }
 
 int main(int argc, const char * argv[]) {
@@ -151,13 +151,13 @@ int main(int argc, const char * argv[]) {
 
 	if (update) {
 		NSFileManager *fileManager = [NSFileManager defaultManager];
-		NSString *readyFilePath = [workDir stringByAppendingString:@"tupdates/temp/ready"];
-		NSString *srcDir = [workDir stringByAppendingString:@"tupdates/temp/"], *srcEnum = [workDir stringByAppendingString:@"tupdates/temp"];
+		NSString *readyFilePath = [workDir stringByAppendingString:@"aupdates/temp/ready"];
+		NSString *srcDir = [workDir stringByAppendingString:@"aupdates/temp/"], *srcEnum = [workDir stringByAppendingString:@"aupdates/temp"];
 		if ([fileManager fileExistsAtPath:readyFilePath]) {
 			writeLog([@"Ready file found! Using new path: " stringByAppendingString: srcEnum]);
 		} else {
-			srcDir = [workDir stringByAppendingString:@"tupdates/ready/"]; // old
-			srcEnum = [workDir stringByAppendingString:@"tupdates/ready"];
+			srcDir = [workDir stringByAppendingString:@"aupdates/ready/"]; // old
+			srcEnum = [workDir stringByAppendingString:@"aupdates/ready"];
 			writeLog([@"Ready file not found! Using old path: " stringByAppendingString: srcEnum]);
 		}
 

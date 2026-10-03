@@ -145,7 +145,7 @@ void applyReadContext(ReadSettingsContext &&context) {
 
 bool _readOldSettings(bool remove, ReadSettingsContext &context) {
 	bool result = false;
-	auto file = QFile(cWorkingDir() + u"tdata/config"_q);
+	auto file = QFile(cWorkingDir() + u"adata/config"_q);
 	if (file.open(QIODevice::ReadOnly)) {
 		LOG(("App Info: reading old config..."));
 		QDataStream stream(&file);
@@ -357,7 +357,7 @@ void start() {
 
 	_localLoader = new TaskQueue(kFileLoaderQueueStopTimeout);
 
-	_basePath = cWorkingDir() + u"tdata/"_q;
+	_basePath = cWorkingDir() + u"adata/"_q;
 	if (!QDir().exists(_basePath)) QDir().mkpath(_basePath);
 
 	ReadSettingsContext context;
@@ -538,7 +538,7 @@ const QString &AutoupdatePrefix(const QString &replaceWith = {}) {
 QString autoupdatePrefixFile() {
 	Expects(!Core::UpdaterDisabled());
 
-	return cWorkingDir() + "tdata/prefix";
+	return cWorkingDir() + "adata/prefix";
 }
 
 const QString &readAutoupdatePrefixRaw() {
@@ -561,7 +561,7 @@ const QString &readAutoupdatePrefixRaw() {
 	// Platform::AutoUpdateVersion(), на современных платформах это 2.
 	//
 	// 🚨 Это значение по умолчанию, а НЕ последнее слово. Приоритет выше у
-	// файла tdata/prefix, который пишется из ответа help.getConfig — поле
+	// файла adata/prefix, который пишется из ответа help.getConfig — поле
 	// autoupdate_url_prefix (flags.7). Наш бэкенд его сейчас не шлёт ни
 	// разу, поэтому работает строка отсюда; как только поле появится в
 	// config, адрес обновлений станет задаваться СЕРВЕРОМ, и менять его
@@ -600,7 +600,7 @@ QString readAutoupdatePrefix() {
 QString updateManifestFile() {
 	Expects(!Core::UpdaterDisabled());
 
-	return cWorkingDir() + "tdata/update-manifest";
+	return cWorkingDir() + "adata/update-manifest";
 }
 
 // The file holds the detached 64-byte root Ed25519 signature followed by

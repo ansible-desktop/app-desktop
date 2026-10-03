@@ -916,14 +916,14 @@ void AuctionBidBox(not_null<GenericBox*> box, AuctionBidBoxArgs &&args) {
 	) | rpl::map([=](const Data::GiftAuctionState &state, int count) {
 		return !state.my.bid
 			? tr::lng_auction_bid_place(
-				lt_stars,
+				lt_diamonds,
 				rpl::single(CreditsEmojiSmall().append(
 					Lang::FormatCountDecimal(count))),
 				tr::marked)
 			: (count <= state.my.bid)
 			? tr::lng_box_ok(tr::marked)
 			: tr::lng_auction_bid_increase(
-				lt_stars,
+				lt_diamonds,
 				rpl::single(CreditsEmojiSmall().append(
 					Lang::FormatCountDecimal(count - state.my.bid))),
 				tr::marked);
@@ -1956,12 +1956,12 @@ object_ptr<Ui::RpWidget> MakeActiveAuctionRow(
 		return outbid
 			? tr::lng_auction_bar_bid_outbid(
 				tr::now,
-				lt_stars,
+				lt_diamonds,
 				stars,
 				tr::rich)
 			: tr::lng_auction_bar_bid_ranked(
 				tr::now,
-				lt_stars,
+				lt_diamonds,
 				stars,
 				lt_n,
 				tr::marked(QString::number(fields.position)),

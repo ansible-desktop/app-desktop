@@ -118,7 +118,7 @@ void fullClearPath(const wstring &dir) {
 }
 
 void delFolder() {
-	wstring delPathOld = L"tupdates\\ready", delPath = L"tupdates\\temp", delFolder = L"tupdates";
+	wstring delPathOld = L"aupdates\\ready", delPath = L"aupdates\\temp", delFolder = L"aupdates";
 	fullClearPath(delPathOld);
 	fullClearPath(delPath);
 	RemoveDirectory(delFolder.c_str());
@@ -130,18 +130,53 @@ WCHAR versionStr[32] = { 0 };
 bool update() {
 	writeLog(L"Update started..");
 
-	wstring updDir = L"tupdates\\temp", readyFilePath = L"tupdates\\temp\\ready", tdataDir = L"tupdates\\temp\\tdata";
-	{
-		HANDLE readyFile = CreateFile(readyFilePath.c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	// 🚨 Каталоги переименованы: tupdates/tdata -> aupdates/adata. Пакет
+	// раскладывает работающий клиент, а применяет УСТАНОВЛЕННЫЙ апдейтер —
+	// это разные сборки, поэтому раскладка может оказаться любой из двух.
+	// Перебираем оба имени, новое первым: иначе уже скачанное обновление
+	// потеряется молча, как "no update is ready".
+	struct Layout {
+		const wchar_t *updates;
+		const wchar_t *data;
+	};
+	const Layout layouts[] = {
+		{ L"aupdates", L"adata" },
+		{ L"tupdates", L"tdata" },
+	};
+
+	wstring updDir, readyFilePath, adataDir;
+	for (const auto &layout : layouts) {
+		const wstring root = layout.updates;
+		const wstring ready = root + L"\\temp\\ready";
+		wstring dir = root + L"\\temp";
+		wstring data = dir + L"\\" + layout.data;
+		HANDLE readyFile = CreateFile(ready.c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 		if (readyFile != INVALID_HANDLE_VALUE) {
 			CloseHandle(readyFile);
 		} else {
-			updDir = L"tupdates\\ready"; // old
-			tdataDir = L"tupdates\\ready\\tdata";
+			dir = root + L"\\ready"; // old
+			data = dir + L"\\" + layout.data;
+		}
+		HANDLE check = CreateFile((data + L"\\version").c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+		if (check != INVALID_HANDLE_VALUE) {
+			CloseHandle(check);
+			updDir = dir;
+			readyFilePath = ready;
+			adataDir = data;
+			writeLog(L"Using update layout '" + root + L"' at '" + dir + L"'");
+			break;
 		}
 	}
+	if (updDir.empty()) {
+		// Готового обновления нет ни под одним именем. Дальше код упрётся в
+		// ERROR_PATH_NOT_FOUND и вернёт true, как и до переименования.
+		const wstring root = layouts[0].updates;
+		updDir = root + L"\\temp";
+		readyFilePath = updDir + L"\\ready";
+		adataDir = updDir + L"\\" + layouts[0].data;
+	}
 
-	HANDLE versionFile = CreateFile((tdataDir + L"\\version").c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	HANDLE versionFile = CreateFile((adataDir + L"\\version").c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (versionFile != INVALID_HANDLE_VALUE) {
 		if (!ReadFile(versionFile, &versionNum, sizeof(DWORD), &readLen, NULL) || readLen != sizeof(DWORD)) {
 			versionNum = 0;
@@ -193,8 +228,8 @@ bool update() {
 
 		do {
 			wstring fname = dir + L"\\" + findData.cFileName;
-			if (fname.substr(0, tdataDir.size()) == tdataDir && (fname.size() <= tdataDir.size() || fname.at(tdataDir.size()) == '/')) {
-				writeLog(L"Skipped 'tdata' path '" + fname + L"'");
+			if (fname.substr(0, adataDir.size()) == adataDir && (fname.size() <= adataDir.size() || fname.at(adataDir.size()) == '/')) {
+				writeLog(L"Skipped 'adata' path '" + fname + L"'");
 			} else if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				if (findData.cFileName != wstring(L".") && findData.cFileName != wstring(L"..")) {
 					dirs.push_back(fname);
@@ -425,8 +460,11 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 				if (needupdate && update()) {
 					updateRegistry();
 				}
-				if (writeprotected) { // if we can't clear all tupdates\ready (Updater.exe is there) - clear only version
-					if (DeleteFile(L"tupdates\\temp\\tdata\\version") || DeleteFile(L"tupdates\\ready\\tdata\\version")) {
+				if (writeprotected) { // if we can't clear all aupdates\ready (Updater.exe is there) - clear only version
+					if (DeleteFile(L"aupdates\\temp\\adata\\version")
+						|| DeleteFile(L"aupdates\\ready\\adata\\version")
+						|| DeleteFile(L"tupdates\\temp\\tdata\\version")
+						|| DeleteFile(L"tupdates\\ready\\tdata\\version")) {
 						writeLog(L"Version file deleted!");
 					} else {
 						writeLog(L"Error: could not delete version file");
@@ -475,10 +513,10 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 				hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
 
 				if (SUCCEEDED(hres)) {
-					wstring lnk = L"tupdates\\temp\\temp.lnk";
+					wstring lnk = L"aupdates\\temp\\temp.lnk";
 					hres = ppf->Save(lnk.c_str(), TRUE);
 					if (!SUCCEEDED(hres)) {
-						lnk = L"tupdates\\ready\\temp.lnk"; // old
+						lnk = L"aupdates\\ready\\temp.lnk"; // old
 						hres = ppf->Save(lnk.c_str(), TRUE);
 					}
 					ppf->Release();
@@ -532,7 +570,7 @@ HANDLE _generateDumpFileAtPath(const WCHAR *path) {
 	static const int maxFileLen = MAX_PATH * 10;
 
 	WCHAR szPath[maxFileLen];
-	wsprintf(szPath, L"%stdata\\", path);
+	wsprintf(szPath, L"%sadata\\", path);
 	if (!CreateDirectory(szPath, NULL)) {
 		if (GetLastError() != ERROR_ALREADY_EXISTS) {
 			return 0;

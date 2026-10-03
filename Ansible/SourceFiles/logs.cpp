@@ -289,6 +289,24 @@ namespace {
 
 bool DebugModeEnabled = false;
 
+// 🚨 Каталог данных переименован: tdata -> adata. Без переноса это
+// разлогин и потеря локальных данных у КАЖДОГО, кто обновился, — ключи,
+// сессии, настройки и кеш лежат именно там. Делается один раз и до первого
+// чтения; если переименовать не удалось (например, каталог держит другая
+// копия приложения), данные остаются на месте и попытка повторится при
+// следующем запуске.
+void MigrateDataDirectory() {
+	const auto was = cWorkingDir() + u"tdata"_q;
+	const auto now = cWorkingDir() + u"adata"_q;
+	if (QDir(now).exists() || !QDir(was).exists()) {
+		return;
+	} else if (QDir().rename(was, now)) {
+		LOG(("Migrated data directory: 'tdata' -> 'adata'."));
+	} else {
+		LOG(("Could not migrate 'tdata' to 'adata'! Data stays in 'tdata'."));
+	}
+}
+
 [[maybe_unused]] void MoveOldDataFiles(const QString &wasDir) {
 	if (wasDir.isEmpty()) {
 		return;
@@ -303,8 +321,8 @@ bool DebugModeEnabled = false;
 				bool tdataGood = true;
 				if (tdataConfig.exists()) {
 					tdataGood = false;
-					QDir().mkpath(cWorkingDir() + "tdata");
-					if (tdataConfig.copy(cWorkingDir() + "tdata/config")) {
+					QDir().mkpath(cWorkingDir() + "adata");
+					if (tdataConfig.copy(cWorkingDir() + "adata/config")) {
 						LOG(("Copied 'tdata/config' to home dir"));
 						tdataGood = true;
 					} else {
@@ -382,7 +400,8 @@ void start() {
 	QDir::setCurrent(cWorkingDir());
 #endif // !Q_OS_WINRT
 
-	QDir().mkpath(cWorkingDir() + u"tdata"_q);
+	MigrateDataDirectory();
+	QDir().mkpath(cWorkingDir() + u"adata"_q);
 
 	launcher.workingFolderReady();
 	CrashReports::StartCatching();

@@ -37,7 +37,7 @@ namespace {
 	fflush(stderr);
 
 	// Crashes with an access violation -> caught by the crash reporter, dumped
-	// to tdata/working + tdata/dumps, and the process exits non-zero. No dialog.
+	// to adata/working + adata/dumps, and the process exits non-zero. No dialog.
 	Unexpected("Test agent: CRT/STL assertion violation.");
 }
 
@@ -153,7 +153,7 @@ bool Launcher::launchUpdater(UpdaterLaunch action) {
 	const auto binaryPath = (action == UpdaterLaunch::JustRelaunch)
 		? (cExeDir() + cExeName())
 		: (cWriteProtected()
-			? (cWorkingDir() + u"tupdates/temp/Updater.exe"_q)
+			? (cWorkingDir() + u"aupdates/temp/Updater.exe"_q)
 			: (cExeDir() + u"Updater.exe"_q));
 
 	auto argumentsList = QStringList();

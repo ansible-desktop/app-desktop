@@ -333,7 +333,7 @@ void StartCatching() {
 	ProcessAnnotations["Platform"] = PlatformString().toUtf8().constData();
 	ProcessAnnotations["UserTag"] = QString::number(Core::Launcher::Instance().installationTag(), 16).toUtf8().constData();
 
-	QString dumpspath = cWorkingDir() + u"tdata/dumps"_q;
+	QString dumpspath = cWorkingDir() + u"adata/dumps"_q;
 	QDir().mkpath(dumpspath);
 
 #ifdef Q_OS_WIN
@@ -402,7 +402,7 @@ void FinishCatching() {
 
 StartResult Start() {
 #ifndef TDESKTOP_DISABLE_CRASH_REPORTS
-	ReportPath = cWorkingDir() + u"tdata/working"_q;
+	ReportPath = cWorkingDir() + u"adata/working"_q;
 
 #ifdef Q_OS_WIN
 	FILE *f = nullptr;
