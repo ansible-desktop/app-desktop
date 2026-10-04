@@ -101,7 +101,9 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 namespace {
 
-constexpr auto kBotManagerUsername = "BotFather"_cs;
+// Управляющий бот мессенджера: у нас это @BotManager (uid 15);
+// имени BotFather на стенде нет, ссылки на него вели в пустоту.
+constexpr auto kBotManagerUsername = "BotManager"_cs;
 constexpr auto kWelcomePreviewLength = 8;
 
 [[nodiscard]] auto ToPositiveNumberString() {

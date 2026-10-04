@@ -396,7 +396,7 @@ void CreateManagedBotBox(
 				const auto premiumLimit = limits.botsCreatePremium();
 				const auto current = premium ? premiumLimit : defaultLimit;
 				const auto bot = tr::link(
-					u"@BotFather"_q,
+					u"@BotManager"_q,
 					u"https://ansible.su/bots?start=deletebot"_q);
 				if (premium || !premiumPossible) {
 					using WeakToast = base::weak_ptr<Ui::Toast::Instance>;

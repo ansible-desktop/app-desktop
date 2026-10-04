@@ -2971,7 +2971,7 @@ object_ptr<Ui::BoxContent> PopularAppsAboutBox(
 		.text = tr::lng_popular_apps_info_text(
 			lt_bot,
 			rpl::single(tr::link(
-				u"@botfather"_q,
+				u"@botmanager"_q,
 				u"https://ansible.su/bots"_q)),
 			lt_link,
 			tr::lng_popular_apps_info_here(
