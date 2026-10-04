@@ -99,6 +99,29 @@ jobs:
           ref: ${{ env.BUILD_REF }}
           path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
 
+      - name: Check the version is consistent.
+        shell: bash
+        run: |
+          cd "$TBUILD/$REPO_NAME"
+          FILE_INT=$(grep '^AppVersion ' Ansible/build/version | awk '{print $2}')
+          FILE_STR=$(grep '^AppVersionStr ' Ansible/build/version | awk '{print $2}')
+          CODE_INT=$(grep -oP 'AppVersion = \K[0-9]+' Ansible/SourceFiles/core/version.h)
+          CODE_STR=$(grep -oP 'AppVersionStr = "\K[^"]+' Ansible/SourceFiles/core/version.h)
+          if [ "$FILE_INT" != "$CODE_INT" ] || [ "$FILE_STR" != "$CODE_STR" ]; then
+            echo "::error::build/version says $FILE_STR ($FILE_INT), core/version.h says $CODE_STR ($CODE_INT)."
+            echo "::error::set_version.py patches both - commit both, or the package is signed with the wrong version."
+            exit 1
+          fi
+          case "$GITHUB_REF" in
+            refs/tags/v*)
+              TAG_STR="${GITHUB_REF#refs/tags/v}"
+              if [ "$TAG_STR" != "$FILE_STR" ]; then
+                echo "::error::tag v$TAG_STR does not match AppVersionStr $FILE_STR."
+                exit 1
+              fi;;
+          esac
+          echo "Version $FILE_STR ($FILE_INT) is consistent."
+
       - name: First set up.
         shell: bash
         run: |
@@ -227,8 +250,14 @@ jobs:
           # многочасовой сборки. У v0.3.1 релиз был заведён руками, поэтому
           # раньше это не всплыло. Заводим сам, если его нет.
           if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            # 🚨 --notes-from-tag ломается в паре с --repo ("not supported"),
+            # и узнаётся это только здесь, последним шагом многочасовой
+            # сборки. Берём описание из changelog.txt: первая запись до
+            # следующего заголовка версии.
+            awk 'NR > 2 && /^[0-9]+\.[0-9]+\.[0-9]+ \(/ { exit } { print }' \
+              "$TBUILD/$REPO_NAME/changelog.txt" > notes.md
             gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
-              --verify-tag --title "$TAG" --notes-from-tag
+              --verify-tag --title "$TAG" --notes-file notes.md
           fi
 
           gh release upload "$TAG" \
