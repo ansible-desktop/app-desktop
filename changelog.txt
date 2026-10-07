@@ -1,3 +1,13 @@
+0.3.4 (07.10.26)
+
+- New artwork throughout: the application icon in every size it is shown at,
+  the store tiles, the tray mark, the welcome screen, the QR codes and the
+  wallpaper emblem.
+
+- The diamond is drawn properly now, at each screen scale, and so are the
+  paid reaction animations and the menu, payment and chat badges that carry
+  it.
+
 0.3.3 (04.10.26)
 
 - The currency is a diamond. The icon, the palette and the paid reaction
