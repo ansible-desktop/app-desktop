@@ -5730,7 +5730,7 @@ void HistoryItem::createServiceFromMtp(const MTPDmessageService &message) {
 			? SuggestRefundType::User
 			: SuggestRefundType::Admin;
 	} else if (type == mtpc_messageActionStarGiftPurchaseOffer) {
-		const auto &data = action.c_messageActionDiamondGiftPurchaseOffer();
+		const auto &data = action.c_messageActionStarGiftPurchaseOffer();
 		const auto accepted = data.is_accepted();
 		const auto rejected = data.is_declined();
 		const auto expiresAt = data.vexpires_at().v;
@@ -5759,7 +5759,7 @@ void HistoryItem::createServiceFromMtp(const MTPDmessageService &message) {
 			}
 		}
 	} else if (type == mtpc_messageActionStarGiftPurchaseOfferDeclined) {
-		const auto &data = action.c_messageActionDiamondGiftPurchaseOfferDeclined();
+		const auto &data = action.c_messageActionStarGiftPurchaseOfferDeclined();
 		UpdateComponents(HistoryServiceSuggestFinish::Bit());
 		const auto finish = Get<HistoryServiceSuggestFinish>();
 		finish->refundType = data.is_expired()

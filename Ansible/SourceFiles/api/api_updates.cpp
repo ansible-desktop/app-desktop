@@ -2859,7 +2859,7 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 	} break;
 
 	case mtpc_updateStarsBalance: {
-		const auto &data = update.c_updateDiamondsBalance();
+		const auto &data = update.c_updateStarsBalance();
 		_session->credits().apply(data);
 	} break;
 
@@ -2870,12 +2870,12 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 	} break;
 
 	case mtpc_updateStarGiftAuctionState: {
-		const auto &data = update.c_updateDiamondGiftAuctionState();
+		const auto &data = update.c_updateStarGiftAuctionState();
 		_session->giftAuctions().apply(data);
 	} break;
 
 	case mtpc_updateStarGiftAuctionUserState: {
-		const auto &data = update.c_updateDiamondGiftAuctionUserState();
+		const auto &data = update.c_updateStarGiftAuctionUserState();
 		_session->giftAuctions().apply(data);
 	} break;
 
