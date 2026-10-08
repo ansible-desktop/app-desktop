@@ -935,7 +935,7 @@ void Toolbar::buildPills() {
 }
 
 void Toolbar::fillHeadingMenu(not_null<Ui::PopupMenu*> menu) {
-	const auto diamondSize = SessionPremium(_session)
+	const auto starSize = SessionPremium(_session)
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	for (const auto level : std::array{ 1, 2, 3, 4, 5, 6 }) {
@@ -958,7 +958,7 @@ void Toolbar::fillHeadingMenu(not_null<Ui::PopupMenu*> menu) {
 			},
 			icon,
 			false,
-			diamondSize);
+			starSize);
 	}
 }
 
@@ -974,7 +974,7 @@ void Toolbar::fillBlockStyleMenu(not_null<Ui::PopupMenu*> menu) {
 		}
 	};
 	const auto premium = SessionPremium(_session);
-	const auto diamondSize = premium
+	const auto starSize = premium
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	auto sub = std::make_unique<Ui::PopupMenu>(menu, st::popupMenuWithIcons);
@@ -1007,7 +1007,7 @@ void Toolbar::fillBlockStyleMenu(not_null<Ui::PopupMenu*> menu) {
 		[=] { insertType(State::InsertBlockType::Pullquote); },
 		&st::ivEditorToolbarPullquoteIcon,
 		(kind == Kind::Quote && info.pullquote),
-		diamondSize);
+		starSize);
 	Menu::AddActiveColorAction(
 		menu,
 		WithTabShortcut(
@@ -1022,14 +1022,14 @@ void Toolbar::fillBlockStyleMenu(not_null<Ui::PopupMenu*> menu) {
 		[=] { insertType(State::InsertBlockType::Footer); },
 		&st::ivEditorToolbarFooterIcon,
 		(kind == Kind::Footer),
-		diamondSize);
+		starSize);
 	Menu::AddActiveColorAction(
 		menu,
 		tr::lng_article_insert_divider(tr::now),
 		[=] { insertType(State::InsertBlockType::Divider); },
 		&st::ivEditorToolbarDividerIcon,
 		false,
-		diamondSize);
+		starSize);
 }
 
 void Toolbar::applyBlockText() {
@@ -1075,7 +1075,7 @@ void Toolbar::showBlockStyleMenu(not_null<Ui::IconButton*> button) {
 void Toolbar::fillTextStyleMenu(not_null<Ui::PopupMenu*> menu) {
 	using Action = Widget::ToolbarFormatAction;
 	const auto premium = SessionPremium(_session);
-	const auto diamondSize = premium
+	const auto starSize = premium
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	const auto add = [&](
@@ -1098,7 +1098,7 @@ void Toolbar::fillTextStyleMenu(not_null<Ui::PopupMenu*> menu) {
 			},
 			icon,
 			state.active,
-			premiumOnly ? diamondSize : 0);
+			premiumOnly ? starSize : 0);
 	};
 	// Bold..Spoiler exist in regular messages too, so they are not marked
 	// as premium - only the rich-message-only entities below are.
@@ -1155,7 +1155,7 @@ void Toolbar::showTextStyleMenu(not_null<Ui::IconButton*> button) {
 }
 
 void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
-	const auto diamondSize = SessionPremium(_session)
+	const auto starSize = SessionPremium(_session)
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	Menu::AddActiveColorAction(
@@ -1170,7 +1170,7 @@ void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
 		},
 		&st::ivEditorToolbarAttachIcon,
 		false,
-		diamondSize);
+		starSize);
 	Menu::AddActiveColorAction(
 		menu,
 		tr::lng_in_dlg_audio_file(tr::now),
@@ -1183,7 +1183,7 @@ void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
 		},
 		&st::ivEditorToolbarAudioIcon,
 		false,
-		diamondSize);
+		starSize);
 	Menu::AddActiveColorAction(
 		menu,
 		tr::lng_attach_file(tr::now),
@@ -1196,7 +1196,7 @@ void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
 		},
 		&st::menuIconFile,
 		false,
-		diamondSize);
+		starSize);
 	if (_requestMap) {
 		Menu::AddActiveColorAction(
 			menu,
@@ -1216,7 +1216,7 @@ void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
 			},
 			&st::ivEditorToolbarLocationIcon,
 			false,
-			diamondSize);
+			starSize);
 	}
 }
 
@@ -1238,7 +1238,7 @@ void Toolbar::fillListStyleMenu(not_null<Ui::PopupMenu*> menu) {
 			_editor->insertBlock({ .type = type });
 		}
 	};
-	const auto diamondSize = SessionPremium(_session)
+	const auto starSize = SessionPremium(_session)
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	const auto lists = !_editor || _editor->canInsertListAtCaret();
@@ -1250,21 +1250,21 @@ void Toolbar::fillListStyleMenu(not_null<Ui::PopupMenu*> menu) {
 				[=] { insertType(State::InsertBlockType::OrderedList); },
 				&st::ivEditorToolbarOrderedListIcon,
 				false,
-				diamondSize);
+				starSize);
 			Menu::AddActiveColorAction(
 				target,
 				tr::lng_article_insert_bullet_list(tr::now),
 				[=] { insertType(State::InsertBlockType::BulletList); },
 				&st::ivEditorToolbarBulletListIcon,
 				false,
-				diamondSize);
+				starSize);
 			Menu::AddActiveColorAction(
 				target,
 				tr::lng_article_insert_task_list(tr::now),
 				[=] { insertType(State::InsertBlockType::TaskList); },
 				&st::ivEditorToolbarTaskListIcon,
 				false,
-				diamondSize);
+				starSize);
 		}
 		Menu::AddActiveColorAction(
 			target,
@@ -1272,7 +1272,7 @@ void Toolbar::fillListStyleMenu(not_null<Ui::PopupMenu*> menu) {
 			[=] { insertType(State::InsertBlockType::Details); },
 			&st::ivEditorToolbarDetailsIcon,
 			false,
-			diamondSize);
+			starSize);
 	};
 
 	const auto range = _editor

@@ -116,7 +116,7 @@ QImage GenerateDiamonds(int height, int count, int ratio) {
 	auto svg = QSvgRenderer(CreditsIconSvg(kStrokeWidth));
 	svg.setViewBox(svg.viewBox() + Margins(kStrokeWidth));
 
-	const auto diamondSize = Size(height - kOutlineWidth * 2);
+	const auto starSize = Size(height - kOutlineWidth * 2);
 
 	auto frame = QImage(
 		QSize((height + kShift * (count - 1)) * ratio, height * ratio),
@@ -130,17 +130,17 @@ QImage GenerateDiamonds(int height, int count, int ratio) {
 		if (count > 1) {
 			// Cut a gap in the star below, they overlap by kShift.
 			q.setCompositionMode(QPainter::CompositionMode_Clear);
-			svg.render(&q, QRectF(QPointF(s, 0), diamondSize));
-			svg.render(&q, QRectF(QPointF(s, s), diamondSize));
-			svg.render(&q, QRectF(QPointF(0, s), diamondSize));
-			svg.render(&q, QRectF(QPointF(-s, s), diamondSize));
-			svg.render(&q, QRectF(QPointF(-s, 0), diamondSize));
-			svg.render(&q, QRectF(QPointF(-s, -s), diamondSize));
-			svg.render(&q, QRectF(QPointF(0, -s), diamondSize));
-			svg.render(&q, QRectF(QPointF(s, -s), diamondSize));
+			svg.render(&q, QRectF(QPointF(s, 0), starSize));
+			svg.render(&q, QRectF(QPointF(s, s), starSize));
+			svg.render(&q, QRectF(QPointF(0, s), starSize));
+			svg.render(&q, QRectF(QPointF(-s, s), starSize));
+			svg.render(&q, QRectF(QPointF(-s, 0), starSize));
+			svg.render(&q, QRectF(QPointF(-s, -s), starSize));
+			svg.render(&q, QRectF(QPointF(0, -s), starSize));
+			svg.render(&q, QRectF(QPointF(s, -s), starSize));
 			q.setCompositionMode(QPainter::CompositionMode_SourceOver);
 		}
-		svg.render(&q, Rect(diamondSize));
+		svg.render(&q, Rect(starSize));
 		q.restore();
 	};
 	{
@@ -626,7 +626,7 @@ Fn<void(QPainter &)> PaintOutlinedColoredCreditsIconCallback(
 	constexpr auto kOutlineWidth = 1.6;
 	// constexpr auto kStarShift = 3.8;
 	constexpr auto kStrokeWidth = 3;
-	const auto diamondSize = Size(size);
+	const auto starSize = Size(size);
 
 	auto svg = std::make_shared<QSvgRenderer>(CreditsIconSvg(kStrokeWidth));
 	svg->setViewBox(svg->viewBox() + Margins(kStrokeWidth));
@@ -638,10 +638,10 @@ Fn<void(QPainter &)> PaintOutlinedColoredCreditsIconCallback(
 			const auto angle = i * kAngleStep;
 			const auto x = s * std::cos(angle);
 			const auto y = s * std::sin(angle);
-			svg->render(&q, QRectF(QPointF(x, y), diamondSize));
+			svg->render(&q, QRectF(QPointF(x, y), starSize));
 		}
 		q.setCompositionMode(QPainter::CompositionMode_SourceOver);
-		svg->render(&q, Rect(diamondSize));
+		svg->render(&q, Rect(starSize));
 		q.restore();
 	};
 }
@@ -661,7 +661,7 @@ QImage CreditsWhiteDoubledIcon(int size, float64 outlineRatio) {
 	constexpr auto kDiamondShift = 3.8;
 	const auto userpicRect = Rect(Size(size));
 	const auto diamondRect = userpicRect - Margins(userpicRect.width() / 4.);
-	const auto diamondSize = diamondRect.size();
+	const auto starSize = diamondRect.size();
 	const auto drawSingle = [&](QPainter &q) {
 		const auto s = style::ConvertFloatScale(kOutlineWidth * outlineRatio);
 		q.save();
@@ -670,10 +670,10 @@ QImage CreditsWhiteDoubledIcon(int size, float64 outlineRatio) {
 			const auto angle = i * kAngleStep;
 			const auto x = s * std::cos(angle);
 			const auto y = s * std::sin(angle);
-			svg.render(&q, QRectF(QPointF(x, y), diamondSize));
+			svg.render(&q, QRectF(QPointF(x, y), starSize));
 		}
 		q.setCompositionMode(QPainter::CompositionMode_SourceOver);
-		svg.render(&q, Rect(diamondSize));
+		svg.render(&q, Rect(starSize));
 		q.restore();
 	};
 	{

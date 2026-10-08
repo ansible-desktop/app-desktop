@@ -1592,7 +1592,7 @@ void ComposeControls::initEditDiamondsButton() {
 	}
 	_editDiamonds = Ui::CreateChild<Ui::IconButton>(
 		_wrap.get(),
-		_st.editDiamonds);
+		_st.editStars);
 	_editDiamonds->show();
 	_editDiamonds->setClickedCallback([=] {
 		editDiamondsFrom();
@@ -1854,7 +1854,7 @@ void ComposeControls::setDiamondsReactionCounter(
 		_starsReaction = Ui::CreateChild<Ui::SendDiamondButton>(
 			_wrap.get(),
 			_st.attach,
-			_st.diamondsReactionCounter,
+			_st.starsReactionCounter,
 			std::move(count));
 		updateControlsParents();
 		updateControlsVisibility();
@@ -4931,7 +4931,7 @@ void ComposeControls::updateControlsGeometry(QSize size) {
 		- (_botKeyboardHide ? _botKeyboardHide->width() : 0)
 		- ((_ttlInfo && _ttlInfo->isVisible()) ? _ttlInfo->width() : 0)
 		- (_starsReaction
-			? (_st.diamondsSkip + _starsReaction->width())
+			? (_st.starsSkip + _starsReaction->width())
 			: 0);
 	{
 		_field->resizeToWidth(fieldWidth);
@@ -4992,7 +4992,7 @@ void ComposeControls::updateControlsGeometry(QSize size) {
 	auto right = 0;
 	if (_starsReaction) {
 		_starsReaction->moveToRight(right, buttonsTop);
-		right += _starsReaction->width() + _st.diamondsSkip;
+		right += _starsReaction->width() + _st.starsSkip;
 	}
 	right += _st.padding.right();
 	_send->moveToRight(right, buttonsTop);
@@ -5621,7 +5621,7 @@ void ComposeControls::paintBackground(QPainter &p, QRect full, QRect clip) {
 		if (_starsReaction) {
 			full.setWidth(full.width()
 				- _starsReaction->width()
-				- _st.diamondsSkip);
+				- _st.starsSkip);
 		}
 		p.drawRoundedRect(full, _st.radius, _st.radius);
 	} else {

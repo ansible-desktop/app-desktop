@@ -90,12 +90,12 @@ void TopBarAbstract::paintEdges(QPainter &p) const {
 QRectF TopBarAbstract::diamondRect(
 		float64 topProgress,
 		float64 sizeProgress) const {
-	const auto diamondSize = _st.diamondSize * sizeProgress;
+	const auto starSize = _st.starSize * sizeProgress;
 	return QRectF(
 		QPointF(
-			(width() - diamondSize.width()) / 2,
-			_st.diamondTopSkip * topProgress),
-		diamondSize);
+			(width() - starSize.width()) / 2,
+			_st.starTopSkip * topProgress),
+		starSize);
 };
 
 bool TopBarAbstract::isDark() const {
@@ -190,7 +190,7 @@ TopBar::TopBar(
 
 	rpl::single() | rpl::then(
 		style::PaletteChanged()
-	) | rpl::on_next([=, diamondSize = st.diamondSize] {
+	) | rpl::on_next([=, starSize = st.starSize] {
 		TopBarAbstract::computeIsDark();
 
 		if (_logo == u"dollar"_q) {
@@ -204,7 +204,7 @@ TopBar::TopBar(
 			if (!_diamond3d) {
 				_lottie = Lottie::MakeIcon({
 					.name = u"diamond"_q,
-					.sizeOverride = diamondSize,
+					.sizeOverride = starSize,
 				});
 				_lottie->animate(
 					[=] {

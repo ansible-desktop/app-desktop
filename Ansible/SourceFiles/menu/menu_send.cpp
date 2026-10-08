@@ -701,7 +701,7 @@ FillMenuResult FillEditCommentPriceMenu(
 			.name = details.commentStreamerName,
 			//.preview = details.commentPreview,
 		}));
-	}, &icons.menuEditDiamonds);
+	}, &icons.menuEditStars);
 	if (details.price.value_or(0) > details.commentPriceMin.value_or(0)) {
 		auto copy = details;
 		copy.price = details.commentPriceMin.value_or(0);

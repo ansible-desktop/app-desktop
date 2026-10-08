@@ -825,12 +825,12 @@ struct VideoPreviewDocument {
 				+ (kDiamondOpacityOn - kDiamondOpacityOff) * ratio;
 			p.setOpacity(opacity);
 
-			const auto diamondSize = st::premiumVideoStarSize;
+			const auto starSize = st::premiumVideoStarSize;
 			state->star.render(&p, QRectF(
 				QPointF(
-					left + (width - diamondSize.width()) / 2.,
-					top + (height - diamondSize.height()) / 2.),
-				diamondSize));
+					left + (width - starSize.width()) / 2.,
+					top + (height - starSize.height()) / 2.),
+				starSize));
 		}
 	}, lifetime);
 
