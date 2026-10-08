@@ -181,7 +181,7 @@ void PostsSearch::requestSearch(const QString &query) {
 	using Flag = MTPchannels_SearchPosts::Flag;
 	entry.searchId = _api.request(MTPchannels_SearchPosts(
 		MTP_flags(Flag::f_query
-			| (useDiamonds ? Flag::f_allow_paid_diamonds : Flag())),
+			| (useDiamonds ? Flag::f_allow_paid_stars : Flag())),
 		MTP_string(), // hashtag
 		MTP_string(query),
 		MTP_int(entry.offsetRate),

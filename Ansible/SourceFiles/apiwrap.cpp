@@ -3957,7 +3957,7 @@ void ApiWrap::forwardMessages(
 		}
 		if (diamondsPaid) {
 			action.options.diamondsApproved -= diamondsPaid;
-			oneFlags |= SendFlag::f_allow_paid_diamonds;
+			oneFlags |= SendFlag::f_allow_paid_stars;
 		}
 		auto buildMessage = [=](
 				not_null<History*> history,
@@ -4568,7 +4568,7 @@ void ApiWrap::sendRichMessage(
 		sendFlags |= Flag::f_suggested_post;
 	}
 	if (diamondsPaid) {
-		sendFlags |= Flag::f_allow_paid_diamonds;
+		sendFlags |= Flag::f_allow_paid_stars;
 	}
 	const auto mtpShortcut = Data::ShortcutIdToMTP(
 		_session,
@@ -4860,8 +4860,8 @@ void ApiWrap::sendMessage(
 			action.options.diamondsApproved);
 		if (diamondsPaid) {
 			action.options.diamondsApproved -= diamondsPaid;
-			sendFlags |= MTPmessages_SendMessage::Flag::f_allow_paid_diamonds;
-			mediaFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
+			sendFlags |= MTPmessages_SendMessage::Flag::f_allow_paid_stars;
+			mediaFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
 		}
 		lastMessage = history->addNewLocalMessage({
 			.id = newId.msg,
@@ -5090,7 +5090,7 @@ void ApiWrap::sendInlineResult(
 		action.options.diamondsApproved);
 	if (diamondsPaid) {
 		action.options.diamondsApproved -= diamondsPaid;
-		sendFlags |= SendFlag::f_allow_paid_diamonds;
+		sendFlags |= SendFlag::f_allow_paid_stars;
 	}
 
 	const auto sendAs = action.options.sendAs;
@@ -5328,7 +5328,7 @@ void ApiWrap::sendMediaWithRandomId(
 		| (options.effectId ? Flag::f_effect : Flag(0))
 		| (options.suggest ? Flag::f_suggested_post : Flag(0))
 		| (options.invertCaption ? Flag::f_invert_media : Flag(0))
-		| (diamondsPaid ? Flag::f_allow_paid_diamonds : Flag(0));
+		| (diamondsPaid ? Flag::f_allow_paid_stars : Flag(0));
 
 	auto &histories = history->owner().histories();
 	const auto itemId = item->fullId();
@@ -5417,7 +5417,7 @@ void ApiWrap::sendMultiPaidMedia(
 		| (options.effectId ? Flag::f_effect : Flag(0))
 		| (options.suggest ? Flag::f_suggested_post : Flag(0))
 		| (options.invertCaption ? Flag::f_invert_media : Flag(0))
-		| (diamondsPaid ? Flag::f_allow_paid_diamonds : Flag(0));
+		| (diamondsPaid ? Flag::f_allow_paid_stars : Flag(0));
 
 	auto &histories = history->owner().histories();
 	const auto itemId = item->fullId();
@@ -5581,7 +5581,7 @@ void ApiWrap::sendAlbumIfReady(not_null<SendingAlbum*> album) {
 			: Flag(0))
 		| (album->options.effectId ? Flag::f_effect : Flag(0))
 		| (album->options.invertCaption ? Flag::f_invert_media : Flag(0))
-		| (diamondsPaid ? Flag::f_allow_paid_diamonds : Flag(0));
+		| (diamondsPaid ? Flag::f_allow_paid_stars : Flag(0));
 	auto &histories = history->owner().histories();
 	const auto peer = history->peer;
 	album->sent = true;

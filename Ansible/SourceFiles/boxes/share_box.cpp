@@ -1952,7 +1952,7 @@ ShareBox::SubmitCallback ShareBox::DefaultForwardCallback(
 					| (options.shortcutId
 						? Flag::f_quick_reply_shortcut
 						: Flag(0))
-					| (diamondsPaid ? Flag::f_allow_paid_diamonds : Flag())
+					| (diamondsPaid ? Flag::f_allow_paid_stars : Flag())
 					| (sublistPeer ? Flag::f_reply_to : Flag())
 					| (options.suggest ? Flag::f_suggested_post : Flag())
 					| (options.effectId ? Flag::f_effect : Flag())

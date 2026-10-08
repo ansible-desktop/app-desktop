@@ -3252,7 +3252,7 @@ void SendOfferBuyGift(
 
 	using Flag = MTPpayments_SendStarGiftOffer::Flag;
 	show->session().api().request(MTPpayments_SendStarGiftOffer(
-		MTP_flags(diamondsPerMessage ? Flag::f_allow_paid_diamonds : Flag()),
+		MTP_flags(diamondsPerMessage ? Flag::f_allow_paid_stars : Flag()),
 		owner->input(),
 		MTP_string(unique->slug),
 		DiamondsAmountToTL(options.price()),

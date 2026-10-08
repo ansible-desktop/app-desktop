@@ -267,7 +267,7 @@ void Polls::create(
 	}
 	if (diamondsPaid) {
 		action.options.diamondsApproved -= diamondsPaid;
-		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
+		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
 	}
 	const auto sendAs = action.options.sendAs;
 	if (sendAs) {

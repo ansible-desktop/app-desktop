@@ -177,7 +177,7 @@ namespace Media::Stories {
 				options.diamondsApproved);
 			if (diamondsPaid) {
 				options.diamondsApproved -= diamondsPaid;
-				sendFlags |= SendFlag::f_allow_paid_diamonds;
+				sendFlags |= SendFlag::f_allow_paid_stars;
 			}
 			const auto done = [=] {
 				if (!--state->requests) {

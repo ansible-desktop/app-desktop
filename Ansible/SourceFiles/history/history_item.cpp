@@ -6874,7 +6874,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		auto result = PreparedServiceText();
 		const auto winners = action.vwinners_count().v;
 		const auto unclaimed = action.vunclaimed_count().v;
-		const auto credits = action.is_diamonds();
+		const auto credits = action.is_stars();
 		result.text = {
 			(!winners
 				? tr::lng_action_giveaway_results_none(tr::now)

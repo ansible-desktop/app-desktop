@@ -247,7 +247,7 @@ void GlobalPrivacy::update(
 		| ((newRequirePremium && newRequirePremiumAllowed)
 			? Flag::f_new_noncontact_peers_require_premium
 			: Flag())
-		| Flag::f_noncontact_peers_paid_diamonds
+		| Flag::f_noncontact_peers_paid_stars
 		| (showGiftIcon ? Flag::f_display_gifts_button : Flag())
 		| Flag::f_disallowed_gifts;
 	const auto disallowedFlags = DisallowedFlag()

@@ -967,7 +967,7 @@ MessageFlags FlagsFromMTP(
 			: Flag())
 		| ((flags & MTP::f_paid_suggested_post_ton)
 			? Flag::TonPaidSuggested
-			: (flags & MTP::f_paid_suggested_post_diamonds)
+			: (flags & MTP::f_paid_suggested_post_stars)
 			? Flag::DiamondsPaidSuggested
 			: Flag())
 		| ((flags & MTP::f_summary_from_language)

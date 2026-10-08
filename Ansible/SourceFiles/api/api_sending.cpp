@@ -146,7 +146,7 @@ void SendSimpleMedia(SendAction action, MTPInputMedia inputMedia) {
 	}
 	if (diamondsPaid) {
 		action.options.diamondsApproved -= diamondsPaid;
-		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
+		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
 	}
 
 	auto &histories = history->owner().histories();
@@ -278,7 +278,7 @@ void SendExistingMedia(
 	}
 	if (diamondsPaid) {
 		action.options.diamondsApproved -= diamondsPaid;
-		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
+		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
 	}
 
 	const auto item = history->addNewLocalMessage({
@@ -604,7 +604,7 @@ void SendMusicSelectionBatch(
 				sendFlags |= MTPmessages_SendMedia::Flag::f_invert_media;
 			}
 			if (batchDiamondsPaid) {
-				sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
+				sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
 			}
 
 			auto &histories = history->owner().histories();
@@ -660,7 +660,7 @@ void SendMusicSelectionBatch(
 			| (action.options.invertCaption
 				? Flag::f_invert_media
 				: Flag(0))
-			| (batchDiamondsPaid ? Flag::f_allow_paid_diamonds : Flag(0));
+			| (batchDiamondsPaid ? Flag::f_allow_paid_stars : Flag(0));
 
 		auto media = QVector<MTPInputSingleMedia>();
 		media.reserve(requests.size());
@@ -882,7 +882,7 @@ bool SendDice(MessageToSend &message) {
 		action.options.diamondsApproved);
 	if (diamondsPaid) {
 		action.options.diamondsApproved -= diamondsPaid;
-		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
+		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
 	}
 
 	session->data().registerMessageRandomId(randomId, newId);

@@ -195,7 +195,7 @@ mtpRequestId SuggestMedia(
 			? MTPmessages_SendMedia::Flag::f_entities
 			: emptyFlag)
 		| (options.diamondsApproved
-			? MTPmessages_SendMedia::Flag::f_allow_paid_diamonds
+			? MTPmessages_SendMedia::Flag::f_allow_paid_stars
 			: emptyFlag);
 	const auto randomId = base::RandomValue<uint64>();
 	return api->request(MTPmessages_SendMedia(

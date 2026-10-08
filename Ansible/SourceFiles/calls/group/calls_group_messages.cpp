@@ -174,7 +174,7 @@ void Messages::send(TextWithTags text, int stars) {
 		using Flag = MTPphone_SendGroupCallMessage::Flag;
 		_api->request(MTPphone_SendGroupCallMessage(
 			MTP_flags(Flag::f_send_as
-				| (stars ? Flag::f_allow_paid_diamonds : Flag())),
+				| (stars ? Flag::f_allow_paid_stars : Flag())),
 			_call->inputCall(),
 			MTP_long(randomId),
 			serialized,
@@ -631,7 +631,7 @@ void Messages::reactionsPaidSend() {
 	}
 	using Flag = MTPphone_SendGroupCallMessage::Flag;
 	_api->request(MTPphone_SendGroupCallMessage(
-		MTP_flags(Flag::f_send_as | Flag::f_allow_paid_diamonds),
+		MTP_flags(Flag::f_send_as | Flag::f_allow_paid_stars),
 		_call->inputCall(),
 		MTP_long(randomId),
 		MTP_textWithEntities(MTP_string(), MTP_vector<MTPMessageEntity>()),
