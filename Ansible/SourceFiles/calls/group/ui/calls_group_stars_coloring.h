@@ -15,33 +15,33 @@ namespace Calls::Group::Ui {
 
 using namespace ::Ui;
 
-struct StarsColoring {
+struct DiamondsColoring {
 	int bgLight = 0;
 	int bgDark = 0;
-	int fromStars = 0;
+	int fromDiamonds = 0;
 	TimeId secondsPin = 0;
 	int charactersMax = 0;
 	int emojiLimit = 0;
 
 	friend inline auto operator<=>(
-		const StarsColoring &,
-		const StarsColoring &) = default;
+		const DiamondsColoring &,
+		const DiamondsColoring &) = default;
 	friend inline bool operator==(
-		const StarsColoring &,
-		const StarsColoring &) = default;
+		const DiamondsColoring &,
+		const DiamondsColoring &) = default;
 };
 
-[[nodiscard]] StarsColoring StarsColoringForCount(
-	const std::vector<StarsColoring> &colorings,
+[[nodiscard]] DiamondsColoring DiamondsColoringForCount(
+	const std::vector<DiamondsColoring> &colorings,
 	int stars);
 
-[[nodiscard]] int StarsRequiredForMessage(
-	const std::vector<StarsColoring> &colorings,
+[[nodiscard]] int DiamondsRequiredForMessage(
+	const std::vector<DiamondsColoring> &colorings,
 	const TextWithTags &text);
 
-[[nodiscard]] object_ptr<Ui::RpWidget> VideoStreamStarsLevel(
+[[nodiscard]] object_ptr<Ui::RpWidget> VideoStreamDiamondsLevel(
 	not_null<Ui::RpWidget*> box,
-	const std::vector<StarsColoring> &colorings,
-	rpl::producer<int> starsValue);
+	const std::vector<DiamondsColoring> &colorings,
+	rpl::producer<int> diamondsValue);
 
 } // namespace Calls::Group::Ui

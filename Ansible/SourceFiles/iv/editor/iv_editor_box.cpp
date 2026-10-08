@@ -202,7 +202,7 @@ enum class ToolbarActionId : uchar {
 	return &st::ivEditorToolbarHeadingIcon;
 }
 
-[[nodiscard]] QImage PremiumStarImage() {
+[[nodiscard]] QImage PremiumDiamondImage() {
 	const auto factor = style::DevicePixelRatio();
 	const auto side = st::ivEditorToolbarPremiumStarSize;
 	const auto size = QSize(side, side);
@@ -222,8 +222,8 @@ enum class ToolbarActionId : uchar {
 
 } // namespace
 
-void PaintPremiumStar(QPainter &p, QRect inner, std::optional<QColor> halo) {
-	const auto star = PremiumStarImage();
+void PaintPremiumDiamond(QPainter &p, QRect inner, std::optional<QColor> halo) {
+	const auto star = PremiumDiamondImage();
 	const auto side = st::ivEditorToolbarPremiumStarSize;
 	const auto skip = st::ivEditorToolbarPremiumStarSkip;
 	const auto outline = st::ivEditorToolbarPremiumStarOutline;
@@ -275,9 +275,9 @@ void SetupToolbarButtonState(
 	}
 }
 
-class ToolbarStarButton final : public Ui::RippleButton {
+class ToolbarDiamondButton final : public Ui::RippleButton {
 public:
-	ToolbarStarButton(
+	ToolbarDiamondButton(
 		QWidget *parent,
 		const style::IconButton &st,
 		not_null<Main::Session*> session);
@@ -336,7 +336,7 @@ private:
 		Fn<void()> callback,
 		std::optional<Widget::ToolbarFormatAction> format = std::nullopt,
 		Fn<QString()> tooltip = nullptr);
-	not_null<ToolbarStarButton*> addStarPillButton(
+	not_null<ToolbarDiamondButton*> addDiamondPillButton(
 		not_null<ToolbarPill*> pill,
 		ToolbarActionId action,
 		const style::icon *icon,
@@ -377,8 +377,8 @@ private:
 	std::vector<PillButton> _stateButtons;
 	Ui::IconButton *_linkButton = nullptr;
 	Ui::IconButton *_emojiButton = nullptr;
-	ToolbarStarButton *_listButton = nullptr;
-	ToolbarStarButton *_tableButton = nullptr;
+	ToolbarDiamondButton *_listButton = nullptr;
+	ToolbarDiamondButton *_tableButton = nullptr;
 	base::flat_map<Ui::RippleButton*, Fn<QString()>> _tooltipFactories;
 	base::unique_qptr<Ui::ImportantTooltip> _tooltip;
 	Ui::RippleButton *_hovered = nullptr;
@@ -587,7 +587,7 @@ private:
 
 };
 
-ToolbarStarButton::ToolbarStarButton(
+ToolbarDiamondButton::ToolbarDiamondButton(
 	QWidget *parent,
 	const style::IconButton &st,
 	not_null<Main::Session*> session)
@@ -605,7 +605,7 @@ ToolbarStarButton::ToolbarStarButton(
 	}, lifetime());
 }
 
-void ToolbarStarButton::setIconOverride(const style::icon *icon) {
+void ToolbarDiamondButton::setIconOverride(const style::icon *icon) {
 	if (_iconOverride == icon) {
 		return;
 	}
@@ -614,7 +614,7 @@ void ToolbarStarButton::setIconOverride(const style::icon *icon) {
 	update();
 }
 
-void ToolbarStarButton::setIconColorOverride(std::optional<QColor> color) {
+void ToolbarDiamondButton::setIconColorOverride(std::optional<QColor> color) {
 	if (_iconColorOverride == color) {
 		return;
 	}
@@ -623,12 +623,12 @@ void ToolbarStarButton::setIconColorOverride(std::optional<QColor> color) {
 	update();
 }
 
-void ToolbarStarButton::setRippleColorOverride(const style::color *color) {
+void ToolbarDiamondButton::setRippleColorOverride(const style::color *color) {
 	_rippleColorOverride = color;
 	update();
 }
 
-void ToolbarStarButton::paintEvent(QPaintEvent *e) {
+void ToolbarDiamondButton::paintEvent(QPaintEvent *e) {
 	auto p = QPainter(this);
 	paintRipple(
 		p,
@@ -638,7 +638,7 @@ void ToolbarStarButton::paintEvent(QPaintEvent *e) {
 	p.drawImage(0, 0, _frame);
 }
 
-void ToolbarStarButton::validateFrame() {
+void ToolbarDiamondButton::validateFrame() {
 	const auto ratio = style::DevicePixelRatio();
 	if (!_frame.isNull() && _frame.size() == size() * ratio) {
 		return;
@@ -661,23 +661,23 @@ void ToolbarStarButton::validateFrame() {
 		icon->paint(p, position, width());
 	}
 	if (!_premium) {
-		PaintPremiumStar(p, rect());
+		PaintPremiumDiamond(p, rect());
 	}
 }
 
-void ToolbarStarButton::onStateChanged(
+void ToolbarDiamondButton::onStateChanged(
 		State was,
 		StateChangeSource source) {
 	RippleButton::onStateChanged(was, source);
 	update();
 }
 
-QImage ToolbarStarButton::prepareRippleMask() const {
+QImage ToolbarDiamondButton::prepareRippleMask() const {
 	return Ui::RippleAnimation::EllipseMask(
 		QSize(_st.rippleAreaSize, _st.rippleAreaSize));
 }
 
-QPoint ToolbarStarButton::prepareRippleStartPosition() const {
+QPoint ToolbarDiamondButton::prepareRippleStartPosition() const {
 	const auto result = mapFromGlobal(QCursor::pos())
 		- _st.rippleAreaPosition;
 	const auto rect = QRect(0, 0, _st.rippleAreaSize, _st.rippleAreaSize);
@@ -746,20 +746,20 @@ not_null<Ui::IconButton*> Toolbar::addPillButton(
 	return raw;
 }
 
-not_null<ToolbarStarButton*> Toolbar::addStarPillButton(
+not_null<ToolbarDiamondButton*> Toolbar::addDiamondPillButton(
 		not_null<ToolbarPill*> pill,
 		ToolbarActionId action,
 		const style::icon *icon,
 		Fn<void()> callback,
 		Fn<QString()> tooltip) {
-	auto owned = object_ptr<ToolbarStarButton>(
+	auto owned = object_ptr<ToolbarDiamondButton>(
 		pill.get(),
 		st::ivEditorToolbarButton,
 		_session);
 	const auto raw = owned.data();
 	raw->setIconOverride(icon);
 	SetupToolbarButtonState(
-		not_null<ToolbarStarButton*>(raw),
+		not_null<ToolbarDiamondButton*>(raw),
 		ToolbarButtonState::Inactive,
 		anim::type::instant);
 	pill->addButton(std::move(owned), st::ivEditorToolbarButton);
@@ -837,7 +837,7 @@ void Toolbar::buildPills() {
 	textStyle->setClickedCallback([=] {
 		showTextStyleMenu(textStyle);
 	});
-	const auto listStyle = addStarPillButton(
+	const auto listStyle = addDiamondPillButton(
 		controls,
 		ToolbarActionId::BulletList,
 		&st::ivEditorToolbarBulletListIcon,
@@ -854,7 +854,7 @@ void Toolbar::buildPills() {
 		showListStyleMenu(listStyle);
 	});
 	_listButton = listStyle;
-	const auto tableStyle = addStarPillButton(
+	const auto tableStyle = addDiamondPillButton(
 		controls,
 		ToolbarActionId::Table,
 		&st::ivEditorToolbarTableIcon,
@@ -898,7 +898,7 @@ void Toolbar::buildPills() {
 		}
 	});
 	if (_hasRequestMedia) {
-		const auto attach = addStarPillButton(
+		const auto attach = addDiamondPillButton(
 			controls,
 			ToolbarActionId::Attach,
 			&st::ivEditorToolbarAttachIcon,
@@ -909,7 +909,7 @@ void Toolbar::buildPills() {
 			showAttachMenu(attach);
 		});
 	}
-	addStarPillButton(
+	addDiamondPillButton(
 		controls,
 		ToolbarActionId::Math,
 		&st::ivEditorToolbarMathIcon,
@@ -935,7 +935,7 @@ void Toolbar::buildPills() {
 }
 
 void Toolbar::fillHeadingMenu(not_null<Ui::PopupMenu*> menu) {
-	const auto starSize = SessionPremium(_session)
+	const auto diamondSize = SessionPremium(_session)
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	for (const auto level : std::array{ 1, 2, 3, 4, 5, 6 }) {
@@ -958,7 +958,7 @@ void Toolbar::fillHeadingMenu(not_null<Ui::PopupMenu*> menu) {
 			},
 			icon,
 			false,
-			starSize);
+			diamondSize);
 	}
 }
 
@@ -974,7 +974,7 @@ void Toolbar::fillBlockStyleMenu(not_null<Ui::PopupMenu*> menu) {
 		}
 	};
 	const auto premium = SessionPremium(_session);
-	const auto starSize = premium
+	const auto diamondSize = premium
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	auto sub = std::make_unique<Ui::PopupMenu>(menu, st::popupMenuWithIcons);
@@ -1007,7 +1007,7 @@ void Toolbar::fillBlockStyleMenu(not_null<Ui::PopupMenu*> menu) {
 		[=] { insertType(State::InsertBlockType::Pullquote); },
 		&st::ivEditorToolbarPullquoteIcon,
 		(kind == Kind::Quote && info.pullquote),
-		starSize);
+		diamondSize);
 	Menu::AddActiveColorAction(
 		menu,
 		WithTabShortcut(
@@ -1022,14 +1022,14 @@ void Toolbar::fillBlockStyleMenu(not_null<Ui::PopupMenu*> menu) {
 		[=] { insertType(State::InsertBlockType::Footer); },
 		&st::ivEditorToolbarFooterIcon,
 		(kind == Kind::Footer),
-		starSize);
+		diamondSize);
 	Menu::AddActiveColorAction(
 		menu,
 		tr::lng_article_insert_divider(tr::now),
 		[=] { insertType(State::InsertBlockType::Divider); },
 		&st::ivEditorToolbarDividerIcon,
 		false,
-		starSize);
+		diamondSize);
 }
 
 void Toolbar::applyBlockText() {
@@ -1075,7 +1075,7 @@ void Toolbar::showBlockStyleMenu(not_null<Ui::IconButton*> button) {
 void Toolbar::fillTextStyleMenu(not_null<Ui::PopupMenu*> menu) {
 	using Action = Widget::ToolbarFormatAction;
 	const auto premium = SessionPremium(_session);
-	const auto starSize = premium
+	const auto diamondSize = premium
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	const auto add = [&](
@@ -1098,7 +1098,7 @@ void Toolbar::fillTextStyleMenu(not_null<Ui::PopupMenu*> menu) {
 			},
 			icon,
 			state.active,
-			premiumOnly ? starSize : 0);
+			premiumOnly ? diamondSize : 0);
 	};
 	// Bold..Spoiler exist in regular messages too, so they are not marked
 	// as premium - only the rich-message-only entities below are.
@@ -1155,7 +1155,7 @@ void Toolbar::showTextStyleMenu(not_null<Ui::IconButton*> button) {
 }
 
 void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
-	const auto starSize = SessionPremium(_session)
+	const auto diamondSize = SessionPremium(_session)
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	Menu::AddActiveColorAction(
@@ -1170,7 +1170,7 @@ void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
 		},
 		&st::ivEditorToolbarAttachIcon,
 		false,
-		starSize);
+		diamondSize);
 	Menu::AddActiveColorAction(
 		menu,
 		tr::lng_in_dlg_audio_file(tr::now),
@@ -1183,7 +1183,7 @@ void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
 		},
 		&st::ivEditorToolbarAudioIcon,
 		false,
-		starSize);
+		diamondSize);
 	Menu::AddActiveColorAction(
 		menu,
 		tr::lng_attach_file(tr::now),
@@ -1196,7 +1196,7 @@ void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
 		},
 		&st::menuIconFile,
 		false,
-		starSize);
+		diamondSize);
 	if (_requestMap) {
 		Menu::AddActiveColorAction(
 			menu,
@@ -1216,7 +1216,7 @@ void Toolbar::fillAttachMenu(not_null<Ui::PopupMenu*> menu) {
 			},
 			&st::ivEditorToolbarLocationIcon,
 			false,
-			starSize);
+			diamondSize);
 	}
 }
 
@@ -1238,7 +1238,7 @@ void Toolbar::fillListStyleMenu(not_null<Ui::PopupMenu*> menu) {
 			_editor->insertBlock({ .type = type });
 		}
 	};
-	const auto starSize = SessionPremium(_session)
+	const auto diamondSize = SessionPremium(_session)
 		? 0
 		: st::ivEditorStyleMenuPremiumStarSize;
 	const auto lists = !_editor || _editor->canInsertListAtCaret();
@@ -1250,21 +1250,21 @@ void Toolbar::fillListStyleMenu(not_null<Ui::PopupMenu*> menu) {
 				[=] { insertType(State::InsertBlockType::OrderedList); },
 				&st::ivEditorToolbarOrderedListIcon,
 				false,
-				starSize);
+				diamondSize);
 			Menu::AddActiveColorAction(
 				target,
 				tr::lng_article_insert_bullet_list(tr::now),
 				[=] { insertType(State::InsertBlockType::BulletList); },
 				&st::ivEditorToolbarBulletListIcon,
 				false,
-				starSize);
+				diamondSize);
 			Menu::AddActiveColorAction(
 				target,
 				tr::lng_article_insert_task_list(tr::now),
 				[=] { insertType(State::InsertBlockType::TaskList); },
 				&st::ivEditorToolbarTaskListIcon,
 				false,
-				starSize);
+				diamondSize);
 		}
 		Menu::AddActiveColorAction(
 			target,
@@ -1272,7 +1272,7 @@ void Toolbar::fillListStyleMenu(not_null<Ui::PopupMenu*> menu) {
 			[=] { insertType(State::InsertBlockType::Details); },
 			&st::ivEditorToolbarDetailsIcon,
 			false,
-			starSize);
+			diamondSize);
 	};
 
 	const auto range = _editor
@@ -1420,7 +1420,7 @@ void Toolbar::updateFromEditorState() {
 		const auto inList = _editor
 			&& _editor->currentListRangeAtCaret().has_value();
 		SetupToolbarButtonState(
-			not_null<ToolbarStarButton*>(_listButton),
+			not_null<ToolbarDiamondButton*>(_listButton),
 			inList
 				? ToolbarButtonState::Active
 				: ToolbarButtonState::Inactive);
@@ -1429,7 +1429,7 @@ void Toolbar::updateFromEditorState() {
 		const auto inTable = _editor
 			&& _editor->currentTableRangeAtCaret().has_value();
 		SetupToolbarButtonState(
-			not_null<ToolbarStarButton*>(_tableButton),
+			not_null<ToolbarDiamondButton*>(_tableButton),
 			inTable
 				? ToolbarButtonState::Active
 				: ToolbarButtonState::Inactive);
@@ -1596,7 +1596,7 @@ public:
 private:
 	void setupWindow(ShowWindowDescriptor &&descriptor);
 	void setupEmojiColumn(const ShowWindowDescriptor &descriptor);
-	void setupBottomAiStar(
+	void setupBottomAiDiamond(
 		not_null<HistoryView::Controls::ComposeAiButton*> button,
 		not_null<Main::Session*> session);
 	void layout();
@@ -1880,7 +1880,7 @@ void WindowHost::Impl::setupWindow(ShowWindowDescriptor &&descriptor) {
 				},
 			});
 		});
-		setupBottomAiStar(button, session);
+		setupBottomAiDiamond(button, session);
 	}
 	_send = object_ptr<Ui::SendButton>(
 		_bottom.data(),
@@ -1896,12 +1896,12 @@ void WindowHost::Impl::setupWindow(ShowWindowDescriptor &&descriptor) {
 	if (!save) {
 		const auto session = descriptor.session;
 		const auto peer = descriptor.peer;
-		StarsPerMessageValue(
+		DiamondsPerMessageValue(
 			session,
 			peer
 		) | rpl::on_next([=](int stars) {
 			raw->setState({
-				.starsToSend = stars,
+				.diamondsToSend = stars,
 			});
 		}, raw->lifetime());
 		raw->finishAnimating();
@@ -2020,19 +2020,19 @@ void WindowHost::Impl::setupWindow(ShowWindowDescriptor &&descriptor) {
 	_initialPage = _state->richPage();
 }
 
-void WindowHost::Impl::setupBottomAiStar(
+void WindowHost::Impl::setupBottomAiDiamond(
 		not_null<HistoryView::Controls::ComposeAiButton*> button,
 		not_null<Main::Session*> session) {
 	const auto editor = not_null<Widget*>(_editor.data());
 	const auto locked = button->lifetime().make_state<bool>(false);
 	const auto refresh = [=] {
 		if (!*locked) {
-			button->setPremiumStar(QImage(), QPoint(), 0);
+			button->setPremiumDiamond(QImage(), QPoint(), 0);
 		} else {
 			const auto side = st::ivEditorToolbarPremiumStarSize;
 			const auto skip = st::ivEditorToolbarPremiumStarSkip;
-			button->setPremiumStar(
-				PremiumStarImage(),
+			button->setPremiumDiamond(
+				PremiumDiamondImage(),
 				QPoint(
 					button->width() - side - skip.x(),
 					button->height() - side - skip.y()),

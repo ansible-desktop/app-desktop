@@ -370,7 +370,7 @@ void PlaceAuctionBid(
 		if (failure) {
 			paymentDone(*failure, nullptr);
 		} else {
-			SubmitStarsForm(
+			SubmitDiamondsForm(
 				show,
 				invoice,
 				formId,
@@ -442,7 +442,7 @@ object_ptr<RpWidget> MakeAuctionInfoBlocks(
 	) | rpl::map([=](const Data::GiftAuctionState &state) {
 		return state.giftsLeft;
 	}) | tr::to_count();
-	return MakeStarSelectInfoBlocks(box, {
+	return MakeDiamondSelectInfoBlocks(box, {
 		{
 			.title = std::move(bidTitle),
 			.subtext = tr::lng_auction_bid_minimal(
@@ -608,7 +608,7 @@ void EditCustomBid(
 
 	box->addTopButton(st::boxTitleClose, [=] { box->closeBox(); });
 
-	const auto starsField = AddStarsInputField(container, {
+	const auto diamondsField = AddDiamondsInputField(container, {
 		.value = current,
 	});
 
@@ -616,19 +616,19 @@ void EditCustomBid(
 		std::move(minBid));
 
 	box->setFocusCallback([=] {
-		starsField->setFocusFast();
+		diamondsField->setFocusFast();
 	});
 
 	const auto submit = [=] {
-		const auto value = starsField->getLastText().toLongLong();
+		const auto value = diamondsField->getLastText().toLongLong();
 		if (value <= min->current() || value > 1'000'000'000) {
-			starsField->showError();
+			diamondsField->showError();
 			return;
 		}
 		save(value);
 		box->closeBox();
 	};
-	QObject::connect(starsField, &Ui::NumberInput::submitted, submit);
+	QObject::connect(diamondsField, &Ui::NumberInput::submitted, submit);
 
 	box->addButton(tr::lng_settings_save(), submit);
 	box->addButton(tr::lng_cancel(), [=] {
@@ -738,7 +738,7 @@ void AuctionBidBox(not_null<GenericBox*> box, AuctionBidBoxArgs &&args) {
 	AddSkip(content, st::boxTitleClose.height + st::paidReactBubbleTop);
 
 	const auto activeFgOverride = [=](int count) {
-		const auto coloring = Calls::Group::Ui::StarsColoringForCount(
+		const auto coloring = Calls::Group::Ui::DiamondsColoringForCount(
 			colorings,
 			count);
 		return ColorFromSerialized(coloring.bgLight);
@@ -769,7 +769,7 @@ void AuctionBidBox(not_null<GenericBox*> box, AuctionBidBoxArgs &&args) {
 			}), std::move(min), state->chosen.current()));
 		};
 
-		const auto bubble = AddStarSelectBubble(
+		const auto bubble = AddDiamondSelectBubble(
 			sliderWrap,
 			initial ? BoxShowFinishes(box) : nullptr,
 			state->chosen.value(),
@@ -930,7 +930,7 @@ void AuctionBidBox(not_null<GenericBox*> box, AuctionBidBoxArgs &&args) {
 	}) | rpl::flatten_latest());
 
 	show->session().credits().load(true);
-	AddStarSelectBalance(
+	AddDiamondSelectBalance(
 		box,
 		&show->session(),
 		show->session().credits().balanceValue());
@@ -1455,7 +1455,7 @@ void AuctionInfoBox(
 				const auto title = now.gift->resellTitle;
 				const auto type = Data::GiftAttributeIdType::Model;
 				const auto null = nullptr;
-				show->show(Box(StarGiftPreviewBox, title, list, type, null));
+				show->show(Box(DiamondGiftPreviewBox, title, list, type, null));
 				return false;
 			});
 		}, box->lifetime());
@@ -1471,7 +1471,7 @@ void AuctionInfoBox(
 			window,
 			peer,
 			nullptr,
-			GiftTypeStars{ .info = *state->value.current().gift },
+			GiftTypeDiamonds{ .info = *state->value.current().gift },
 			state->value.value()));
 		sendBox->boxClosing(
 		) | rpl::on_next([=] {
@@ -1520,7 +1520,7 @@ base::weak_qptr<BoxContent> ChooseAndShowAuctionBox(
 				window,
 				peer,
 				nullptr,
-				Info::PeerGifts::GiftTypeStars{
+				Info::PeerGifts::GiftTypeDiamonds{
 					.info = *current.gift,
 				},
 				state->value()));
@@ -1586,7 +1586,7 @@ base::weak_qptr<BoxContent> ChooseAndShowAuctionBox(
 
 } // namespace
 
-rpl::lifetime ShowStarGiftAuction(
+rpl::lifetime ShowDiamondGiftAuction(
 		not_null<Window::SessionController*> controller,
 		PeerData *peer,
 		uint64 giftId,
@@ -2004,7 +2004,7 @@ object_ptr<Ui::RpWidget> MakeActiveAuctionRow(
 			Ui::Text::Colorized(NiceCountdownText(seconds)));
 	}));
 	button->setClickedCallback([=] {
-		window->showStarGiftAuction(giftId);
+		window->showDiamondGiftAuction(giftId);
 	});
 	button->setFullRadius(true);
 	raw->widthValue() | rpl::on_next([=](int width) {
@@ -2022,7 +2022,7 @@ Fn<void()> ActiveAuctionsCallback(
 	if (count == 1) {
 		const auto giftId = list.front()->gift->id;
 		return [=] {
-			window->showStarGiftAuction(giftId);
+			window->showDiamondGiftAuction(giftId);
 		};
 	}
 	struct Auctions {

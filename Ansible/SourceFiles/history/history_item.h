@@ -94,7 +94,7 @@ struct HistoryItemCommonFields {
 	TimeId date = 0;
 	TimeId scheduleRepeatPeriod = 0;
 	BusinessShortcutId shortcutId = 0;
-	int starsPaid = 0;
+	int diamondsPaid = 0;
 	UserId viaBotId = 0;
 	QString postAuthor;
 	uint64 groupedId = 0;
@@ -637,7 +637,7 @@ public:
 	[[nodiscard]] auto contentColorCollectible() const
 		-> const std::shared_ptr<Ui::ColorCollectible> &;
 
-	[[nodiscard]] int starsPaid() const;
+	[[nodiscard]] int diamondsPaid() const;
 
 	[[nodiscard]] std::unique_ptr<HistoryView::Element> createView(
 		not_null<HistoryView::ElementDelegate*> delegate,

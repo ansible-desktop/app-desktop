@@ -532,7 +532,7 @@ void GiftAuctions::apply(
 }
 
 void GiftAuctions::apply(
-		not_null<StarGiftAuctionMyState*> entry,
+		not_null<DiamondGiftAuctionMyState*> entry,
 		const MTPStarGiftAuctionUserState &state) {
 	const auto &data = state.data();
 	entry->to = data.vbid_peer()

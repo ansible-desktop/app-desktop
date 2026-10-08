@@ -25,12 +25,12 @@ class QRhiCommandBuffer;
 
 namespace Ui::Premium {
 
-class StarRenderer final
+class DiamondRenderer final
 	: public GL::Renderer
 	, public Rhi::Renderer {
 public:
-	StarRenderer();
-	~StarRenderer();
+	DiamondRenderer();
+	~DiamondRenderer();
 
 	struct State {
 		float yaw = 0.;

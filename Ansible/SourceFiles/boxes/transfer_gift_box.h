@@ -19,7 +19,7 @@ class Show;
 
 namespace Data {
 struct UniqueGift;
-class SavedStarGiftId;
+class SavedDiamondGiftId;
 } // namespace Data
 
 namespace Ui {
@@ -30,13 +30,13 @@ void ShowTransferToBox(
 	not_null<Window::SessionController*> controller,
 	not_null<PeerData*> peer,
 	std::shared_ptr<Data::UniqueGift> gift,
-	Data::SavedStarGiftId savedId,
+	Data::SavedDiamondGiftId savedId,
 	Fn<void()> closeParentBox);
 
 void ShowTransferGiftBox(
 	not_null<Window::SessionController*> window,
 	std::shared_ptr<Data::UniqueGift> gift,
-	Data::SavedStarGiftId savedId);
+	Data::SavedDiamondGiftId savedId);
 
 void ShowGiftSaleAcceptBox(
 	not_null<Window::SessionController*> controller,

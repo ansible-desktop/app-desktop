@@ -917,7 +917,7 @@ std::optional<PaidInformation> GroupedMedia::paidInformation() const {
 	auto result = PaidInformation();
 	for (const auto &part : _parts) {
 		++result.messages;
-		result.stars += part.item->starsPaid();
+		result.stars += part.item->diamondsPaid();
 	}
 	return result;
 }

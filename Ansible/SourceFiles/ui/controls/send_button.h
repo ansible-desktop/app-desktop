@@ -45,7 +45,7 @@ public:
 		Type type = Type::Send;
 		QColor fillBgOverride;
 		int slowmodeDelay = 0;
-		int starsToSend = 0;
+		int diamondsToSend = 0;
 		bool forbidden = false;
 
 		friend inline bool operator==(State, State) = default;
@@ -66,7 +66,7 @@ protected:
 	QPoint prepareRippleStartPosition() const override;
 
 private:
-	struct StarsGeometry {
+	struct DiamondsGeometry {
 		QRect inner;
 		QRect rounded;
 		QRect outer;
@@ -74,14 +74,14 @@ private:
 	enum class RippleShape : uchar {
 		InnerEllipse,
 		SendEllipse,
-		StarsRoundRect,
+		DiamondsRoundRect,
 		ScheduleEllipse,
 	};
 
 	[[nodiscard]] QPixmap grabContent();
 	void updateSize();
 
-	[[nodiscard]] StarsGeometry starsGeometry() const;
+	[[nodiscard]] DiamondsGeometry diamondsGeometry() const;
 
 	[[nodiscard]] RippleShape currentRippleShape() const;
 	[[nodiscard]] QRect sendEllipseRect() const;
@@ -95,7 +95,7 @@ private:
 	void paintStop(QPainter &p, bool over);
 	void paintSchedule(QPainter &p, bool over);
 	void paintSlowmode(QPainter &p);
-	void paintStarsToSend(QPainter &p, bool over);
+	void paintDiamondsToSend(QPainter &p, bool over);
 
 	void initVoiceRoundIcon(int index);
 	void paintVoiceRoundIcon(QPainter &p, bool over);
@@ -119,18 +119,18 @@ private:
 
 };
 
-struct SendStarButtonState {
+struct SendDiamondButtonState {
 	int count = 0;
 	bool highlight = false;
 };
 
-class SendStarButton final : public RippleButton {
+class SendDiamondButton final : public RippleButton {
 public:
-	SendStarButton(
+	SendDiamondButton(
 		QWidget *parent,
 		const style::IconButton &st,
 		const style::RoundButton &counterSt,
-		rpl::producer<SendStarButtonState> state);
+		rpl::producer<SendDiamondButtonState> state);
 
 protected:
 	void paintEvent(QPaintEvent *e) override;

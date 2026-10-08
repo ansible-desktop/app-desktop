@@ -49,7 +49,7 @@ constexpr auto kGiftsPerRow = 3;
 constexpr auto kCraftUnavailableOpacity = 0.5;
 
 [[nodiscard]] bool AllowedToSend(
-		const GiftTypeStars &gift,
+		const GiftTypeDiamonds &gift,
 		not_null<PeerData*> peer) {
 	using Type = Api::DisallowedGiftType;
 	const auto user = peer->asUser();
@@ -70,7 +70,7 @@ constexpr auto kCraftUnavailableOpacity = 0.5;
 	} else if (!gift.info.limitedCount) {
 		return allowUnlimited;
 	}
-	return allowLimited || (gift.info.starsToUpgrade && allowUnique);
+	return allowLimited || (gift.info.diamondsToUpgrade && allowUnique);
 }
 
 } // namespace
@@ -99,16 +99,16 @@ std::strong_ordering operator<=>(const GiftBadge &a, const GiftBadge &b) {
 	return a.gradient <=> b.gradient;
 }
 
-rpl::producer<std::vector<GiftTypeStars>> GiftsStars(
+rpl::producer<std::vector<GiftTypeDiamonds>> GiftsDiamonds(
 		not_null<Main::Session*> session,
 		not_null<PeerData*> peer) {
 	struct Session {
-		std::vector<GiftTypeStars> last;
+		std::vector<GiftTypeDiamonds> last;
 	};
 	static auto Map = base::flat_map<not_null<Main::Session*>, Session>();
 
-	const auto filtered = [=](std::vector<GiftTypeStars> list) {
-		list.erase(ranges::remove_if(list, [&](const GiftTypeStars &gift) {
+	const auto filtered = [=](std::vector<GiftTypeDiamonds> list) {
+		list.erase(ranges::remove_if(list, [&](const GiftTypeDiamonds &gift) {
 			return !AllowedToSend(gift, peer);
 		}), end(list));
 		return list;
@@ -127,11 +127,11 @@ rpl::producer<std::vector<GiftTypeStars>> GiftsStars(
 
 		using namespace Api;
 		const auto api = lifetime.make_state<PremiumGiftCodeOptions>(peer);
-		api->requestStarGifts(
+		api->requestDiamondGifts(
 		) | rpl::on_error_done([=](QString error) {
 			consumer.put_next({});
 		}, [=] {
-			auto list = std::vector<GiftTypeStars>();
+			auto list = std::vector<GiftTypeDiamonds>();
 			const auto &gifts = api->starGifts();
 			list.reserve(gifts.size());
 			for (auto &gift : gifts) {
@@ -196,16 +196,16 @@ void GiftButton::unsubscribe() {
 void GiftButton::setDescriptor(const GiftDescriptor &descriptor, Mode mode) {
 	_mode = mode;
 
-	const auto unique = v::is<GiftTypeStars>(descriptor)
-		? v::get<GiftTypeStars>(descriptor).info.unique.get()
+	const auto unique = v::is<GiftTypeDiamonds>(descriptor)
+		? v::get<GiftTypeDiamonds>(descriptor).info.unique.get()
 		: nullptr;
 	const auto resalePrice = (unique && _mode != Mode::CraftPreview)
-		? unique->starsForResale
+		? unique->diamondsForResale
 		: 0;
 	if (_descriptor == descriptor && _resalePrice == resalePrice) {
 		return;
 	}
-	const auto starsType = Ui::Premium::MiniStarsType::SlowStars;
+	const auto diamondsType = Ui::Premium::MiniDiamondsType::SlowDiamonds;
 	unsubscribe();
 	update();
 
@@ -216,8 +216,8 @@ void GiftButton::setDescriptor(const GiftDescriptor &descriptor, Mode mode) {
 			: Lang::FormatCountDecimal(number);
 	};
 
-	const auto auctionStartDate = v::is<GiftTypeStars>(descriptor)
-		? v::get<GiftTypeStars>(descriptor).info.auctionStartDate
+	const auto auctionStartDate = v::is<GiftTypeDiamonds>(descriptor)
+		? v::get<GiftTypeDiamonds>(descriptor).info.auctionStartDate
 		: TimeId();
 	const auto upcomingAuction = (auctionStartDate > base::unixtime::now());
 
@@ -241,27 +241,27 @@ void GiftButton::setDescriptor(const GiftDescriptor &descriptor, Mode mode) {
 				data.currency,
 				true));
 		if (const auto stars = data.stars) {
-			const auto starsText = Lang::FormatCountDecimal(stars);
-			_byStars.setMarkedText(
+			const auto diamondsText = Lang::FormatCountDecimal(stars);
+			_byDiamonds.setMarkedText(
 				st::giftBoxByStarsStyle,
 				tr::lng_gift_premium_by_diamonds(
 					tr::now,
 					lt_amount,
-					_delegate->ministar().append(' ' + starsText),
+					_delegate->ministar().append(' ' + diamondsText),
 					tr::marked),
 				kMarkupTextOptions,
 				_delegate->textContext());
 		}
 		_userpic = nullptr;
-		if (!_stars) {
-			_stars.emplace(this, true, starsType);
+		if (!_diamonds) {
+			_diamonds.emplace(this, true, diamondsType);
 		}
-		_stars->setColorOverride(QGradientStops{
+		_diamonds->setColorOverride(QGradientStops{
 			{ 0., anim::with_alpha(st::windowActiveTextFg->c, .3) },
 			{ 1., st::windowActiveTextFg->c },
 		});
 		_lockedUntilDate = 0;
-	}, [&](const GiftTypeStars &data) {
+	}, [&](const GiftTypeDiamonds &data) {
 		const auto soldOut = data.info.limitedCount
 			&& !data.userpic
 			&& !data.info.limitedLeft;
@@ -272,7 +272,7 @@ void GiftButton::setDescriptor(const GiftDescriptor &descriptor, Mode mode) {
 			: Ui::MakeHiddenAuthorThumbnail();
 		if ((small() && !resale) || (_mode == Mode::Craft)) {
 			_price = {};
-			_stars.reset();
+			_diamonds.reset();
 			return;
 		}
 		_price.setMarkedText(
@@ -284,10 +284,10 @@ void GiftButton::setDescriptor(const GiftDescriptor &descriptor, Mode mode) {
 					? _delegate->monostar()
 						: _delegate->star()).append(' ').append(
 							format(unique
-								? unique->starsForResale
-								: data.info.starsResellMin)
+								? unique->diamondsForResale
+								: data.info.diamondsResellMin)
 						).append(data.info.resellCount > 1 ? "+" : ""))
-				: (small() && unique && unique->starsForResale)
+				: (small() && unique && unique->diamondsForResale)
 				? Data::FormatGiftResaleAsked(*unique)
 				: unique
 				? tr::lng_gift_transfer_button(tr::now, tr::marked)
@@ -298,22 +298,22 @@ void GiftButton::setDescriptor(const GiftDescriptor &descriptor, Mode mode) {
 				: _delegate->star().append(' ' + format(data.info.stars))),
 			kMarkupTextOptions,
 			_delegate->textContext());
-		if (!_stars) {
-			_stars.emplace(this, true, starsType);
+		if (!_diamonds) {
+			_diamonds.emplace(this, true, diamondsType);
 		}
 		if (unique) {
 			const auto white = QColor(255, 255, 255);
-			_stars->setColorOverride(QGradientStops{
+			_diamonds->setColorOverride(QGradientStops{
 				{ 0., anim::with_alpha(white, .3) },
 				{ 1., white },
 			});
 		} else if (data.resale) {
-			_stars->setColorOverride(
+			_diamonds->setColorOverride(
 				Ui::Premium::CreditsIconGradientStops());
 		} else if (soldOut) {
-			_stars.reset();
+			_diamonds.reset();
 		} else {
-			_stars->setColorOverride(
+			_diamonds->setColorOverride(
 				Ui::Premium::CreditsIconGradientStops());
 		}
 		_lockedUntilDate = data.resale ? 0 : data.info.lockedUntilDate;
@@ -350,16 +350,16 @@ void GiftButton::setDescriptor(const GiftDescriptor &descriptor, Mode mode) {
 	const auto skipy = _delegate->buttonSize().height()
 		- (small()
 			? st::giftBoxButtonBottomSmall
-			: _byStars.isEmpty()
+			: _byDiamonds.isEmpty()
 			? st::giftBoxButtonBottom
 			: st::giftBoxButtonBottomByStars)
 		- inner.height();
 	const auto skipx = (width() - inner.width()) / 2;
 	const auto outer = (width() - 2 * skipx);
 	_button = QRect(skipx, skipy, outer, inner.height());
-	if (_stars) {
+	if (_diamonds) {
 		const auto padding = _button.height() / 2;
-		_stars->setCenter(_button - QMargins(padding, 0, padding, 0));
+		_diamonds->setCenter(_button - QMargins(padding, 0, padding, 0));
 	}
 }
 
@@ -542,9 +542,9 @@ void GiftButton::paintBackground(QPainter &p, const QImage &background) {
 void GiftButton::resizeEvent(QResizeEvent *e) {
 	if (!_button.isEmpty()) {
 		_button.moveLeft((width() - _button.width()) / 2);
-		if (_stars) {
+		if (_diamonds) {
 			const auto padding = _button.height() / 2;
-			_stars->setCenter(_button - QMargins(padding, 0, padding, 0));
+			_diamonds->setCenter(_button - QMargins(padding, 0, padding, 0));
 		}
 	}
 }
@@ -690,7 +690,7 @@ void GiftButton::paintEvent(QPaintEvent *e) {
 		if (_mode != Mode::Craft) {
 			return 0;
 		}
-		const auto stargift = std::get_if<GiftTypeStars>(&_descriptor);
+		const auto stargift = std::get_if<GiftTypeDiamonds>(&_descriptor);
 		const auto unique = stargift ? stargift->info.unique.get() : nullptr;
 		return unique ? unique->canCraftAt : TimeId();
 	}();
@@ -721,9 +721,9 @@ void GiftButton::paintEvent(QPaintEvent *e) {
 }
 
 void GiftButton::paint(QPainter &p, float64 craftProgress) {
-	const auto stargift = std::get_if<GiftTypeStars>(&_descriptor);
+	const auto stargift = std::get_if<GiftTypeDiamonds>(&_descriptor);
 	const auto unique = stargift ? stargift->info.unique.get() : nullptr;
-	const auto onsale = unique && unique->starsForResale && small();
+	const auto onsale = unique && unique->diamondsForResale && small();
 	const auto requirePremium = stargift
 		&& !stargift->userpic
 		&& !stargift->resale
@@ -862,7 +862,7 @@ void GiftButton::paint(QPainter &p, float64 craftProgress) {
 					? (unique
 						? st::giftBoxStickerUniqueTop
 						: st::giftBoxStickerStarTop)
-					: _byStars.isEmpty()
+					: _byDiamonds.isEmpty()
 					? st::giftBoxStickerTop
 					: st::giftBoxStickerTopByStars),
 				size.width(),
@@ -878,7 +878,7 @@ void GiftButton::paint(QPainter &p, float64 craftProgress) {
 				? (unique
 					? st::giftBoxStickerUniqueTop
 					: st::giftBoxStickerStarTop)
-				: _byStars.isEmpty()
+				: _byDiamonds.isEmpty()
 				? st::giftBoxStickerTop
 				: st::giftBoxStickerTopByStars));
 		_delegate->hiddenMark()->paint(
@@ -910,7 +910,7 @@ void GiftButton::paint(QPainter &p, float64 craftProgress) {
 			};
 		}
 		return GiftBadge();
-	}, [&](const GiftTypeStars &data) {
+	}, [&](const GiftTypeDiamonds &data) {
 		const auto count = data.info.limitedCount;
 		const auto pinned = data.pinned || data.pinnedSelection;
 		const auto now = base::unixtime::now();
@@ -1006,7 +1006,7 @@ void GiftButton::paint(QPainter &p, float64 craftProgress) {
 		? st::giftBoxUserpicSize + st::giftBoxUserpicSkip
 		: 0;
 	v::match(_descriptor, [](const GiftTypePremium &) {
-	}, [&](const GiftTypeStars &data) {
+	}, [&](const GiftTypeDiamonds &data) {
 		if (!unique || _mode == Mode::Craft || _mode == Mode::CraftPreview) {
 		} else if (data.pinned && _mode != Mode::Selection) {
 			auto hq = PainterHighQualityEnabler(p);
@@ -1094,14 +1094,14 @@ void GiftButton::paint(QPainter &p, float64 craftProgress) {
 		if (!premium || onsale) {
 			p.setOpacity(1.);
 		}
-		if (_stars) {
+		if (_diamonds) {
 			if (unique) {
-				_stars->paint(p);
+				_diamonds->paint(p);
 			} else {
 				auto clipPath = QPainterPath();
 				clipPath.addRoundedRect(geometry, radius, radius);
 				p.setClipPath(clipPath);
-				_stars->paint(p);
+				_diamonds->paint(p);
 				p.setClipping(false);
 			}
 		}
@@ -1110,7 +1110,7 @@ void GiftButton::paint(QPainter &p, float64 craftProgress) {
 	if (!_text.isEmpty()) {
 		p.setPen(st::windowFg);
 		_text.draw(p, {
-			.position = (position + QPoint(0, _byStars.isEmpty()
+			.position = (position + QPoint(0, _byDiamonds.isEmpty()
 				? st::giftBoxPremiumTextTop
 				: st::giftBoxPremiumTextTopByStars)),
 			.availableWidth = singlew,
@@ -1131,9 +1131,9 @@ void GiftButton::paint(QPainter &p, float64 craftProgress) {
 			.availableWidth = _price.maxWidth(),
 		});
 
-		if (!_byStars.isEmpty()) {
+		if (!_byDiamonds.isEmpty()) {
 			p.setPen(st::creditsFg);
-			_byStars.draw(p, {
+			_byDiamonds.draw(p, {
 				.position = QPoint(
 					position.x(),
 					_button.y() + _button.height() + st::giftBoxByStarsSkip),
@@ -1342,7 +1342,7 @@ DocumentData *LookupGiftSticker(
 		auto &packs = session->giftBoxStickersPacks();
 		packs.load();
 		return packs.lookup(data.months);
-	}, [&](GiftTypeStars data) {
+	}, [&](GiftTypeDiamonds data) {
 		return data.info.document.get();
 	});
 }
@@ -1367,7 +1367,7 @@ rpl::producer<not_null<DocumentData*>> GiftStickerValue(
 		}) | rpl::take(1) | rpl::map([=](DocumentData *document) {
 			return not_null(document);
 		}) | rpl::type_erased;
-	}, [&](GiftTypeStars data) {
+	}, [&](GiftTypeDiamonds data) {
 		return rpl::single(data.info.document) | rpl::type_erased;
 	});
 }
@@ -1463,7 +1463,7 @@ QImage ValidateRotatedBadge(
 void SelectGiftToUnpin(
 		std::shared_ptr<ChatHelpers::Show> show,
 		const std::vector<Data::CreditsHistoryEntry> &pinned,
-		Fn<void(Data::SavedStarGiftId)> chosen) {
+		Fn<void(Data::SavedDiamondGiftId)> chosen) {
 	show->show(Box([=](not_null<Ui::GenericBox*> box) {
 		struct State {
 			explicit State(not_null<Main::Session*> session)
@@ -1507,7 +1507,7 @@ void SelectGiftToUnpin(
 			state->buttons.push_back(
 				Ui::CreateChild<GiftButton>(gifts, &state->delegate));
 			const auto button = state->buttons.back();
-			button->setDescriptor(GiftTypeStars{
+			button->setDescriptor(GiftTypeDiamonds{
 				.info = {
 					.id = entry.stargiftId,
 					.unique = entry.uniqueGift,
@@ -1570,7 +1570,7 @@ void SelectGiftToUnpin(
 			Assert(index < int(pinned.size()));
 			const auto &entry = pinned[index];
 			const auto weak = base::make_weak(box);
-			chosen(::Settings::EntryToSavedStarGiftId(session, entry));
+			chosen(::Settings::EntryToSavedDiamondGiftId(session, entry));
 			if (const auto strong = weak.get()) {
 				strong->closeBox();
 			}

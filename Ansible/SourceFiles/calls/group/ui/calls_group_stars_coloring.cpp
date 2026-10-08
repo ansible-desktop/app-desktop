@@ -17,11 +17,11 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 namespace Calls::Group::Ui {
 
-StarsColoring StarsColoringForCount(
-		const std::vector<StarsColoring> &colorings,
+DiamondsColoring DiamondsColoringForCount(
+		const std::vector<DiamondsColoring> &colorings,
 		int stars) {
 	for (auto i = begin(colorings), e = end(colorings); i != e; ++i) {
-		if (i->fromStars > stars) {
+		if (i->fromDiamonds > stars) {
 			Assert(i != begin(colorings));
 			return *(std::prev(i));
 		}
@@ -29,8 +29,8 @@ StarsColoring StarsColoringForCount(
 	return colorings.back();
 }
 
-int StarsRequiredForMessage(
-		const std::vector<StarsColoring> &colorings,
+int DiamondsRequiredForMessage(
+		const std::vector<DiamondsColoring> &colorings,
 		const TextWithTags &text) {
 	Expects(!colorings.empty());
 
@@ -48,29 +48,29 @@ int StarsRequiredForMessage(
 	}
 	for (const auto &entry : colorings) {
 		if (emojis <= entry.emojiLimit && length <= entry.charactersMax) {
-			return entry.fromStars;
+			return entry.fromDiamonds;
 		}
 	}
-	return colorings.back().fromStars + 1;
+	return colorings.back().fromDiamonds + 1;
 }
 
-object_ptr<RpWidget> VideoStreamStarsLevel(
+object_ptr<RpWidget> VideoStreamDiamondsLevel(
 		not_null<RpWidget*> box,
-		const std::vector<StarsColoring> &colorings,
-		rpl::producer<int> starsValue) {
+		const std::vector<DiamondsColoring> &colorings,
+		rpl::producer<int> diamondsValue) {
 	struct State {
 		rpl::variable<int> stars;
-		rpl::variable<StarsColoring> coloring;
+		rpl::variable<DiamondsColoring> coloring;
 	};
 	const auto state = box->lifetime().make_state<State>();
-	state->stars = std::move(starsValue);
+	state->stars = std::move(diamondsValue);
 	state->coloring = state->stars.value(
 	) | rpl::map([=](int stars) {
-		return StarsColoringForCount(colorings, stars);
+		return DiamondsColoringForCount(colorings, stars);
 	});
 
 	auto pinTitle = state->coloring.value(
-	) | rpl::map([=](const StarsColoring &value) {
+	) | rpl::map([=](const DiamondsColoring &value) {
 		const auto seconds = value.secondsPin;
 		return (seconds >= 3600)
 			? tr::lng_hours_tiny(tr::now, lt_count, seconds / 3600)
@@ -79,28 +79,28 @@ object_ptr<RpWidget> VideoStreamStarsLevel(
 			: tr::lng_seconds_tiny(tr::now, lt_count, seconds);
 	});
 	auto limitTitle = state->coloring.value(
-	) | rpl::map([=](const StarsColoring &value) {
+	) | rpl::map([=](const DiamondsColoring &value) {
 		return QString::number(value.charactersMax);
 	});
 	auto limitSubtext = state->coloring.value(
-	) | rpl::map([=](const StarsColoring &value) {
+	) | rpl::map([=](const DiamondsColoring &value) {
 		return tr::lng_paid_comment_limit_about(
 			tr::now,
 			lt_count,
 			value.charactersMax);
 	});
 	auto emojiTitle = state->coloring.value(
-	) | rpl::map([=](const StarsColoring &value) {
+	) | rpl::map([=](const DiamondsColoring &value) {
 		return QString::number(value.emojiLimit);
 	});
 	auto emojiSubtext = state->coloring.value(
-	) | rpl::map([=](const StarsColoring &value) {
+	) | rpl::map([=](const DiamondsColoring &value) {
 		return tr::lng_paid_comment_emoji_about(
 			tr::now,
 			lt_count,
 			value.emojiLimit);
 	});
-	return MakeStarSelectInfoBlocks(box, {
+	return MakeDiamondSelectInfoBlocks(box, {
 		{
 			.title = std::move(pinTitle) | rpl::map(tr::marked),
 			.subtext = tr::lng_paid_comment_pin_about(),

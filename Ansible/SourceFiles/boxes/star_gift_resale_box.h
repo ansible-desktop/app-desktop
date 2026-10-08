@@ -13,7 +13,7 @@ struct ResaleGiftsDescriptor;
 } // namespace Data
 
 namespace Info::PeerGifts {
-struct GiftTypeStars;
+struct GiftTypeDiamonds;
 } // namespace Info::PeerGifts
 
 namespace Main {
@@ -34,7 +34,7 @@ void ShowResaleGiftBoughtToast(
 	not_null<PeerData*> to,
 	const Data::UniqueGift &gift);
 
-[[nodiscard]] rpl::lifetime ShowStarGiftResale(
+[[nodiscard]] rpl::lifetime ShowDiamondGiftResale(
 	not_null<Window::SessionController*> controller,
 	not_null<PeerData*> peer,
 	uint64 giftId,

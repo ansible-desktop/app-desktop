@@ -36,7 +36,7 @@ private:
 
 };
 
-struct FourPointStarArgs {
+struct FourPointDiamondArgs {
 	int size = 0;
 	float64 corner = 0.85;
 	float64 cornerRadius = 0.;
@@ -44,7 +44,7 @@ struct FourPointStarArgs {
 	QColor color = Qt::white;
 };
 
-[[nodiscard]] QImage FourPointStarImage(FourPointStarArgs args);
+[[nodiscard]] QImage FourPointDiamondImage(FourPointDiamondArgs args);
 
 struct DriftingSprite {
 	QImage image;

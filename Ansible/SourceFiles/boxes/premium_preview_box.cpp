@@ -60,9 +60,9 @@ namespace {
 
 constexpr auto kPremiumShift = 21. / 240;
 constexpr auto kToggleStickerTimeout = 2 * crl::time(1000);
-constexpr auto kStarOpacityOff = 0.1;
-constexpr auto kStarOpacityOn = 1.;
-constexpr auto kStarPeriod = 3 * crl::time(1000);
+constexpr auto kDiamondOpacityOff = 0.1;
+constexpr auto kDiamondOpacityOn = 1.;
+constexpr auto kDiamondPeriod = 3 * crl::time(1000);
 
 using Data::ReactionId;
 
@@ -817,20 +817,20 @@ struct VideoPreviewDocument {
 			}
 			const auto progress = anim::Disabled()
 				? 1.
-				: ((crl::now() % kStarPeriod) / float64(kStarPeriod));
+				: ((crl::now() % kDiamondPeriod) / float64(kDiamondPeriod));
 			const auto ratio = anim::Disabled()
 				? 1.
 				: (1. + cos(progress * 2 * M_PI)) / 2.;
-			const auto opacity = kStarOpacityOff
-				+ (kStarOpacityOn - kStarOpacityOff) * ratio;
+			const auto opacity = kDiamondOpacityOff
+				+ (kDiamondOpacityOn - kDiamondOpacityOff) * ratio;
 			p.setOpacity(opacity);
 
-			const auto starSize = st::premiumVideoStarSize;
+			const auto diamondSize = st::premiumVideoStarSize;
 			state->star.render(&p, QRectF(
 				QPointF(
-					left + (width - starSize.width()) / 2.,
-					top + (height - starSize.height()) / 2.),
-				starSize));
+					left + (width - diamondSize.width()) / 2.,
+					top + (height - diamondSize.height()) / 2.),
+				diamondSize));
 		}
 	}, lifetime);
 
@@ -1419,7 +1419,7 @@ void Show(
 		return;
 	} else if (descriptor.section == PremiumFeature::Business) {
 		show->showBox(Box([=](not_null<Ui::GenericBox*> box) {
-			TelegramBusinessPreviewBox(box, &show->session());
+			AnsibleBusinessPreviewBox(box, &show->session());
 			DecorateListPromoBox(box, show, descriptor);
 		}));
 		return;
@@ -1741,7 +1741,7 @@ void UpgradedStoriesPreviewBox(
 		tr::lng_premium_stories_about_mobile());
 }
 
-void TelegramBusinessPreviewBox(
+void AnsibleBusinessPreviewBox(
 		not_null<Ui::GenericBox*> box,
 		not_null<Main::Session*> session) {
 	using namespace Ui::Text;

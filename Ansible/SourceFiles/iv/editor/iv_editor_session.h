@@ -73,7 +73,7 @@ void ShowRichMessagesPremiumToast(std::shared_ptr<ChatHelpers::Show> show);
 [[nodiscard]] bool SessionPremium(not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> AmPremiumValue(
 	not_null<Main::Session*> session);
-[[nodiscard]] rpl::producer<int> StarsPerMessageValue(
+[[nodiscard]] rpl::producer<int> DiamondsPerMessageValue(
 	not_null<Main::Session*> session,
 	not_null<PeerData*> peer);
 [[nodiscard]] bool IsEmojiDocument(not_null<DocumentData*> document);

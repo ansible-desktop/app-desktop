@@ -357,7 +357,7 @@ enum class MessageFlag : uint64 {
 
 	HideDisplayDate       = (1ULL << 51),
 
-	StarsPaidSuggested    = (1ULL << 52),
+	DiamondsPaidSuggested    = (1ULL << 52),
 	TonPaidSuggested      = (1ULL << 53),
 
 	StoryInProfile        = (1ULL << 54),

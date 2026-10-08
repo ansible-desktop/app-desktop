@@ -296,7 +296,7 @@ private:
 [[nodiscard]] RecentPeersList RecentPeersContent(
 	not_null<Main::Session*> session);
 
-[[nodiscard]] object_ptr<Ui::BoxContent> StarsExamplesBox(
+[[nodiscard]] object_ptr<Ui::BoxContent> DiamondsExamplesBox(
 	not_null<Window::SessionController*> window);
 
 [[nodiscard]] object_ptr<Ui::BoxContent> PopularAppsAboutBox(

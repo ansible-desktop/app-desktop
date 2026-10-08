@@ -13,7 +13,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "mtproto/sender.h"
 
 namespace Data {
-class SavedStarGiftId;
+class SavedDiamondGiftId;
 } // namespace Data
 
 namespace Main {
@@ -124,8 +124,8 @@ void EditCreditsSubscription(
 	Fn<void()> done,
 	Fn<void(QString)> fail);
 
-[[nodiscard]] MTPInputSavedStarGift InputSavedStarGiftId(
-	const Data::SavedStarGiftId &id,
+[[nodiscard]] MTPInputSavedStarGift InputSavedDiamondGiftId(
+	const Data::SavedDiamondGiftId &id,
 	const std::shared_ptr<Data::UniqueGift> &unique = nullptr);
 
 } // namespace Api

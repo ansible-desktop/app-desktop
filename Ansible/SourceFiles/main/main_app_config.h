@@ -16,7 +16,7 @@ struct ColorIndicesCompressed;
 
 namespace Calls::Group::Ui {
 using namespace ::Ui;
-struct StarsColoring;
+struct DiamondsColoring;
 } // namespace Calls::Group::Ui
 
 namespace Main {
@@ -79,16 +79,16 @@ public:
 	[[nodiscard]] int starrefCommissionMin() const;
 	[[nodiscard]] int starrefCommissionMax() const;
 
-	[[nodiscard]] int starsWithdrawMax() const;
-	[[nodiscard]] float64 starsWithdrawRate() const;
+	[[nodiscard]] int diamondsWithdrawMax() const;
+	[[nodiscard]] float64 diamondsWithdrawRate() const;
 	[[nodiscard]] float64 currencyWithdrawRate() const;
-	[[nodiscard]] float64 starsSellRate() const;
+	[[nodiscard]] float64 diamondsSellRate() const;
 	[[nodiscard]] float64 currencySellRate() const;
-	[[nodiscard]] bool starsSpendTopupInvoiceDisabled() const;
+	[[nodiscard]] bool diamondsSpendTopupInvoiceDisabled() const;
 	[[nodiscard]] bool paidMessagesAvailable() const;
-	[[nodiscard]] int paidMessageStarsMax() const;
+	[[nodiscard]] int paidMessageDiamondsMax() const;
 	[[nodiscard]] int paidMessageCommission() const;
-	[[nodiscard]] int paidMessageChannelStarsDefault() const;
+	[[nodiscard]] int paidMessageChannelDiamondsDefault() const;
 
 	[[nodiscard]] int pinnedGiftsLimit() const;
 	[[nodiscard]] int giftCollectionsLimit() const;
@@ -98,9 +98,9 @@ public:
 	[[nodiscard]] int confcallSizeLimit() const;
 	[[nodiscard]] bool confcallPrioritizeVP8() const;
 
-	[[nodiscard]] int giftResaleStarsMin() const;
-	[[nodiscard]] int giftResaleStarsMax() const;
-	[[nodiscard]] int giftResaleStarsThousandths() const;
+	[[nodiscard]] int giftResaleDiamondsMin() const;
+	[[nodiscard]] int giftResaleDiamondsMax() const;
+	[[nodiscard]] int giftResaleDiamondsThousandths() const;
 	[[nodiscard]] int64 giftResaleNanoTonMin() const;
 	[[nodiscard]] int64 giftResaleNanoTonMax() const;
 	[[nodiscard]] int giftResaleNanoTonThousandths() const;
@@ -113,10 +113,10 @@ public:
 	[[nodiscard]] int todoListTitleLimit() const;
 	[[nodiscard]] int todoListItemTextLimit() const;
 
-	[[nodiscard]] int suggestedPostCommissionStars() const;
+	[[nodiscard]] int suggestedPostCommissionDiamonds() const;
 	[[nodiscard]] int suggestedPostCommissionTon() const;
-	[[nodiscard]] int suggestedPostStarsMin() const;
-	[[nodiscard]] int suggestedPostStarsMax() const;
+	[[nodiscard]] int suggestedPostDiamondsMin() const;
+	[[nodiscard]] int suggestedPostDiamondsMax() const;
 	[[nodiscard]] int64 suggestedPostNanoTonMin() const;
 	[[nodiscard]] int64 suggestedPostNanoTonMax() const;
 	[[nodiscard]] int suggestedPostDelayMin() const;
@@ -141,8 +141,8 @@ public:
 	[[nodiscard]] int64 stakeDiceNanoTonMax() const;
 	[[nodiscard]] std::vector<int64> stakeDiceNanoTonSuggested() const;
 
-	using StarsColoring = Calls::Group::Ui::StarsColoring;
-	[[nodiscard]] std::vector<StarsColoring> groupCallColorings() const;
+	using DiamondsColoring = Calls::Group::Ui::DiamondsColoring;
+	[[nodiscard]] std::vector<DiamondsColoring> groupCallColorings() const;
 
 	[[nodiscard]] std::vector<std::vector<int>> craftAttributePermilles() const;
 
@@ -196,7 +196,7 @@ private:
 
 	std::vector<QString> _startRefPrefixes;
 
-	mutable std::vector<StarsColoring> _groupCallColorings;
+	mutable std::vector<DiamondsColoring> _groupCallColorings;
 
 	crl::time _lastFrozenRefresh = 0;
 	rpl::lifetime _frozenTrackLifetime;

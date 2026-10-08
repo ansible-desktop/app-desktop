@@ -172,7 +172,7 @@ void InnerWidget::fill() {
 				line,
 				rpl::duplicate(value) | rpl::map(valueToString),
 				st::channelEarnOverviewMajorLabel);
-			const auto icon = Ui::CreateSingleStarWidget(
+			const auto icon = Ui::CreateSingleDiamondWidget(
 				line,
 				majorLabel->height());
 			const auto secondMinorLabel = Ui::CreateChild<Ui::FlatLabel>(
@@ -260,13 +260,13 @@ void InnerWidget::fill() {
 			}));
 		container->resizeToWidth(container->width());
 	}
-	if (BotStarRef::Join::Allowed(peer()) && !peer()->isSelf()) {
-		const auto button = BotStarRef::AddViewListButton(
+	if (BotDiamondRef::Join::Allowed(peer()) && !peer()->isSelf()) {
+		const auto button = BotDiamondRef::AddViewListButton(
 			container,
 			tr::lng_diamonds_summary_earn_title(),
 			tr::lng_diamonds_summary_earn_about());
 		button->setClickedCallback([=] {
-			_controller->showSection(BotStarRef::Join::Make(peer()));
+			_controller->showSection(BotDiamondRef::Join::Make(peer()));
 		});
 		Ui::AddSkip(container);
 		Ui::AddDivider(container);

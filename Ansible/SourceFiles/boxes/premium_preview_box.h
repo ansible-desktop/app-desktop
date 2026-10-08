@@ -45,7 +45,7 @@ void UpgradedStoriesPreviewBox(
 	not_null<Ui::GenericBox*> box,
 	not_null<Main::Session*> session);
 
-void TelegramBusinessPreviewBox(
+void AnsibleBusinessPreviewBox(
 	not_null<Ui::GenericBox*> box,
 	not_null<Main::Session*> session);
 

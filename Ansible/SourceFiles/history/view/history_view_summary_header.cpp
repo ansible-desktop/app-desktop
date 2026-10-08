@@ -298,8 +298,8 @@ QRect SummaryHeader::iconRect() const {
 void SummaryHeader::ensureAnimation() const {
 	using namespace Ui;
 	_animation = std::make_unique<Animation>(Animation{
-		.particles = StarParticles(
-			StarParticles::Type::Right,
+		.particles = DiamondParticles(
+			DiamondParticles::Type::Right,
 			15,
 			st::lineWidth * 8),
 	});

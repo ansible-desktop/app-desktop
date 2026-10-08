@@ -401,8 +401,8 @@ void EditCreditsSubscription(
 	)).done(done).fail([=](const MTP::Error &e) { fail(e.type()); }).send();
 }
 
-MTPInputSavedStarGift InputSavedStarGiftId(
-		const Data::SavedStarGiftId &id,
+MTPInputSavedStarGift InputSavedDiamondGiftId(
+		const Data::SavedDiamondGiftId &id,
 		const std::shared_ptr<Data::UniqueGift> &unique) {
 	return (!id && unique)
 		? MTP_inputSavedStarGiftSlug(MTP_string(unique->slug))

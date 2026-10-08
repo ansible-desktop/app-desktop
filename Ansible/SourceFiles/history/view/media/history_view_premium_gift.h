@@ -32,7 +32,7 @@ public:
 	TextWithEntities author() override;
 	TextWithEntities subtitle() override;
 	rpl::producer<QString> button() override;
-	std::optional<Ui::Premium::MiniStarsType> buttonMinistars() override;
+	std::optional<Ui::Premium::MiniDiamondsType> buttonMinistars() override;
 	QImage cornerTag(const PaintContext &context) override;
 	int buttonSkip() override;
 	void draw(
@@ -56,7 +56,7 @@ private:
 	[[nodiscard]] bool outgoingGift() const;
 	[[nodiscard]] bool tonGift() const;
 	[[nodiscard]] bool starGift() const;
-	[[nodiscard]] bool starGiftUpgrade() const;
+	[[nodiscard]] bool diamondGiftUpgrade() const;
 	[[nodiscard]] bool gift() const;
 	[[nodiscard]] bool creditsPrize() const;
 	[[nodiscard]] int credits() const;
@@ -74,6 +74,6 @@ private:
 
 };
 
-[[nodiscard]] ClickHandlerPtr OpenStarGiftLink(not_null<HistoryItem*> item);
+[[nodiscard]] ClickHandlerPtr OpenDiamondGiftLink(not_null<HistoryItem*> item);
 
 } // namespace HistoryView

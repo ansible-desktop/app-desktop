@@ -105,7 +105,7 @@ struct ColorScheme {
 
 struct GiftForCraft {
 	std::shared_ptr<Data::UniqueGift> unique;
-	Data::SavedStarGiftId manageId;
+	Data::SavedDiamondGiftId manageId;
 
 	[[nodiscard]] QString slugId() const {
 		return unique ? unique->slug : QString();
@@ -372,7 +372,7 @@ AbstractButton *MakeRemoveButton(
 
 		if (entry.gift) {
 			entry.button = CreateChild<GiftButton>(raw, &state->delegate);
-			entry.button->setDescriptor(GiftTypeStars{
+			entry.button->setDescriptor(GiftTypeDiamonds{
 				.info = {
 					.id = entry.gift.unique->initialGiftId,
 					.unique = entry.gift.unique,
@@ -586,7 +586,7 @@ void AddCraftGiftsList(
 	state->data = std::move(descriptor);
 
 	using Descriptor = Info::PeerGifts::GiftDescriptor;
-	using StarGift = Info::PeerGifts::GiftTypeStars;
+	using StarGift = Info::PeerGifts::GiftTypeDiamonds;
 	auto handler = crl::guard(container, [=](Descriptor descriptor) {
 		Expects(v::is<StarGift>(descriptor));
 
@@ -600,7 +600,7 @@ void AddCraftGiftsList(
 		auto result = GiftsDescriptor();
 		const auto selfId = window->session().userPeerId();
 		for (const auto &gift : state->data.list) {
-			result.list.push_back(Info::PeerGifts::GiftTypeStars{
+			result.list.push_back(Info::PeerGifts::GiftTypeDiamonds{
 				.info = gift.info,
 				.resale = true,
 				.mine = (gift.info.unique->ownerId == selfId),
@@ -1162,7 +1162,7 @@ void Craft(
 		auto inputs = QVector<MTPInputSavedStarGift>();
 		for (const auto &gift : gifts) {
 			inputs.push_back(
-				Api::InputSavedStarGiftId(gift.manageId, gift.unique));
+				Api::InputSavedDiamondGiftId(gift.manageId, gift.unique));
 		}
 		const auto weak = base::make_weak(controller);
 		const auto session = &controller->session();
@@ -1287,7 +1287,7 @@ void AddPreviewNewModels(
 			}),
 			end(previewAttrs.models));
 		show->show(Box(
-			StarGiftPreviewBox,
+			DiamondGiftPreviewBox,
 			giftName,
 			previewAttrs,
 			Data::GiftAttributeIdType::Model,
@@ -1649,7 +1649,7 @@ void ShowGiftCraftBox(
 void ShowGiftCraftInfoBox(
 		not_null<Window::SessionController*> controller,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId savedId) {
+		Data::SavedDiamondGiftId savedId) {
 	controller->show(Box([=](not_null<GenericBox*> box) {
 		const auto container = box->verticalLayout();
 		auto cover = tr::lng_gift_craft_info_title(

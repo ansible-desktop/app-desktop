@@ -28,7 +28,7 @@ namespace Main {
 class Session;
 } // namespace Main
 
-namespace Info::BotStarRef {
+namespace Info::BotDiamondRef {
 
 struct ConnectedBotState {
 	StarRefProgram program;
@@ -60,10 +60,10 @@ void AddFullWidthButtonFooter(
 	not_null<Ui::RpWidget*> button,
 	rpl::producer<TextWithEntities> text);
 
-[[nodiscard]] object_ptr<Ui::BoxContent> StarRefLinkBox(
+[[nodiscard]] object_ptr<Ui::BoxContent> DiamondRefLinkBox(
 	ConnectedBot row,
 	not_null<PeerData*> peer);
-[[nodiscard]] object_ptr<Ui::BoxContent> JoinStarRefBox(
+[[nodiscard]] object_ptr<Ui::BoxContent> JoinDiamondRefBox(
 	ConnectedBot row,
 	not_null<PeerData*> initialRecipient,
 	std::vector<not_null<PeerData*>> recipients,

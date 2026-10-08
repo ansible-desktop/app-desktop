@@ -50,7 +50,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace HistoryView {
 namespace {
 
-[[nodiscard]] rpl::producer<CreditsAmount> StarsPriceValue(
+[[nodiscard]] rpl::producer<CreditsAmount> DiamondsPriceValue(
 		rpl::producer<CreditsAmount> full) {
 	return rpl::single(
 		CreditsAmount()
@@ -107,9 +107,9 @@ void ChooseSuggestTimeBox(
 	});
 }
 
-StarsTonPriceInput AddStarsTonPriceInput(
+DiamondsTonPriceInput AddDiamondsTonPriceInput(
 		not_null<Ui::VerticalLayout*> container,
-		StarsTonPriceArgs &&args) {
+		DiamondsTonPriceArgs &&args) {
 	struct State {
 		rpl::variable<bool> ton;
 		rpl::variable<CreditsAmount> price;
@@ -123,14 +123,14 @@ StarsTonPriceInput AddStarsTonPriceInput(
 	const auto session = args.session;
 	const auto added = st::boxRowPadding - st::defaultSubsectionTitlePadding;
 
-	const auto starsWrap = container->add(
+	const auto diamondsWrap = container->add(
 		object_ptr<Ui::SlideWrap<Ui::VerticalLayout>>(
 			container,
 			object_ptr<Ui::VerticalLayout>(container)));
-	const auto starsInner = starsWrap->entity();
+	const auto diamondsInner = diamondsWrap->entity();
 
 	Ui::AddSubsectionTitle(
-		starsInner,
+		diamondsInner,
 		tr::lng_suggest_options_diamonds_price(),
 		QMargins(
 			added.left(),
@@ -138,21 +138,21 @@ StarsTonPriceInput AddStarsTonPriceInput(
 			added.right(),
 			-st::defaultSubsectionTitlePadding.bottom()));
 
-	const auto starsField = AddStarsInputField(starsInner, {
+	const auto diamondsField = AddDiamondsInputField(diamondsInner, {
 		.value = ((args.price && args.price.stars())
 			? args.price.whole()
 			: std::optional<int64>()),
 	});
 
 	AddApproximateUsd(
-		starsField,
+		diamondsField,
 		session,
-		StarsPriceValue(state->price.value()));
+		DiamondsPriceValue(state->price.value()));
 
-	Ui::AddSkip(starsInner);
-	Ui::AddSkip(starsInner);
-	if (args.starsAbout) {
-		Ui::AddDividerText(starsInner, std::move(args.starsAbout));
+	Ui::AddSkip(diamondsInner);
+	Ui::AddSkip(diamondsInner);
+	if (args.diamondsAbout) {
+		Ui::AddDividerText(diamondsInner, std::move(args.diamondsAbout));
 	}
 
 	const auto tonWrap = container->add(
@@ -188,7 +188,7 @@ StarsTonPriceInput AddStarsTonPriceInput(
 	}
 
 	tonWrap->toggleOn(state->ton.value(), anim::type::instant);
-	starsWrap->toggleOn(
+	diamondsWrap->toggleOn(
 		state->ton.value() | rpl::map(!rpl::mappers::_1),
 		anim::type::instant);
 
@@ -210,15 +210,15 @@ StarsTonPriceInput AddStarsTonPriceInput(
 			}
 			tonField->showError();
 		} else {
-			const auto now = starsField->getLastText().toLongLong();
+			const auto now = diamondsField->getLastText().toLongLong();
 			amount = CreditsAmount(now);
 			const auto bad = !now
 				? (!args.allowEmpty)
-				: ((now < args.starsMin) || (now > args.starsMax));
+				: ((now < args.diamondsMin) || (now > args.diamondsMax));
 			if (!bad) {
 				return amount;
 			}
-			starsField->showError();
+			diamondsField->showError();
 		}
 		if (const auto hook = args.errorHook) {
 			hook(amount);
@@ -232,44 +232,44 @@ StarsTonPriceInput AddStarsTonPriceInput(
 		}
 		state->updates.fire({});
 	};
-	const auto updateTonFromStars = [=] {
+	const auto updateTonFromDiamonds = [=] {
 		if (auto result = computeResult(); result && result->stars()) {
-			const auto v = Ui::TonFromStars(session, *result);
+			const auto v = Ui::TonFromDiamonds(session, *result);
 			const auto amount = v.whole() * Ui::kNanosInOne + v.nano();
 			tonField->setText(
 				Ui::FormatTonAmount(amount, Ui::TonFormatFlag::Simple).full);
 		}
 	};
-	const auto updateStarsFromTon = [=] {
+	const auto updateDiamondsFromTon = [=] {
 		if (auto result = computeResult(); result && result->ton()) {
-			const auto v = Ui::StarsFromTon(session, *result);
-			starsField->setText(QString::number(v.whole()));
+			const auto v = Ui::DiamondsFromTon(session, *result);
+			diamondsField->setText(QString::number(v.whole()));
 		}
 	};
-	QObject::connect(starsField, &Ui::NumberInput::changed, starsField, [=] {
+	QObject::connect(diamondsField, &Ui::NumberInput::changed, diamondsField, [=] {
 		if (!state->ton.current()) {
 			updatePrice();
-			updateTonFromStars();
+			updateTonFromDiamonds();
 		}
 	});
 	tonField->changes(
 	) | rpl::on_next([=] {
 		if (state->ton.current()) {
 			updatePrice();
-			updateStarsFromTon();
+			updateDiamondsFromTon();
 		}
 	}, tonField->lifetime());
 
 	state->ton.changes(
 	) | rpl::on_next(updatePrice, container->lifetime());
 	if (state->ton.current()) {
-		updateStarsFromTon();
+		updateDiamondsFromTon();
 	} else {
-		updateTonFromStars();
+		updateTonFromDiamonds();
 	}
 
 	QObject::connect(
-		starsField,
+		diamondsField,
 		&Ui::NumberInput::submitted,
 		container,
 		[=] { state->submits.fire({}); });
@@ -283,8 +283,8 @@ StarsTonPriceInput AddStarsTonPriceInput(
 			tonField->selectAll();
 			tonField->setFocusFast();
 		} else {
-			starsField->selectAll();
-			starsField->setFocusFast();
+			diamondsField->selectAll();
+			diamondsField->setFocusFast();
 		}
 	};
 
@@ -481,9 +481,9 @@ void ChooseSuggestPriceBox(
 				lt_percent,
 				rpl::duplicate(price) | rpl::map(formatCommission));
 	};
-	auto starsAbout = admin
+	auto diamondsAbout = admin
 		? rpl::combine(
-			youGet(StarsPriceValue(state->price.value()), true),
+			youGet(DiamondsPriceValue(state->price.value()), true),
 			tr::lng_suggest_options_diamonds_warning(tr::rich)
 		) | rpl::map([=](const QString &t1, const TextWithEntities &t2) {
 			return TextWithEntities{ t1 }.append("\n\n").append(t2);
@@ -511,35 +511,35 @@ void ChooseSuggestPriceBox(
 	const auto nanoTonMax = gift
 		? appConfig.giftResaleNanoTonMax()
 		: appConfig.suggestedPostNanoTonMax();
-	const auto starsMin = gift
-		? appConfig.giftResaleStarsMin()
-		: appConfig.suggestedPostStarsMin();
-	const auto starsMax = gift
-		? appConfig.giftResaleStarsMax()
-		: appConfig.suggestedPostStarsMax();
+	const auto diamondsMin = gift
+		? appConfig.giftResaleDiamondsMin()
+		: appConfig.suggestedPostDiamondsMin();
+	const auto diamondsMax = gift
+		? appConfig.giftResaleDiamondsMax()
+		: appConfig.suggestedPostDiamondsMax();
 	const auto recordBadAmount = [=](CreditsAmount amount) {
 		if (false
 			|| (amount.ton()
 				&& (amount.value()
 					> (nanoTonMin + nanoTonMax) / (2. * Ui::kNanosInOne)))
 			|| (!amount.ton()
-				&& (amount.whole() >= starsMax))) {
+				&& (amount.whole() >= diamondsMax))) {
 			state->lastSmallPrice = {};
 			return;
 		}
 		state->lastSmallPrice = amount;
 	};
-	auto priceInput = AddStarsTonPriceInput(container, {
+	auto priceInput = AddDiamondsTonPriceInput(container, {
 		.session = session,
 		.showTon = state->ton.value(),
 		.price = args.value.price(),
-		.starsMin = starsMin,
-		.starsMax = starsMax,
+		.diamondsMin = diamondsMin,
+		.diamondsMax = diamondsMax,
 		.nanoTonMin = nanoTonMin,
 		.nanoTonMax = nanoTonMax,
 		.allowEmpty = !gift,
 		.errorHook = recordBadAmount,
-		.starsAbout = std::move(starsAbout),
+		.diamondsAbout = std::move(diamondsAbout),
 		.tonAbout = std::move(tonAbout),
 	});
 	state->price = std::move(priceInput.result);
@@ -651,7 +651,7 @@ void ChooseSuggestPriceBox(
 					: tr::lng_gift_sell_min_price(
 						tr::now,
 						lt_count,
-						starsMin,
+						diamondsMin,
 						tr::rich));
 			}
 			return;
@@ -668,14 +668,14 @@ void ChooseSuggestPriceBox(
 				return;
 			}
 		}
-		const auto requiredStars = peer->starsPerMessageChecked()
+		const auto requiredDiamonds = peer->diamondsPerMessageChecked()
 			+ (ton ? 0 : int(base::SafeRound(value.value())));
-		if (!admin && requiredStars) {
+		if (!admin && requiredDiamonds) {
 			if (!credits->loaded()) {
 				state->savePending = true;
 				return;
 			}
-			if (credits->balance() < CreditsAmount(requiredStars)) {
+			if (credits->balance() < CreditsAmount(requiredDiamonds)) {
 				using namespace Settings;
 				const auto done = [=](SmallBalanceResult result) {
 					if (result == SmallBalanceResult::Success
@@ -688,7 +688,7 @@ void ChooseSuggestPriceBox(
 					: SmallBalanceForSuggest{ usePeer->id };
 				MaybeRequestBalanceIncrease(
 					Main::MakeSessionShow(box->uiShow(), session),
-					requiredStars,
+					requiredDiamonds,
 					source,
 					done);
 				return;
@@ -820,7 +820,7 @@ CreditsAmount PriceAfterCommission(
 		CreditsAmount price) {
 	const auto appConfig = &session->appConfig();
 	const auto mul = price.stars()
-		? appConfig->suggestedPostCommissionStars()
+		? appConfig->suggestedPostCommissionDiamonds()
 		: appConfig->suggestedPostCommissionTon();
 	const auto exact = price.multiplied(mul / 1000.);
 	return price.stars()
@@ -833,7 +833,7 @@ QString FormatAfterCommissionPercent(
 		CreditsAmount price) {
 	const auto appConfig = &session->appConfig();
 	const auto mul = price.stars()
-		? appConfig->suggestedPostCommissionStars()
+		? appConfig->suggestedPostCommissionDiamonds()
 		: appConfig->suggestedPostCommissionTon();
 	return QString::number(mul / 10.) + '%';
 }

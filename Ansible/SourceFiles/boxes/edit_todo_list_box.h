@@ -40,7 +40,7 @@ public:
 	EditTodoListBox(
 		QWidget*,
 		not_null<Window::SessionController*> controller,
-		rpl::producer<int> starsRequired,
+		rpl::producer<int> diamondsRequired,
 		Api::SendType sendType,
 		SendMenu::Details sendMenuDetails);
 	EditTodoListBox(

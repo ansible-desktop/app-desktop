@@ -64,7 +64,7 @@ namespace {
 	return options;
 }
 
-[[nodiscard]] int FindStarsForResale(const MTPVector<MTPStarsAmount> *list) {
+[[nodiscard]] int FindDiamondsForResale(const MTPVector<MTPStarsAmount> *list) {
 	if (!list) {
 		return 0;
 	}
@@ -452,12 +452,12 @@ void Premium::requestPremiumRequiredSlice() {
 				constexpr auto me = Flag::RequiresPremiumToWrite;
 				constexpr auto known = Flag::MessageMoneyRestrictionsKnown;
 				constexpr auto hasPrem = Flag::HasRequirePremiumToWrite;
-				constexpr auto hasStars = Flag::HasStarsPerMessage;
-				user->setStarsPerMessage(stars);
+				constexpr auto hasDiamonds = Flag::HasDiamondsPerMessage;
+				user->setDiamondsPerMessage(stars);
 				user->setFlags((user->flags() & ~me)
 					| known
 					| (requirePremium ? (me | hasPrem) : Flag())
-					| (stars ? hasStars : Flag()));
+					| (stars ? hasDiamonds : Flag()));
 			};
 			if (index >= list.size()) {
 				set(false, 0);
@@ -621,7 +621,7 @@ std::vector<GiftOptionData> PremiumGiftCodeOptions::optionsForPeer() const {
 
 Data::PremiumSubscriptionOptions PremiumGiftCodeOptions::optionsForGiveaway(
 		int usersCount) {
-	const auto skipForStars = [&](Data::PremiumSubscriptionOptions options) {
+	const auto skipForDiamonds = [&](Data::PremiumSubscriptionOptions options) {
 		const auto proj = &Data::PremiumSubscriptionOption::currency;
 		options.erase(
 			ranges::remove(options, Ui::kCreditsCurrency, proj),
@@ -630,7 +630,7 @@ Data::PremiumSubscriptionOptions PremiumGiftCodeOptions::optionsForGiveaway(
 	};
 	const auto it = _subscriptionOptions.find(usersCount);
 	if (it != end(_subscriptionOptions)) {
-		return skipForStars(it->second);
+		return skipForDiamonds(it->second);
 	} else {
 		auto tlOptions = QVector<MTPPremiumGiftCodeOption>();
 		for (auto i = 0; i < _optionsForOnePerson.months.size(); i++) {
@@ -644,11 +644,11 @@ Data::PremiumSubscriptionOptions PremiumGiftCodeOptions::optionsForGiveaway(
 				MTP_long(_optionsForOnePerson.totalCosts[i] * usersCount)));
 		}
 		_subscriptionOptions[usersCount] = GiftCodesFromTL(tlOptions);
-		return skipForStars(_subscriptionOptions[usersCount]);
+		return skipForDiamonds(_subscriptionOptions[usersCount]);
 	}
 }
 
-auto PremiumGiftCodeOptions::requestStarGifts()
+auto PremiumGiftCodeOptions::requestDiamondGifts()
 -> rpl::producer<rpl::no_value, QString> {
 	return [=](auto consumer) {
 		auto lifetime = rpl::lifetime();
@@ -760,7 +760,7 @@ MessageMoneyRestriction ResolveMessageMoneyRestrictions(
 		History *maybeHistory) {
 	if (const auto channel = peer->asChannel()) {
 		return {
-			.starsPerMessage = channel->starsPerMessageChecked(),
+			.diamondsPerMessage = channel->diamondsPerMessageChecked(),
 			.known = true,
 		};
 	}
@@ -769,12 +769,12 @@ MessageMoneyRestriction ResolveMessageMoneyRestrictions(
 		return { .known = true };
 	} else if (user->messageMoneyRestrictionsKnown()) {
 		return {
-			.starsPerMessage = user->starsPerMessageChecked(),
+			.diamondsPerMessage = user->diamondsPerMessageChecked(),
 			.premiumRequired = (user->requiresPremiumToWrite()
 				&& !user->session().premium()),
 			.known = true,
 		};
-	} else if (user->hasStarsPerMessage()) {
+	} else if (user->hasDiamondsPerMessage()) {
 		return {};
 	} else if (!user->hasRequirePremiumToWrite()) {
 		return { .known = true };
@@ -868,9 +868,9 @@ std::optional<Data::StarGift> FromTL(
 			.id = uint64(data.vid().v),
 			.background = background(),
 			.stars = int64(data.vstars().v),
-			.starsConverted = int64(data.vconvert_stars().v),
-			.starsToUpgrade = int64(data.vupgrade_stars().value_or_empty()),
-			.starsResellMin = int64(resellPrice),
+			.diamondsConverted = int64(data.vconvert_stars().v),
+			.diamondsToUpgrade = int64(data.vupgrade_stars().value_or_empty()),
+			.diamondsResellMin = int64(resellPrice),
 			.document = document,
 			.releasedBy = releasedBy,
 			.resellTitle = qs(data.vtitle().value_or_empty()),
@@ -950,8 +950,8 @@ std::optional<Data::StarGift> FromTL(
 				.nanoTonForResale = FindTonForResale(data.vresell_amount()),
 				.craftChancePermille
 					= data.vcraft_chance_permille().value_or_empty(),
-				.starsForResale = FindStarsForResale(data.vresell_amount()),
-				.starsMinOffer = data.voffer_min_stars().value_or(-1),
+				.diamondsForResale = FindDiamondsForResale(data.vresell_amount()),
+				.diamondsMinOffer = data.voffer_min_stars().value_or(-1),
 				.number = data.vnum().v,
 				.onlyAcceptTon = data.is_resale_ton_only(),
 				.canBeTheme = data.is_theme_available(),
@@ -1002,13 +1002,13 @@ std::optional<Data::SavedStarGift> FromTL(
 	if (!parsed) {
 		return {};
 	} else if (const auto unique = parsed->unique.get()) {
-		unique->starsForTransfer = data.vtransfer_stars().value_or(-1);
+		unique->diamondsForTransfer = data.vtransfer_stars().value_or(-1);
 		unique->exportAt = data.vcan_export_at().value_or_empty();
 		unique->canTransferAt = data.vcan_transfer_at().value_or_empty();
 		unique->canResellAt = data.vcan_resell_at().value_or_empty();
 		unique->canCraftAt = data.vcan_craft_at().value_or_empty();
 	}
-	using Id = Data::SavedStarGiftId;
+	using Id = Data::SavedDiamondGiftId;
 	const auto hasUnique = parsed->unique != nullptr;
 	return Data::SavedStarGift{
 		.info = std::move(*parsed),
@@ -1025,10 +1025,10 @@ std::optional<Data::SavedStarGift> FromTL(
 				session,
 				*data.vmessage())
 			: TextWithEntities()),
-		.starsConverted = int64(data.vconvert_stars().value_or_empty()),
-		.starsUpgradedBySender = int64(
+		.diamondsConverted = int64(data.vconvert_stars().value_or_empty()),
+		.diamondsUpgradedBySender = int64(
 			data.vupgrade_stars().value_or_empty()),
-		.starsForDetailsRemove = int64(
+		.diamondsForDetailsRemove = int64(
 			data.vdrop_original_details_stars().value_or_empty()),
 		.giftPrepayUpgradeHash = qs(
 			data.vprepaid_upgrade_hash().value_or_empty()),

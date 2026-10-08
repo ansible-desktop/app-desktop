@@ -35,6 +35,6 @@ not_null<QAction*> AddActiveColorAction(
 	Fn<void()> callback,
 	const style::icon *icon,
 	bool active,
-	int premiumStarSize = 0);
+	int premiumDiamondSize = 0);
 
 } // namespace Menu

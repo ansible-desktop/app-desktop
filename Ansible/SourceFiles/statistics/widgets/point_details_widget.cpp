@@ -179,7 +179,7 @@ PointDetailsWidget::PointDetailsWidget(
 	const auto maxValueTextWidth = [&] {
 		if (hasUsdLine) {
 			auto maxValueWidth = 0;
-			const auto multiplier = float64(kOneStarInNano);
+			const auto multiplier = float64(kOneDiamondInNano);
 			for (const auto &value : _chartData.lines.front().y) {
 				const auto valueText = Ui::Text::String(
 					_textStyle,
@@ -361,8 +361,8 @@ void PointDetailsWidget::setXIndex(int xIndex) {
 			const auto value = isCredits
 				? CreditsAmount(provided, CreditsType::Stars)
 				: CreditsAmount(
-					provided / kOneStarInNano,
-					provided % kOneStarInNano,
+					provided / kOneDiamondInNano,
+					provided % kOneDiamondInNano,
 					CreditsType::Ton);
 			copy.value.setText(
 				_textStyle,

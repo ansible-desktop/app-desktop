@@ -121,7 +121,7 @@ not_null<Main::Session*> SessionFromId(const InvoiceId &id) {
 		return slug->session;
 	} else if (const auto slug = std::get_if<InvoiceCredits>(&id.value)) {
 		return slug->session;
-	} else if (const auto gift = std::get_if<InvoiceStarGift>(&id.value)) {
+	} else if (const auto gift = std::get_if<InvoiceDiamondGift>(&id.value)) {
 		return &gift->recipient->session();
 	}
 	const auto &giftCode = v::get<InvoicePremiumGiftCode>(id.value);
@@ -219,7 +219,7 @@ MTPinputStorePaymentPurpose InvoiceCreditsGiveawayToTL(
 		MTP_int(invoice.users));
 }
 
-bool IsPremiumForStarsInvoice(const InvoiceId &id) {
+bool IsPremiumForDiamondsInvoice(const InvoiceId &id) {
 	const auto giftCode = std::get_if<InvoicePremiumGiftCode>(&id.value);
 	return giftCode
 		&& !giftCode->giveawayCredits
@@ -394,7 +394,7 @@ MTPInputInvoice Form::inputInvoice() const {
 				MTP_string(credits->currency),
 				MTP_long(credits->amount),
 				spendPeer ? spendPeer->input() : MTPInputPeer()));
-	} else if (const auto gift = std::get_if<InvoiceStarGift>(&_id.value)) {
+	} else if (const auto gift = std::get_if<InvoiceDiamondGift>(&_id.value)) {
 		using Flag = MTPDinputInvoiceStarGift::Flag;
 		return MTP_inputInvoiceStarGift(
 			MTP_flags((gift->anonymous ? Flag::f_hide_name : Flag(0))
@@ -532,15 +532,15 @@ void Form::requestForm() {
 				.currency = currency,
 				.amount = amount,
 			};
-			const auto gift = std::get_if<InvoiceStarGift>(&_id.value);
+			const auto gift = std::get_if<InvoiceDiamondGift>(&_id.value);
 			const auto formData = CreditsFormData{
 				.id = _id,
 				.formId = data.vform_id().v,
 				.invoice = invoice,
 				.inputInvoice = inputInvoice(),
-				.starGiftLimitedCount = gift ? gift->limitedCount : 0,
-				.starGiftPerUserLimit = gift ? gift->perUserLimit : 0,
-				.starGiftForm = true,
+				.diamondGiftLimitedCount = gift ? gift->limitedCount : 0,
+				.diamondGiftPerUserLimit = gift ? gift->perUserLimit : 0,
+				.diamondGiftForm = true,
 			};
 			_updates.fire(CreditsPaymentStarted{ .data = formData });
 		});

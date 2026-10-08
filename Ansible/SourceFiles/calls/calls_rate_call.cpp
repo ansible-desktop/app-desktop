@@ -21,11 +21,11 @@ namespace {
 
 constexpr auto kBurstMinRating = 4;
 constexpr auto kShowDuration = crl::time(250);
-constexpr auto kStarShowDelay = crl::time(16);
+constexpr auto kDiamondShowDelay = crl::time(16);
 constexpr auto kSelectDuration = crl::time(250);
 constexpr auto kCardShowScaleFrom = 0.7;
-constexpr auto kStarShowScaleFrom = 0.3;
-constexpr auto kStarPressedScale = 0.8;
+constexpr auto kDiamondShowScaleFrom = 0.3;
+constexpr auto kDiamondPressedScale = 0.8;
 constexpr auto kDarkOpacity = 0.14;
 constexpr auto kRippleOpacity = 0.3;
 constexpr auto kPathSize = 96.;
@@ -35,7 +35,7 @@ constexpr auto kCloseTextShadeOpacity = 0.15;
 constexpr auto kCloseRippleOpacity = 0.12;
 constexpr auto kMaxBursts = 5;
 
-struct StarPoint {
+struct DiamondPoint {
 	float64 x = 0.;
 	float64 y = 0.;
 	float64 inX = 0.;
@@ -44,7 +44,7 @@ struct StarPoint {
 	float64 outY = 0.;
 };
 
-const StarPoint kStarPath[] = {
+const DiamondPoint kDiamondPath[] = {
 	{ 46.080, 69.940, 0.855, -0.588, 0.000, 0.000 },
 	{ 32.727, 79.118, 0.000, 0.000, -2.274, 1.563 },
 	{ 25.770, 77.844, 1.568, 2.267, -0.860, -1.243 },
@@ -72,17 +72,17 @@ const StarPoint kStarPath[] = {
 	{ 48.920, 69.940, 0.000, 0.000, -0.855, -0.588 },
 };
 
-[[nodiscard]] QPainterPath StarPath(int size) {
+[[nodiscard]] QPainterPath DiamondPath(int size) {
 	const auto scale = size / kPathSize;
 	const auto map = [&](float64 x, float64 y) {
 		return QPointF(x * scale, y * scale);
 	};
-	const auto count = int(std::size(kStarPath));
+	const auto count = int(std::size(kDiamondPath));
 	auto result = QPainterPath();
-	result.moveTo(map(kStarPath[0].x, kStarPath[0].y));
+	result.moveTo(map(kDiamondPath[0].x, kDiamondPath[0].y));
 	for (auto i = 0; i != count; ++i) {
-		const auto &from = kStarPath[i];
-		const auto &to = kStarPath[(i + 1) % count];
+		const auto &from = kDiamondPath[i];
+		const auto &to = kDiamondPath[(i + 1) % count];
 		result.cubicTo(
 			map(from.x + from.outX, from.y + from.outY),
 			map(to.x + to.inX, to.y + to.inY),
@@ -92,7 +92,7 @@ const StarPoint kStarPath[] = {
 	return result;
 }
 
-[[nodiscard]] QImage StarImage(int size, QColor color, bool filled) {
+[[nodiscard]] QImage DiamondImage(int size, QColor color, bool filled) {
 	const auto ratio = style::DevicePixelRatio();
 	auto result = QImage(
 		QSize(size, size) * ratio,
@@ -102,7 +102,7 @@ const StarPoint kStarPath[] = {
 
 	auto p = QPainter(&result);
 	auto hq = PainterHighQualityEnabler(p);
-	const auto path = StarPath(size);
+	const auto path = DiamondPath(size);
 	p.setPen(Qt::NoPen);
 	p.setBrush(color);
 	if (filled) {
@@ -147,7 +147,7 @@ void RateCall::showAnimated() {
 		[=] { update(); },
 		0.,
 		1.,
-		kShowDuration + (kStarsCount - 1) * kStarShowDelay,
+		kShowDuration + (kDiamondsCount - 1) * kDiamondShowDelay,
 		anim::linear);
 	update();
 }
@@ -189,18 +189,18 @@ QRect RateCall::cardRect() const {
 		st::callRateHeight);
 }
 
-QRect RateCall::starRect(int index) const {
+QRect RateCall::diamondRect(int index) const {
 	const auto single = st::callRateStarSize;
-	const auto full = kStarsCount * single
-		+ (kStarsCount - 1) * st::callRateStarSkip;
+	const auto full = kDiamondsCount * single
+		+ (kDiamondsCount - 1) * st::callRateStarSkip;
 	const auto left = (width() - full) / 2
 		+ index * (single + st::callRateStarSkip);
 	return QRect(left, st::callRateStarsTop, single, single);
 }
 
-int RateCall::starByPosition(QPoint position) const {
-	for (auto i = 0; i != kStarsCount; ++i) {
-		if (starRect(i).contains(position)) {
+int RateCall::diamondByPosition(QPoint position) const {
+	for (auto i = 0; i != kDiamondsCount; ++i) {
+		if (diamondRect(i).contains(position)) {
 			return i;
 		}
 	}
@@ -208,19 +208,19 @@ int RateCall::starByPosition(QPoint position) const {
 }
 
 float64 RateCall::cardShown() const {
-	const auto total = kShowDuration + (kStarsCount - 1) * kStarShowDelay;
+	const auto total = kShowDuration + (kDiamondsCount - 1) * kDiamondShowDelay;
 	const auto passed = _showAnimation.value(1.) * total;
 	return anim::sineInOut(1., std::clamp(passed / kShowDuration, 0., 1.));
 }
 
-float64 RateCall::starShown(int index) const {
-	const auto total = kShowDuration + (kStarsCount - 1) * kStarShowDelay;
+float64 RateCall::diamondShown(int index) const {
+	const auto total = kShowDuration + (kDiamondsCount - 1) * kDiamondShowDelay;
 	const auto passed = _showAnimation.value(1.) * total
-		- index * kStarShowDelay;
+		- index * kDiamondShowDelay;
 	return anim::sineInOut(1., std::clamp(passed / kShowDuration, 0., 1.));
 }
 
-const QImage &RateCall::starImage(bool filled) const {
+const QImage &RateCall::diamondImage(bool filled) const {
 	const auto color = textColor();
 	if (_starColor != color) {
 		_starColor = color;
@@ -228,7 +228,7 @@ const QImage &RateCall::starImage(bool filled) const {
 	}
 	auto &image = filled ? _starFilled : _starOutline;
 	if (image.isNull()) {
-		image = StarImage(st::callRateStarSize, color, filled);
+		image = DiamondImage(st::callRateStarSize, color, filled);
 	}
 	return image;
 }
@@ -238,8 +238,8 @@ void RateCall::paintEvent(QPaintEvent *e) {
 	auto hq = PainterHighQualityEnabler(p);
 
 	paintCard(p, cardShown());
-	for (auto i = 0; i != kStarsCount; ++i) {
-		paintStar(p, i, starShown(i));
+	for (auto i = 0; i != kDiamondsCount; ++i) {
+		paintDiamond(p, i, diamondShown(i));
 	}
 	paintBurst(p);
 }
@@ -279,12 +279,12 @@ void RateCall::paintCard(QPainter &p, float64 shown) {
 	p.restore();
 }
 
-void RateCall::paintStar(QPainter &p, int index, float64 shown) {
+void RateCall::paintDiamond(QPainter &p, int index, float64 shown) {
 	if (shown <= 0.) {
 		return;
 	}
-	auto &star = _stars[index];
-	const auto rect = starRect(index);
+	auto &star = _diamonds[index];
+	const auto rect = diamondRect(index);
 	if (star.ripple && !star.ripple->empty()) {
 		auto color = textColor();
 		color.setAlphaF(color.alphaF() * kRippleOpacity);
@@ -294,7 +294,7 @@ void RateCall::paintStar(QPainter &p, int index, float64 shown) {
 	}
 	const auto filled = star.filled.value(star.filledTo);
 	const auto scale = star.pressed.value(star.pressedTo)
-		* (kStarShowScaleFrom + (1. - kStarShowScaleFrom) * shown);
+		* (kDiamondShowScaleFrom + (1. - kDiamondShowScaleFrom) * shown);
 
 	p.save();
 	p.translate(0, anim::interpolate(st::callRateStarShowShift, 0, shown));
@@ -303,11 +303,11 @@ void RateCall::paintStar(QPainter &p, int index, float64 shown) {
 	p.translate(-rect.center());
 	if (filled < 1.) {
 		p.setOpacity(shown * (1. - filled));
-		p.drawImage(rect.topLeft(), starImage(false));
+		p.drawImage(rect.topLeft(), diamondImage(false));
 	}
 	if (filled > 0.) {
 		p.setOpacity(shown * filled);
-		p.drawImage(rect.topLeft(), starImage(true));
+		p.drawImage(rect.topLeft(), diamondImage(true));
 	}
 	p.restore();
 	p.setOpacity(1.);
@@ -340,11 +340,11 @@ void RateCall::applyPreview(int preview) {
 	}
 	_preview = preview;
 	const auto shown = _preview ? _preview : _rating.current();
-	for (auto i = 0; i != kStarsCount; ++i) {
-		auto &star = _stars[i];
+	for (auto i = 0; i != kDiamondsCount; ++i) {
+		auto &star = _diamonds[i];
 		const auto filled = (i < shown) ? 1. : 0.;
 		const auto pressed = (_preview && (i < _preview))
-			? kStarPressedScale
+			? kDiamondPressedScale
 			: 1.;
 		if (star.filledTo != filled) {
 			star.filled.start(
@@ -395,7 +395,7 @@ void RateCall::startBurst(int index) {
 			return;
 		}
 	}
-	burst->center = starRect(index).center();
+	burst->center = diamondRect(index).center();
 	burst->started = crl::now();
 	const auto last = burst->icon->framesCount() - 1;
 	burst->icon->animate([=] { update(); }, 0, last);
@@ -403,20 +403,20 @@ void RateCall::startBurst(int index) {
 }
 
 void RateCall::mouseMoveEvent(QMouseEvent *e) {
-	setOver(starByPosition(e->pos()));
+	setOver(diamondByPosition(e->pos()));
 }
 
 void RateCall::mousePressEvent(QMouseEvent *e) {
 	if (e->button() != Qt::LeftButton) {
 		return;
 	}
-	setOver(starByPosition(e->pos()));
+	setOver(diamondByPosition(e->pos()));
 	if (_over < 0) {
 		return;
 	}
 	_pressed = _over;
-	auto &star = _stars[_pressed];
-	const auto rect = starRect(_pressed);
+	auto &star = _diamonds[_pressed];
+	const auto rect = diamondRect(_pressed);
 	if (!star.ripple) {
 		star.ripple = std::make_unique<Ui::RippleAnimation>(
 			st::callRateStarRipple,
@@ -434,10 +434,10 @@ void RateCall::mouseReleaseEvent(QMouseEvent *e) {
 	const auto pressed = std::exchange(_pressed, -1);
 	if (pressed < 0) {
 		return;
-	} else if (const auto &ripple = _stars[pressed].ripple) {
+	} else if (const auto &ripple = _diamonds[pressed].ripple) {
 		ripple->lastStop();
 	}
-	setOver(starByPosition(e->pos()));
+	setOver(diamondByPosition(e->pos()));
 	if (_over == pressed) {
 		commit(pressed);
 	} else {

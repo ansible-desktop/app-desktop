@@ -69,14 +69,14 @@ void ProcessCreditsPayment(
 			const auto onstack = maybeReturnToBot;
 			if (error) {
 				if (*error == u"STARGIFT_USAGE_LIMITED"_q) {
-					if (form->starGiftLimitedCount) {
+					if (form->diamondGiftLimitedCount) {
 						show->showToast({
 							.title = tr::lng_gift_sold_out_title(
 								tr::now),
 							.text = tr::lng_gift_sold_out_text(
 								tr::now,
 								lt_count_decimal,
-								form->starGiftLimitedCount,
+								form->diamondGiftLimitedCount,
 								tr::rich),
 						});
 					} else {
@@ -88,7 +88,7 @@ void ProcessCreditsPayment(
 						.text = tr::lng_gift_sent_finished(
 							tr::now,
 							lt_count,
-							std::max(form->starGiftPerUserLimit, 1),
+							std::max(form->diamondGiftPerUserLimit, 1),
 							tr::rich),
 					});
 				} else if (!Ui::ShowGiftErrorToast(show, *error)) {
@@ -105,7 +105,7 @@ void ProcessCreditsPayment(
 	};
 	using namespace Settings;
 	auto source = Ui::SmallBalanceSourceFromForm(form);
-	if (form->starGiftForm || IsPremiumForStarsInvoice(form->id)) {
+	if (form->diamondGiftForm || IsPremiumForDiamondsInvoice(form->id)) {
 		const auto credits = form->invoice.credits;
 		MaybeRequestBalanceIncrease(show, credits, source, done);
 	} else {

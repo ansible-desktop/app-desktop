@@ -11,7 +11,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 namespace Ui {
 
-class StarParticles final {
+class DiamondParticles final {
 public:
 	enum class Type {
 		Right,
@@ -19,7 +19,7 @@ public:
 		RadialInside,
 	};
 
-	StarParticles(Type type, int count, int size);
+	DiamondParticles(Type type, int count, int size);
 
 	void setSpeed(float speed);
 	void setVisible(float visible);
@@ -42,7 +42,7 @@ private:
 	};
 
 	void generate();
-	[[nodiscard]] QImage generateStarCache(int size, QColor color);
+	[[nodiscard]] QImage generateDiamondCache(int size, QColor color);
 
 	Type _type;
 	int _count = 0;

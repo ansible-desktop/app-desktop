@@ -1242,7 +1242,7 @@ CreditsController::CreditsController(CreditsDescriptor d)
 		) -> std::unique_ptr<Ui::Text::CustomEmoji> {
 		if (data == Ui::kCreditsCurrency) {
 			if (_iconCache.credits.isNull()) {
-				_iconCache.credits = Ui::GenerateStars(height, 1);
+				_iconCache.credits = Ui::GenerateDiamonds(height, 1);
 			}
 			return MakeWrappedEmoji<Ui::Text::ShiftedEmoji>(
 				std::make_unique<Ui::CustomEmoji::Internal>(

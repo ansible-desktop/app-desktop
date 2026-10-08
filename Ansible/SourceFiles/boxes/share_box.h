@@ -160,7 +160,7 @@ private:
 	void needSearchByUsername();
 	void applyFilterUpdate(const QString &query);
 	void selectedChanged();
-	void computeStarsCount();
+	void computeDiamondsCount();
 	void createButtons();
 	int getTopScrollSkip() const;
 	int getBottomScrollSkip() const;

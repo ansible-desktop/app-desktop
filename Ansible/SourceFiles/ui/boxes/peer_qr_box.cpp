@@ -68,7 +68,7 @@ using Colors = std::vector<QColor>;
 		st::profileQrFont->family());
 }
 
-[[nodiscard]] QImage TelegramQr(
+[[nodiscard]] QImage AnsibleQr(
 		const Qr::Data &data,
 		int pixel,
 		int max,
@@ -269,7 +269,7 @@ not_null<Ui::RpWidget*> PrepareQrWidget(
 			const auto downTo = remainder
 				? qrMaxSize - remainder
 				: qrMaxSize;
-			state->qrImage = TelegramQr(
+			state->qrImage = AnsibleQr(
 				Qr::Encode(link.toUtf8(), Qr::Redundancy::Default),
 				st::introQrPixel,
 				downTo,
@@ -919,7 +919,7 @@ void FillPeerQrBox(
 		const auto weak = base::make_weak(box);
 
 		crl::async([=] {
-			const auto qrImage = TelegramQr(
+			const auto qrImage = AnsibleQr(
 				Qr::Encode(
 					link.current().toUtf8(),
 					Qr::Redundancy::Default),

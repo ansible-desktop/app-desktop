@@ -686,7 +686,7 @@ private:
 	object_ptr<Ui::RpWidget> _content;
 	object_ptr<Ui::FlatLabel> _title;
 	object_ptr<Ui::FlatLabel> _about;
-	Ui::Premium::ColoredMiniStars _ministars;
+	Ui::Premium::ColoredMiniDiamonds _ministars;
 
 	struct {
 		object_ptr<Ui::RpWidget> widget;
@@ -697,7 +697,7 @@ private:
 	} _smallTop;
 
 	std::unique_ptr<EmojiStatusTopBar> _emojiStatus;
-	QImage _imageStar;
+	QImage _imageDiamond;
 
 	QRectF _starRect;
 
@@ -742,7 +742,7 @@ TopBarWithSticker::TopBarWithSticker(
 		st::boxTitle.style,
 		tr::lng_premium_summary_title(tr::now)),
 }) {
-	_starRect = TopBarAbstract::starRect(1., 1.);
+	_starRect = TopBarAbstract::diamondRect(1., 1.);
 
 	if (_type == TopBarWithStickerType::PremiumGift) {
 		_ministars.setColorOverride(Ui::Premium::CreditsIconGradientStops());
@@ -774,10 +774,10 @@ TopBarWithSticker::TopBarWithSticker(
 				document,
 				[=](QRect r) { _content->update(std::move(r)); },
 				HistoryView::Sticker::EmojiSize());
-			_imageStar = QImage();
+			_imageDiamond = QImage();
 		} else {
 			_emojiStatus = nullptr;
-			_imageStar = Ui::Premium::GenerateStarForLightTopBar(_starRect);
+			_imageDiamond = Ui::Premium::GenerateDiamondForLightTopBar(_starRect);
 		}
 
 		updateTitle(document, { name }, controller);
@@ -804,7 +804,7 @@ TopBarWithSticker::TopBarWithSticker(
 			const QSize &titleSize,
 			const QSize &aboutSize,
 			const QSize &size) {
-		const auto rect = TopBarAbstract::starRect(1., 1.);
+		const auto rect = TopBarAbstract::diamondRect(1., 1.);
 		const auto &padding = st::settingsPremiumUserTitlePadding;
 		_title->moveToLeft(
 			(size.width() - titleSize.width()) / 2,
@@ -890,8 +890,8 @@ TopBarWithSticker::TopBarWithSticker(
 
 		if (_emojiStatus) {
 			_emojiStatus->paint(p);
-		} else if (!_imageStar.isNull()) {
-			p.drawImage(_starRect.topLeft(), _imageStar);
+		} else if (!_imageDiamond.isNull()) {
+			p.drawImage(_starRect.topLeft(), _imageDiamond);
 		}
 	}, lifetime());
 }
@@ -999,7 +999,7 @@ void TopBarWithSticker::paintEvent(QPaintEvent *e) {
 }
 
 void TopBarWithSticker::resizeEvent(QResizeEvent *e) {
-	_starRect = TopBarAbstract::starRect(1., 1.);
+	_starRect = TopBarAbstract::diamondRect(1., 1.);
 
 	_ministars.setCenter(_starRect.toRect());
 

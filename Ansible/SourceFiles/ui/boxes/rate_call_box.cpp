@@ -31,11 +31,11 @@ void RateCallBox::prepare() {
 	addButton(tr::lng_cancel(), [=] { closeBox(); });
 
 	for (auto i = 0; i < kMaxRating; ++i) {
-		_stars.emplace_back(this, st::callRatingStar);
-		_stars.back()->setClickedCallback([this, value = i + 1] {
+		_diamonds.emplace_back(this, st::callRatingStar);
+		_diamonds.back()->setClickedCallback([this, value = i + 1] {
 			ratingChanged(value);
 		});
-		_stars.back()->show();
+		_diamonds.back()->show();
 	}
 
 	updateMaxHeight();
@@ -44,17 +44,17 @@ void RateCallBox::prepare() {
 void RateCallBox::resizeEvent(QResizeEvent *e) {
 	BoxContent::resizeEvent(e);
 
-	const auto starsWidth = (_stars.size() * st::callRatingStar.width);
-	auto starLeft = (width() - starsWidth) / 2;
-	const auto starTop = st::callRatingStarTop;
-	for (auto &star : _stars) {
-		star->moveToLeft(starLeft, starTop);
-		starLeft += star->width();
+	const auto diamondsWidth = (_diamonds.size() * st::callRatingStar.width);
+	auto diamondLeft = (width() - diamondsWidth) / 2;
+	const auto diamondTop = st::callRatingStarTop;
+	for (auto &star : _diamonds) {
+		star->moveToLeft(diamondLeft, diamondTop);
+		diamondLeft += star->width();
 	}
 	if (_comment) {
 		_comment->moveToLeft(
 			st::callRatingPadding.left(),
-			_stars.back()->bottomNoMargins() + st::callRatingCommentTop);
+			_diamonds.back()->bottomNoMargins() + st::callRatingCommentTop);
 	}
 }
 
@@ -68,10 +68,10 @@ void RateCallBox::ratingChanged(int value) {
 	_rating = value;
 
 	for (auto i = 0; i < kMaxRating; ++i) {
-		_stars[i]->setIconOverride((i < value)
+		_diamonds[i]->setIconOverride((i < value)
 			? &st::callRatingStarFilled
 			: nullptr);
-		_stars[i]->setRippleColorOverride((i < value)
+		_diamonds[i]->setRippleColorOverride((i < value)
 			? &st::lightButtonBgOver
 			: nullptr);
 	}
@@ -134,7 +134,7 @@ void RateCallBox::send() {
 void RateCallBox::updateMaxHeight() {
 	auto newHeight = st::callRatingPadding.top()
 		+ st::callRatingStarTop
-		+ _stars.back()->heightNoMargins()
+		+ _diamonds.back()->heightNoMargins()
 		+ st::callRatingPadding.bottom();
 	if (_comment) {
 		newHeight += st::callRatingCommentTop + _comment->height();

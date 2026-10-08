@@ -1390,8 +1390,8 @@ void ApplySendOptions(
 	if (options.stakeNanoTon != empty.stakeNanoTon) {
 		base.stakeNanoTon = options.stakeNanoTon;
 	}
-	if (options.starsApproved != empty.starsApproved) {
-		base.starsApproved = options.starsApproved;
+	if (options.diamondsApproved != empty.diamondsApproved) {
+		base.diamondsApproved = options.diamondsApproved;
 	}
 	if (options.silent != empty.silent) {
 		base.silent = options.silent;
@@ -1776,7 +1776,7 @@ void MusicAttachBox(
 
 		const auto resend = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			state->sendPreparedMusic(bundle, copy, replyTo);
 		};
 		const auto ephemeralReply = controller->session().ephemeralMessages()
@@ -1858,7 +1858,7 @@ void MusicAttachBox(
 		}
 		const auto resend = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			state->sendSelected(copy);
 		};
 		if (!ephemeralReply && !state->paymentHelper.check(

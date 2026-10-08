@@ -352,7 +352,7 @@ void RecipientRow::paintUserpicOverlay(
 		PaintRestrictionBadge(
 			p,
 			_maybeLockedSt,
-			r->value.starsPerMessage,
+			r->value.diamondsPerMessage,
 			r->cache,
 			x,
 			y,

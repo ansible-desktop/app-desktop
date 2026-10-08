@@ -66,7 +66,7 @@ Key::Key(Statistics::Tag statistics) : _value(statistics) {
 Key::Key(PeerGifts::Tag gifts) : _value(gifts) {
 }
 
-Key::Key(BotStarRef::Tag starref) : _value(starref) {
+Key::Key(BotDiamondRef::Tag starref) : _value(starref) {
 }
 
 Key::Key(GlobalMedia::Tag global) : _value(global) {
@@ -192,17 +192,17 @@ Statistics::Tag Key::statisticsTag() const {
 }
 
 PeerData *Key::starrefPeer() const {
-	if (const auto tag = std::get_if<BotStarRef::Tag>(&_value)) {
+	if (const auto tag = std::get_if<BotDiamondRef::Tag>(&_value)) {
 		return tag->peer;
 	}
 	return nullptr;
 }
 
-BotStarRef::Type Key::starrefType() const {
-	if (const auto tag = std::get_if<BotStarRef::Tag>(&_value)) {
+BotDiamondRef::Type Key::starrefType() const {
+	if (const auto tag = std::get_if<BotDiamondRef::Tag>(&_value)) {
 		return tag->type;
 	}
-	return BotStarRef::Type();
+	return BotDiamondRef::Type();
 }
 
 PollData *Key::poll() const {

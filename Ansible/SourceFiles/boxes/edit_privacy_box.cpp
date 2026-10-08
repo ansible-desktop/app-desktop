@@ -462,7 +462,7 @@ auto PrivacyExceptionsBoxController::createRow(not_null<History*> history)
 	return result;
 }
 
-[[nodiscard]] object_ptr<Ui::RpWidget> MakeChargeStarsSlider(
+[[nodiscard]] object_ptr<Ui::RpWidget> MakeChargeDiamondsSlider(
 		QWidget *parent,
 		not_null<const style::MediaSlider*> sliderStyle,
 		not_null<const style::FlatLabel*> labelStyle,
@@ -991,7 +991,7 @@ void EditMessagesPrivacyBox(
 			? kOptionAll
 			: privacy->newRequirePremiumCurrent()
 			? kOptionPremium
-			: privacy->newChargeStarsCurrent()
+			: privacy->newChargeDiamondsCurrent()
 			? kOptionCharge
 			: kOptionAll));
 	inner->add(
@@ -1039,7 +1039,7 @@ void EditMessagesPrivacyBox(
 		rpl::variable<int> stars;
 	};
 	const auto state = std::make_shared<State>();
-	const auto savedValue = privacy->newChargeStarsCurrent();
+	const auto savedValue = privacy->newChargeDiamondsCurrent();
 
 	if (available) {
 		Ui::AddDividerText(inner, tr::lng_messages_privacy_charge_about());
@@ -1168,10 +1168,10 @@ void EditMessagesPrivacyBox(
 			if (allowed()) {
 				const auto value = group->current();
 				const auto premiumRequired = (value == kOptionPremium);
-				const auto chargeStars = (value == kOptionCharge)
+				const auto chargeDiamonds = (value == kOptionCharge)
 					? state->stars.current()
 					: 0;
-				privacy->updateMessagesPrivacy(premiumRequired, chargeStars);
+				privacy->updateMessagesPrivacy(premiumRequired, chargeDiamonds);
 				box->closeBox();
 			} else {
 				showToast();
@@ -1207,8 +1207,8 @@ rpl::producer<int> SetupChargeSlider(
 	const auto broadcast = peer->isBroadcast();
 	const auto group = !broadcast && !peer->isUser();
 	const auto state = container->lifetime().make_state<State>();
-	const auto chargeStars = savedValue.value_or(defaultValue);
-	state->stars = chargeStars;
+	const auto chargeDiamonds = savedValue.value_or(defaultValue);
+	state->stars = chargeDiamonds;
 
 	Ui::AddSubsectionTitle(container, broadcast
 		? tr::lng_manage_monoforum_price()
@@ -1217,23 +1217,23 @@ rpl::producer<int> SetupChargeSlider(
 		: tr::lng_messages_privacy_price());
 
 	auto values = std::vector<int>();
-	const auto minStars = allowZero ? 0 : 1;
-	const auto maxStars = peer->session().appConfig().paidMessageStarsMax();
-	if (chargeStars < minStars) {
-		values.push_back(chargeStars);
+	const auto minDiamonds = allowZero ? 0 : 1;
+	const auto maxDiamonds = peer->session().appConfig().paidMessageDiamondsMax();
+	if (chargeDiamonds < minDiamonds) {
+		values.push_back(chargeDiamonds);
 	}
-	for (auto i = minStars; i < std::min(100, maxStars); ++i) {
+	for (auto i = minDiamonds; i < std::min(100, maxDiamonds); ++i) {
 		values.push_back(i);
 	}
-	for (auto i = 100; i < std::min(1000, maxStars); i += 10) {
-		if (i < chargeStars + 10 && chargeStars < i) {
-			values.push_back(chargeStars);
+	for (auto i = 100; i < std::min(1000, maxDiamonds); i += 10) {
+		if (i < chargeDiamonds + 10 && chargeDiamonds < i) {
+			values.push_back(chargeDiamonds);
 		}
 		values.push_back(i);
 	}
-	for (auto i = 1000; i < maxStars + 1; i += 100) {
-		if (i < chargeStars + 100 && chargeStars < i) {
-			values.push_back(chargeStars);
+	for (auto i = 1000; i < maxDiamonds + 1; i += 100) {
+		if (i < chargeDiamonds + 100 && chargeDiamonds < i) {
+			values.push_back(chargeDiamonds);
 		}
 		values.push_back(i);
 	}
@@ -1242,15 +1242,15 @@ rpl::producer<int> SetupChargeSlider(
 		state->stars = value;
 	};
 	container->add(
-		MakeChargeStarsSlider(
+		MakeChargeDiamondsSlider(
 			container,
 			&st::settingsScale,
 			&st::settingsScaleLabel,
 			valuesCount,
 			[=](int index) { return values[index]; },
-			chargeStars,
-			minStars,
-			maxStars,
+			chargeDiamonds,
+			minDiamonds,
+			maxDiamonds,
 			setStars,
 			setStars),
 		st::boxRowPadding);
@@ -1270,7 +1270,7 @@ rpl::producer<int> SetupChargeSlider(
 		}
 		const auto &appConfig = peer->session().appConfig();
 		const auto percent = appConfig.paidMessageCommission();
-		const auto ratio = appConfig.starsWithdrawRate();
+		const auto ratio = appConfig.diamondsWithdrawRate();
 		const auto dollars = int(base::SafeRound(stars * ratio));
 		const auto amount = Ui::FillAmountAndCurrency(dollars, u"USD"_q);
 		Ui::AddDividerText(
@@ -1338,7 +1338,7 @@ void EditDirectMessagesPriceBox(
 		inner,
 		channel,
 		savedValue,
-		channel->session().appConfig().paidMessageChannelStarsDefault(),
+		channel->session().appConfig().paidMessageChannelDiamondsDefault(),
 		true
 	) | rpl::on_next([=](int stars) {
 		*result = stars;

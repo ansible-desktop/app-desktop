@@ -32,14 +32,14 @@ namespace Calls::Group {
 namespace {
 
 constexpr auto kMaxShownVideoStreamMessages = 100;
-constexpr auto kStarsStatsShortPollDelay = 30 * crl::time(1000);
+constexpr auto kDiamondsStatsShortPollDelay = 30 * crl::time(1000);
 
-[[nodiscard]] StarsTop ParseStarsTop(
+[[nodiscard]] DiamondsTop ParseDiamondsTop(
 		not_null<Data::Session*> owner,
 		const MTPphone_GroupCallStars &stars) {
 	const auto &data = stars.data();
 	const auto &list = data.vtop_donors().v;
-	auto result = StarsTop{ .total = int(data.vtotal_stars().v) };
+	auto result = DiamondsTop{ .total = int(data.vtotal_stars().v) };
 	result.topDonors.reserve(list.size());
 	for (const auto &entry : list) {
 		const auto &fields = entry.data();
@@ -62,7 +62,7 @@ constexpr auto kStarsStatsShortPollDelay = 30 * crl::time(1000);
 		return 0;
 	}
 	const auto &colorings = peer->session().appConfig().groupCallColorings();
-	return date + Ui::StarsColoringForCount(colorings, stars).secondsPin;
+	return date + Ui::DiamondsColoringForCount(colorings, stars).secondsPin;
 }
 
 [[nodiscard]] TimeId PinFinishDate(const Message &message) {
@@ -77,7 +77,7 @@ Messages::Messages(not_null<GroupCall*> call, not_null<MTP::Sender*> api)
 , _api(api)
 , _destroyTimer([=] { checkDestroying(); })
 , _ttl(_session->appConfig().groupCallMessageTTL())
-, _starsStatsTimer([=] { requestStarsStats(); }) {
+, _starsStatsTimer([=] { requestDiamondsStats(); }) {
 	Ui::PostponeCall(_call, [=] {
 		_call->real(
 		) | rpl::on_next([=](not_null<Data::GroupCall*> call) {
@@ -89,7 +89,7 @@ Messages::Messages(not_null<GroupCall*> call, not_null<MTP::Sender*> api)
 			}
 		}, _lifetime);
 
-		requestStarsStats();
+		requestDiamondsStats();
 	});
 }
 
@@ -103,7 +103,7 @@ Messages::~Messages() {
 	}
 }
 
-void Messages::requestStarsStats() {
+void Messages::requestDiamondsStats() {
 	if (!_call->videoStream()) {
 		return;
 	}
@@ -117,13 +117,13 @@ void Messages::requestStarsStats() {
 		owner->processUsers(data.vusers());
 		owner->processChats(data.vchats());
 
-		_paid.top = ParseStarsTop(owner, result);
+		_paid.top = ParseDiamondsTop(owner, result);
 		_paidChanges.fire({});
 
-		_starsStatsTimer.callOnce(kStarsStatsShortPollDelay);
+		_starsStatsTimer.callOnce(kDiamondsStatsShortPollDelay);
 	}).fail([=](const MTP::Error &error) {
 		[[maybe_unused]] const auto &type = error.type();
-		_starsStatsTimer.callOnce(kStarsStatsShortPollDelay);
+		_starsStatsTimer.callOnce(kDiamondsStatsShortPollDelay);
 	}).send();
 
 }
@@ -174,7 +174,7 @@ void Messages::send(TextWithTags text, int stars) {
 		using Flag = MTPphone_SendGroupCallMessage::Flag;
 		_api->request(MTPphone_SendGroupCallMessage(
 			MTP_flags(Flag::f_send_as
-				| (stars ? Flag::f_allow_paid_stars : Flag())),
+				| (stars ? Flag::f_allow_paid_diamonds : Flag())),
 			_call->inputCall(),
 			MTP_long(randomId),
 			serialized,
@@ -206,7 +206,7 @@ void Messages::send(TextWithTags text, int stars) {
 		}).send();
 	}
 
-	addStars(from, stars, true);
+	addDiamonds(from, stars, true);
 	if (!skip) {
 		checkDestroying(true);
 	}
@@ -383,7 +383,7 @@ void Messages::received(
 		ranges::sort(_messages, ranges::less(), &Message::id);
 	}
 	if (!_applyingInitial) {
-		addStars(author, stars, mine);
+		addDiamonds(author, stars, mine);
 	}
 	if (!skip) {
 		checkDestroying(true);
@@ -584,7 +584,7 @@ void Messages::finishPaidSending(
 			_session->credits().withdrawLocked(CreditsAmount(amount));
 
 			auto &donors = _paid.top.topDonors;
-			const auto i = ranges::find(donors, true, &StarsDonor::my);
+			const auto i = ranges::find(donors, true, &DiamondsDonor::my);
 			if (i != end(donors)) {
 				i->peer = from;
 				i->stars += amount;
@@ -631,7 +631,7 @@ void Messages::reactionsPaidSend() {
 	}
 	using Flag = MTPphone_SendGroupCallMessage::Flag;
 	_api->request(MTPphone_SendGroupCallMessage(
-		MTP_flags(Flag::f_send_as | Flag::f_allow_paid_stars),
+		MTP_flags(Flag::f_send_as | Flag::f_allow_paid_diamonds),
 		_call->inputCall(),
 		MTP_long(randomId),
 		MTP_textWithEntities(MTP_string(), MTP_vector<MTPMessageEntity>()),
@@ -647,7 +647,7 @@ void Messages::reactionsPaidSend() {
 		failed(randomId, response);
 	}).send();
 
-	addStars(from, stars, true);
+	addDiamonds(from, stars, true);
 	if (!skip) {
 		checkDestroying(true);
 	}
@@ -657,9 +657,9 @@ void Messages::undoScheduledPaidOnDestroy() {
 	_call->peer()->owner().reactions().undoScheduledPaid(_call);
 }
 
-Messages::PaidLocalState Messages::starsLocalState() const {
+Messages::PaidLocalState Messages::diamondsLocalState() const {
 	const auto &donors = _paid.top.topDonors;
-	const auto i = ranges::find(donors, true, &StarsDonor::my);
+	const auto i = ranges::find(donors, true, &DiamondsDonor::my);
 	const auto local = int(_paid.scheduled);
 	const auto my = (i != end(donors) ? i->stars : 0) + local;
 	const auto total = _paid.top.total + local;
@@ -703,7 +703,7 @@ void Messages::deleteConfirmed(MessageDeleteRequest request) {
 	}
 }
 
-void Messages::addStars(not_null<PeerData*> from, int stars, bool mine) {
+void Messages::addDiamonds(not_null<PeerData*> from, int stars, bool mine) {
 	if (stars <= 0) {
 		return;
 	}
@@ -711,7 +711,7 @@ void Messages::addStars(not_null<PeerData*> from, int stars, bool mine) {
 	const auto i = ranges::find(
 		_paid.top.topDonors,
 		from.get(),
-		&StarsDonor::peer);
+		&DiamondsDonor::peer);
 	if (i != end(_paid.top.topDonors)) {
 		i->stars += stars;
 	} else {
@@ -724,7 +724,7 @@ void Messages::addStars(not_null<PeerData*> from, int stars, bool mine) {
 	ranges::stable_sort(
 		_paid.top.topDonors,
 		ranges::greater(),
-		&StarsDonor::stars);
+		&DiamondsDonor::stars);
 	_paidChanges.fire({ .peer = from, .stars = stars });
 }
 

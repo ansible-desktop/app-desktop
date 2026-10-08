@@ -29,7 +29,7 @@ struct ComposeFeatures {
 	bool suggestStickersByEmoji : 1 = true;
 	bool commonTabbedPanel : 1 = true;
 	bool recordMediaMessage : 1 = true;
-	bool editMessageStars : 1 = false;
+	bool editMessageDiamonds : 1 = false;
 	bool emojiOnlyPanel : 1 = false;
 	bool videoStream : 1 = false;
 	bool richEditor : 1 = true;

@@ -1384,7 +1384,7 @@ SendMenu::Details Filler::createSendMenuDetails() const {
 
 	const auto type = (_request.section == Section::Scheduled)
 		? Type::Disabled
-		: (!_peer || _peer->starsPerMessageChecked())
+		: (!_peer || _peer->diamondsPerMessageChecked())
 		? Type::SilentOnly
 		: (_request.section == Section::Replies)
 		? (_topic ? Type::Scheduled : Type::SilentOnly)
@@ -1691,7 +1691,7 @@ void Filler::addSendGift() {
 	const auto peer = _peer;
 	const auto navigation = _controller;
 	_addAction(tr::lng_profile_gift_premium(tr::now), [=] {
-		Ui::ShowStarGiftBox(navigation, peer);
+		Ui::ShowDiamondGiftBox(navigation, peer);
 	}, &st::menuIconGiftPremium);
 }
 
@@ -2138,7 +2138,7 @@ void Filler::addToggleFee() {
 				tr::marked().append(
 					st::starIconEmojiMiniFont
 				).append(Lang::FormatCountDecimal(
-					user->owner().commonStarsPerMessage(parent)
+					user->owner().commonDiamondsPerMessage(parent)
 				)),
 				tr::marked);
 		const auto action = Ui::CreateChild<QAction>(actionParent);
@@ -2341,7 +2341,7 @@ void PeerMenuShareContactBox(
 			const auto withPaymentApproved = [=](int stars) {
 				if (const auto onstack = state->share) {
 					auto copy = options;
-					copy.starsApproved = stars;
+					copy.diamondsApproved = stars;
 					onstack(copy);
 				}
 			};
@@ -2411,19 +2411,19 @@ void PeerMenuCreatePoll(
 		chosen &= ~PollData::Flag::OpenAnswers;
 		disabled |= PollData::Flag::OpenAnswers;
 	}
-	auto starsRequired = peer->session().changes().peerFlagsValue(
+	auto diamondsRequired = peer->session().changes().peerFlagsValue(
 		peer,
 		Data::PeerUpdate::Flag::FullInfo
-		| Data::PeerUpdate::Flag::StarsPerMessage
+		| Data::PeerUpdate::Flag::DiamondsPerMessage
 	) | rpl::map([=] {
-		return peer->starsPerMessageChecked();
+		return peer->diamondsPerMessageChecked();
 	});
 	auto box = Box<CreatePollBox>(
 		controller,
 		peer,
 		chosen,
 		disabled,
-		std::move(starsRequired),
+		std::move(diamondsRequired),
 		sendType,
 		sendMenuDetails);
 	struct State {
@@ -2449,7 +2449,7 @@ void PeerMenuCreatePoll(
 		const auto withPaymentApproved = crl::guard(weak, [=](int stars) {
 			if (const auto onstack = state->create) {
 				auto copy = result;
-				copy.options.starsApproved = stars;
+				copy.options.diamondsApproved = stars;
 				onstack(copy);
 			}
 		});
@@ -2551,16 +2551,16 @@ void PeerMenuCreateTodoList(
 		PeerMenuTodoWantsPremium(TodoWantsPremium::Create);
 		return;
 	}
-	auto starsRequired = peer->session().changes().peerFlagsValue(
+	auto diamondsRequired = peer->session().changes().peerFlagsValue(
 		peer,
 		Data::PeerUpdate::Flag::FullInfo
-		| Data::PeerUpdate::Flag::StarsPerMessage
+		| Data::PeerUpdate::Flag::DiamondsPerMessage
 	) | rpl::map([=] {
-		return peer->starsPerMessageChecked();
+		return peer->diamondsPerMessageChecked();
 	});
 	auto box = Box<EditTodoListBox>(
 		controller,
-		std::move(starsRequired),
+		std::move(diamondsRequired),
 		sendType,
 		sendMenuDetails);
 	struct State {
@@ -2574,7 +2574,7 @@ void PeerMenuCreateTodoList(
 		const auto withPaymentApproved = crl::guard(weak, [=](int stars) {
 			if (const auto onstack = state->create) {
 				auto copy = result;
-				copy.options.starsApproved = stars;
+				copy.options.diamondsApproved = stars;
 				onstack(copy);
 			}
 		});
@@ -2967,23 +2967,23 @@ object_ptr<Ui::BoxContent> PrepareChooseRecipientBox(
 
 	struct State {
 		Fn<void(Api::SendOptions)> submit;
-		rpl::variable<int> starsToSend;
-		Fn<void()> refreshStarsToSend;
+		rpl::variable<int> diamondsToSend;
+		Fn<void()> refreshDiamondsToSend;
 		rpl::lifetime submitLifetime;
 	};
 	const auto state = std::make_shared<State>();
 	auto initBox = [=](not_null<PeerListBox*> box) {
-		state->refreshStarsToSend = [=] {
+		state->refreshDiamondsToSend = [=] {
 			auto perMessage = 0;
 			for (const auto &peer : box->collectSelectedRows()) {
-				perMessage += peer->starsPerMessageChecked();
+				perMessage += peer->diamondsPerMessageChecked();
 			}
-			state->starsToSend = perMessage;
+			state->diamondsToSend = perMessage;
 		};
 		raw->selectionChanges(
 		) | rpl::on_next([=] {
 			box->clearButtons();
-			state->refreshStarsToSend();
+			state->refreshDiamondsToSend();
 			const auto shown = raw->hasSelected();
 			if (shown) {
 				const auto weak = base::make_weak(box);
@@ -2994,13 +2994,13 @@ object_ptr<Ui::BoxContent> PrepareChooseRecipientBox(
 					const auto withPaymentApproved = crl::guard(weak, [=](
 							int approved) {
 						auto copy = options;
-						copy.starsApproved = approved;
+						copy.diamondsApproved = approved;
 						if (const auto onstack = state->submit) {
 							onstack(copy);
 						}
 					});
 
-					const auto alreadyApproved = options.starsApproved;
+					const auto alreadyApproved = options.diamondsApproved;
 					auto paid = std::vector<not_null<PeerData*>>();
 					auto waiting = base::flat_set<not_null<PeerData*>>();
 					auto totalStars = 0;
@@ -3055,7 +3055,7 @@ object_ptr<Ui::BoxContent> PrepareChooseRecipientBox(
 						}
 					});
 				send->setText(PaidSendButtonText(
-					state->starsToSend.value(),
+					state->diamondsToSend.value(),
 					tr::lng_send_button()));
 			}
 			box->addButton(tr::lng_cancel(), [=] {
@@ -3405,8 +3405,8 @@ base::weak_qptr<Ui::BoxContent> ShowForwardMessagesBox(
 		not_null<Controller*> controller;
 		base::unique_qptr<Ui::PopupMenu> menu;
 		Fn<void(Api::SendOptions options)> submit;
-		rpl::variable<int> starsToSend;
-		Fn<void()> refreshStarsToSend;
+		rpl::variable<int> diamondsToSend;
+		Fn<void()> refreshDiamondsToSend;
 		rpl::lifetime submitLifetime;
 	};
 
@@ -3577,13 +3577,13 @@ base::weak_qptr<Ui::BoxContent> ShowForwardMessagesBox(
 			const auto withPaymentApproved = crl::guard(weak, [=](
 					int approved) {
 				auto copy = options;
-				copy.starsApproved = approved;
+				copy.diamondsApproved = approved;
 				if (const auto onstack = state->submit) {
 					onstack(copy);
 				}
 			});
 
-			const auto alreadyApproved = options.starsApproved;
+			const auto alreadyApproved = options.diamondsApproved;
 			const auto messagesCount = countMessages(comment);
 			auto paid = std::vector<not_null<PeerData*>>();
 			auto waiting = base::flat_set<not_null<PeerData*>>();
@@ -3651,7 +3651,7 @@ base::weak_qptr<Ui::BoxContent> ShowForwardMessagesBox(
 		const auto selected = state->box->collectSelectedRows();
 		const auto hasPaid = [&] {
 			for (const auto &peer : selected) {
-				if (peer->starsPerMessageChecked()) {
+				if (peer->diamondsPerMessageChecked()) {
 					return true;
 				}
 			}
@@ -3721,12 +3721,12 @@ base::weak_qptr<Ui::BoxContent> ShowForwardMessagesBox(
 		}
 	};
 
-	state->refreshStarsToSend = [=] {
+	state->refreshDiamondsToSend = [=] {
 		auto perMessage = 0;
 		for (const auto &peer : state->box->collectSelectedRows()) {
-			perMessage += peer->starsPerMessageChecked();
+			perMessage += peer->diamondsPerMessageChecked();
 		}
-		state->starsToSend = perMessage
+		state->diamondsToSend = perMessage
 			* countMessages(field->getTextWithTags());
 	};
 
@@ -3762,7 +3762,7 @@ base::weak_qptr<Ui::BoxContent> ShowForwardMessagesBox(
 	});
 	field->setSubmitSettings(Core::App().settings().sendSubmitWay());
 	field->changes() | rpl::on_next([=] {
-		state->refreshStarsToSend();
+		state->refreshDiamondsToSend();
 	}, field->lifetime());
 
 	Ui::SendPendingMoveResizeEvents(comment);
@@ -3779,7 +3779,7 @@ base::weak_qptr<Ui::BoxContent> ShowForwardMessagesBox(
 		const auto shown = state->controller->hasSelected();
 
 		state->box->clearButtons();
-		state->refreshStarsToSend();
+		state->refreshDiamondsToSend();
 		if (shown) {
 			const auto send = state->box->addButton(
 				tr::lng_send_button(),
@@ -3796,7 +3796,7 @@ base::weak_qptr<Ui::BoxContent> ShowForwardMessagesBox(
 				}
 			}, send->lifetime());
 			send->setText(PaidSendButtonText(
-				state->starsToSend.value(),
+				state->diamondsToSend.value(),
 				tr::lng_send_button()));
 		}
 		state->box->addButton(tr::lng_cancel(), [=] {

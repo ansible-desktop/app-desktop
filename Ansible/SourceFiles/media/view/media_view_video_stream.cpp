@@ -65,9 +65,9 @@ auto TopVideoStreamDonors(not_null<Calls::GroupCall*> call)
 -> rpl::producer<std::vector<Data::MessageReactionsTopPaid>> {
 	const auto messages = call->messages();
 	return rpl::single(rpl::empty) | rpl::then(
-		messages->starsValueChanges() | rpl::to_empty
+		messages->diamondsValueChanges() | rpl::to_empty
 	) | rpl::map([=] {
-		const auto &list = messages->starsTop().topDonors;
+		const auto &list = messages->diamondsTop().topDonors;
 		auto still = Ui::MaxTopPaidDonorsShown();
 		auto result = std::vector<Data::MessageReactionsTopPaid>();
 		result.reserve(list.size());

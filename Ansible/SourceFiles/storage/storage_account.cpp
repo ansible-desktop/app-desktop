@@ -3384,7 +3384,7 @@ void Account::readTrustedPeers() {
 		trusted.stream >> value >> stars;
 		const auto peerId = DeserializePeerId(value);
 		const auto peer = owner ? owner->peerLoaded(peerId) : nullptr;
-		const auto now = peer ? peer->starsPerMessage() : stars;
+		const auto now = peer ? peer->diamondsPerMessage() : stars;
 		if (now > 0 && now <= stars) {
 			_trustedPayPerMessage.emplace(peerId, stars);
 		}
@@ -3460,29 +3460,29 @@ bool Account::isPeerTrustedOpenWebView(PeerId peerId) {
 
 void Account::markPeerTrustedPayForMessage(
 		PeerId peerId,
-		int starsPerMessage) {
-	if (isPeerTrustedPayForMessage(peerId, starsPerMessage)) {
+		int diamondsPerMessage) {
+	if (isPeerTrustedPayForMessage(peerId, diamondsPerMessage)) {
 		return;
 	}
 	const auto i = _trustedPayPerMessage.find(peerId);
 	if (i == end(_trustedPayPerMessage)) {
-		_trustedPayPerMessage.emplace(peerId, starsPerMessage);
+		_trustedPayPerMessage.emplace(peerId, diamondsPerMessage);
 	} else {
-		i->second = starsPerMessage;
+		i->second = diamondsPerMessage;
 	}
 	writeTrustedPeers();
 }
 
 bool Account::isPeerTrustedPayForMessage(
 		PeerId peerId,
-		int starsPerMessage) {
-	if (starsPerMessage <= 0) {
+		int diamondsPerMessage) {
+	if (diamondsPerMessage <= 0) {
 		return true;
 	}
 	readTrustedPeers();
 	const auto i = _trustedPayPerMessage.find(peerId);
 	return (i != end(_trustedPayPerMessage))
-		&& (i->second >= starsPerMessage);
+		&& (i->second >= diamondsPerMessage);
 }
 
 bool Account::peerTrustedPayForMessageRead() const {

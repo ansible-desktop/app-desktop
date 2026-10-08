@@ -65,10 +65,10 @@ public:
 	[[nodiscard]] bool newRequirePremiumCurrent() const;
 	[[nodiscard]] rpl::producer<bool> newRequirePremium() const;
 
-	[[nodiscard]] int newChargeStarsCurrent() const;
-	[[nodiscard]] rpl::producer<int> newChargeStars() const;
+	[[nodiscard]] int newChargeDiamondsCurrent() const;
+	[[nodiscard]] rpl::producer<int> newChargeDiamonds() const;
 
-	void updateMessagesPrivacy(bool requirePremium, int chargeStars);
+	void updateMessagesPrivacy(bool requirePremium, int chargeDiamonds);
 
 	[[nodiscard]] DisallowedGiftTypes disallowedGiftTypesCurrent() const;
 	[[nodiscard]] auto disallowedGiftTypes() const
@@ -88,7 +88,7 @@ private:
 		UnarchiveOnNewMessage unarchiveOnNewMessage,
 		bool hideReadTime,
 		bool newRequirePremium,
-		int newChargeStars,
+		int newChargeDiamonds,
 		DisallowedGiftTypes disallowedGiftTypes);
 
 	const not_null<Main::Session*> _session;
@@ -100,7 +100,7 @@ private:
 	rpl::variable<bool> _showArchiveAndMute = false;
 	rpl::variable<bool> _hideReadTime = false;
 	rpl::variable<bool> _newRequirePremium = false;
-	rpl::variable<int> _newChargeStars = 0;
+	rpl::variable<int> _newChargeDiamonds = 0;
 	rpl::variable<DisallowedGiftTypes> _disallowedGiftTypes;
 	rpl::variable<PeerId> _paidReactionShownPeer = false;
 	std::vector<Fn<void()>> _callbacks;

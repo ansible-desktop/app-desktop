@@ -176,7 +176,7 @@ ChatbotsPermissions FromMTP(const MTPBusinessBotRights &rights) {
 		| (data.is_sell_gifts() ? Flag::SellGifts : Flag())
 		| (data.is_change_gift_settings() ? Flag::GiftSettings : Flag())
 		| (data.is_transfer_and_upgrade_gifts() ? Flag::TransferGifts : Flag())
-		| (data.is_transfer_stars() ? Flag::TransferStars : Flag())
+		| (data.is_transfer_diamonds() ? Flag::TransferStars : Flag())
 		| (data.is_manage_stories() ? Flag::ManageStories : Flag());
 }
 
@@ -196,7 +196,7 @@ MTPBusinessBotRights ToMTP(ChatbotsPermissions rights) {
 		| ((rights & Right::SellGifts) ? Flag::f_sell_gifts : Flag())
 		| ((rights & Right::GiftSettings) ? Flag::f_change_gift_settings : Flag())
 		| ((rights & Right::TransferGifts) ? Flag::f_transfer_and_upgrade_gifts : Flag())
-		| ((rights & Right::TransferStars) ? Flag::f_transfer_stars : Flag())
+		| ((rights & Right::TransferStars) ? Flag::f_transfer_diamonds : Flag())
 		| ((rights & Right::ManageStories) ? Flag::f_manage_stories : Flag())));
 }
 

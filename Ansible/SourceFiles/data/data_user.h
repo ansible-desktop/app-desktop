@@ -140,7 +140,7 @@ enum class UserDataFlag : uint32 {
 	HasUnreadStories = (1 << 20),
 	RequiresPremiumToWrite = (1 << 21),
 	HasRequirePremiumToWrite = (1 << 22),
-	HasStarsPerMessage = (1 << 23),
+	HasDiamondsPerMessage = (1 << 23),
 	MessageMoneyRestrictionsKnown = (1 << 24),
 	ReadDatesPrivate = (1 << 25),
 	StoriesCorrespondent = (1 << 26),
@@ -209,7 +209,7 @@ public:
 	[[nodiscard]] bool hasPersonalPhoto() const;
 	[[nodiscard]] bool hasStoriesHidden() const;
 	[[nodiscard]] bool hasRequirePremiumToWrite() const;
-	[[nodiscard]] bool hasStarsPerMessage() const;
+	[[nodiscard]] bool hasDiamondsPerMessage() const;
 	[[nodiscard]] bool requiresPremiumToWrite() const;
 	[[nodiscard]] bool messageMoneyRestrictionsKnown() const;
 	[[nodiscard]] bool canSendIgnoreMoneyRestrictions() const;
@@ -226,8 +226,8 @@ public:
 	void setStoriesCorrespondent(bool is);
 	[[nodiscard]] bool storiesCorrespondent() const;
 
-	void setStarsPerMessage(int stars);
-	[[nodiscard]] int starsPerMessage() const;
+	void setDiamondsPerMessage(int stars);
+	[[nodiscard]] int diamondsPerMessage() const;
 
 	void setStarsRating(Data::StarsRating value);
 	[[nodiscard]] Data::StarsRating starsRating() const;
@@ -371,7 +371,7 @@ namespace Data {
 
 void ApplyUserUpdate(not_null<UserData*> user, const MTPDuserFull &update);
 
-[[nodiscard]] StarRefProgram ParseStarRefProgram(
+[[nodiscard]] StarRefProgram ParseDiamondRefProgram(
 	const MTPStarRefProgram *program);
 
 [[nodiscard]] Ui::BotVerifyDetails ParseBotVerifyDetails(

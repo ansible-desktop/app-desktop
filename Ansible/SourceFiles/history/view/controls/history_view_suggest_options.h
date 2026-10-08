@@ -51,7 +51,7 @@ void ChooseSuggestTimeBox(
 	not_null<Ui::GenericBox*> box,
 	SuggestTimeBoxArgs &&args);
 
-struct StarsTonPriceInput {
+struct DiamondsTonPriceInput {
 	Fn<void()> focusCallback;
 	Fn<std::optional<CreditsAmount>()> computeResult;
 	rpl::producer<> submits;
@@ -59,23 +59,23 @@ struct StarsTonPriceInput {
 	rpl::producer<CreditsAmount> result;
 };
 
-struct StarsTonPriceArgs {
+struct DiamondsTonPriceArgs {
 	not_null<Main::Session*> session;
 	rpl::producer<bool> showTon;
 	CreditsAmount price;
-	int starsMin = 0;
-	int starsMax = 0;
+	int diamondsMin = 0;
+	int diamondsMax = 0;
 	int64 nanoTonMin = 0;
 	int64 nanoTonMax = 0;
 	bool allowEmpty = false;
 	Fn<void(CreditsAmount)> errorHook;
-	rpl::producer<TextWithEntities> starsAbout;
+	rpl::producer<TextWithEntities> diamondsAbout;
 	rpl::producer<TextWithEntities> tonAbout;
 };
 
-[[nodiscard]] StarsTonPriceInput AddStarsTonPriceInput(
+[[nodiscard]] DiamondsTonPriceInput AddDiamondsTonPriceInput(
 	not_null<Ui::VerticalLayout*> container,
-	StarsTonPriceArgs &&args);
+	DiamondsTonPriceArgs &&args);
 
 struct SuggestPriceBoxArgs {
 	not_null<PeerData*> peer;

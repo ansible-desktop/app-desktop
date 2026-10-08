@@ -46,7 +46,7 @@ public:
 		not_null<PeerData*> peer,
 		PollData::Flags chosen,
 		PollData::Flags disabled,
-		rpl::producer<int> starsRequired,
+		rpl::producer<int> diamondsRequired,
 		Api::SendType sendType,
 		SendMenu::Details sendMenuDetails);
 

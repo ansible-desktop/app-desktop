@@ -118,7 +118,7 @@ constexpr auto kBlurRadius = 24;
 	const auto ratio = style::DevicePixelRatio();
 	const auto skip = SubscriptionCutSkip();
 	const auto size = st::dialogsSubscriptionBadgeSize + 2 * skip;
-	const auto star = Ui::GenerateStars(
+	const auto star = Ui::GenerateDiamonds(
 		st::dialogsSubscriptionBadgeSize,
 		1,
 		ratio * kSupersample);
@@ -165,12 +165,12 @@ constexpr auto kBlurRadius = 24;
 }
 
 [[nodiscard]] const QImage &SubscriptionIcon() {
-	static auto starImage = QImage();
-	if (!starImage.isNull()) {
-		return starImage;
+	static auto diamondImage = QImage();
+	if (!diamondImage.isNull()) {
+		return diamondImage;
 	}
-	starImage = Ui::GenerateStars(st::dialogsSubscriptionBadgeSize, 1);
-	return starImage;
+	diamondImage = Ui::GenerateDiamonds(st::dialogsSubscriptionBadgeSize, 1);
+	return diamondImage;
 }
 
 [[nodiscard]] QImage CornerBadgeTTL(

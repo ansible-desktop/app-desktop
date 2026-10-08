@@ -54,7 +54,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 #include <QApplication>
 
-namespace Info::BotStarRef::Join {
+namespace Info::BotDiamondRef::Join {
 namespace {
 
 constexpr auto kPerPage = 50;
@@ -420,7 +420,7 @@ void ListController::loadMoreRows() {
 					delegate()->peerListAppendRow(createRow({
 						.bot = user,
 						.state = {
-							.program = Data::ParseStarRefProgram(&program),
+							.program = Data::ParseDiamondRefProgram(&program),
 							.unresolved = true,
 						},
 					}));
@@ -549,7 +549,7 @@ void ListController::open(not_null<UserData*> bot, ConnectedBotState state) {
 	if (_type == JoinType::Joined
 		|| (!state.link.isEmpty() && !state.revoked)) {
 		_recipientsReady = nullptr;
-		show->show(StarRefLinkBox({ bot, state }, _peer));
+		show->show(DiamondRefLinkBox({ bot, state }, _peer));
 	} else {
 		const auto requireOthers = (_type == JoinType::Existing)
 			|| _peer->isSelf();
@@ -567,7 +567,7 @@ void ListController::open(not_null<UserData*> bot, ConnectedBotState state) {
 			_states[bot] = now;
 			_connected.fire({ bot, now });
 		});
-		show->show(JoinStarRefBox(
+		show->show(JoinDiamondRefBox(
 			{ bot, state },
 			_peer,
 			requireOthers ? _recipients : std::vector<not_null<PeerData*>>(),
@@ -919,7 +919,7 @@ Memento::Memento(not_null<PeerData*> peer)
 Memento::~Memento() = default;
 
 Section Memento::section() const {
-	return Section(Section::Type::BotStarRef);
+	return Section(Section::Type::BotDiamondRef);
 }
 
 object_ptr<ContentWidget> Memento::createWidget(

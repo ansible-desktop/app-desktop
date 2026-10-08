@@ -322,11 +322,11 @@ void SendCreditsBox(
 	{
 		const auto ministarsContainer = Ui::CreateChild<Ui::RpWidget>(box);
 		const auto fullHeight = photoSize * 2;
-		using MiniStars = Ui::Premium::ColoredMiniStars;
-		const auto ministars = box->lifetime().make_state<MiniStars>(
+		using MiniDiamonds = Ui::Premium::ColoredMiniDiamonds;
+		const auto ministars = box->lifetime().make_state<MiniDiamonds>(
 			ministarsContainer,
 			false,
-			Ui::Premium::MiniStarsType::BiStars);
+			Ui::Premium::MiniDiamondsType::BiDiamonds);
 		ministars->setColorOverride(Ui::Premium::CreditsIconGradientStops());
 
 		ministarsContainer->paintRequest(
@@ -390,7 +390,7 @@ void SendCreditsBox(
 	Ui::AddSkip(content);
 	Ui::AddSkip(content);
 
-	const auto sendStars = [=] {
+	const auto sendDiamonds = [=] {
 		if (state->confirmButtonBusy.current()) {
 			return;
 		}
@@ -443,7 +443,7 @@ void SendCreditsBox(
 				if (result == Settings::SmallBalanceResult::Cancelled) {
 				} else if (result == Settings::SmallBalanceResult::Success
 					|| result == Settings::SmallBalanceResult::Already) {
-					sendStars();
+					sendDiamonds();
 				} else {
 					sent(result);
 				}
@@ -592,10 +592,10 @@ Settings::SmallBalanceSource SmallBalanceSourceFromForm(
 		std::shared_ptr<Payments::CreditsFormData> form) {
 	using namespace Payments;
 	using namespace Settings;
-	const auto starGift = std::get_if<InvoiceStarGift>(&form->id.value);
+	const auto starGift = std::get_if<InvoiceDiamondGift>(&form->id.value);
 	return !starGift
 		? SmallBalanceSource(SmallBalanceBot{ .botId = form->botId })
-		: SmallBalanceSource(SmallBalanceStarGift{
+		: SmallBalanceSource(SmallBalanceDiamondGift{
 			.recipientId = starGift->recipient->id,
 		});
 }

@@ -1320,7 +1320,7 @@ CreatePollBox::CreatePollBox(
 	not_null<PeerData*> peer,
 	PollData::Flags chosen,
 	PollData::Flags disabled,
-	rpl::producer<int> starsRequired,
+	rpl::producer<int> diamondsRequired,
 	Api::SendType sendType,
 	SendMenu::Details sendMenuDetails)
 : _controller(controller)
@@ -1329,7 +1329,7 @@ CreatePollBox::CreatePollBox(
 , _disabled(disabled)
 , _sendType(sendType)
 , _sendMenuDetails([result = sendMenuDetails] { return result; })
-, _starsRequired(std::move(starsRequired)) {
+, _starsRequired(std::move(diamondsRequired)) {
 }
 
 rpl::producer<CreatePollBox::Result> CreatePollBox::submitRequests() const {

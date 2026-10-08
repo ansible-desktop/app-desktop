@@ -51,7 +51,7 @@ struct PaidReactionBoxArgs {
 	not_null<Main::Session*> session;
 	QString name;
 	Fn<rpl::producer<TextWithEntities>(rpl::producer<int> amount)> submit;
-	std::vector<Calls::Group::Ui::StarsColoring> colorings;
+	std::vector<Calls::Group::Ui::DiamondsColoring> colorings;
 	rpl::producer<CreditsAmount> balanceValue;
 	Fn<void(int, uint64)> send;
 	bool videoStreamChoosing = false;
@@ -76,12 +76,12 @@ void PaidReactionsBox(
 	QColor fg,
 	const style::RoundCheckbox *borderSt = nullptr);
 
-struct StarSelectDiscreter {
+struct DiamondSelectDiscreter {
 	Fn<int(float64)> ratioToValue;
 	Fn<float64(int)> valueToRatio;
 };
 
-[[nodiscard]] StarSelectDiscreter StarSelectDiscreterForMax(int max);
+[[nodiscard]] DiamondSelectDiscreter DiamondSelectDiscreterForMax(int max);
 
 void PaidReactionSlider(
 	not_null<VerticalLayout*> container,
@@ -93,27 +93,27 @@ void PaidReactionSlider(
 	Fn<void(int)> changed,
 	Fn<QColor(int)> activeFgOverride = nullptr);
 
-void AddStarSelectBalance(
+void AddDiamondSelectBalance(
 	not_null<GenericBox*> box,
 	not_null<Main::Session*> session,
 	rpl::producer<CreditsAmount> balanceValue,
 	bool dark = false);
 
-not_null<Premium::BubbleWidget*> AddStarSelectBubble(
+not_null<Premium::BubbleWidget*> AddDiamondSelectBubble(
 	not_null<VerticalLayout*> container,
 	rpl::producer<> showFinishes,
 	rpl::producer<int> value,
 	int max,
 	Fn<QColor(int)> activeFgOverride = nullptr);
 
-struct StarSelectInfoBlock {
+struct DiamondSelectInfoBlock {
 	rpl::producer<TextWithEntities> title;
 	rpl::producer<QString> subtext;
 	Fn<void()> click;
 };
-[[nodiscard]] object_ptr<RpWidget> MakeStarSelectInfoBlocks(
+[[nodiscard]] object_ptr<RpWidget> MakeDiamondSelectInfoBlocks(
 	not_null<RpWidget*> parent,
-	std::vector<StarSelectInfoBlock> blocks,
+	std::vector<DiamondSelectInfoBlock> blocks,
 	Text::MarkedContext context,
 	bool dark = false);
 

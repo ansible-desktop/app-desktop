@@ -104,7 +104,7 @@ struct BubbleRowState {
 
 enum class BubbleType : uchar {
 	UpgradePrice,
-	StarRating,
+	DiamondRating,
 	NegativeRating,
 	NoPremium,
 	Premium,
@@ -168,7 +168,7 @@ private:
 	float64 _stepAfterDeflection;
 
 	RpWidget *_particlesWidget = nullptr;
-	std::optional<StarParticles> _particles;
+	std::optional<DiamondParticles> _particles;
 	Ui::Animations::Basic _particlesAnimation;
 
 };

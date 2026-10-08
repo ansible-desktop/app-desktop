@@ -516,7 +516,7 @@ std::unique_ptr<Ui::RpWidget> MakeEmojiSetStatusPreview(
 		style::margins(st::normalFont->spacew, 0, 0, 0));
 	emoji->entity()->resizeToWidth(emoji->entity()->textMaxWidth());
 
-	auto result = Info::BotStarRef::MakePeerBubbleButton(
+	auto result = Info::BotDiamondRef::MakePeerBubbleButton(
 		parent,
 		peer,
 		emoji);
@@ -2066,7 +2066,7 @@ void WebViewInstance::botSendPreparedMessage(
 				const auto withPaymentApproved = [=](int stars) {
 					if (const auto onstack = state->send) {
 						auto copy = options;
-						copy.starsApproved = stars;
+						copy.diamondsApproved = stars;
 						onstack(copy);
 					}
 				};
@@ -2939,7 +2939,7 @@ void ChooseAndSendLocation(
 			const auto withPaymentApproved = [=](int stars) {
 				if (const auto onstack = state->send) {
 					auto copy = action;
-					copy.options.starsApproved = stars;
+					copy.options.diamondsApproved = stars;
 					onstack(venue, copy);
 				}
 			};
@@ -3075,7 +3075,7 @@ std::unique_ptr<Ui::DropdownMenu> MakeAttachBotsMenu(
 		}, &st::menuIconSoundOn);
 	}
 	const auto addBots = Data::CanSend(peer, ChatRestriction::SendInline, false)
-		&& !peer->starsPerMessageChecked();
+		&& !peer->diamondsPerMessageChecked();
 	for (const auto &bot : bots->attachBots()) {
 		if (!addBots
 			|| !bot.inAttachMenu

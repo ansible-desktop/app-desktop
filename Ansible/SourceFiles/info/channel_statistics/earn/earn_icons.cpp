@@ -167,7 +167,7 @@ std::unique_ptr<Ui::Text::CustomEmoji> MakeCurrencyIconEmoji(
 Ui::Text::PaletteDependentEmoji IconCreditsEmoji(
 		IconDescriptor descriptor) {
 	return { .factory = [=] {
-		return Ui::GenerateStars(
+		return Ui::GenerateDiamonds(
 			(descriptor.size
 				? descriptor.size
 				: st::defaultTableLabel.style.font->height),

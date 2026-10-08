@@ -14,20 +14,20 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace Ui {
 namespace Premium {
 
-enum class MiniStarsType {
-	MonoStars,
-	BiStars,
-	SlowStars,
-	DiamondStars,
-	SlowDiamondStars,
+enum class MiniDiamondsType {
+	MonoDiamonds,
+	BiDiamonds,
+	SlowDiamonds,
+	DiamondDiamonds,
+	SlowDiamondDiamonds,
 };
 
-class MiniStars final {
+class MiniDiamonds final {
 public:
-	MiniStars(
+	MiniDiamonds(
 		Fn<void(const QRect &r)> updateCallback,
 		bool opaque = false,
-		MiniStarsType type = MiniStarsType::MonoStars);
+		MiniDiamondsType type = MiniDiamondsType::MonoDiamonds);
 
 	void paint(QPainter &p, const QRectF &rect);
 	void setPaused(bool paused);
@@ -35,7 +35,7 @@ public:
 	static constexpr auto kSizeFactor = 1.5;
 
 private:
-	struct MiniStar {
+	struct MiniDiamond {
 		crl::time birthTime = 0;
 		crl::time deathTime = 0;
 		int angle = 0;
@@ -50,7 +50,7 @@ private:
 		int length = 0;
 	};
 
-	void createStar(crl::time now);
+	void createDiamond(crl::time now);
 	[[nodiscard]] crl::time timeNow() const;
 	[[nodiscard]] int randomInterval(
 		const Interval &interval,
@@ -73,7 +73,7 @@ private:
 
 	Ui::Animations::Basic _animation;
 
-	std::vector<MiniStar> _ministars;
+	std::vector<MiniDiamond> _ministars;
 
 	crl::time _nextBirthTime = 0;
 	bool _paused = false;

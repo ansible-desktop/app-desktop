@@ -188,7 +188,7 @@ template <typename T>
 	return fields;
 }
 
-[[nodiscard]] TextWithEntities AmountAndStarCurrency(
+[[nodiscard]] TextWithEntities AmountAndDiamondCurrency(
 		int64 amount,
 		const QString &currency) {
 	if (currency == Ui::kCreditsCurrency) {
@@ -498,7 +498,7 @@ HistoryItem::HistoryItem(
 	.date = data.vdate().v,
 	.scheduleRepeatPeriod = data.vschedule_repeat_period().value_or_empty(),
 	.shortcutId = data.vquick_reply_shortcut_id().value_or_empty(),
-	.starsPaid = int(data.vpaid_message_stars().value_or_empty()),
+	.diamondsPaid = int(data.vpaid_message_stars().value_or_empty()),
 	.effectId = data.veffect().value_or_empty(),
 }) {
 	_boostsApplied = data.vfrom_boosts_applied().value_or_empty();
@@ -925,7 +925,7 @@ HistoryItem::HistoryItem(
 	: history->peer)
 , _flags(FinalizeMessageFlags(history, fields.flags))
 , _date(fields.date)
-, _starsPaid(fields.starsPaid)
+, _starsPaid(fields.diamondsPaid)
 , _shortcutId(fields.shortcutId)
 , _effectId(fields.effectId) {
 	Expects(!_shortcutId
@@ -975,7 +975,7 @@ TimeId HistoryItem::date() const {
 	return _date;
 }
 
-int HistoryItem::starsPaid() const {
+int HistoryItem::diamondsPaid() const {
 	return _starsPaid;
 }
 
@@ -2076,7 +2076,7 @@ const Data::Media *HistoryItem::savedMedia() const {
 }
 
 PaidPostType HistoryItem::paidType() const {
-	return (_flags & MessageFlag::StarsPaidSuggested)
+	return (_flags & MessageFlag::DiamondsPaidSuggested)
 		? PaidPostType::Stars
 		: (_flags & MessageFlag::TonPaidSuggested)
 		? PaidPostType::Ton
@@ -3157,7 +3157,7 @@ void HistoryItem::setRealId(MsgId newId) {
 		this,
 		Data::MessageUpdate::Flag::NewMaybeAdded);
 
-	if (out() && starsPaid()) {
+	if (out() && diamondsPaid()) {
 		_history->session().credits().load(true);
 	}
 }
@@ -5578,7 +5578,7 @@ void HistoryItem::createServiceFromMtp(const MTPDmessageService &message) {
 		payment->recurringInit = data.is_recurring_init();
 		payment->recurringUsed = data.is_recurring_used();
 		payment->isCreditsCurrency = (currency == Ui::kCreditsCurrency);
-		payment->amount = AmountAndStarCurrency(amount, currency);
+		payment->amount = AmountAndDiamondCurrency(amount, currency);
 		payment->invoiceLink = std::make_shared<LambdaClickHandler>([=](
 				ClickContext context) {
 			using namespace Payments;
@@ -5730,7 +5730,7 @@ void HistoryItem::createServiceFromMtp(const MTPDmessageService &message) {
 			? SuggestRefundType::User
 			: SuggestRefundType::Admin;
 	} else if (type == mtpc_messageActionStarGiftPurchaseOffer) {
-		const auto &data = action.c_messageActionStarGiftPurchaseOffer();
+		const auto &data = action.c_messageActionDiamondGiftPurchaseOffer();
 		const auto accepted = data.is_accepted();
 		const auto rejected = data.is_declined();
 		const auto expiresAt = data.vexpires_at().v;
@@ -5759,7 +5759,7 @@ void HistoryItem::createServiceFromMtp(const MTPDmessageService &message) {
 			}
 		}
 	} else if (type == mtpc_messageActionStarGiftPurchaseOfferDeclined) {
-		const auto &data = action.c_messageActionStarGiftPurchaseOfferDeclined();
+		const auto &data = action.c_messageActionDiamondGiftPurchaseOfferDeclined();
 		UpdateComponents(HistoryServiceSuggestFinish::Bit());
 		const auto finish = Get<HistoryServiceSuggestFinish>();
 		finish->refundType = data.is_expired()
@@ -6151,7 +6151,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 			: tr::lng_action_payment_bot_done)(
 				tr::now,
 				lt_amount,
-				AmountAndStarCurrency(data.vtotal_amount().v, qs(data.vcurrency())),
+				AmountAndDiamondCurrency(data.vtotal_amount().v, qs(data.vcurrency())),
 				tr::marked);
 		return result;
 	};
@@ -6582,7 +6582,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		session->giftBoxStickersPacks().load();
 		const auto amount = action.vamount().v;
 		const auto currency = qs(action.vcurrency());
-		const auto cost = AmountAndStarCurrency(amount, currency);
+		const auto cost = AmountAndDiamondCurrency(amount, currency);
 		const auto anonymous = _from->isServiceUser();
 		if (anonymous) {
 			result.text = tr::lng_action_gift_received_anonymous(
@@ -6821,7 +6821,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		} else {
 			const auto isSelf = (_from->id == _from->session().userPeerId());
 			const auto peer = isSelf ? _history->peer : _from;
-			const auto cost = AmountAndStarCurrency(
+			const auto cost = AmountAndDiamondCurrency(
 				action.vamount().value_or_empty(),
 				qs(action.vcurrency().value_or_empty()));
 			result.links.push_back(peer->createOpenLink());
@@ -6874,7 +6874,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		auto result = PreparedServiceText();
 		const auto winners = action.vwinners_count().v;
 		const auto unclaimed = action.vunclaimed_count().v;
-		const auto credits = action.is_stars();
+		const auto credits = action.is_diamonds();
 		result.text = {
 			(!winners
 				? tr::lng_action_giveaway_results_none(tr::now)
@@ -6931,12 +6931,12 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 			lt_peer,
 			tr::link(refund->peer->name(), 1), // Link 1.
 			lt_amount,
-			AmountAndStarCurrency(amount, currency),
+			AmountAndDiamondCurrency(amount, currency),
 			tr::marked);
 		return result;
 	};
 
-	auto prepareGiftStars = [&](
+	auto prepareGiftDiamonds = [&](
 			const MTPDmessageActionGiftStars &action) {
 		auto result = PreparedServiceText();
 		const auto isSelf = (_from->id == _from->session().userPeerId());
@@ -6944,7 +6944,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		_history->session().giftBoxStickersPacks().load();
 		const auto amount = action.vamount().v;
 		const auto currency = qs(action.vcurrency());
-		const auto cost = AmountAndStarCurrency(amount, currency);
+		const auto cost = AmountAndDiamondCurrency(amount, currency);
 		const auto anonymous = _from->isServiceUser();
 		if (anonymous) {
 			result.text = tr::lng_action_gift_received_anonymous(
@@ -6978,7 +6978,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		_history->session().giftBoxStickersPacks().tonLoad();
 		const auto amount = action.vamount().v;
 		const auto currency = qs(action.vcurrency());
-		const auto cost = AmountAndStarCurrency(amount, currency);
+		const auto cost = AmountAndDiamondCurrency(amount, currency);
 		const auto anonymous = _from->isServiceUser();
 		if (anonymous) {
 			result.text = tr::lng_action_gift_received_anonymous(
@@ -7020,7 +7020,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		return result;
 	};
 
-	auto prepareStarGift = [&](
+	auto prepareDiamondGift = [&](
 			const MTPDmessageActionStarGift &action) {
 		auto result = PreparedServiceText();
 		const auto upgradeGifted = action.is_prepaid_upgrade();
@@ -7197,7 +7197,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		return result;
 	};
 
-	auto prepareStarGiftUnique = [&](
+	auto prepareDiamondGiftUnique = [&](
 			const MTPDmessageActionStarGiftUnique &action) {
 		auto result = PreparedServiceText();
 		const auto isSelf = _from->isSelf();
@@ -7488,7 +7488,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		return result;
 	};
 
-	auto prepareStarGiftPurchaseOffer = [&](const MTPDmessageActionStarGiftPurchaseOffer &action) {
+	auto prepareDiamondGiftPurchaseOffer = [&](const MTPDmessageActionStarGiftPurchaseOffer &action) {
 		auto result = PreparedServiceText{};
 		action.vgift().match([&](const MTPDstarGiftUnique &data) {
 			const auto amount = CreditsAmountFromTL(action.vprice());
@@ -7516,7 +7516,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		return result;
 	};
 
-	auto prepareStarGiftPurchaseOfferDeclined = [&](const MTPDmessageActionStarGiftPurchaseOfferDeclined &action) {
+	auto prepareDiamondGiftPurchaseOfferDeclined = [&](const MTPDmessageActionStarGiftPurchaseOfferDeclined &action) {
 		auto result = PreparedServiceText{};
 		action.vgift().match([&](const MTPDstarGiftUnique &data) {
 			const auto amount = CreditsAmountFromTL(action.vprice());
@@ -7780,11 +7780,11 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		prepareGiveawayResults,
 		prepareBoostApply,
 		preparePaymentRefunded,
-		prepareGiftStars,
+		prepareGiftDiamonds,
 		prepareGiftTon,
 		prepareGiftPrize,
-		prepareStarGift,
-		prepareStarGiftUnique,
+		prepareDiamondGift,
+		prepareDiamondGiftUnique,
 		preparePaidMessagesRefunded,
 		preparePaidMessagesPrice,
 		prepareConferenceCall,
@@ -7795,8 +7795,8 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		prepareSuggestedPostSuccess,
 		prepareSuggestedPostRefund,
 		prepareSuggestBirthday,
-		prepareStarGiftPurchaseOffer,
-		prepareStarGiftPurchaseOfferDeclined,
+		prepareDiamondGiftPurchaseOffer,
+		prepareDiamondGiftPurchaseOfferDeclined,
 		prepareNewCreatorPending,
 		prepareChangeCreator,
 		prepareNoForwardsToggle,
@@ -8010,10 +8010,10 @@ void HistoryItem::processAction(const MTPMessageAction &action) {
 				data.vprepaid_upgrade_hash().value_or_empty()),
 			.giftTitle = title,
 			.realGiftMsgId = realGiftMsgId,
-			.starsConverted = int(data.vconvert_stars().value_or_empty()),
-			.starsUpgradedBySender = int(
+			.diamondsConverted = int(data.vconvert_stars().value_or_empty()),
+			.diamondsUpgradedBySender = int(
 				data.vupgrade_stars().value_or_empty()),
-			.starsBid = bid,
+			.diamondsBid = bid,
 			.giftNum = data.vgift_num().value_or_empty(),
 			.type = Data::GiftType::StarGift,
 			.upgradeSeparate = data.is_upgrade_separate(),
@@ -8026,7 +8026,7 @@ void HistoryItem::processAction(const MTPMessageAction &action) {
 		};
 		if (auto gift = Api::FromTL(&history()->session(), data.vgift())) {
 			fields.stargiftId = gift->id;
-			fields.starsToUpgrade = gift->starsToUpgrade;
+			fields.diamondsToUpgrade = gift->diamondsToUpgrade;
 			fields.document = gift->document;
 			fields.stargiftReleasedBy = gift->releasedBy;
 			fields.limitedCount = gift->limitedCount;
@@ -8083,7 +8083,7 @@ void HistoryItem::processAction(const MTPMessageAction &action) {
 				: nullptr),
 			.channelSavedId = channelSavedId,
 			.realGiftMsgId = realGiftMsgId,
-			.starsForDetailsRemove = int(
+			.diamondsForDetailsRemove = int(
 				data.vdrop_original_details_stars().value_or_empty()),
 			.type = Data::GiftType::StarGift,
 			.transferred = data.is_transferred(),
@@ -8103,7 +8103,7 @@ void HistoryItem::processAction(const MTPMessageAction &action) {
 			fields.count = gift->stars;
 			fields.unique = std::move(gift->unique);
 			if (const auto unique = fields.unique.get()) {
-				unique->starsForTransfer
+				unique->diamondsForTransfer
 					= data.vtransfer_stars().value_or(-1);
 				unique->exportAt = data.vcan_export_at().value_or_empty();
 				unique->canTransferAt = data.vcan_transfer_at().value_or_empty();

@@ -80,7 +80,7 @@ class BusinessInfo;
 struct ReactionId;
 struct UnavailableReason;
 struct CreditsStatusSlice;
-struct StarsRatingPending;
+struct DiamondsRatingPending;
 struct UniqueGift;
 
 struct RepliesReadTillUpdate {
@@ -109,15 +109,15 @@ struct GiftUpdate {
 		Upgraded,
 	};
 
-	Data::SavedStarGiftId id;
+	Data::SavedDiamondGiftId id;
 	QString slug;
 	Action action = {};
 };
 struct GiftsUpdate {
 	not_null<PeerData*> peer;
 	int collectionId = 0;
-	std::vector<Data::SavedStarGiftId> added;
-	std::vector<Data::SavedStarGiftId> removed;
+	std::vector<Data::SavedDiamondGiftId> added;
+	std::vector<Data::SavedDiamondGiftId> removed;
 };
 struct GiftAuctionGot {
 	uint64 giftId = 0;
@@ -1010,12 +1010,12 @@ public:
 	void sentFromScheduled(SentFromScheduled value);
 	[[nodiscard]] rpl::producer<SentFromScheduled> sentFromScheduled() const;
 
-	void editStarsPerMessage(not_null<ChannelData*> channel, int count);
-	[[nodiscard]] int commonStarsPerMessage(
+	void editDiamondsPerMessage(not_null<ChannelData*> channel, int count);
+	[[nodiscard]] int commonDiamondsPerMessage(
 		not_null<const ChannelData*> channel) const;
 
-	void setPendingStarsRating(StarsRatingPending value);
-	[[nodiscard]] StarsRatingPending pendingStarsRating() const;
+	void setPendingDiamondsRating(DiamondsRatingPending value);
+	[[nodiscard]] DiamondsRatingPending pendingDiamondsRating() const;
 
 	void addRecentSelfForwards(const RecentSelfForwards &data);
 	[[nodiscard]] rpl::producer<RecentSelfForwards> recentSelfForwards() const;
@@ -1396,7 +1396,7 @@ private:
 	base::flat_set<ChannelId> _pinnedCommunitiesNotLoaded;
 
 	// This one from `channel`, not `channelFull`.
-	base::flat_map<not_null<const ChannelData*>, int> _commonStarsPerMessage;
+	base::flat_map<not_null<const ChannelData*>, int> _commonDiamondsPerMessage;
 
 	MessageIdsList _mimeForwardIds;
 
@@ -1449,7 +1449,7 @@ private:
 
 	MsgId _nonHistoryEntryId = WelcomeMaxMsgId;
 
-	std::unique_ptr<StarsRatingPending> _pendingStarsRating;
+	std::unique_ptr<DiamondsRatingPending> _pendingDiamondsRating;
 
 	base::flat_map<
 		not_null<PeerData*>,

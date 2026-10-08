@@ -8,7 +8,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #pragma once
 
 namespace Data {
-class SavedStarGiftId;
+class SavedDiamondGiftId;
 } // namespace Data
 
 namespace Ui {
@@ -25,7 +25,7 @@ void NewCollectionBox(
 	not_null<Ui::GenericBox*> box,
 	not_null<Window::SessionNavigation*> navigation,
 	not_null<PeerData*> peer,
-	Data::SavedStarGiftId addId,
+	Data::SavedDiamondGiftId addId,
 	Fn<void(MTPStarGiftCollection)> added);
 
 void EditCollectionNameBox(

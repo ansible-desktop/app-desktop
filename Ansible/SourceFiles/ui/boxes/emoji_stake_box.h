@@ -24,13 +24,13 @@ class InputField;
 class NumberInput;
 class VerticalLayout;
 
-struct StarsInputFieldArgs {
+struct DiamondsInputFieldArgs {
 	std::optional<int64> value;
 	int64 max = 0;
 };
-[[nodiscard]] not_null<NumberInput*> AddStarsInputField(
+[[nodiscard]] not_null<NumberInput*> AddDiamondsInputField(
 	not_null<VerticalLayout*> container,
-	StarsInputFieldArgs &&args);
+	DiamondsInputFieldArgs &&args);
 
 struct TonInputFieldArgs {
 	int64 value = 0;

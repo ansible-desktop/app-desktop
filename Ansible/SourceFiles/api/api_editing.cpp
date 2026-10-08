@@ -194,8 +194,8 @@ mtpRequestId SuggestMedia(
 		| (!sentEntities.v.isEmpty()
 			? MTPmessages_SendMedia::Flag::f_entities
 			: emptyFlag)
-		| (options.starsApproved
-			? MTPmessages_SendMedia::Flag::f_allow_paid_stars
+		| (options.diamondsApproved
+			? MTPmessages_SendMedia::Flag::f_allow_paid_diamonds
 			: emptyFlag);
 	const auto randomId = base::RandomValue<uint64>();
 	return api->request(MTPmessages_SendMedia(
@@ -212,7 +212,7 @@ mtpRequestId SuggestMedia(
 		MTPInputPeer(), // send_as
 		MTPInputQuickReplyShortcut(), // quick_reply_shortcut
 		MTPlong(), // effect
-		MTP_long(options.starsApproved),
+		MTP_long(options.diamondsApproved),
 		Api::SuggestToMTP(options.suggest)
 	)).done([=](
 			const MTPUpdates &result,

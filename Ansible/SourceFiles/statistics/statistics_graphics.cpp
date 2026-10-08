@@ -34,7 +34,7 @@ QImage ChartCurrencyIcon(
 			}
 		}
 	} else if (chartData.currency == Data::StatisticalCurrency::Credits) {
-		return Ui::GenerateStars(iconSize.height(), 1);
+		return Ui::GenerateDiamonds(iconSize.height(), 1);
 	}
 	return result;
 }

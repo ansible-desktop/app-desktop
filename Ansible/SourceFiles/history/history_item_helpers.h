@@ -204,21 +204,21 @@ void ShowSendPaidConfirm(
 	SendPaymentDetails details,
 	Fn<void()> confirmed,
 	PaidConfirmStyles styles = {},
-	int suggestStarsPrice = 0);
+	int suggestDiamondsPrice = 0);
 void ShowSendPaidConfirm(
 	std::shared_ptr<Main::SessionShow> show,
 	not_null<PeerData*> peer,
 	SendPaymentDetails details,
 	Fn<void()> confirmed,
 	PaidConfirmStyles styles = {},
-	int suggestStarsPrice = 0);
+	int suggestDiamondsPrice = 0);
 void ShowSendPaidConfirm(
 	std::shared_ptr<Main::SessionShow> show,
 	const std::vector<not_null<PeerData*>> &peers,
 	SendPaymentDetails details,
 	Fn<void()> confirmed,
 	PaidConfirmStyles styles = {},
-	int suggestStarsPrice = 0);
+	int suggestDiamondsPrice = 0);
 
 class SendPaymentHelper final {
 public:

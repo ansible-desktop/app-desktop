@@ -24,23 +24,23 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace Calls::Group {
 namespace {
 
-constexpr auto kMaxStarsFallback = 10'000;
-constexpr auto kDefaultStars = 10;
+constexpr auto kMaxDiamondsFallback = 10'000;
+constexpr auto kDefaultDiamonds = 10;
 
 } // namespace
 
-int MaxVideoStreamStarsCount(not_null<Main::Session*> session) {
+int MaxVideoStreamDiamondsCount(not_null<Main::Session*> session) {
 	const auto appConfig = &session->appConfig();
 	return std::max(
 		appConfig->get<int>(
 			u"stars_groupcall_message_amount_max"_q,
-			kMaxStarsFallback),
+			kMaxDiamondsFallback),
 		2);
 }
 
-void VideoStreamStarsBox(
+void VideoStreamDiamondsBox(
 		not_null<Ui::GenericBox*> box,
-		VideoStreamStarsBoxArgs &&args) {
+		VideoStreamDiamondsBoxArgs &&args) {
 	args.show->session().credits().load();
 
 	const auto admin = args.admin;
@@ -61,9 +61,9 @@ void VideoStreamStarsBox(
 	};
 	const auto &show = args.show;
 	const auto session = &show->session();
-	const auto max = std::max(args.min, MaxVideoStreamStarsCount(session));
+	const auto max = std::max(args.min, MaxVideoStreamDiamondsCount(session));
 	const auto chosen = std::clamp(
-		args.current ? args.current : kDefaultStars,
+		args.current ? args.current : kDefaultDiamonds,
 		args.min,
 		max);
 	auto top = std::vector<Ui::PaidReactionTop>();
@@ -139,9 +139,9 @@ void VideoStreamStarsBox(
 	});
 }
 
-object_ptr<Ui::BoxContent> MakeVideoStreamStarsBox(
-		VideoStreamStarsBoxArgs &&args) {
-	return Box(VideoStreamStarsBox, std::move(args));
+object_ptr<Ui::BoxContent> MakeVideoStreamDiamondsBox(
+		VideoStreamDiamondsBoxArgs &&args) {
+	return Box(VideoStreamDiamondsBox, std::move(args));
 }
 
 } // namespace Calls::Group

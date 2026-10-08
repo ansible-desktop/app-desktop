@@ -332,7 +332,7 @@ void AddLottieIconWithCircle(
 	QMargins iconPadding,
 	QSize circleSize);
 
-void AddPremiumStar(
+void AddPremiumDiamond(
 	not_null<Button*> button,
 	bool credits,
 	Fn<bool()> isPaused);

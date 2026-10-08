@@ -4041,7 +4041,7 @@ void SessionController::dropSubsectionTabs() {
 	base::take(_savedSubsectionTabs);
 }
 
-void SessionController::showStarGiftAuction(const QString &slug) {
+void SessionController::showDiamondGiftAuction(const QString &slug) {
 	_starGiftAuctionLifetime.destroy();
 
 	const auto requesting = _starGiftAuctionLifetime.make_state<
@@ -4055,14 +4055,14 @@ void SessionController::showStarGiftAuction(const QString &slug) {
 		}
 		_starGiftAuctionLifetime.destroy();
 		if (giftId) {
-			showStarGiftAuction(giftId);
+			showDiamondGiftAuction(giftId);
 		}
 	});
 }
 
-void SessionController::showStarGiftAuction(uint64 giftId) {
+void SessionController::showDiamondGiftAuction(uint64 giftId) {
 	_starGiftAuctionLifetime.destroy();
-	_starGiftAuctionLifetime = Ui::ShowStarGiftAuction(
+	_starGiftAuctionLifetime = Ui::ShowDiamondGiftAuction(
 		this,
 		nullptr,
 		giftId,

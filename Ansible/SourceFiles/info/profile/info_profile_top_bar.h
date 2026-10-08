@@ -21,7 +21,7 @@ class ForumTopic;
 class DocumentMedia;
 struct SavedStarGift;
 struct ColorProfileSet;
-class SavedStarGiftId;
+class SavedDiamondGiftId;
 } // namespace Data
 
 namespace Info::Profile {
@@ -364,7 +364,7 @@ private:
 	std::unique_ptr<Lottie::MultiPlayer> _lottiePlayer;
 	bool _lottieSingleLoop = false;
 	struct PinnedToTopGiftEntry {
-		Data::SavedStarGiftId manageId;
+		Data::SavedDiamondGiftId manageId;
 		// QString slug;
 		Lottie::Animation *animation = nullptr;
 		std::shared_ptr<Data::DocumentMedia> media;

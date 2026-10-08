@@ -63,7 +63,7 @@ constexpr auto kSizesDp = std::array{ 3., 8., 7. };
 constexpr auto kDollarSizesDp = std::array{ 16., 8., 7. };
 constexpr auto kRotationDegPerSec = std::array{ 9., 7.2, 6. };
 
-[[nodiscard]] QPainterPath StarPath(float64 size) {
+[[nodiscard]] QPainterPath DiamondPath(float64 size) {
 	const auto half = size / 2.;
 	const auto mid = half * kFatness;
 	auto path = QPainterPath();
@@ -87,7 +87,7 @@ constexpr auto kRotationDegPerSec = std::array{ 9., 7.2, 6. };
 
 } // namespace
 
-StarParticles::StarParticles(Fn<void(const QRect &)> update)
+DiamondParticles::DiamondParticles(Fn<void(const QRect &)> update)
 : _update(std::move(update))
 , _animation([=](crl::time now) {
 	if (++_idleCounter >= kIdleLimit) {
@@ -102,11 +102,11 @@ StarParticles::StarParticles(Fn<void(const QRect &)> update)
 , _random(kRandomBuffer) {
 }
 
-void StarParticles::setColor(QColor color) {
+void DiamondParticles::setColor(QColor color) {
 	setColors(color, color);
 }
 
-void StarParticles::setColors(QColor color1, QColor color2) {
+void DiamondParticles::setColors(QColor color1, QColor color2) {
 	if (_color1 == color1 && _color2 == color2) {
 		return;
 	}
@@ -115,7 +115,7 @@ void StarParticles::setColors(QColor color1, QColor color2) {
 	_spritesDirty = true;
 }
 
-void StarParticles::setGlyph(Glyph glyph) {
+void DiamondParticles::setGlyph(Glyph glyph) {
 	if (_glyph == glyph) {
 		return;
 	}
@@ -123,7 +123,7 @@ void StarParticles::setGlyph(Glyph glyph) {
 	_spritesDirty = true;
 }
 
-void StarParticles::setPaused(bool paused) {
+void DiamondParticles::setPaused(bool paused) {
 	if (_paused == paused) {
 		return;
 	}
@@ -147,11 +147,11 @@ void StarParticles::setPaused(bool paused) {
 	}
 }
 
-float64 StarParticles::driftStep(crl::time delta) const {
+float64 DiamondParticles::driftStep(crl::time delta) const {
 	return style::ConvertScale(kDriftDp) * (delta / kDriftDivisor);
 }
 
-void StarParticles::fling(float64 strength) {
+void DiamondParticles::fling(float64 strength) {
 	_flingMax = (strength < kFlingThresholdLow)
 		? kFlingSpeedLow
 		: (strength < kFlingThresholdHigh)
@@ -166,7 +166,7 @@ void StarParticles::fling(float64 strength) {
 	}
 }
 
-void StarParticles::updateSpeedScale(crl::time now) {
+void DiamondParticles::updateSpeedScale(crl::time now) {
 	if (!_flingStart) {
 		_speedScale = 1.;
 		return;
@@ -185,7 +185,7 @@ void StarParticles::updateSpeedScale(crl::time now) {
 	}
 }
 
-void StarParticles::createParticle(crl::time now, Particle &particle) {
+void DiamondParticles::createParticle(crl::time now, Particle &particle) {
 	if (_glyph == Glyph::Dollar) {
 		const auto roll = base::RandomIndex(kRadiusResolution, _random)
 			/ float64(kRadiusResolution);
@@ -217,7 +217,7 @@ void StarParticles::createParticle(crl::time now, Particle &particle) {
 	particle.distance = 0.;
 }
 
-void StarParticles::ensureParticles() {
+void DiamondParticles::ensureParticles() {
 	if (!_particles.empty()) {
 		return;
 	}
@@ -241,7 +241,7 @@ void StarParticles::ensureParticles() {
 	_lastTime = now;
 }
 
-void StarParticles::tick(crl::time now) {
+void DiamondParticles::tick(crl::time now) {
 	ensureParticles();
 	const auto delta = std::clamp(now - _lastTime, kMinDelta, kMaxDelta);
 	_lastTime = now;
@@ -286,7 +286,7 @@ void StarParticles::tick(crl::time now) {
 	}
 }
 
-void StarParticles::rebuildSprites(int ratio) {
+void DiamondParticles::rebuildSprites(int ratio) {
 	_spritesDirty = false;
 	_spritesRatio = ratio;
 	const auto round = style::ConvertScale(kRoundDp) * ratio;
@@ -305,7 +305,7 @@ void StarParticles::rebuildSprites(int ratio) {
 			pen.setCapStyle(Qt::RoundCap);
 			p.setPen(pen);
 			p.setBrush(fill);
-			p.drawPath(StarPath(side));
+			p.drawPath(DiamondPath(side));
 		}
 		const auto soft = std::max(
 			1,
@@ -377,7 +377,7 @@ void StarParticles::rebuildSprites(int ratio) {
 	}
 }
 
-void StarParticles::paint(QPainter &p, const QRectF &field) {
+void DiamondParticles::paint(QPainter &p, const QRectF &field) {
 	if (!_color1.isValid() || field.isEmpty()) {
 		return;
 	}

@@ -19,7 +19,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace HistoryView {
 namespace {
 
-[[nodiscard]] ClickHandlerPtr MakeUpdateTelegramHandler() {
+[[nodiscard]] ClickHandlerPtr MakeUpdateAnsibleHandler() {
 	return std::make_shared<LambdaClickHandler>([] {
 		Core::UpdateApplication();
 	});
@@ -29,7 +29,7 @@ namespace {
 
 UnsupportedNotice::UnsupportedNotice(not_null<Element*> parent)
 : Media(parent)
-, _link(MakeUpdateTelegramHandler()) {
+, _link(MakeUpdateAnsibleHandler()) {
 	_card.setTexts(
 		tr::lng_unsupported_message_title(tr::now),
 		tr::lng_unsupported_message_text(tr::now),

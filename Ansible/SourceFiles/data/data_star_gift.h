@@ -101,14 +101,14 @@ struct UniqueGiftValue {
 	QString currency;
 	int64 valuePrice = 0;
 	int64 valuePriceUsd = 0;
-	CreditsAmount initialPriceStars;
+	CreditsAmount initialPriceDiamonds;
 	int64 initialSalePrice = 0;
 	TimeId initialSaleDate = 0;
 	int64 lastSalePrice = 0;
 	TimeId lastSaleDate = 0;
 	int64 averagePrice = 0;
 	int64 minimumPrice = 0;
-	int forSaleOnTelegram = 0;
+	int forSaleOnAnsible = 0;
 	int forSaleOnFragment = 0;
 	QString fragmentUrl;
 	bool lastSaleFragment = false;
@@ -128,9 +128,9 @@ struct UniqueGift {
 	PeerData *themeUser = nullptr;
 	int64 nanoTonForResale = -1;
 	int craftChancePermille = 0;
-	int starsForResale = -1;
-	int starsForTransfer = -1;
-	int starsMinOffer = -1;
+	int diamondsForResale = -1;
+	int diamondsForTransfer = -1;
+	int diamondsMinOffer = -1;
 	int number = 0;
 	bool onlyAcceptTon = false;
 	bool canBeTheme = false;
@@ -151,11 +151,11 @@ struct UniqueGift {
 [[nodiscard]] QString UniqueGiftName(const UniqueGift &gift);
 [[nodiscard]] QString UniqueGiftName(const QString &title, int number);
 
-[[nodiscard]] CreditsAmount UniqueGiftResaleStars(const UniqueGift &gift);
+[[nodiscard]] CreditsAmount UniqueGiftResaleDiamonds(const UniqueGift &gift);
 [[nodiscard]] CreditsAmount UniqueGiftResaleTon(const UniqueGift &gift);
 [[nodiscard]] CreditsAmount UniqueGiftResaleAsked(const UniqueGift &gift);
 
-[[nodiscard]] TextWithEntities FormatGiftResaleStars(const UniqueGift &gift);
+[[nodiscard]] TextWithEntities FormatGiftResaleDiamonds(const UniqueGift &gift);
 [[nodiscard]] TextWithEntities FormatGiftResaleTon(const UniqueGift &gift);
 [[nodiscard]] TextWithEntities FormatGiftResaleAsked(const UniqueGift &gift);
 
@@ -179,9 +179,9 @@ struct StarGift {
 	std::shared_ptr<UniqueGift> unique;
 	std::shared_ptr<StarGiftBackground> background;
 	int64 stars = 0;
-	int64 starsConverted = 0;
-	int64 starsToUpgrade = 0;
-	int64 starsResellMin = 0;
+	int64 diamondsConverted = 0;
+	int64 diamondsToUpgrade = 0;
+	int64 diamondsResellMin = 0;
 	not_null<DocumentData*> document;
 	PeerData *releasedBy = nullptr;
 	QString resellTitle;
@@ -213,17 +213,17 @@ struct StarGift {
 		const StarGift &) = default;
 };
 
-class SavedStarGiftId {
+class SavedDiamondGiftId {
 public:
-	[[nodiscard]] static SavedStarGiftId User(MsgId messageId) {
-		auto result = SavedStarGiftId();
+	[[nodiscard]] static SavedDiamondGiftId User(MsgId messageId) {
+		auto result = SavedDiamondGiftId();
 		result.entityId = uint64(messageId.bare);
 		return result;
 	}
-	[[nodiscard]] static SavedStarGiftId Chat(
+	[[nodiscard]] static SavedDiamondGiftId Chat(
 			not_null<PeerData*> peer,
 			uint64 savedId) {
-		auto result = SavedStarGiftId();
+		auto result = SavedDiamondGiftId();
 		result.peer = peer;
 		result.entityId = savedId;
 		return result;
@@ -251,11 +251,11 @@ public:
 	}
 
 	friend inline bool operator==(
-		const SavedStarGiftId &,
-		const SavedStarGiftId &) = default;
+		const SavedDiamondGiftId &,
+		const SavedDiamondGiftId &) = default;
 	friend inline auto operator<=>(
-		const SavedStarGiftId &,
-		const SavedStarGiftId &) = default;
+		const SavedDiamondGiftId &,
+		const SavedDiamondGiftId &) = default;
 
 private:
 	PeerData *peer = nullptr;
@@ -265,12 +265,12 @@ private:
 
 struct SavedStarGift {
 	StarGift info;
-	SavedStarGiftId manageId;
+	SavedDiamondGiftId manageId;
 	std::vector<int> collectionIds;
 	TextWithEntities message;
-	int64 starsConverted = 0;
-	int64 starsUpgradedBySender = 0;
-	int64 starsForDetailsRemove = 0;
+	int64 diamondsConverted = 0;
+	int64 diamondsUpgradedBySender = 0;
+	int64 diamondsForDetailsRemove = 0;
 	QString giftPrepayUpgradeHash;
 	PeerId fromId = 0;
 	TimeId date = 0;
@@ -307,9 +307,9 @@ struct GiftUpgradeSpinner {
 
 struct GiftUpgradeResult {
 	StarGift info;
-	SavedStarGiftId manageId;
+	SavedDiamondGiftId manageId;
 	TimeId date = 0;
-	int starsForDetailsRemove = 0;
+	int diamondsForDetailsRemove = 0;
 	bool saved = false;
 };
 

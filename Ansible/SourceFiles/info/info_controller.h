@@ -61,7 +61,7 @@ struct Tag {
 
 } // namespace Info::GlobalMedia
 
-namespace Info::BotStarRef {
+namespace Info::BotDiamondRef {
 
 enum class Type : uchar {
 	Setup,
@@ -91,7 +91,7 @@ public:
 	Key(Saved::MusicTag music);
 	Key(Statistics::Tag statistics);
 	Key(PeerGifts::Tag gifts);
-	Key(BotStarRef::Tag starref);
+	Key(BotDiamondRef::Tag starref);
 	Key(GlobalMedia::Tag global);
 	Key(not_null<PollData*> poll, FullMsgId contextId);
 	Key(
@@ -115,7 +115,7 @@ public:
 	[[nodiscard]] int giftsCollectionId() const;
 	[[nodiscard]] Statistics::Tag statisticsTag() const;
 	[[nodiscard]] PeerData *starrefPeer() const;
-	[[nodiscard]] BotStarRef::Type starrefType() const;
+	[[nodiscard]] BotDiamondRef::Type starrefType() const;
 	[[nodiscard]] PollData *poll() const;
 	[[nodiscard]] FullMsgId pollContextId() const;
 	[[nodiscard]] auto reactionsWhoReadIds() const
@@ -144,7 +144,7 @@ private:
 		Saved::MusicTag,
 		Statistics::Tag,
 		PeerGifts::Tag,
-		BotStarRef::Tag,
+		BotDiamondRef::Tag,
 		GlobalMedia::Tag,
 		PollKey,
 		ReactionsKey> _value;
@@ -177,7 +177,7 @@ public:
 		SavedMusic,
 		PollResults,
 		Statistics,
-		BotStarRef,
+		BotDiamondRef,
 		Boosts,
 		ChannelEarn,
 		BotEarn,
@@ -270,7 +270,7 @@ public:
 	[[nodiscard]] PeerData *starrefPeer() const {
 		return key().starrefPeer();
 	}
-	[[nodiscard]] BotStarRef::Type starrefType() const {
+	[[nodiscard]] BotDiamondRef::Type starrefType() const {
 		return key().starrefType();
 	}
 	[[nodiscard]] PollData *poll() const;

@@ -38,7 +38,7 @@ class Form;
 struct FormUpdate;
 struct Error;
 struct InvoiceCredits;
-struct InvoiceStarGift;
+struct InvoiceDiamondGift;
 struct InvoiceId;
 struct InvoicePremiumGiftCode;
 struct CreditsFormData;
@@ -95,7 +95,7 @@ public:
 		InvoiceCredits creditsInvoice,
 		Fn<void(CheckoutResult)> reactivate);
 	static void Start(
-		InvoiceStarGift giftInvoice,
+		InvoiceDiamondGift giftInvoice,
 		Fn<void(CheckoutResult)> reactivate,
 		Fn<void(NonPanelPaymentForm)> nonPanelPaymentFormProcess);
 	[[nodiscard]] static std::optional<PaidInvoice> InvoicePaid(

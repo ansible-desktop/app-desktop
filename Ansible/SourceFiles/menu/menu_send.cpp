@@ -689,7 +689,7 @@ FillMenuResult FillEditCommentPriceMenu(
 		? *iconsOverride
 		: st::defaultComposeIcons;
 	menu->addAction(tr::lng_video_stream_edit_diamonds(tr::now), [=] {
-		show->show(Calls::Group::MakeVideoStreamStarsBox({
+		show->show(Calls::Group::MakeVideoStreamDiamondsBox({
 			.show = show,
 			.min = int(details.commentPriceMin.value_or(1)),
 			.current = int(details.price.value_or(1)),
@@ -701,7 +701,7 @@ FillMenuResult FillEditCommentPriceMenu(
 			.name = details.commentStreamerName,
 			//.preview = details.commentPreview,
 		}));
-	}, &icons.menuEditStars);
+	}, &icons.menuEditDiamonds);
 	if (details.price.value_or(0) > details.commentPriceMin.value_or(0)) {
 		auto copy = details;
 		copy.price = details.commentPriceMin.value_or(0);

@@ -113,8 +113,8 @@ bool UniqueGiftAttributeHasSpecialRarity(const UniqueGiftAttribute &attribute) {
 	return attribute.rarityType() != UniqueGiftRarity::Default;
 }
 
-CreditsAmount UniqueGiftResaleStars(const UniqueGift &gift) {
-	return CreditsAmount(gift.starsForResale);
+CreditsAmount UniqueGiftResaleDiamonds(const UniqueGift &gift) {
+	return CreditsAmount(gift.diamondsForResale);
 }
 
 CreditsAmount UniqueGiftResaleTon(const UniqueGift &gift) {
@@ -127,13 +127,13 @@ CreditsAmount UniqueGiftResaleTon(const UniqueGift &gift) {
 CreditsAmount UniqueGiftResaleAsked(const UniqueGift &gift) {
 	return gift.onlyAcceptTon
 		? UniqueGiftResaleTon(gift)
-		: UniqueGiftResaleStars(gift);
+		: UniqueGiftResaleDiamonds(gift);
 }
 
-TextWithEntities FormatGiftResaleStars(const UniqueGift &gift) {
+TextWithEntities FormatGiftResaleDiamonds(const UniqueGift &gift) {
 	return Ui::Text::IconEmoji(
 		&st::starIconEmoji
-	).append(Lang::FormatCountDecimal(gift.starsForResale));
+	).append(Lang::FormatCountDecimal(gift.diamondsForResale));
 }
 
 TextWithEntities FormatGiftResaleTon(const UniqueGift &gift) {
@@ -145,7 +145,7 @@ TextWithEntities FormatGiftResaleTon(const UniqueGift &gift) {
 TextWithEntities FormatGiftResaleAsked(const UniqueGift &gift) {
 	return gift.onlyAcceptTon
 		? FormatGiftResaleTon(gift)
-		: FormatGiftResaleStars(gift);
+		: FormatGiftResaleDiamonds(gift);
 }
 
 GiftAttributeId IdFor(const UniqueGiftBackdrop &value) {

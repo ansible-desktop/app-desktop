@@ -23,7 +23,7 @@ public:
 		const style::icon &star2,
 		const style::color *overColor = nullptr);
 
-	void setPremiumStar(QImage image, QPoint position, int outline);
+	void setPremiumDiamond(QImage image, QPoint position, int outline);
 
 protected:
 	void paintEvent(QPaintEvent *e) override;
@@ -46,9 +46,9 @@ private:
 	const style::icon &_star2;
 	const style::color *_overColor = nullptr;
 	Ui::Animations::Simple _animation;
-	QImage _premiumStar;
-	QPoint _premiumStarPosition;
-	int _premiumStarOutline = 0;
+	QImage _premiumDiamond;
+	QPoint _premiumDiamondPosition;
+	int _premiumDiamondOutline = 0;
 	QImage _frame;
 	float64 _frameStar1 = -1.;
 	float64 _frameStar2 = -1.;

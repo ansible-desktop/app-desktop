@@ -73,13 +73,13 @@ void ResolveGiveawayInfo(
 	not_null<Main::Session*> session,
 	const QString &address);
 
-void AddStarGiftTable(
+void AddDiamondGiftTable(
 	std::shared_ptr<ChatHelpers::Show> show,
 	not_null<Ui::VerticalLayout*> container,
 	Settings::CreditsEntryBoxStyleOverrides st,
 	const Data::CreditsHistoryEntry &entry,
 	std::shared_ptr<Data::GiftUpgradeSpinner> spinner,
-	Fn<void()> convertToStars,
+	Fn<void()> convertToDiamonds,
 	bool canStartUpgrade,
 	Fn<void(Fn<void()> removed)> removeDetails);
 void AddTransferGiftTable(

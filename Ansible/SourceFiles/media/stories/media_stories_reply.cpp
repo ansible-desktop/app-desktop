@@ -65,18 +65,18 @@ namespace {
 [[nodiscard]] rpl::producer<QString> PlaceholderText(
 		const std::shared_ptr<ChatHelpers::Show> &show,
 		rpl::producer<ReplyAreaType> type,
-		rpl::producer<int> starsPerMessage) {
+		rpl::producer<int> diamondsPerMessage) {
 	return rpl::combine(
 		show->session().data().stories().stealthModeValue(),
 		std::move(type),
-		std::move(starsPerMessage)
+		std::move(diamondsPerMessage)
 	) | rpl::map([](
 			Data::StealthMode value,
 			ReplyAreaType type,
-			int starsPerMessage) {
-		return std::tuple(value.enabledTill, type, starsPerMessage);
+			int diamondsPerMessage) {
+		return std::tuple(value.enabledTill, type, diamondsPerMessage);
 	}) | rpl::distinct_until_changed(
-	) | rpl::map([](TimeId till, ReplyAreaType type, int starsPerMessage) {
+	) | rpl::map([](TimeId till, ReplyAreaType type, int diamondsPerMessage) {
 		return rpl::single(
 			rpl::empty
 		) | rpl::then(
@@ -89,15 +89,15 @@ namespace {
 			rpl::single(0)
 		) | rpl::map([=](TimeId left) {
 			return (type == ReplyAreaType::VideoStreamComment)
-				? (starsPerMessage
+				? (diamondsPerMessage
 					? tr::lng_video_stream_comment_paid_ph(
 						lt_count,
-						rpl::single(starsPerMessage * 1.))
+						rpl::single(diamondsPerMessage * 1.))
 					: tr::lng_video_stream_comment_ph())
-				: starsPerMessage
+				: diamondsPerMessage
 				? tr::lng_message_diamonds_ph(
 					lt_count,
-					rpl::single(starsPerMessage * 1.))
+					rpl::single(diamondsPerMessage * 1.))
 				: left
 				? tr::lng_stealth_mode_countdown(
 					lt_left,
@@ -128,7 +128,7 @@ namespace {
 		.autocompleteMentions = false,
 		.autocompleteCommands = false,
 		.recordMediaMessage = !videoStream,
-		.editMessageStars = videoStream,
+		.editMessageDiamonds = videoStream,
 		.emojiOnlyPanel = videoStream,
 		.richEditor = false,
 	};
@@ -243,7 +243,7 @@ bool ReplyArea::sendReaction(const Data::ReactionId &id) {
 
 void ReplyArea::send(Api::SendOptions options) {
 	auto text = _controls->getTextWithAppliedMarkdown();
-	const auto stars = _controls->chosenStarsForMessage();
+	const auto stars = _controls->chosenDiamondsForMessage();
 	if (const auto stream = _videoStream.get()) {
 		if (stars > 0) {
 			const auto weak = _videoStream;
@@ -301,7 +301,7 @@ bool ReplyArea::send(
 	if (!message.action.options.scheduled) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = message;
-			copy.action.options.starsApproved = approved;
+			copy.action.options.diamondsApproved = approved;
 			send(copy);
 		};
 		const auto checked = checkSendPayment(
@@ -345,7 +345,7 @@ void ReplyArea::sendVoice(const VoiceToSend &data) {
 
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = data;
-		copy.options.starsApproved = approved;
+		copy.options.diamondsApproved = approved;
 		sendVoice(copy);
 	};
 	const auto checked = checkSendPayment(
@@ -386,7 +386,7 @@ bool ReplyArea::sendExistingDocument(
 	}
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = messageToSend;
-		copy.action.options.starsApproved = approved;
+		copy.action.options.diamondsApproved = approved;
 		sendExistingDocument(document, std::move(copy), localId);
 	};
 	const auto checked = checkSendPayment(
@@ -428,7 +428,7 @@ bool ReplyArea::sendExistingPhoto(
 
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = options;
-		copy.starsApproved = approved;
+		copy.diamondsApproved = approved;
 		sendExistingPhoto(photo, copy);
 	};
 	const auto checked = checkSendPayment(
@@ -467,7 +467,7 @@ void ReplyArea::sendInlineResult(
 
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = options;
-		copy.starsApproved = approved;
+		copy.diamondsApproved = approved;
 		sendInlineResult(result, bot, copy, localMessageId);
 	};
 	const auto checked = checkSendPayment(
@@ -605,7 +605,7 @@ Fn<SendMenu::Details()> ReplyArea::sendMenuDetails() const {
 				? call->peer()->shortName()
 				: QString()),
 			.price = (_data.videoStream
-				? uint64(_controls->chosenStarsForMessage())
+				? uint64(_controls->chosenDiamondsForMessage())
 				: std::optional<uint64>()),
 			.commentPriceMin = (call
 				? uint64(call->canManage() ? call->messagesMinPrice() : 0)
@@ -698,7 +698,7 @@ void ReplyArea::sendingFilesConfirmed(
 
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = options;
-		copy.starsApproved = approved;
+		copy.diamondsApproved = approved;
 		sendingFilesConfirmed(bundle, copy);
 	};
 	const auto checked = checkSendPayment(
@@ -840,15 +840,15 @@ void ReplyArea::show(
 			_controls->commentsShownToggles());
 	}
 	using Controls = HistoryView::ComposeControls;
-	_controls->setStarsReactionCounter(
-		stream ? _controller->starsReactionsValue() : nullptr,
-		stream ? _controller->starsReactionsEffects() : nullptr);
-	_controller->setStarsReactionIncrements(
-		_controls->starsReactionIncrements(
-		) | rpl::map([](Controls::StarReactionIncrement increment) {
+	_controls->setDiamondsReactionCounter(
+		stream ? _controller->diamondsReactionsValue() : nullptr,
+		stream ? _controller->diamondsReactionsEffects() : nullptr);
+	_controller->setDiamondsReactionIncrements(
+		_controls->diamondsReactionIncrements(
+		) | rpl::map([](Controls::DiamondReactionIncrement increment) {
 			return increment.count;
 		}));
-	_starsForMessage = starsPerMessageValue();
+	_starsForMessage = diamondsPerMessageValue();
 	if (!peerChanged) {
 		if (_data.peer) {
 			_controls->clear();
@@ -907,7 +907,7 @@ void ReplyArea::show(
 		) | rpl::map([](const Data::ReactionId &id) {
 			return !id.empty();
 		}),
-		.minStarsCount = (stream
+		.minDiamondsCount = (stream
 			? _starsForMessage.value()
 			: rpl::producer<int>()),
 		.writeRestriction = std::move(writeRestriction),
@@ -937,7 +937,7 @@ void ReplyArea::show(
 	}
 }
 
-rpl::producer<int> ReplyArea::starsPerMessageValue() const {
+rpl::producer<int> ReplyArea::diamondsPerMessageValue() const {
 	if (const auto stream = _data.videoStream.get()) {
 		return rpl::combine(
 			Data::CanManageGroupCallValue(stream->peer()),
@@ -949,9 +949,9 @@ rpl::producer<int> ReplyArea::starsPerMessageValue() const {
 		using Flag = Data::PeerUpdate::Flag;
 		return peer->session().changes().peerFlagsValue(
 			peer,
-			Flag::StarsPerMessage | Flag::FullInfo
+			Flag::DiamondsPerMessage | Flag::FullInfo
 		) | rpl::map([=] {
-			return peer->starsPerMessageChecked();
+			return peer->diamondsPerMessageChecked();
 		});
 	}
 	return rpl::single(0);
@@ -960,7 +960,7 @@ rpl::producer<int> ReplyArea::starsPerMessageValue() const {
 void ReplyArea::updateVideoStream(not_null<Calls::GroupCall*> videoStream) {
 	_type = ReplyAreaType::VideoStreamComment;
 	_videoStream = videoStream;
-	_controls->setStarsReactionTop(View::TopVideoStreamDonors(videoStream));
+	_controls->setDiamondsReactionTop(View::TopVideoStreamDonors(videoStream));
 }
 
 bool ReplyArea::showSlowmodeError() {

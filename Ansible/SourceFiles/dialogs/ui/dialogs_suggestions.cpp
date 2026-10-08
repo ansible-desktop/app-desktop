@@ -2036,20 +2036,20 @@ void Suggestions::setupPostsIntro(const PostsSearchIntroState &intro) {
 	delete base::take(_postsContent);
 	_postsSearchIntro = Ui::CreateChild<PostsSearchIntro>(_postsWrap, intro);
 
-	_postsSearchIntro->searchWithStars(
+	_postsSearchIntro->searchWithDiamonds(
 	) | rpl::on_next([=](int stars) {
 		if (!_controller->session().premium()) {
 			Settings::ShowPremium(
 				_controller,
 				u"posts_search"_q);
 		} else if (!stars) {
-			_postsSearch->setAllowedStars(0);
+			_postsSearch->setAllowedDiamonds(0);
 		} else {
 			using namespace Settings;
 			const auto done = [=](Settings::SmallBalanceResult result) {
 				if (result == Settings::SmallBalanceResult::Success
 					|| result == Settings::SmallBalanceResult::Already) {
-					const auto spent = _postsSearch->setAllowedStars(stars);
+					const auto spent = _postsSearch->setAllowedDiamonds(stars);
 					if (spent > 0) {
 						_controller->showToast({
 							.text = tr::lng_posts_paid_spent(
@@ -2929,7 +2929,7 @@ RecentPeersList RecentPeersContent(not_null<Main::Session*> session) {
 	return RecentPeersList{ session->recentPeers().list() };
 }
 
-object_ptr<Ui::BoxContent> StarsExamplesBox(
+object_ptr<Ui::BoxContent> DiamondsExamplesBox(
 		not_null<Window::SessionController*> window) {
 	auto controller = std::make_unique<PopularAppsController>(
 		window,

@@ -360,10 +360,10 @@ void Step::fillSentCodeData(const MTPDauth_sentCode &data) {
 	const auto bad = [](const char *type) {
 		LOG(("API Error: Should not be '%1'.").arg(type));
 	};
-	getData()->codeByTelegram = false;
+	getData()->codeByAnsible = false;
 	getData()->codeByFragmentUrl = QString();
 	data.vtype().match([&](const MTPDauth_sentCodeTypeApp &data) {
-		getData()->codeByTelegram = true;
+		getData()->codeByAnsible = true;
 		getData()->codeLength = data.vlength().v;
 	}, [&](const MTPDauth_sentCodeTypeSms &data) {
 		getData()->codeLength = data.vlength().v;

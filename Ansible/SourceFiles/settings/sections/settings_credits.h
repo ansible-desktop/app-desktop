@@ -23,10 +23,10 @@ namespace Settings {
 [[nodiscard]] Type CreditsId();
 [[nodiscard]] Type CurrencyId();
 
-class BuyStarsHandler final : public base::has_weak_ptr {
+class BuyDiamondsHandler final : public base::has_weak_ptr {
 public:
-	BuyStarsHandler();
-	~BuyStarsHandler();
+	BuyDiamondsHandler();
+	~BuyDiamondsHandler();
 
 	[[nodiscard]] Fn<void()> handler(
 		std::shared_ptr<::Main::SessionShow> show,

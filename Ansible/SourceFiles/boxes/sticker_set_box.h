@@ -46,11 +46,11 @@ public:
 
 private:
 	void validateLock(const QImage &frame, QImage &backCache);
-	void validateStar();
+	void validateDiamond();
 
 	const style::icon &_lockIcon;
 	QImage _lockGray;
-	QImage _star;
+	QImage _diamond;
 	RectPart _part = RectPart::Bottom;
 	bool _premium = false;
 

@@ -22,7 +22,7 @@ struct PostsSearchIntroState {
 	int freeSearchesPerDay = 0;
 	int freeSearchesLeft = 0;
 	TimeId nextFreeSearchTime = 0;
-	uint32 starsPerPaidSearch : 31 = 0;
+	uint32 diamondsPerPaidSearch : 31 = 0;
 	uint32 needsPremium : 1 = 0;
 
 	friend inline bool operator==(
@@ -39,7 +39,7 @@ public:
 
 	void update(PostsSearchIntroState state);
 
-	[[nodiscard]] rpl::producer<int> searchWithStars() const;
+	[[nodiscard]] rpl::producer<int> searchWithDiamonds() const;
 
 private:
 	void resizeEvent(QResizeEvent *e) override;

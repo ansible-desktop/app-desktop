@@ -70,14 +70,14 @@ void SendButton::setState(State state) {
 			? u"%1:%2"_q.arg(minutes).arg(seconds % 60, 2, 10, QChar('0'))
 			: QString();
 	}
-	if (!state.starsToSend || state.type != Type::Send) {
+	if (!state.diamondsToSend || state.type != Type::Send) {
 		_starsToSendText = Text::String();
 	} else if (_starsToSendText.isEmpty()
-		|| _state.starsToSend != state.starsToSend) {
+		|| _state.diamondsToSend != state.diamondsToSend) {
 		_starsToSendText.setMarkedText(
 			_st.stars.style,
 			Text::IconEmoji(&st::starIconEmoji).append(
-				Lang::FormatCountToShort(state.starsToSend).string),
+				Lang::FormatCountToShort(state.diamondsToSend).string),
 			kMarkupTextOptions);
 	}
 	_state = state;
@@ -214,7 +214,7 @@ void SendButton::paintEvent(QPaintEvent *e) {
 		if (_starsToSendText.isEmpty()) {
 			paintSend(p, over);
 		} else {
-			paintStarsToSend(p, over);
+			paintDiamondsToSend(p, over);
 		}
 		break;
 	case Type::Stop: paintStop(p, over); break;
@@ -352,8 +352,8 @@ void SendButton::paintStop(QPainter &p, bool over) {
 	p.drawRoundedRect(inner, _st.stopRadius, _st.stopRadius);
 }
 
-void SendButton::paintStarsToSend(QPainter &p, bool over) {
-	const auto geometry = starsGeometry();
+void SendButton::paintDiamondsToSend(QPainter &p, bool over) {
+	const auto geometry = diamondsGeometry();
 	{
 		PainterHighQualityEnabler hq(p);
 		p.setPen(Qt::NoPen);
@@ -406,7 +406,7 @@ void SendButton::paintSlowmode(QPainter &p) {
 		style::al_center);
 }
 
-SendButton::StarsGeometry SendButton::starsGeometry() const {
+SendButton::DiamondsGeometry SendButton::diamondsGeometry() const {
 	const auto &st = _st.stars;
 	const auto inner = QRect(
 		0,
@@ -436,7 +436,7 @@ SendButton::RippleShape SendButton::currentRippleShape() const {
 	switch (_state.type) {
 	case Type::Send:
 		if (!_starsToSendText.isEmpty()) {
-			return RippleShape::StarsRoundRect;
+			return RippleShape::DiamondsRoundRect;
 		} else if (_st.sendIconFillPadding > 0) {
 			return RippleShape::SendEllipse;
 		}
@@ -491,7 +491,7 @@ void SendButton::updateSize() {
 	}
 	const auto finalWidth = _starsToSendText.isEmpty()
 		? _st.inner.width
-		: starsGeometry().outer.width();
+		: diamondsGeometry().outer.width();
 	const auto progress = _stateChangeAnimation.value(1.);
 	resize(
 		anim::interpolate(_stateChangeFromWidth, finalWidth, progress),
@@ -524,8 +524,8 @@ QImage SendButton::prepareRippleMask() const {
 		const auto r = sendEllipseRect();
 		return RippleAnimation::EllipseMask(r.size());
 	}
-	case RippleShape::StarsRoundRect: {
-		const auto r = starsGeometry().rounded;
+	case RippleShape::DiamondsRoundRect: {
+		const auto r = diamondsGeometry().rounded;
 		const auto radius = r.height() / 2;
 		return RippleAnimation::RoundRectMask(r.size(), radius);
 	}
@@ -547,8 +547,8 @@ QPoint SendButton::prepareRippleStartPosition() const {
 	}
 	case RippleShape::SendEllipse:
 		return real - sendEllipseRect().topLeft();
-	case RippleShape::StarsRoundRect:
-		return real - starsGeometry().rounded.topLeft();
+	case RippleShape::DiamondsRoundRect:
+		return real - diamondsGeometry().rounded.topLeft();
 	case RippleShape::ScheduleEllipse:
 		return real - scheduleEllipseRect().topLeft();
 	}
@@ -594,23 +594,23 @@ bool SendButton::isVoiceRoundTransition(Type from, Type to) {
 		|| (from == Type::Round && to == Type::Record);
 }
 
-SendStarButton::SendStarButton(
+SendDiamondButton::SendDiamondButton(
 	QWidget *parent,
 	const style::IconButton &st,
 	const style::RoundButton &counterSt,
-	rpl::producer<SendStarButtonState> state)
+	rpl::producer<SendDiamondButtonState> state)
 : RippleButton(parent, st.ripple)
 , _st(st)
 , _counterSt(counterSt) {
 	resize(_st.width, _st.height);
 
-	std::move(state) | rpl::on_next([=](SendStarButtonState value) {
+	std::move(state) | rpl::on_next([=](SendDiamondButtonState value) {
 		setCount(value.count);
 		highlight(value.highlight);
 	}, lifetime());
 }
 
-void SendStarButton::paintEvent(QPaintEvent *e) {
+void SendDiamondButton::paintEvent(QPaintEvent *e) {
 	const auto ratio = style::DevicePixelRatio();
 	const auto fullSize = size() * ratio;
 	if (_frame.size() != fullSize) {
@@ -666,7 +666,7 @@ void SendStarButton::paintEvent(QPaintEvent *e) {
 	QPainter(this).drawImage(0, 0, _frame);
 }
 
-void SendStarButton::setCount(int count) {
+void SendDiamondButton::setCount(int count) {
 	if (_count == count) {
 		return;
 	}
@@ -688,7 +688,7 @@ void SendStarButton::setCount(int count) {
 	update();
 }
 
-void SendStarButton::highlight(bool enabled) {
+void SendDiamondButton::highlight(bool enabled) {
 	if (_highlighted == enabled) {
 		return;
 	}
@@ -701,11 +701,11 @@ void SendStarButton::highlight(bool enabled) {
 		anim::easeOutCirc);
 }
 
-QImage SendStarButton::prepareRippleMask() const {
+QImage SendDiamondButton::prepareRippleMask() const {
 	return RippleAnimation::EllipseMask(size());
 }
 
-QPoint SendStarButton::prepareRippleStartPosition() const {
+QPoint SendDiamondButton::prepareRippleStartPosition() const {
 	return mapFromGlobal(QCursor::pos());
 }
 

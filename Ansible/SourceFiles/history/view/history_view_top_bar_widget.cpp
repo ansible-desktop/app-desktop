@@ -1363,7 +1363,7 @@ void TopBarWidget::updateControlsVisibility() {
 		: (section == Section::SavedSublist)
 		? (_activeChat.key.peer()
 			&& _activeChat.key.peer()->isChannel()
-			&& _activeChat.key.peer()->owner().commonStarsPerMessage(
+			&& _activeChat.key.peer()->owner().commonDiamondsPerMessage(
 				_activeChat.key.peer()->asChannel()))
 		: false;
 	const auto hasInfo = !_activeChat.key.folder()

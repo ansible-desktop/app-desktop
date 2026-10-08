@@ -47,7 +47,7 @@ inline constexpr auto kLimitRowRatio = 0.5;
 [[nodiscard]] QByteArray ColorizedSvg(
 	const QString &path,
 	const QGradientStops &gradientStops);
-[[nodiscard]] QImage GenerateStarForLightTopBar(QRectF rect);
+[[nodiscard]] QImage GenerateDiamondForLightTopBar(QRectF rect);
 
 void AddLimitRow(
 	not_null<Ui::VerticalLayout*> parent,

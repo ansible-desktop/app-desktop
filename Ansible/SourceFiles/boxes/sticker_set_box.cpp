@@ -189,7 +189,7 @@ void ValidatePremiumLockBg(
 	image = Images::Circle(std::move(image));
 }
 
-void ValidatePremiumStarFg(const style::icon &lockIcon, QImage &image) {
+void ValidatePremiumDiamondFg(const style::icon &lockIcon, QImage &image) {
 	if (!image.isNull()) {
 		return;
 	}
@@ -240,7 +240,7 @@ StickerPremiumMark::StickerPremiumMark(
 	style::PaletteChanged(
 	) | rpl::on_next([=] {
 		_lockGray = QImage();
-		_star = QImage();
+		_diamond = QImage();
 	}, _lifetime);
 
 	Data::AmPremiumValue(
@@ -270,8 +270,8 @@ void StickerPremiumMark::paint(
 	const auto point = position + QPoint(shiftx, shifty);
 	p.drawImage(point, bg);
 	if (_premium && _part != RectPart::Center) {
-		validateStar();
-		p.drawImage(point, _star);
+		validateDiamond();
+		p.drawImage(point, _diamond);
 	} else {
 		_lockIcon.paint(p, point, outerWidth);
 	}
@@ -284,8 +284,8 @@ void StickerPremiumMark::validateLock(
 	ValidatePremiumLockBg(_lockIcon, image, frame, _part);
 }
 
-void StickerPremiumMark::validateStar() {
-	ValidatePremiumStarFg(_lockIcon, _star);
+void StickerPremiumMark::validateDiamond() {
+	ValidatePremiumDiamondFg(_lockIcon, _diamond);
 }
 
 class StickerSetBox::Inner final : public Ui::RpWidget {

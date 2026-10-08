@@ -182,11 +182,11 @@ struct GiftCode {
 	QString giftTitle;
 	MsgId giveawayMsgId = 0;
 	MsgId realGiftMsgId = 0;
-	int starsConverted = 0;
-	int starsToUpgrade = 0;
-	int starsUpgradedBySender = 0;
-	int starsForDetailsRemove = 0;
-	int starsBid = 0;
+	int diamondsConverted = 0;
+	int diamondsToUpgrade = 0;
+	int diamondsUpgradedBySender = 0;
+	int diamondsForDetailsRemove = 0;
+	int diamondsBid = 0;
 	int giftNum = 0;
 	int limitedCount = 0;
 	int limitedLeft = 0;

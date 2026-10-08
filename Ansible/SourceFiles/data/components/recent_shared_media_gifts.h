@@ -34,7 +34,7 @@ public:
 	void togglePinned(
 		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<PeerData*> peer,
-		const Data::SavedStarGiftId &manageId,
+		const Data::SavedDiamondGiftId &manageId,
 		bool pinned,
 		std::shared_ptr<Data::UniqueGift> uniqueData,
 		std::shared_ptr<Data::UniqueGift> replacingData = nullptr);
@@ -50,7 +50,7 @@ private:
 		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<PeerData*> peer,
 		const std::vector<SavedStarGift> &gifts,
-		const std::vector<Data::SavedStarGiftId> &manageIds,
+		const std::vector<Data::SavedDiamondGiftId> &manageIds,
 		Fn<void()> done);
 
 	[[nodiscard]] std::vector<Data::SavedStarGift> filterGifts(

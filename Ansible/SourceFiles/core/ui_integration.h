@@ -21,13 +21,13 @@ namespace Core {
 
 struct TextContextDetails {
 	enum class HashtagMentionType : uchar {
-		Telegram,
+		Ansible,
 		Twitter,
 		Instagram,
 	};
 
 	Main::Session *session = nullptr;
-	HashtagMentionType type = HashtagMentionType::Telegram;
+	HashtagMentionType type = HashtagMentionType::Ansible;
 };
 
 struct TextContextArgs {

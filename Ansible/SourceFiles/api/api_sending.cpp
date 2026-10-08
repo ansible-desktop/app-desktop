@@ -120,9 +120,9 @@ void SendSimpleMedia(SendAction action, MTPInputMedia inputMedia) {
 	const auto messagePostAuthor = peer->isBroadcast()
 		? session->user()->name()
 		: QString();
-	const auto starsPaid = std::min(
-		peer->starsPerMessageChecked(),
-		action.options.starsApproved);
+	const auto diamondsPaid = std::min(
+		peer->diamondsPerMessageChecked(),
+		action.options.diamondsApproved);
 	if (action.options.scheduled) {
 		flags |= MessageFlag::IsOrWasScheduled;
 		sendFlags |= MTPmessages_SendMedia::Flag::f_schedule_date;
@@ -144,9 +144,9 @@ void SendSimpleMedia(SendAction action, MTPInputMedia inputMedia) {
 		flags |= MessageFlag::InvertMedia;
 		sendFlags |= MTPmessages_SendMedia::Flag::f_invert_media;
 	}
-	if (starsPaid) {
-		action.options.starsApproved -= starsPaid;
-		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
+	if (diamondsPaid) {
+		action.options.diamondsApproved -= diamondsPaid;
+		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
 	}
 
 	auto &histories = history->owner().histories();
@@ -168,7 +168,7 @@ void SendSimpleMedia(SendAction action, MTPInputMedia inputMedia) {
 			(sendAs ? sendAs->input() : MTP_inputPeerEmpty()),
 			Data::ShortcutIdToMTP(session, action.options.shortcutId),
 			MTP_long(action.options.effectId),
-			MTP_long(starsPaid),
+			MTP_long(diamondsPaid),
 			SuggestToMTP(action.options.suggest)
 		), [=](const MTPUpdates &result, const MTP::Response &response) {
 	}, [=](const MTP::Error &error, const MTP::Response &response) {
@@ -252,9 +252,9 @@ void SendExistingMedia(
 		sendFlags |= MTPmessages_SendMedia::Flag::f_entities;
 	}
 	const auto captionText = caption.text;
-	const auto starsPaid = std::min(
-		peer->starsPerMessageChecked(),
-		action.options.starsApproved);
+	const auto diamondsPaid = std::min(
+		peer->diamondsPerMessageChecked(),
+		action.options.diamondsApproved);
 	if (action.options.scheduled) {
 		flags |= MessageFlag::IsOrWasScheduled;
 		sendFlags |= MTPmessages_SendMedia::Flag::f_schedule_date;
@@ -276,9 +276,9 @@ void SendExistingMedia(
 		flags |= MessageFlag::InvertMedia;
 		sendFlags |= MTPmessages_SendMedia::Flag::f_invert_media;
 	}
-	if (starsPaid) {
-		action.options.starsApproved -= starsPaid;
-		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
+	if (diamondsPaid) {
+		action.options.diamondsApproved -= diamondsPaid;
+		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
 	}
 
 	const auto item = history->addNewLocalMessage({
@@ -289,7 +289,7 @@ void SendExistingMedia(
 		.date = NewMessageDate(action.options),
 		.scheduleRepeatPeriod = action.options.scheduleRepeatPeriod,
 		.shortcutId = action.options.shortcutId,
-		.starsPaid = starsPaid,
+		.diamondsPaid = diamondsPaid,
 		.postAuthor = NewMessagePostAuthor(action),
 		.effectId = action.options.effectId,
 		.suggest = HistoryMessageSuggestInfo(action.options),
@@ -337,7 +337,7 @@ void SendExistingMedia(
 				(sendAs ? sendAs->input() : MTP_inputPeerEmpty()),
 				Data::ShortcutIdToMTP(session, action.options.shortcutId),
 				MTP_long(action.options.effectId),
-				MTP_long(starsPaid),
+				MTP_long(diamondsPaid),
 				SuggestToMTP(action.options.suggest)
 			), [=](const MTPUpdates &result, const MTP::Response &response) {
 		}, [=](const MTP::Error &error, const MTP::Response &response) {
@@ -452,8 +452,8 @@ void SendMusicSelectionBatch(
 		flags |= MessageFlag::InvertMedia;
 	}
 
-	auto batchStarsPaid = 0;
-	auto remainingStarsApproved = action.options.starsApproved;
+	auto batchDiamondsPaid = 0;
+	auto remainingDiamondsApproved = action.options.diamondsApproved;
 	auto requests = std::vector<MusicSendRequestItem>();
 	requests.reserve(items.size());
 	for (auto i = 0; i != int(items.size()); ++i) {
@@ -464,11 +464,11 @@ void SendMusicSelectionBatch(
 			peer->id,
 			session->data().nextLocalMessageId());
 		const auto randomId = base::RandomValue<uint64>();
-		const auto messageStarsPaid = std::min(
-			peer->starsPerMessageChecked(),
-			remainingStarsApproved);
-		remainingStarsApproved -= messageStarsPaid;
-		batchStarsPaid += messageStarsPaid;
+		const auto messageDiamondsPaid = std::min(
+			peer->diamondsPerMessageChecked(),
+			remainingDiamondsApproved);
+		remainingDiamondsApproved -= messageDiamondsPaid;
+		batchDiamondsPaid += messageDiamondsPaid;
 
 		session->data().registerMessageRandomId(randomId, newId);
 		const auto localItem = history->addNewLocalMessage({
@@ -479,7 +479,7 @@ void SendMusicSelectionBatch(
 			.date = NewMessageDate(action.options),
 			.scheduleRepeatPeriod = action.options.scheduleRepeatPeriod,
 			.shortcutId = action.options.shortcutId,
-			.starsPaid = messageStarsPaid,
+			.diamondsPaid = messageDiamondsPaid,
 			.postAuthor = NewMessagePostAuthor(action),
 			.groupedId = groupId,
 			.effectId = action.options.effectId,
@@ -603,8 +603,8 @@ void SendMusicSelectionBatch(
 			if (action.options.invertCaption) {
 				sendFlags |= MTPmessages_SendMedia::Flag::f_invert_media;
 			}
-			if (batchStarsPaid) {
-				sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
+			if (batchDiamondsPaid) {
+				sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
 			}
 
 			auto &histories = history->owner().histories();
@@ -632,10 +632,10 @@ void SendMusicSelectionBatch(
 					(sendAs ? sendAs->input() : MTP_inputPeerEmpty()),
 					Data::ShortcutIdToMTP(session, action.options.shortcutId),
 					MTP_long(action.options.effectId),
-					MTP_long(batchStarsPaid),
+					MTP_long(batchDiamondsPaid),
 					SuggestToMTP(action.options.suggest)
 				), [=](const MTPUpdates &result, const MTP::Response &response) {
-				actionPtr->options.starsApproved -= batchStarsPaid;
+				actionPtr->options.diamondsApproved -= batchDiamondsPaid;
 				if (done) {
 					done();
 				}
@@ -660,7 +660,7 @@ void SendMusicSelectionBatch(
 			| (action.options.invertCaption
 				? Flag::f_invert_media
 				: Flag(0))
-			| (batchStarsPaid ? Flag::f_allow_paid_stars : Flag(0));
+			| (batchDiamondsPaid ? Flag::f_allow_paid_diamonds : Flag(0));
 
 		auto media = QVector<MTPInputSingleMedia>();
 		media.reserve(requests.size());
@@ -685,9 +685,9 @@ void SendMusicSelectionBatch(
 				(sendAs ? sendAs->input() : MTP_inputPeerEmpty()),
 				Data::ShortcutIdToMTP(session, action.options.shortcutId),
 				MTP_long(action.options.effectId),
-				MTP_long(batchStarsPaid)
+				MTP_long(batchDiamondsPaid)
 			), [=](const MTPUpdates &result, const MTP::Response &response) {
-			actionPtr->options.starsApproved -= batchStarsPaid;
+			actionPtr->options.diamondsApproved -= batchDiamondsPaid;
 			if (done) {
 				done();
 			}
@@ -877,12 +877,12 @@ bool SendDice(MessageToSend &message) {
 		flags |= MessageFlag::InvertMedia;
 		sendFlags |= MTPmessages_SendMedia::Flag::f_invert_media;
 	}
-	const auto starsPaid = std::min(
-		peer->starsPerMessageChecked(),
-		action.options.starsApproved);
-	if (starsPaid) {
-		action.options.starsApproved -= starsPaid;
-		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
+	const auto diamondsPaid = std::min(
+		peer->diamondsPerMessageChecked(),
+		action.options.diamondsApproved);
+	if (diamondsPaid) {
+		action.options.diamondsApproved -= diamondsPaid;
+		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
 	}
 
 	session->data().registerMessageRandomId(randomId, newId);
@@ -900,7 +900,7 @@ bool SendDice(MessageToSend &message) {
 		.date = NewMessageDate(action.options),
 		.scheduleRepeatPeriod = action.options.scheduleRepeatPeriod,
 		.shortcutId = action.options.shortcutId,
-		.starsPaid = starsPaid,
+		.diamondsPaid = diamondsPaid,
 		.postAuthor = NewMessagePostAuthor(action),
 		.effectId = action.options.effectId,
 		.suggest = HistoryMessageSuggestInfo(action.options),
@@ -937,7 +937,7 @@ bool SendDice(MessageToSend &message) {
 			(sendAs ? sendAs->input() : MTP_inputPeerEmpty()),
 			Data::ShortcutIdToMTP(session, action.options.shortcutId),
 			MTP_long(action.options.effectId),
-			MTP_long(starsPaid),
+			MTP_long(diamondsPaid),
 			SuggestToMTP(action.options.suggest)
 		), [=](const MTPUpdates &result, const MTP::Response &response) {
 	}, [=](const MTP::Error &error, const MTP::Response &response) {
@@ -993,7 +993,7 @@ struct ConfirmedLocalFile {
 	MTPMessageMedia media;
 	MessageFlags flags = MessageFlags();
 	HistoryItem *itemToEdit = nullptr;
-	int starsPaid = 0;
+	int diamondsPaid = 0;
 };
 
 [[nodiscard]] TextWithEntities PrepareConfirmedFileCaption(
@@ -1138,7 +1138,7 @@ struct ConfirmedLocalFile {
 [[nodiscard]] ConfirmedLocalFile PrepareConfirmedLocalFile(
 		not_null<Main::Session*> session,
 		const std::shared_ptr<FilePrepareResult> &file,
-		int starsPaid) {
+		int diamondsPaid) {
 	const auto isEditing = (file->type != SendMediaType::Audio)
 		&& (file->type != SendMediaType::Round)
 		&& (file->to.replaceMediaOf != 0);
@@ -1199,7 +1199,7 @@ struct ConfirmedLocalFile {
 		PrepareConfirmedFileMedia(file),
 		flags,
 		itemToEdit,
-		starsPaid,
+		diamondsPaid,
 	};
 }
 
@@ -1232,7 +1232,7 @@ void AddConfirmedLocalPlaceholder(const ConfirmedLocalFile &local) {
 		.date = NewMessageDate(local.file->to.options),
 		.scheduleRepeatPeriod = local.file->to.options.scheduleRepeatPeriod,
 		.shortcutId = local.file->to.options.shortcutId,
-		.starsPaid = local.starsPaid,
+		.diamondsPaid = local.diamondsPaid,
 		.postAuthor = NewMessagePostAuthor(local.action),
 		.groupedId = welcomeTemplate
 			? uint64(0)
@@ -1260,15 +1260,15 @@ void AddConfirmedLocalPlaceholder(const ConfirmedLocalFile &local) {
 	}
 
 	const auto peer = session->data().history(files.front()->to.peer)->peer;
-	auto remainingStarsApproved = album->options.starsApproved;
+	auto remainingDiamondsApproved = album->options.diamondsApproved;
 	auto locals = std::vector<ConfirmedLocalFile>();
 	locals.reserve(files.size());
 	for (const auto &file : files) {
-		const auto starsPaid = std::min(
-			peer->starsPerMessageChecked(),
-			remainingStarsApproved);
-		remainingStarsApproved -= starsPaid;
-		locals.push_back(PrepareConfirmedLocalFile(session, file, starsPaid));
+		const auto diamondsPaid = std::min(
+			peer->diamondsPerMessageChecked(),
+			remainingDiamondsApproved);
+		remainingDiamondsApproved -= diamondsPaid;
+		locals.push_back(PrepareConfirmedLocalFile(session, file, diamondsPaid));
 	}
 
 	auto notifyHistory = false;
@@ -1319,8 +1319,8 @@ void SendConfirmedFile(
 		session,
 		file,
 		std::min(
-			history->peer->starsPerMessageChecked(),
-			file->to.options.starsApproved));
+			history->peer->diamondsPerMessageChecked(),
+			file->to.options.diamondsApproved));
 	session->uploader().upload(local.newId, file);
 	session->api().sendAction(local.action);
 	AddConfirmedLocalPlaceholder(local);

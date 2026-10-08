@@ -178,7 +178,7 @@ void CheckoutProcess::Start(
 }
 
 void CheckoutProcess::Start(
-		InvoiceStarGift giftInvoice,
+		InvoiceDiamondGift giftInvoice,
 		Fn<void(CheckoutResult)> reactivate,
 		Fn<void(NonPanelPaymentForm)> nonPanelPaymentFormProcess) {
 	const auto randomId = giftInvoice.randomId;

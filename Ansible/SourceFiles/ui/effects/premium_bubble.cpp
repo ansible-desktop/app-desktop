@@ -372,7 +372,7 @@ BubbleWidget::BubbleWidget(
 }
 
 void BubbleWidget::setupParticles(not_null<Ui::RpWidget*> parent) {
-	_particles.emplace(StarParticles::Type::Radial, 50, st::lineWidth * 4);
+	_particles.emplace(DiamondParticles::Type::Radial, 50, st::lineWidth * 4);
 	_particles->setSpeed(0.1);
 
 	_particlesWidget = Ui::CreateChild<Ui::RpWidget>(parent);
@@ -619,7 +619,7 @@ void BubbleWidget::paintEvent(QPaintEvent *e) {
 		switch (_type) {
 		case BubbleType::NoPremium:
 		case BubbleType::UpgradePrice:
-		case BubbleType::StarRating: return st::windowBgActive->b;
+		case BubbleType::DiamondRating: return st::windowBgActive->b;
 		case BubbleType::NegativeRating: return st::attentionButtonFg->b;
 		case BubbleType::Premium: return QBrush(_cachedGradient);
 		case BubbleType::Credits: return st::creditsBg3->b;

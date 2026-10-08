@@ -690,7 +690,7 @@ void AddResaleGiftsList(
 		if (i == end(state->data.list)) {
 			return;
 		} else if (action == Action::Transfer
-			|| !i->unique->starsForResale) {
+			|| !i->unique->diamondsForResale) {
 			state->data.list.erase(i);
 		}
 		state->updated.fire({});
@@ -699,7 +699,7 @@ void AddResaleGiftsList(
 	using Descriptor = Info::PeerGifts::GiftDescriptor;
 	auto customHandler = Fn<void(Descriptor)>();
 	if (bought) {
-		using StarGift = Info::PeerGifts::GiftTypeStars;
+		using StarGift = Info::PeerGifts::GiftTypeDiamonds;
 		customHandler = crl::guard(container, [=](Descriptor descriptor) {
 			Expects(v::is<StarGift>(descriptor));
 
@@ -726,7 +726,7 @@ void AddResaleGiftsList(
 			if (mine && forCraft) {
 				continue;
 			}
-			result.list.push_back(Info::PeerGifts::GiftTypeStars{
+			result.list.push_back(Info::PeerGifts::GiftTypeDiamonds{
 				.info = gift,
 				.resale = true,
 				.mine = mine,
@@ -813,7 +813,7 @@ void ShowResaleGiftBoughtToast(
 	});
 }
 
-rpl::lifetime ShowStarGiftResale(
+rpl::lifetime ShowDiamondGiftResale(
 		not_null<Window::SessionController*> controller,
 		not_null<PeerData*> peer,
 		uint64 giftId,

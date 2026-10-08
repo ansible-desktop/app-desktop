@@ -538,12 +538,12 @@ private:
 	bool showSendMessageError(
 		const TextWithTags &textWithTags,
 		bool ignoreSlowmodeCountdown,
-		Fn<void(int starsApproved)> withPaymentApproved = nullptr,
+		Fn<void(int diamondsApproved)> withPaymentApproved = nullptr,
 		Api::SendOptions options = {},
 		bool ephemeral = false);
 	bool showSendRichDraftError(
 		bool ignoreSlowmodeCountdown,
-		Fn<void(int starsApproved)> withPaymentApproved = nullptr,
+		Fn<void(int diamondsApproved)> withPaymentApproved = nullptr,
 		Api::SendOptions options = {},
 		bool ephemeral = false);
 

@@ -1983,7 +1983,7 @@ void InitFieldAutocomplete(
 			&& !peer->asUser()->isBot()
 			&& (!shortcutMessages
 				|| shortcutMessages->shortcuts().list.empty()
-				|| peer->starsPerMessageChecked() != 0)) {
+				|| peer->diamondsPerMessageChecked() != 0)) {
 			parsed = {};
 		}
 		if (!parsed.query.isEmpty() && parsed.query[0] == '@') {

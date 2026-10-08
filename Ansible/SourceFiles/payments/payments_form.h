@@ -174,7 +174,7 @@ struct InvoiceCredits {
 	PeerId spendPurposePeerId = PeerId(0);
 };
 
-struct InvoiceStarGift {
+struct InvoiceDiamondGift {
 	uint64 giftId = 0;
 	uint64 randomId = 0;
 	TextWithEntities message;
@@ -191,7 +191,7 @@ struct InvoiceId {
 		InvoiceSlug,
 		InvoicePremiumGiftCode,
 		InvoiceCredits,
-		InvoiceStarGift> value;
+		InvoiceDiamondGift> value;
 };
 
 struct CreditsFormData {
@@ -203,9 +203,9 @@ struct CreditsFormData {
 	PhotoData *photo = nullptr;
 	InvoiceCredits invoice;
 	MTPInputInvoice inputInvoice;
-	int starGiftLimitedCount = 0;
-	int starGiftPerUserLimit = 0;
-	bool starGiftForm = false;
+	int diamondGiftLimitedCount = 0;
+	int diamondGiftPerUserLimit = 0;
+	bool diamondGiftForm = false;
 };
 
 struct CreditsReceiptData {
@@ -290,7 +290,7 @@ struct FormUpdate : std::variant<
 [[nodiscard]] MTPinputStorePaymentPurpose InvoiceCreditsGiveawayToTL(
 	const InvoicePremiumGiftCode &invoice);
 
-[[nodiscard]] bool IsPremiumForStarsInvoice(const InvoiceId &id);
+[[nodiscard]] bool IsPremiumForDiamondsInvoice(const InvoiceId &id);
 
 class Form final : public base::has_weak_ptr {
 public:

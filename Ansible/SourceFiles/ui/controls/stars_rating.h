@@ -33,7 +33,7 @@ public:
 		std::shared_ptr<Ui::Show> show,
 		const QString &name,
 		rpl::producer<Data::StarsRating> value,
-		Fn<Data::StarsRatingPending()> pending);
+		Fn<Data::DiamondsRatingPending()> pending);
 	~StarsRating();
 
 	void raise();
@@ -61,7 +61,7 @@ private:
 	QString _collapsedText;
 
 	rpl::variable<Data::StarsRating> _value;
-	Fn<Data::StarsRatingPending()> _pending;
+	Fn<Data::DiamondsRatingPending()> _pending;
 	rpl::variable<int> _widthValue;
 	const style::LevelShape *_shape = nullptr;
 

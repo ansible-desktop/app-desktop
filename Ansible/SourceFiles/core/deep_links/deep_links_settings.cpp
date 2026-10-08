@@ -1611,7 +1611,7 @@ void RegisterSettingsHandlers(Router &router) {
 			if (!ctx.controller) {
 				return Result::NeedsAuth;
 			}
-			static auto handler = ::Settings::BuyStarsHandler();
+			static auto handler = ::Settings::BuyDiamondsHandler();
 			handler.handler(ctx.controller->uiShow())();
 			return Result::Handled;
 		}},
@@ -1647,8 +1647,8 @@ void RegisterSettingsHandlers(Router &router) {
 				return Result::NeedsAuth;
 			}
 			const auto self = ctx.controller->session().user();
-			if (Info::BotStarRef::Join::Allowed(self)) {
-				ctx.controller->showSection(Info::BotStarRef::Join::Make(self));
+			if (Info::BotDiamondRef::Join::Allowed(self)) {
+				ctx.controller->showSection(Info::BotDiamondRef::Join::Make(self));
 			}
 			return Result::Handled;
 		}},
@@ -1678,7 +1678,7 @@ void RegisterSettingsHandlers(Router &router) {
 			if (!ctx.controller) {
 				return Result::NeedsAuth;
 			}
-			Ui::ChooseStarGiftRecipient(ctx.controller);
+			Ui::ChooseDiamondGiftRecipient(ctx.controller);
 			return Result::Handled;
 		}},
 	});
@@ -1689,7 +1689,7 @@ void RegisterSettingsHandlers(Router &router) {
 			if (!ctx.controller) {
 				return Result::NeedsAuth;
 			}
-			Ui::ShowStarGiftBox(ctx.controller, ctx.controller->session().user());
+			Ui::ShowDiamondGiftBox(ctx.controller, ctx.controller->session().user());
 			return Result::Handled;
 		}},
 	});

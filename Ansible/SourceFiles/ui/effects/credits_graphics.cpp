@@ -105,7 +105,7 @@ QByteArray CreditsIconSvg(int strokeWidth) {
 
 } // namespace
 
-QImage GenerateStars(int height, int count, int ratio) {
+QImage GenerateDiamonds(int height, int count, int ratio) {
 	constexpr auto kOutlineWidth = .6;
 	constexpr auto kStrokeWidth = 3;
 	constexpr auto kShift = 3;
@@ -116,7 +116,7 @@ QImage GenerateStars(int height, int count, int ratio) {
 	auto svg = QSvgRenderer(CreditsIconSvg(kStrokeWidth));
 	svg.setViewBox(svg.viewBox() + Margins(kStrokeWidth));
 
-	const auto starSize = Size(height - kOutlineWidth * 2);
+	const auto diamondSize = Size(height - kOutlineWidth * 2);
 
 	auto frame = QImage(
 		QSize((height + kShift * (count - 1)) * ratio, height * ratio),
@@ -130,17 +130,17 @@ QImage GenerateStars(int height, int count, int ratio) {
 		if (count > 1) {
 			// Cut a gap in the star below, they overlap by kShift.
 			q.setCompositionMode(QPainter::CompositionMode_Clear);
-			svg.render(&q, QRectF(QPointF(s, 0), starSize));
-			svg.render(&q, QRectF(QPointF(s, s), starSize));
-			svg.render(&q, QRectF(QPointF(0, s), starSize));
-			svg.render(&q, QRectF(QPointF(-s, s), starSize));
-			svg.render(&q, QRectF(QPointF(-s, 0), starSize));
-			svg.render(&q, QRectF(QPointF(-s, -s), starSize));
-			svg.render(&q, QRectF(QPointF(0, -s), starSize));
-			svg.render(&q, QRectF(QPointF(s, -s), starSize));
+			svg.render(&q, QRectF(QPointF(s, 0), diamondSize));
+			svg.render(&q, QRectF(QPointF(s, s), diamondSize));
+			svg.render(&q, QRectF(QPointF(0, s), diamondSize));
+			svg.render(&q, QRectF(QPointF(-s, s), diamondSize));
+			svg.render(&q, QRectF(QPointF(-s, 0), diamondSize));
+			svg.render(&q, QRectF(QPointF(-s, -s), diamondSize));
+			svg.render(&q, QRectF(QPointF(0, -s), diamondSize));
+			svg.render(&q, QRectF(QPointF(s, -s), diamondSize));
 			q.setCompositionMode(QPainter::CompositionMode_SourceOver);
 		}
-		svg.render(&q, Rect(starSize));
+		svg.render(&q, Rect(diamondSize));
 		q.restore();
 	};
 	{
@@ -154,11 +154,11 @@ QImage GenerateStars(int height, int count, int ratio) {
 	return frame;
 }
 
-not_null<RpWidget*> CreateSingleStarWidget(
+not_null<RpWidget*> CreateSingleDiamondWidget(
 		not_null<RpWidget*> parent,
 		int height) {
 	const auto widget = CreateChild<RpWidget>(parent);
-	const auto image = GenerateStars(height, 1);
+	const auto image = GenerateDiamonds(height, 1);
 	widget->resize(image.size() / style::DevicePixelRatio());
 	widget->paintRequest(
 	) | rpl::on_next([=] {
@@ -193,7 +193,7 @@ not_null<MaskedInputField*> AddInputFieldForCredits(
 		input->changeLimit(v.whole());
 		input->setText(QString::number(v.whole()));
 	}, input->lifetime());
-	const auto icon = CreateSingleStarWidget(
+	const auto icon = CreateSingleDiamondWidget(
 		inputContainer,
 		st.style.font->height);
 	inputContainer->sizeValue(
@@ -306,10 +306,10 @@ PaintRoundImageCallback GenerateCreditsPaintUserpicCallback(
 						Qt::RoundJoin));
 				q.fillPath(path, st::historyPeerUserpicFg);
 				q.setCompositionMode(QPainter::CompositionMode_Clear);
-				constexpr auto kStarRatio = kSize / ((kSize - 44) / 2.);
+				constexpr auto kDiamondRatio = kSize / ((kSize - 44) / 2.);
 				svg->render(
 					&q,
-					QRectF(0, 0, size, size) - Margins(size / kStarRatio));
+					QRectF(0, 0, size, size) - Margins(size / kDiamondRatio));
 			}
 			p.drawImage(x, y, *image);
 		};
@@ -571,7 +571,7 @@ TextWithEntities GenerateEntryName(const Data::CreditsHistoryEntry &entry) {
 			tr::now,
 			lt_amount,
 			TextWithEntities{
-				Info::BotStarRef::FormatCommission(entry.starrefCommission)
+				Info::BotDiamondRef::FormatCommission(entry.starrefCommission)
 			},
 			TextWithEntities::Simple)
 		: entry.isLiveStoryReaction()
@@ -584,7 +584,7 @@ TextWithEntities GenerateEntryName(const Data::CreditsHistoryEntry &entry) {
 			lt_count,
 			entry.paidMessagesCount,
 			TextWithEntities::Simple)
-		: (entry.premiumMonthsForStars
+		: (entry.premiumMonthsForDiamonds
 		? tr::lng_premium_summary_title
 		: entry.floodSkip
 		? tr::lng_diamonds_box_history_entry_api
@@ -602,7 +602,7 @@ TextWithEntities GenerateEntryName(const Data::CreditsHistoryEntry &entry) {
 		? tr::lng_diamonds_box_history_entry_gift_converted
 		: (entry.gift && !entry.in && entry.uniqueGift)
 		? tr::lng_diamonds_box_history_entry_gift_transfer
-		: (entry.starsConverted || (entry.gift && !entry.in))
+		: (entry.diamondsConverted || (entry.gift && !entry.in))
 		? tr::lng_diamonds_box_history_entry_gift_sent
 		: entry.gift
 		? tr::lng_diamonds_box_history_entry_gift_name
@@ -626,7 +626,7 @@ Fn<void(QPainter &)> PaintOutlinedColoredCreditsIconCallback(
 	constexpr auto kOutlineWidth = 1.6;
 	// constexpr auto kStarShift = 3.8;
 	constexpr auto kStrokeWidth = 3;
-	const auto starSize = Size(size);
+	const auto diamondSize = Size(size);
 
 	auto svg = std::make_shared<QSvgRenderer>(CreditsIconSvg(kStrokeWidth));
 	svg->setViewBox(svg->viewBox() + Margins(kStrokeWidth));
@@ -638,10 +638,10 @@ Fn<void(QPainter &)> PaintOutlinedColoredCreditsIconCallback(
 			const auto angle = i * kAngleStep;
 			const auto x = s * std::cos(angle);
 			const auto y = s * std::sin(angle);
-			svg->render(&q, QRectF(QPointF(x, y), starSize));
+			svg->render(&q, QRectF(QPointF(x, y), diamondSize));
 		}
 		q.setCompositionMode(QPainter::CompositionMode_SourceOver);
-		svg->render(&q, Rect(starSize));
+		svg->render(&q, Rect(diamondSize));
 		q.restore();
 	};
 }
@@ -658,10 +658,10 @@ QImage CreditsWhiteDoubledIcon(int size, float64 outlineRatio) {
 	constexpr auto kPoints = uint(16);
 	constexpr auto kAngleStep = 2. * M_PI / kPoints;
 	constexpr auto kOutlineWidth = 1.6;
-	constexpr auto kStarShift = 3.8;
+	constexpr auto kDiamondShift = 3.8;
 	const auto userpicRect = Rect(Size(size));
-	const auto starRect = userpicRect - Margins(userpicRect.width() / 4.);
-	const auto starSize = starRect.size();
+	const auto diamondRect = userpicRect - Margins(userpicRect.width() / 4.);
+	const auto diamondSize = diamondRect.size();
 	const auto drawSingle = [&](QPainter &q) {
 		const auto s = style::ConvertFloatScale(kOutlineWidth * outlineRatio);
 		q.save();
@@ -670,19 +670,19 @@ QImage CreditsWhiteDoubledIcon(int size, float64 outlineRatio) {
 			const auto angle = i * kAngleStep;
 			const auto x = s * std::cos(angle);
 			const auto y = s * std::sin(angle);
-			svg.render(&q, QRectF(QPointF(x, y), starSize));
+			svg.render(&q, QRectF(QPointF(x, y), diamondSize));
 		}
 		q.setCompositionMode(QPainter::CompositionMode_SourceOver);
-		svg.render(&q, Rect(starSize));
+		svg.render(&q, Rect(diamondSize));
 		q.restore();
 	};
 	{
 		auto p = QPainter(&result);
 		p.setPen(Qt::NoPen);
 		p.setBrush(st::lightButtonFg);
-		p.translate(starRect.topLeft());
+		p.translate(diamondRect.topLeft());
 		p.translate(
-			style::ConvertFloatScale(kStarShift * outlineRatio) / 2.,
+			style::ConvertFloatScale(kDiamondShift * outlineRatio) / 2.,
 			0);
 		drawSingle(p);
 		{
@@ -699,7 +699,7 @@ QImage CreditsWhiteDoubledIcon(int size, float64 outlineRatio) {
 			p.restore();
 		}
 		p.translate(
-			-style::ConvertFloatScale(kStarShift * outlineRatio),
+			-style::ConvertFloatScale(kDiamondShift * outlineRatio),
 			0);
 		drawSingle(p);
 	}
@@ -711,7 +711,7 @@ std::unique_ptr<Ui::Text::CustomEmoji> MakeCreditsIconEmoji(
 		int count) {
 	return std::make_unique<Ui::CustomEmoji::Internal>(
 		u"credits_icon:%1:%2"_q.arg(height).arg(count),
-		GenerateStars(height, count));
+		GenerateDiamonds(height, count));
 }
 
 Ui::Text::MarkedContext MakeCreditsIconContext(int height, int count) {

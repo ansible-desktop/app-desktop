@@ -125,12 +125,12 @@ void PostsSearchIntro::update(PostsSearchIntroState state) {
 	_state = std::move(state);
 }
 
-rpl::producer<int> PostsSearchIntro::searchWithStars() const {
+rpl::producer<int> PostsSearchIntro::searchWithDiamonds() const {
 	return _button->clicks() | rpl::map([=] {
 		const auto &now = _state.current();
 		return (now.needsPremium || now.freeSearchesLeft)
 			? 0
-			: int(now.starsPerPaidSearch);
+			: int(now.diamondsPerPaidSearch);
 	});
 }
 
@@ -227,7 +227,7 @@ void PostsSearchIntro::setup() {
 					rpl::single(Ui::Text::IconEmoji(
 						&st::starIconEmoji
 					).append(
-						Lang::FormatCountDecimal(state.starsPerPaidSearch))),
+						Lang::FormatCountDecimal(state.diamondsPerPaidSearch))),
 					tr::marked),
 				tr::lng_posts_limit_unlocks(
 					lt_duration,

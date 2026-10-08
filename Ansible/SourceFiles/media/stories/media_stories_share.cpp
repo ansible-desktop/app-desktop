@@ -172,12 +172,12 @@ namespace Media::Stories {
 			if (options.invertCaption) {
 				sendFlags |= SendFlag::f_invert_media;
 			}
-			const auto starsPaid = std::min(
-				threadHistory->peer->starsPerMessageChecked(),
-				options.starsApproved);
-			if (starsPaid) {
-				options.starsApproved -= starsPaid;
-				sendFlags |= SendFlag::f_allow_paid_stars;
+			const auto diamondsPaid = std::min(
+				threadHistory->peer->diamondsPerMessageChecked(),
+				options.diamondsApproved);
+			if (diamondsPaid) {
+				options.diamondsApproved -= diamondsPaid;
+				sendFlags |= SendFlag::f_allow_paid_diamonds;
 			}
 			const auto done = [=] {
 				if (!--state->requests) {
@@ -205,7 +205,7 @@ namespace Media::Stories {
 					MTP_inputPeerEmpty(),
 					Data::ShortcutIdToMTP(session, options.shortcutId),
 					MTP_long(options.effectId),
-					MTP_long(starsPaid),
+					MTP_long(diamondsPaid),
 					Api::SuggestToMTP(options.suggest)
 				), [=](
 						const MTPUpdates &result,

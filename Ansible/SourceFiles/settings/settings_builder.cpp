@@ -336,7 +336,7 @@ Ui::SettingsButton *SectionBuilder::addPremiumButton(PremiumButtonArgs &&args) {
 		.keywords = std::move(args.keywords),
 	});
 	if (result) {
-		AddPremiumStar(
+		AddPremiumDiamond(
 			result,
 			args.credits,
 			v::get<WidgetContext>(_context).isPaused);
@@ -374,7 +374,7 @@ Ui::SettingsButton *SectionBuilder::addPrivacyButton(PrivacyButtonArgs &&args) {
 			}));
 		});
 		if (premium) {
-			AddPrivacyPremiumStar(
+			AddPrivacyPremiumDiamond(
 				button,
 				session,
 				std::move(args.title),

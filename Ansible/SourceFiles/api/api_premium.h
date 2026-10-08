@@ -197,7 +197,7 @@ public:
 	[[nodiscard]] int giveawayPeriodMax() const;
 	[[nodiscard]] bool giveawayGiftsPurchaseAvailable() const;
 
-	[[nodiscard]] rpl::producer<rpl::no_value, QString> requestStarGifts();
+	[[nodiscard]] rpl::producer<rpl::no_value, QString> requestDiamondGifts();
 	[[nodiscard]] const std::vector<Data::StarGift> &starGifts() const;
 
 private:
@@ -248,12 +248,12 @@ private:
 };
 
 struct MessageMoneyRestriction {
-	int starsPerMessage = 0;
+	int diamondsPerMessage = 0;
 	bool premiumRequired = false;
 	bool known = false;
 
 	explicit operator bool() const {
-		return starsPerMessage != 0 || premiumRequired;
+		return diamondsPerMessage != 0 || premiumRequired;
 	}
 
 	friend inline bool operator==(

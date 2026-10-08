@@ -630,7 +630,7 @@ Key ContentMemento::key() const {
 	} else if (statisticsTag().peer) {
 		return statisticsTag();
 	} else if (const auto starref = starrefPeer()) {
-		return BotStarRef::Tag(starref, starrefType());
+		return BotDiamondRef::Tag(starref, starrefType());
 	} else if (const auto who = reactionsWhoReadIds()) {
 		return Key(who, _reactionsSelected, _pollReactionsContextId);
 	} else if (const auto another = globalMediaSelf()) {
@@ -693,7 +693,7 @@ ContentMemento::ContentMemento(Statistics::Tag statistics)
 : _statisticsTag(statistics) {
 }
 
-ContentMemento::ContentMemento(BotStarRef::Tag starref)
+ContentMemento::ContentMemento(BotDiamondRef::Tag starref)
 : _starrefPeer(starref.peer)
 , _starrefType(starref.type) {
 }

@@ -733,8 +733,8 @@ public:
 		-> std::unique_ptr<HistoryView::SubsectionTabs>;
 	void dropSubsectionTabs();
 
-	void showStarGiftAuction(const QString &slug);
-	void showStarGiftAuction(uint64 giftId);
+	void showDiamondGiftAuction(const QString &slug);
+	void showDiamondGiftAuction(uint64 giftId);
 
 	void showCloudPassword(const QString &highlightId = QString());
 

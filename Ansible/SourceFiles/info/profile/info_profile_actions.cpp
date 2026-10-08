@@ -1011,7 +1011,7 @@ void DeleteContactNote(
 
 	button->setClickedCallback([=] {
 		if (!button->isDisabled()) {
-			Ui::ShowStarGiftBox(controller, user);
+			Ui::ShowDiamondGiftBox(controller, user);
 		}
 	});
 
@@ -2793,20 +2793,20 @@ void ActionsFiller::addAffiliateProgram(not_null<UserData*> user) {
 	) | rpl::filter([=](StarRefProgram program) {
 		return program.commission > 0;
 	}) | rpl::map([=](StarRefProgram program) {
-		return Info::BotStarRef::FormatCommission(program.commission);
+		return Info::BotDiamondRef::FormatCommission(program.commission);
 	});
 	const auto show = _controller->uiShow();
 
-	struct StarRefRecipients {
+	struct DiamondRefRecipients {
 		std::vector<not_null<PeerData*>> list;
 		bool requested = false;
 		Fn<void()> open;
 	};
-	const auto recipients = std::make_shared<StarRefRecipients>();
+	const auto recipients = std::make_shared<DiamondRefRecipients>();
 	recipients->open = [=] {
 		if (!recipients->list.empty()) {
 			const auto program = user->botInfo->starRefProgram;
-			show->show(Info::BotStarRef::JoinStarRefBox(
+			show->show(Info::BotDiamondRef::JoinDiamondRefBox(
 				{ user, { program } },
 				user->session().user(),
 				recipients->list));
@@ -2816,7 +2816,7 @@ void ActionsFiller::addAffiliateProgram(not_null<UserData*> user) {
 				recipients->list = std::move(list);
 				recipients->open();
 			};
-			Info::BotStarRef::ResolveRecipients(&user->session(), done);
+			Info::BotDiamondRef::ResolveRecipients(&user->session(), done);
 		}
 	};
 

@@ -1117,10 +1117,10 @@ ColorGiftTabsResult AddColorGiftTabs(
 	};
 	const auto state = container->lifetime().make_state<State>();
 
-	GiftsStars(
+	GiftsDiamonds(
 		session,
 		session->user()
-	) | rpl::on_next([=](const std::vector<GiftTypeStars> &list) {
+	) | rpl::on_next([=](const std::vector<GiftTypeDiamonds> &list) {
 		auto filtered = std::vector<Data::StarGift>();
 		for (const auto &gift : list) {
 			if ((profile || gift.info.peerColorAvailable) && gift.resale) {
@@ -1200,7 +1200,7 @@ void AddGiftSelector(
 		object_ptr<Ui::VisibleRangeWidget>(container));
 
 	struct List {
-		std::vector<GiftTypeStars> list;
+		std::vector<GiftTypeDiamonds> list;
 		rpl::lifetime loading;
 		QString offset;
 		bool loaded = false;
@@ -2006,7 +2006,7 @@ void EditPeerColorSection(
 					: 0;
 				state->buyCollectible = (selected->peerColor
 					&& (selected->ownerId != session->userPeerId())
-					&& selected->starsForResale > 0)
+					&& selected->diamondsForResale > 0)
 					? selected
 					: nullptr;
 				state->collectible = selected->peerColor
@@ -2109,7 +2109,7 @@ void EditPeerColorSection(
 					lt_cost,
 					rpl::single(Ui::Text::IconEmoji(
 						&st::starIconEmojiSmall
-					).append(Lang::FormatCountDecimal(buy->starsForResale))),
+					).append(Lang::FormatCountDecimal(buy->diamondsForResale))),
 					tr::marked),
 				st::resaleButtonTitle,
 				st::resaleButtonSubtitle);
@@ -2117,7 +2117,7 @@ void EditPeerColorSection(
 			button->setText(tr::lng_gift_buy_resale_button(
 				lt_cost,
 				rpl::single(Ui::Text::IconEmoji(&st::starIconEmoji).append(
-					Lang::FormatCountDecimal(buy->starsForResale))),
+					Lang::FormatCountDecimal(buy->diamondsForResale))),
 				tr::marked));
 		}
 	}, button->lifetime());
@@ -2287,7 +2287,7 @@ void EditPeerProfileColorSection(
 				state->patternEmojiId = 0;
 				state->buyCollectible = (selected->peerColor
 					&& (selected->ownerId != session->userPeerId())
-					&& selected->starsForResale > 0)
+					&& selected->diamondsForResale > 0)
 					? selected
 					: nullptr;
 				const auto statuses = &peer->owner().emojiStatuses();
@@ -2383,7 +2383,7 @@ void EditPeerProfileColorSection(
 					lt_cost,
 					rpl::single(Ui::Text::IconEmoji(
 						&st::starIconEmojiSmall
-					).append(Lang::FormatCountDecimal(buy->starsForResale))),
+					).append(Lang::FormatCountDecimal(buy->diamondsForResale))),
 					tr::marked),
 				st::resaleButtonTitle,
 				st::resaleButtonSubtitle);
@@ -2391,7 +2391,7 @@ void EditPeerProfileColorSection(
 			button->setText(tr::lng_gift_buy_resale_button(
 				lt_cost,
 				rpl::single(Ui::Text::IconEmoji(&st::starIconEmoji).append(
-					Lang::FormatCountDecimal(buy->starsForResale))),
+					Lang::FormatCountDecimal(buy->diamondsForResale))),
 				tr::marked));
 		}
 	}, button->lifetime());

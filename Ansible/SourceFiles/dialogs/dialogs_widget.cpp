@@ -1942,8 +1942,8 @@ void Widget::updateControlsVisibility(bool fast) {
 		&& _searchHasFocus) {
 		setInnerFocus();
 	}
-	if (_updateTelegram) {
-		_updateTelegram->show();
+	if (_updateAnsible) {
+		_updateAnsible->show();
 	}
 	_searchControls->setVisible(
 		!_openedFolder && !_openedForum && !_openedCommunity);
@@ -2630,18 +2630,18 @@ void Widget::checkUpdateStatus() {
 
 	using Checker = Core::UpdateChecker;
 	if (Checker().state() == Checker::State::Ready) {
-		if (_updateTelegram) {
+		if (_updateAnsible) {
 			return;
 		}
-		_updateTelegram.create(
+		_updateAnsible.create(
 			this,
 			tr::lng_update_ansible(tr::now),
 			st::dialogsUpdateButton,
 			st::dialogsInstallUpdate,
 			st::dialogsInstallUpdateOver,
 			true);
-		_updateTelegram->show();
-		_updateTelegram->setClickedCallback([] {
+		_updateAnsible->show();
+		_updateAnsible->setClickedCallback([] {
 			Core::checkReadyUpdate();
 			Core::Restart();
 		});
@@ -2649,10 +2649,10 @@ void Widget::checkUpdateStatus() {
 			_connecting->raise();
 		}
 	} else {
-		if (!_updateTelegram) {
+		if (!_updateAnsible) {
 			return;
 		}
-		_updateTelegram.destroy();
+		_updateAnsible.destroy();
 	}
 	updateControlsGeometry();
 }
@@ -2925,8 +2925,8 @@ void Widget::showAnimated(
 	showFast();
 	auto newContentCache = Ui::GrabWidget(this);
 
-	if (_updateTelegram) {
-		_updateTelegram->hide();
+	if (_updateAnsible) {
+		_updateAnsible->hide();
 	}
 	if (_connecting) {
 		_connecting->setForceHidden(true);
@@ -4620,7 +4620,7 @@ void Widget::updateControlsGeometry() {
 				buttonHeight);
 		}
 	};
-	putBottomButton(_updateTelegram);
+	putBottomButton(_updateAnsible);
 	putBottomButton(_downloadBar);
 	putBottomButton(_loadMoreChats);
 	if (_connecting) {

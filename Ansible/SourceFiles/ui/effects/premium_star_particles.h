@@ -12,7 +12,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 namespace Ui::Premium {
 
-class StarParticles final {
+class DiamondParticles final {
 public:
 	enum class Glyph {
 		None,
@@ -20,7 +20,7 @@ public:
 		Dollar,
 	};
 
-	explicit StarParticles(Fn<void(const QRect &)> update);
+	explicit DiamondParticles(Fn<void(const QRect &)> update);
 
 	void setColor(QColor color);
 	void setColors(QColor color1, QColor color2);

@@ -730,7 +730,7 @@ void InnerWidget::fill() {
 					return Lang::FormatCreditsAmountDecimal(value);
 				}),
 				st::channelEarnOverviewMajorLabel);
-			const auto icon = Ui::CreateSingleStarWidget(
+			const auto icon = Ui::CreateSingleDiamondWidget(
 				line,
 				creditsLabel->height());
 			const auto creditsSecondLabel = Ui::CreateChild<Ui::FlatLabel>(
@@ -970,13 +970,13 @@ void InnerWidget::fill() {
 			) | rpl::map(creditsToUsdMap));
 	}
 
-	if (Info::BotStarRef::Join::Allowed(_peer)) {
-		const auto button = Info::BotStarRef::AddViewListButton(
+	if (Info::BotDiamondRef::Join::Allowed(_peer)) {
+		const auto button = Info::BotDiamondRef::AddViewListButton(
 			container,
 			tr::lng_diamonds_summary_earn_title(),
 			tr::lng_diamonds_summary_earn_about());
 		button->setClickedCallback([=] {
-			_controller->showSection(Info::BotStarRef::Join::Make(_peer));
+			_controller->showSection(Info::BotDiamondRef::Join::Make(_peer));
 		});
 		Ui::AddSkip(container);
 		Ui::AddDivider(container);

@@ -14,8 +14,8 @@ class RippleAnimation;
 } // namespace Ui
 
 namespace Ui::Premium {
-class ColoredMiniStars;
-enum class MiniStarsType;
+class ColoredMiniDiamonds;
+enum class MiniDiamondsType;
 } // namespace Ui::Premium
 
 namespace HistoryView {
@@ -43,7 +43,7 @@ public:
 	}
 
 	[[nodiscard]] virtual auto buttonMinistars()
-	-> std::optional<Ui::Premium::MiniStarsType> {
+	-> std::optional<Ui::Premium::MiniDiamondsType> {
 		return std::nullopt;
 	}
 	[[nodiscard]] virtual QImage cornerTag(const PaintContext &context) {
@@ -129,7 +129,7 @@ private:
 
 		ClickHandlerPtr link;
 		std::unique_ptr<Ui::RippleAnimation> ripple;
-		std::unique_ptr<Ui::Premium::ColoredMiniStars> stars;
+		std::unique_ptr<Ui::Premium::ColoredMiniDiamonds> stars;
 		std::unique_ptr<QColor> lastFg;
 
 		mutable QPoint lastPoint;

@@ -121,7 +121,7 @@ struct Settings {
 
 struct Environment {
 	QString internalLinksDomain;
-	QByteArray aboutTelegram;
+	QByteArray aboutAnsible;
 	QByteArray aboutContacts;
 	QByteArray aboutFrequent;
 	QByteArray aboutSessions;

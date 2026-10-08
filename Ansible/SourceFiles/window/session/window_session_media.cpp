@@ -147,7 +147,7 @@ void SessionController::sendDrawToReplyFiles(
 			payment->clear();
 			if (const auto thread = weak.get()) {
 				auto copy = options;
-				copy.starsApproved = approved;
+				copy.diamondsApproved = approved;
 				sendDrawToReplyFiles(thread, replyTo, bundle, copy);
 			}
 		});

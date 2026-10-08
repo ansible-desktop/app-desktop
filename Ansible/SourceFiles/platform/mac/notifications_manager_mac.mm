@@ -39,9 +39,9 @@ constexpr auto kQuerySettingsEachMs = crl::time(1000);
 constexpr auto kCacheExpirationWeeks = 5;
 constexpr auto kCacheExpirationSeconds = kCacheExpirationWeeks * 7 * 24 * 60 * 60;
 
-NSString *const kTelegramMarkAsReadText = @"AnsibleMarkAsReadText";
-NSString *const kTelegramMarkAsReadTimestamp = @"AnsibleMarkAsReadTimestamp";
-NSString *const kTelegramMarkAsReadLanguageCode = @"AnsibleMarkAsReadLanguageCode";
+NSString *const kAnsibleMarkAsReadText = @"AnsibleMarkAsReadText";
+NSString *const kAnsibleMarkAsReadTimestamp = @"AnsibleMarkAsReadTimestamp";
+NSString *const kAnsibleMarkAsReadLanguageCode = @"AnsibleMarkAsReadLanguageCode";
 
 crl::time LastSettingsQueryMs/* = 0*/;
 bool DoNotDisturbEnabled/* = false*/;
@@ -624,11 +624,11 @@ void Manager::Private::initCachedMarkAsReadText() {
 
 	const auto defaults = [NSUserDefaults standardUserDefaults];
 	const auto cachedText = static_cast<NSString*>([defaults
-		stringForKey:kTelegramMarkAsReadText]);
+		stringForKey:kAnsibleMarkAsReadText]);
 	const auto cachedTimestamp = static_cast<NSNumber*>([defaults
-		objectForKey:kTelegramMarkAsReadTimestamp]);
+		objectForKey:kAnsibleMarkAsReadTimestamp]);
 	const auto cachedLanguageCode = static_cast<NSString*>([defaults
-		stringForKey:kTelegramMarkAsReadLanguageCode]);
+		stringForKey:kAnsibleMarkAsReadLanguageCode]);
 
 	const auto now = base::unixtime::now();
 	const auto shouldRefresh = !cachedTimestamp
@@ -645,13 +645,13 @@ void Manager::Private::initCachedMarkAsReadText() {
 	if (langId == NS2QString(languageCode)) {
 		[defaults
 			setObject:Q2NSString(tr::lng_context_mark_read(tr::now))
-			forKey:kTelegramMarkAsReadText];
+			forKey:kAnsibleMarkAsReadText];
 		[defaults
 			setObject:@(base::unixtime::now())
-			forKey:kTelegramMarkAsReadTimestamp];
+			forKey:kAnsibleMarkAsReadTimestamp];
 		[defaults
 			setObject:languageCode
-			forKey:kTelegramMarkAsReadLanguageCode];
+			forKey:kAnsibleMarkAsReadLanguageCode];
 	} else if (shouldRefresh) {
 		Lang::CurrentCloudManager().getValueForLang(
 			u"lng_context_mark_read"_q,
@@ -663,13 +663,13 @@ void Manager::Private::initCachedMarkAsReadText() {
 				}
 				[defaults
 					setObject:Q2NSString(r)
-					forKey:kTelegramMarkAsReadText];
+					forKey:kAnsibleMarkAsReadText];
 				[defaults
 					setObject:@(base::unixtime::now())
-					forKey:kTelegramMarkAsReadTimestamp];
+					forKey:kAnsibleMarkAsReadTimestamp];
 				[defaults
 					setObject:languageCode
-					forKey:kTelegramMarkAsReadLanguageCode];
+					forKey:kAnsibleMarkAsReadLanguageCode];
 			});
 	}
 }

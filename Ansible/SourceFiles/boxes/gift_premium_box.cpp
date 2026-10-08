@@ -525,7 +525,7 @@ void AddUniqueGiftPropertyRows(
 					const Data::UniqueGiftAttributes &list) {
 				if (!list.models.empty()) {
 					show->show(Box(
-						Ui::StarGiftPreviewBox,
+						Ui::DiamondGiftPreviewBox,
 						title,
 						list,
 						id.type,
@@ -592,19 +592,19 @@ void AddUniqueGiftPropertyRows(
 		margin);
 }
 
-[[nodiscard]] object_ptr<Ui::RpWidget> MakeStarGiftStarsValue(
+[[nodiscard]] object_ptr<Ui::RpWidget> MakeDiamondGiftDiamondsValue(
 		not_null<Ui::TableLayout*> table,
 		std::shared_ptr<ChatHelpers::Show> show,
 		const Data::CreditsHistoryEntry &entry,
-		Fn<void()> convertToStars) {
+		Fn<void()> convertToDiamonds) {
 	auto helper = Ui::Text::CustomEmojiHelper();
 	const auto addUpgradeToValue = !entry.credits.ton()
 		&& !entry.giftUpgradeGifted
 		&& !entry.giftUpgradeSeparate
-		&& entry.starsUpgradedBySender;
+		&& entry.diamondsUpgradedBySender;
 	const auto amount = addUpgradeToValue
 		? CreditsAmount(
-			entry.credits.whole() + entry.starsUpgradedBySender,
+			entry.credits.whole() + entry.diamondsUpgradedBySender,
 			entry.credits.nano())
 		: entry.credits;
 	const auto price = helper.paletteDependent(Ui::Earn::IconCreditsEmoji(
@@ -617,15 +617,15 @@ void AddUniqueGiftPropertyRows(
 		helper.context());
 	label->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-	if (!convertToStars) {
+	if (!convertToDiamonds) {
 		return label;
 	}
 	const auto handler = [=](not_null<Ui::RpWidget*> button) {
-		convertToStars();
+		convertToDiamonds();
 	};
 	auto text = tr::lng_gift_sell_small(
 		lt_count_decimal,
-		rpl::single(entry.starsConverted * 1.));
+		rpl::single(entry.diamondsConverted * 1.));
 	return MakeValueWithSmallButton(
 		table,
 		label.release(),
@@ -651,7 +651,7 @@ void AddUniqueGiftPropertyRows(
 	label->setAttribute(Qt::WA_TransparentForMouseEvents);
 
 	const auto handler = [=](not_null<Ui::RpWidget*> button) {
-		if (value->initialPriceStars) {
+		if (value->initialPriceDiamonds) {
 			show->show(Box(Settings::UniqueGiftValueBox, show, entry, st));
 			return;
 		} else if (*loading) {
@@ -667,7 +667,7 @@ void AddUniqueGiftPropertyRows(
 			value->currency = qs(data.vcurrency());
 			value->valuePrice = data.vvalue().v;
 			value->initialSaleDate = data.vinitial_sale_date().v;
-			value->initialPriceStars = CreditsAmount(
+			value->initialPriceDiamonds = CreditsAmount(
 				data.vinitial_sale_stars().v);
 			value->initialSalePrice = data.vinitial_sale_price().v;
 			value->lastSaleDate = data.vlast_sale_date().value_or_empty();
@@ -675,7 +675,7 @@ void AddUniqueGiftPropertyRows(
 			value->lastSaleFragment = data.is_last_sale_on_fragment();
 			value->minimumPrice = data.vfloor_price().value_or_empty();
 			value->averagePrice = data.vaverage_price().value_or_empty();
-			value->forSaleOnTelegram = data.vlisted_count().value_or_empty();
+			value->forSaleOnAnsible = data.vlisted_count().value_or_empty();
 			value->forSaleOnFragment = int(
 				data.vfragment_listed_count().value_or_empty());
 			value->fragmentUrl = qs(
@@ -1480,13 +1480,13 @@ struct AddedUniqueDetails {
 	};
 }
 
-void AddStarGiftTable(
+void AddDiamondGiftTable(
 		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<Ui::VerticalLayout*> container,
 		Settings::CreditsEntryBoxStyleOverrides st,
 		const Data::CreditsHistoryEntry &entry,
 		std::shared_ptr<Data::GiftUpgradeSpinner> spinner,
-		Fn<void()> convertToStars,
+		Fn<void()> convertToDiamonds,
 		bool canStartUpgrade,
 		Fn<void(Fn<void()> removed)> removeDetails) {
 	const auto table = container->add(
@@ -1638,7 +1638,7 @@ void AddStarGiftTable(
 		auto send = withSendButton ? tr::lng_gift_send_small() : nullptr;
 		auto handler = send ? Fn<void()>([=] {
 			if (const auto window = show->resolveWindow()) {
-				Ui::ShowStarGiftBox(window, user);
+				Ui::ShowDiamondGiftBox(window, user);
 			}
 		}) : nullptr;
 		AddTableRow(
@@ -1680,11 +1680,11 @@ void AddStarGiftTable(
 		AddTableRow(
 			table,
 			tr::lng_gift_link_label_value(),
-			MakeStarGiftStarsValue(
+			MakeDiamondGiftDiamondsValue(
 				table,
 				show,
 				entry,
-				std::move(convertToStars)));
+				std::move(convertToDiamonds)));
 	}
 	if (entry.limitedCount > 0 && !entry.giftRefunded) {
 		auto amount = rpl::single(TextWithEntities{
@@ -1776,7 +1776,7 @@ void AddStarGiftTable(
 				std::move(details),
 				st,
 				Core::TextContext({ .session = session }),
-				entry.starsForDetailsRemove,
+				entry.diamondsForDetailsRemove,
 				std::move(removeDetails));
 			const auto showBoxLink = [=](not_null<PeerData*> peer) {
 				return std::make_shared<LambdaClickHandler>([=] {
@@ -1854,12 +1854,12 @@ void AddCreditsHistoryEntryTable(
 			const auto full = int(base::SafeRound(entry.credits.value()
 				/ (1. - (entry.starrefCommission / 1000.))));
 			auto value = Ui::Text::IconEmoji(&st::starIconEmojiColored);
-			const auto starsText = Lang::FormatCreditsAmountDecimal(
+			const auto diamondsText = Lang::FormatCreditsAmountDecimal(
 				CreditsAmount{ full });
 			AddTableRow(
 				table,
 				tr::lng_diamonds_box_history_entry_gift_full_price(),
-				rpl::single(value.append(' ' + starsText)));
+				rpl::single(value.append(' ' + diamondsText)));
 		} else if (entry.starrefAmount) {
 			AddTableRow(
 				table,
@@ -1918,7 +1918,7 @@ void AddCreditsHistoryEntryTable(
 		auto handler = send
 			? Fn<void()>([=] {
 				if (const auto window = show->resolveWindow()) {
-					Ui::ShowStarGiftBox(window, user);
+					Ui::ShowDiamondGiftBox(window, user);
 				}
 			})
 			: nullptr;
@@ -2030,13 +2030,13 @@ void AddCreditsHistoryEntryTable(
 		auto value = Ui::Text::IconEmoji(&st::starIconEmojiColored);
 		const auto full = (entry.in ? 1 : -1)
 			* (entry.credits + entry.paidMessagesAmount);
-		const auto starsText = Lang::FormatCreditsAmountDecimal(full);
+		const auto diamondsText = Lang::FormatCreditsAmountDecimal(full);
 		AddTableRow(
 			table,
 			tr::lng_diamonds_paid_messages_full(),
-			rpl::single(value.append(' ' + starsText)));
+			rpl::single(value.append(' ' + diamondsText)));
 	}
-	if (const auto months = entry.premiumMonthsForStars) {
+	if (const auto months = entry.premiumMonthsForDiamonds) {
 		AddTableRow(
 			table,
 			tr::lng_diamonds_premium_gift_duration(),
@@ -2290,15 +2290,15 @@ void AddUniqueGiftValueTable(
 			rpl::single(FormatValueDate(value->initialSaleDate)));
 	}
 	auto helper = Ui::Text::CustomEmojiHelper();
-	auto starIcon = helper.paletteDependent(
+	auto diamondIcon = helper.paletteDependent(
 		Ui::Earn::IconCreditsEmoji());
 	AddTableRow(
 		table,
 		tr::lng_gift_value_initial_price(),
 		tr::lng_gift_value_initial_price_value(
 			lt_diamonds,
-			rpl::single(starIcon.append(' ').append(
-				Lang::FormatCreditsAmountDecimal(value->initialPriceStars)
+			rpl::single(diamondIcon.append(' ').append(
+				Lang::FormatCreditsAmountDecimal(value->initialPriceDiamonds)
 			)),
 			lt_amount,
 			rpl::single(FormatValuePrice(

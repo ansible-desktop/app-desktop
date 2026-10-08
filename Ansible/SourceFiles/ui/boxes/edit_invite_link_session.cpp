@@ -78,7 +78,7 @@ InviteLinkSubscriptionToggle FillCreateInviteLinkSubscriptionToggle(
 			input->setFocus();
 		}
 	}, input->lifetime());
-	const auto icon = CreateSingleStarWidget(
+	const auto icon = CreateSingleDiamondWidget(
 		inputContainer,
 		st.style.font->height);
 	const auto priceOverlay = Ui::CreateChild<Ui::RpWidget>(inputContainer);

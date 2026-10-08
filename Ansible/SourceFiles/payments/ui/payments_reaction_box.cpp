@@ -60,7 +60,7 @@ struct TopReactorKey {
 };
 
 [[nodiscard]] QImage GenerateBadgeImage(
-		const std::vector<Calls::Group::Ui::StarsColoring> &colorings,
+		const std::vector<Calls::Group::Ui::DiamondsColoring> &colorings,
 		int count,
 		bool videoStream) {
 	return GenerateSmallBadgeImage(
@@ -68,7 +68,7 @@ struct TopReactorKey {
 		st::paidReactTopStarIcon,
 		(videoStream
 			? Ui::ColorFromSerialized(
-				Calls::Group::Ui::StarsColoringForCount(
+				Calls::Group::Ui::DiamondsColoringForCount(
 					colorings,
 					count
 				).bgLight)
@@ -105,7 +105,7 @@ void AddArrowDown(not_null<RpWidget*> widget) {
 		not_null<QWidget*> parent,
 		const PaidReactionTop &data,
 		int place,
-		const std::vector<Calls::Group::Ui::StarsColoring> &colorings,
+		const std::vector<Calls::Group::Ui::DiamondsColoring> &colorings,
 		Fn<void()> selectShownPeer,
 		bool videoStream) {
 	auto top = 0;
@@ -159,7 +159,7 @@ void AddArrowDown(not_null<RpWidget*> widget) {
 			state->badge);
 
 		if (videoStream) {
-			const auto bg = Calls::Group::Ui::StarsColoringForCount(
+			const auto bg = Calls::Group::Ui::DiamondsColoringForCount(
 				colorings,
 				count
 			).bgLight;
@@ -242,7 +242,7 @@ void SelectShownPeer(
 void FillTopReactors(
 		not_null<VerticalLayout*> container,
 		std::vector<PaidReactionTop> top,
-		const std::vector<Calls::Group::Ui::StarsColoring> &colorings,
+		const std::vector<Calls::Group::Ui::DiamondsColoring> &colorings,
 		rpl::producer<int> chosen,
 		rpl::producer<uint64> shownPeer,
 		Fn<void(uint64)> changeShownPeer,
@@ -386,7 +386,7 @@ void FillTopReactors(
 	}, wrap->lifetime());
 }
 
-[[nodiscard]] not_null<RpWidget*> MakeStarSelectInfoBlock(
+[[nodiscard]] not_null<RpWidget*> MakeDiamondSelectInfoBlock(
 		not_null<RpWidget*> parent,
 		rpl::producer<TextWithEntities> title,
 		rpl::producer<QString> subtext,
@@ -504,12 +504,12 @@ void PaidReactionsBox(
 	AddSkip(content, st::boxTitleClose.height + st::paidReactBubbleTop);
 
 	const auto activeFgOverride = [=](int count) {
-		const auto coloring = Calls::Group::Ui::StarsColoringForCount(
+		const auto coloring = Calls::Group::Ui::DiamondsColoringForCount(
 			colorings,
 			count);
 		return Ui::ColorFromSerialized(coloring.bgLight);
 	};
-	AddStarSelectBubble(
+	AddDiamondSelectBubble(
 		content,
 		BoxShowFinishes(box),
 		state->chosen.value(),
@@ -554,7 +554,7 @@ void PaidReactionsBox(
 	if (videoStreamChoosing) {
 		using namespace Calls::Group::Ui;
 		box->addRow(
-			VideoStreamStarsLevel(box, colorings, state->chosen.value()),
+			VideoStreamDiamondsLevel(box, colorings, state->chosen.value()),
 			st::boxRowPadding + QMargins(0, st::paidReactTitleSkip, 0, 0));
 	} else if (videoStreamSending) {
 		addTopReactors();
@@ -659,7 +659,7 @@ void PaidReactionsBox(
 
 	button->setText(args.submit(state->chosen.value()));
 
-	AddStarSelectBalance(
+	AddDiamondSelectBalance(
 		box,
 		args.session,
 		std::move(args.balanceValue),
@@ -735,7 +735,7 @@ QImage GenerateSmallBadgeImage(
 	return result;
 }
 
-StarSelectDiscreter StarSelectDiscreterForMax(int max) {
+DiamondSelectDiscreter DiamondSelectDiscreterForMax(int max) {
 	Expects(max >= 2);
 
 	// 1/8 of width is 1..10
@@ -829,7 +829,7 @@ void PaidReactionSlider(
 		}
 	};
 
-	const auto discreter = StarSelectDiscreterForMax(max);
+	const auto discreter = DiamondSelectDiscreterForMax(max);
 	slider->setAlwaysDisplayMarker(true);
 	slider->setDirection(ContinuousSlider::Direction::Horizontal);
 
@@ -862,8 +862,8 @@ void PaidReactionSlider(
 
 
 	struct State {
-		StarParticles particles = StarParticles(
-			StarParticles::Type::Right,
+		DiamondParticles particles = DiamondParticles(
+			DiamondParticles::Type::Right,
 			200,
 			st::lineWidth * 7);
 		Ui::Animations::Basic animation;
@@ -920,7 +920,7 @@ void PaidReactionSlider(
 	}, stars->lifetime());
 }
 
-void AddStarSelectBalance(
+void AddDiamondSelectBalance(
 		not_null<GenericBox*> box,
 		not_null<Main::Session*> session,
 		rpl::producer<CreditsAmount> balanceValue,
@@ -943,13 +943,13 @@ void AddStarSelectBalance(
 	}, balance->lifetime());
 }
 
-not_null<Premium::BubbleWidget*> AddStarSelectBubble(
+not_null<Premium::BubbleWidget*> AddDiamondSelectBubble(
 		not_null<VerticalLayout*> container,
 		rpl::producer<> showFinishes,
 		rpl::producer<int> value,
 		int max,
 		Fn<QColor(int)> activeFgOverride) {
-	const auto valueToRatio = StarSelectDiscreterForMax(max).valueToRatio;
+	const auto valueToRatio = DiamondSelectDiscreterForMax(max).valueToRatio;
 	auto bubbleRowState = rpl::duplicate(value) | rpl::map([=](int value) {
 		const auto full = st::boxWideWidth
 			- st::boxRowPadding.left()
@@ -982,9 +982,9 @@ not_null<Premium::BubbleWidget*> AddStarSelectBubble(
 	return bubble;
 }
 
-object_ptr<RpWidget> MakeStarSelectInfoBlocks(
+object_ptr<RpWidget> MakeDiamondSelectInfoBlocks(
 		not_null<RpWidget*> parent,
-		std::vector<StarSelectInfoBlock> blocks,
+		std::vector<DiamondSelectInfoBlock> blocks,
 		Text::MarkedContext context,
 		bool dark) {
 	Expects(!blocks.empty());
@@ -998,7 +998,7 @@ object_ptr<RpWidget> MakeStarSelectInfoBlocks(
 	const auto state = raw->lifetime().make_state<State>();
 
 	for (auto &info : blocks) {
-		state->blocks.push_back(MakeStarSelectInfoBlock(
+		state->blocks.push_back(MakeDiamondSelectInfoBlock(
 			raw,
 			std::move(info.title),
 			std::move(info.subtext),

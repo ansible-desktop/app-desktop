@@ -132,8 +132,8 @@ private:
 
 	QWidget *_parent = nullptr;
 
-	QImage _star;
-	QImage _balanceStar;
+	QImage _diamond;
+	QImage _balanceDiamond;
 
 	base::unique_qptr<Ui::FadeWrap<Ui::IconButton>> _back;
 	base::unique_qptr<Ui::IconButton> _close;
@@ -156,12 +156,12 @@ Credits::Credits(
 	CreditsType type)
 : Section(parent, controller)
 , _creditsType(type)
-, _star(Ui::GenerateStars(st::creditsTopupButton.height, 1))
-, _balanceStar((_creditsType == CreditsType::Ton)
+, _diamond(Ui::GenerateDiamonds(st::creditsTopupButton.height, 1))
+, _balanceDiamond((_creditsType == CreditsType::Ton)
 		? Ui::Earn::IconCurrencyColored(
 			st::tonFieldIconSize,
 			st::currencyFg->c)
-		: Ui::GenerateStars(st::creditsBalanceStarHeight, 1)) {
+		: Ui::GenerateDiamonds(st::creditsBalanceStarHeight, 1)) {
 	controller->session().giftBoxStickersPacks().tonLoad();
 	setupContent();
 	setupSwipeBack();
@@ -492,7 +492,7 @@ void Credits::setupContent() {
 	const auto earnButton = &_earnButton;
 
 	struct State final {
-		BuyStarsHandler buyStars;
+		BuyDiamondsHandler buyDiamonds;
 	};
 	const auto state = content->lifetime().make_state<State>();
 
@@ -530,7 +530,7 @@ void Credits::setupContent() {
 		}());
 		button->setText(
 			rpl::conditional(
-				state->buyStars.loadingValue(),
+				state->buyDiamonds.loadingValue(),
 				rpl::single(TextWithEntities()),
 				isCurrency
 					? tr::lng_credits_currency_summary_in_button(
@@ -549,7 +549,7 @@ void Credits::setupContent() {
 					Ui::StartFireworks(parent);
 				}
 			};
-			button->setClickedCallback(state->buyStars.handler(show, paid));
+			button->setClickedCallback(state->buyDiamonds.handler(show, paid));
 		}
 		{
 			using namespace Info::Statistics;
@@ -557,7 +557,7 @@ void Credits::setupContent() {
 				button,
 				button->height() / 2);
 			AddChildToWidgetCenter(button, loadingAnimation);
-			loadingAnimation->showOn(state->buyStars.loadingValue());
+			loadingAnimation->showOn(state->buyDiamonds.loadingValue());
 		}
 	}
 
@@ -995,7 +995,7 @@ void BuildCreditsButtons(
 		}
 	}
 
-	if (!isCurrency && Info::BotStarRef::Join::Allowed(self)) {
+	if (!isCurrency && Info::BotDiamondRef::Join::Allowed(self)) {
 		const auto earn = builder.addButton({
 			.id = u"stars/earn"_q,
 			.title = tr::lng_diamonds_earn_button(),
@@ -1003,7 +1003,7 @@ void BuildCreditsButtons(
 			.icon = { &st::settingsButtonIconEarn },
 			.onClick = [controller, self] {
 				controller->parentController()->showSection(
-					Info::BotStarRef::Join::Make(self));
+					Info::BotDiamondRef::Join::Make(self));
 			},
 			.keywords = { u"affiliate"_q, u"referral"_q },
 		});
@@ -1104,11 +1104,11 @@ Type CurrencyId() {
 	return SectionFactory<Currency>::Instance();
 }
 
-BuyStarsHandler::BuyStarsHandler() = default;
+BuyDiamondsHandler::BuyDiamondsHandler() = default;
 
-BuyStarsHandler::~BuyStarsHandler() = default;
+BuyDiamondsHandler::~BuyDiamondsHandler() = default;
 
-Fn<void()> BuyStarsHandler::handler(
+Fn<void()> BuyDiamondsHandler::handler(
 		std::shared_ptr<::Main::SessionShow> show,
 		Fn<void()> paid) {
 	const auto optionsBox = [=](not_null<Ui::GenericBox*> box) {
@@ -1155,7 +1155,7 @@ Fn<void()> BuyStarsHandler::handler(
 	});
 }
 
-rpl::producer<bool> BuyStarsHandler::loadingValue() const {
+rpl::producer<bool> BuyDiamondsHandler::loadingValue() const {
 	return _loading.value();
 }
 

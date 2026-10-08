@@ -85,7 +85,7 @@ struct SetHistoryArgs {
 	rpl::producer<int> slowmodeSecondsLeft;
 	rpl::producer<bool> sendDisabledBySlowmode;
 	rpl::producer<bool> liked;
-	rpl::producer<int> minStarsCount;
+	rpl::producer<int> minDiamondsCount;
 	rpl::producer<WriteRestriction> writeRestriction;
 	rpl::producer<bool> canSendTexts;
 };
@@ -106,7 +106,7 @@ enum class ToggleCommentsState {
 	WithNew,
 };
 
-struct SendStarButtonEffect {
+struct SendDiamondButtonEffect {
 	not_null<PeerData*> from;
 	int stars = 0;
 };

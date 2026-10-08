@@ -58,7 +58,7 @@ private:
 
 	[[nodiscard]] QRect iconRect() const;
 	struct Animation {
-		Ui::StarParticles particles;
+		Ui::DiamondParticles particles;
 		QPainterPath path;
 		QSize cachedSize;
 	};

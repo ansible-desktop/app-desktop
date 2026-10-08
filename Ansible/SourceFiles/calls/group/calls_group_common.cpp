@@ -360,7 +360,7 @@ void ShowConferenceCallLinkBox(
 		}
 
 		box->addRow(
-			Info::BotStarRef::CreateLinkHeaderIcon(box, &call->session()),
+			Info::BotDiamondRef::CreateLinkHeaderIcon(box, &call->session()),
 			st::boxRowPadding + st::confcallLinkHeaderIconPadding);
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
@@ -382,7 +382,7 @@ void ShowConferenceCallLinkBox(
 
 		Ui::AddSkip(box->verticalLayout(), st::defaultVerticalListSkip * 2);
 		const auto preview = box->addRow(
-			Info::BotStarRef::MakeLinkLabel(box, link, st.linkPreview));
+			Info::BotDiamondRef::MakeLinkLabel(box, link, st.linkPreview));
 		Ui::AddSkip(box->verticalLayout());
 
 		const auto copyCallback = [=] {

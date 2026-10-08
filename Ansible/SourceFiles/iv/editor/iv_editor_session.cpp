@@ -1082,7 +1082,7 @@ private:
 		const auto withPaymentApproved = [weak](int approved) {
 			if (const auto strong = weak.get()) {
 				auto options = strong->_submitOptions;
-				options.starsApproved = approved;
+				options.diamondsApproved = approved;
 				strong->requestSubmit(std::move(options));
 			}
 		};
@@ -1215,7 +1215,7 @@ private:
 		const auto weak = base::make_weak(this);
 		const auto withPaymentApproved = [weak, page](int approved) {
 			if (const auto strong = weak.get()) {
-				strong->_submitOptions.starsApproved = approved;
+				strong->_submitOptions.diamondsApproved = approved;
 				if (strong->_composeAction) {
 					strong->_composeAction->options
 						= strong->_submitOptions;
@@ -1312,9 +1312,9 @@ private:
 			&& submitWouldBeEphemeral(std::nullopt)) {
 			flags |= MessageFlag::Ephemeral;
 		}
-		const auto starsPaid = std::min(
-			peer->starsPerMessageChecked(),
-			action.options.starsApproved);
+		const auto diamondsPaid = std::min(
+			peer->diamondsPerMessageChecked(),
+			action.options.diamondsApproved);
 		return history->addNewLocalMessage({
 			.id = _articleId.msg,
 			.flags = flags,
@@ -1323,7 +1323,7 @@ private:
 			.date = NewMessageDate(action.options),
 			.scheduleRepeatPeriod = action.options.scheduleRepeatPeriod,
 			.shortcutId = action.options.shortcutId,
-			.starsPaid = starsPaid,
+			.diamondsPaid = diamondsPaid,
 			.postAuthor = NewMessagePostAuthor(action),
 			.effectId = action.options.effectId,
 			.suggest = HistoryMessageSuggestInfo(action.options),
@@ -4941,14 +4941,14 @@ rpl::producer<bool> AmPremiumValue(not_null<Main::Session*> session) {
 	return ::Data::AmPremiumValue(session);
 }
 
-rpl::producer<int> StarsPerMessageValue(
+rpl::producer<int> DiamondsPerMessageValue(
 		not_null<Main::Session*> session,
 		not_null<PeerData*> peer) {
 	return session->changes().peerFlagsValue(
 		peer,
-		::Data::PeerUpdate::Flag::StarsPerMessage
+		::Data::PeerUpdate::Flag::DiamondsPerMessage
 	) | rpl::map([=] {
-		return peer->starsPerMessageChecked();
+		return peer->diamondsPerMessageChecked();
 	});
 }
 

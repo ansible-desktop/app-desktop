@@ -48,7 +48,7 @@ protected:
 	void resizeEvent(QResizeEvent *e) override;
 
 private:
-	void noTelegramCode();
+	void noAnsibleCode();
 	void sendCall();
 	void checkRequest();
 
@@ -68,15 +68,15 @@ private:
 	void callDone(const MTPauth_SentCode &result);
 	void gotPassword(const MTPaccount_Password &result);
 
-	void noTelegramCodeDone(const MTPauth_SentCode &result);
-	void noTelegramCodeFail(const MTP::Error &result);
+	void noAnsibleCodeDone(const MTPauth_SentCode &result);
+	void noAnsibleCodeFail(const MTP::Error &result);
 
 	void submitCode(const QString &text);
 
 	void stopCheck();
 
-	object_ptr<Ui::LinkButton> _noTelegramCode;
-	mtpRequestId _noTelegramCodeRequestId = 0;
+	object_ptr<Ui::LinkButton> _noAnsibleCode;
+	mtpRequestId _noAnsibleCodeRequestId = 0;
 
 	object_ptr<Ui::CodeInput> _code;
 	QString _sentCode;

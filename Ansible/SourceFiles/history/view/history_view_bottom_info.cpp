@@ -721,7 +721,7 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 	if (!item->history()->peer->isUser()) {
 		const auto mine = PaidInformation{
 			.messages = 1,
-			.stars = item->starsPaid(),
+			.stars = item->diamondsPaid(),
 		};
 		const auto media = message->media();
 		auto info = media ? media->paidInformation().value_or(mine) : mine;

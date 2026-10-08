@@ -74,7 +74,7 @@ class SilentToggle;
 class DropdownMenu;
 struct PreparedBundle;
 struct PreparedList;
-struct SendStarButtonState;
+struct SendDiamondButtonState;
 class ReactionFlyAnimation;
 class ChatStyle;
 } // namespace Ui
@@ -167,7 +167,7 @@ public:
 	using FieldHistoryAction = Ui::InputField::HistoryAction;
 	using Mode = ComposeControlsMode;
 	using ToggleCommentsState = Controls::ToggleCommentsState;
-	using SendStarButtonEffect = Controls::SendStarButtonEffect;
+	using SendDiamondButtonEffect = Controls::SendDiamondButtonEffect;
 
 	ComposeControls(
 		not_null<Ui::RpWidget*> parent,
@@ -196,18 +196,18 @@ public:
 	void setupCommentsShownNewDot();
 	void setToggleCommentsButton(rpl::producer<ToggleCommentsState> state);
 	[[nodiscard]] rpl::producer<> commentsShownToggles() const;
-	void setStarsReactionCounter(
-		rpl::producer<Ui::SendStarButtonState> count,
-		rpl::producer<SendStarButtonEffect> effects);
-	using StarReactionTop = Data::MessageReactionsTopPaid;
-	void setStarsReactionTop(
-		rpl::producer<std::vector<StarReactionTop>> top);
-	struct StarReactionIncrement {
+	void setDiamondsReactionCounter(
+		rpl::producer<Ui::SendDiamondButtonState> count,
+		rpl::producer<SendDiamondButtonEffect> effects);
+	using DiamondReactionTop = Data::MessageReactionsTopPaid;
+	void setDiamondsReactionTop(
+		rpl::producer<std::vector<DiamondReactionTop>> top);
+	struct DiamondReactionIncrement {
 		int count = 0;
 		bool fromBox = false;
 	};
-	[[nodiscard]] auto starsReactionIncrements() const
-		-> rpl::producer<StarReactionIncrement>;
+	[[nodiscard]] auto diamondsReactionIncrements() const
+		-> rpl::producer<DiamondReactionIncrement>;
 
 	bool focus();
 	[[nodiscard]] bool focused() const;
@@ -301,8 +301,8 @@ public:
 	void hidePanelsAnimated();
 	void clearListenState();
 
-	void clearChosenStarsForMessage();
-	[[nodiscard]] int chosenStarsForMessage() const;
+	void clearChosenDiamondsForMessage();
+	[[nodiscard]] int chosenDiamondsForMessage() const;
 
 	void hide();
 	void show();
@@ -336,7 +336,7 @@ public:
 	void undoFieldChange();
 
 private:
-	struct StarEffect;
+	struct DiamondEffect;
 	enum class TextUpdateEvent {
 		SaveDraft = (1 << 0),
 		SendTyping = (1 << 1),
@@ -366,7 +366,7 @@ private:
 	void initVoiceRecordBar();
 	void initKeyHandler();
 	void initLikeButton();
-	void initEditStarsButton();
+	void initEditDiamondsButton();
 	void initAiButton();
 	void updateControlsParents();
 	void updateSubmitSettings();
@@ -420,7 +420,7 @@ private:
 
 	[[nodiscard]] auto sendContentRequests(
 		SendRequestType requestType = SendRequestType::Text) const;
-	void editStarsFrom(int selected = 0);
+	void editDiamondsFrom(int selected = 0);
 
 	void orderControls();
 	void updateFieldPlaceholder();
@@ -438,9 +438,9 @@ private:
 	[[nodiscard]] bool canSendAiComposeDirect() const;
 
 	[[nodiscard]] bool showRecordButton() const;
-	[[nodiscard]] bool showEditStarsButton() const;
+	[[nodiscard]] bool showEditDiamondsButton() const;
 	[[nodiscard]] bool showStopButton() const;
-	[[nodiscard]] int shownStarsPerMessage() const;
+	[[nodiscard]] int shownDiamondsPerMessage() const;
 	bool updateBotCommandShown();
 	bool refreshBotMenuButton();
 	bool updateLikeShown();
@@ -457,11 +457,11 @@ private:
 	void inlineBotChanged();
 
 	[[nodiscard]] bool hasSilentBroadcastToggle() const;
-	[[nodiscard]] bool editStarsButtonShown() const;
-	void startStarsSendEffect();
-	void setupStarsSendEffectsCanvas();
-	void startStarsEffect(SendStarButtonEffect event);
-	void setupStarsEffectsCanvas();
+	[[nodiscard]] bool editDiamondsButtonShown() const;
+	void startDiamondsSendEffect();
+	void setupDiamondsSendEffectsCanvas();
+	void startDiamondsEffect(SendDiamondButtonEffect event);
+	void setupDiamondsEffectsCanvas();
 
 	// Look in the _field for the inline bot and query string.
 	[[nodiscard]] InlineBotQuery parseInlineBotQuery() const;
@@ -556,10 +556,10 @@ private:
 	Ui::IconButton * const _sendAsFile = nullptr;
 	Ui::IconButton * const _expand = nullptr;
 	Ui::IconButton * const _discardRichDraft = nullptr;
-	Ui::IconButton *_editStars = nullptr;
+	Ui::IconButton *_editDiamonds = nullptr;
 	Ui::IconButton *_like = nullptr;
-	rpl::variable<int> _minStarsCount;
-	std::optional<int> _chosenStarsCount;
+	rpl::variable<int> _minDiamondsCount;
+	std::optional<int> _chosenDiamondsCount;
 	Ui::IconButton *_commentsShown = nullptr;
 	rpl::variable<bool> _commentsShownHidden;
 	Ui::RpWidget *_commentsShownNewDot = nullptr;
@@ -567,7 +567,7 @@ private:
 	Ui::AbstractButton *_starsReaction = nullptr;
 	std::vector<std::unique_ptr<Ui::ReactionFlyAnimation>> _starSendEffects;
 	std::unique_ptr<Ui::RpWidget> _starSendEffectsCanvas;
-	std::vector<std::unique_ptr<StarEffect>> _starEffects;
+	std::vector<std::unique_ptr<DiamondEffect>> _starEffects;
 	std::unique_ptr<Ui::RpWidget> _starEffectsCanvas;
 	std::unique_ptr<Ui::IconButton> _replaceMedia;
 	const not_null<Ui::EmojiButton*> _tabbedSelectorToggle;
@@ -638,8 +638,8 @@ private:
 	rpl::event_stream<> _suggestPostToggleClicks;
 	rpl::event_stream<> _botKeyboardToggleClicks;
 	rpl::event_stream<> _commentsShownToggles;
-	rpl::event_stream<StarReactionIncrement> _starsReactionIncrements;
-	rpl::variable<std::vector<StarReactionTop>> _starsReactionTop;
+	rpl::event_stream<DiamondReactionIncrement> _starsReactionIncrements;
+	rpl::variable<std::vector<DiamondReactionTop>> _starsReactionTop;
 	rpl::variable<bool> _recording;
 	rpl::variable<bool> _hasSendText;
 

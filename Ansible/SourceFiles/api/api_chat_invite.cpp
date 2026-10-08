@@ -282,7 +282,7 @@ void ConfirmSubscriptionBox(
 	Ui::AddSkip(content);
 	Ui::AddSkip(content);
 
-	Settings::AddMiniStars(
+	Settings::AddMiniDiamonds(
 		content,
 		Ui::CreateChild<Ui::RpWidget>(content),
 		photoSize,

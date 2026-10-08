@@ -887,13 +887,13 @@ void Tasks::checkLastTask() {
 EditTodoListBox::EditTodoListBox(
 	QWidget*,
 	not_null<Window::SessionController*> controller,
-	rpl::producer<int> starsRequired,
+	rpl::producer<int> diamondsRequired,
 	Api::SendType sendType,
 	SendMenu::Details sendMenuDetails)
 : _controller(controller)
 , _sendType(sendType)
 , _sendMenuDetails([result = sendMenuDetails] { return result; })
-, _starsRequired(std::move(starsRequired))
+, _starsRequired(std::move(diamondsRequired))
 , _titleLimit(controller->session().appConfig().todoListTitleLimit()) {
 }
 

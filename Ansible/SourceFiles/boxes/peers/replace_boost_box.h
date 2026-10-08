@@ -63,7 +63,7 @@ object_ptr<Ui::BoxContent> ReassignBoostsBox(
 
 enum class UserpicsTransferType {
 	BoostReplace,
-	StarRefJoin,
+	DiamondRefJoin,
 	AuctionRecipient,
 	ChannelFutureOwner,
 	GuardBotReplace,

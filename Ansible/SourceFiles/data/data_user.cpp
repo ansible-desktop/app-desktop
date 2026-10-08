@@ -71,7 +71,7 @@ bool ApplyBotVerifierSettings(
 	return false;
 }
 
-[[nodiscard]] Data::StarsRating ParseStarsRating(
+[[nodiscard]] Data::StarsRating ParseDiamondsRating(
 		const MTPStarsRating *rating) {
 	if (!rating) {
 		return {};
@@ -80,7 +80,7 @@ bool ApplyBotVerifierSettings(
 	return {
 		.level = data.vlevel().v,
 		.stars = int(data.vstars().v),
-		.thisLevelStars = int(data.vcurrent_level_stars().v),
+		.thisLevelDiamonds = int(data.vcurrent_level_stars().v),
 		.nextLevelStars = int(data.vnext_level_stars().value_or_empty()),
 	};
 }
@@ -644,8 +644,8 @@ bool UserData::hasRequirePremiumToWrite() const {
 	return (flags() & UserDataFlag::HasRequirePremiumToWrite);
 }
 
-bool UserData::hasStarsPerMessage() const {
-	return (flags() & UserDataFlag::HasStarsPerMessage);
+bool UserData::hasDiamondsPerMessage() const {
+	return (flags() & UserDataFlag::HasDiamondsPerMessage);
 }
 
 bool UserData::requiresPremiumToWrite() const {
@@ -679,7 +679,7 @@ void UserData::setNoForwardsFlags(bool myEnabled, bool peerEnabled) {
 	}
 }
 
-int UserData::starsPerMessage() const {
+int UserData::diamondsPerMessage() const {
 	return _starsPerMessage;
 }
 
@@ -695,10 +695,10 @@ bool UserData::storiesCorrespondent() const {
 	return (_flags.current() & UserDataFlag::StoriesCorrespondent);
 }
 
-void UserData::setStarsPerMessage(int stars) {
+void UserData::setDiamondsPerMessage(int stars) {
 	if (_starsPerMessage != stars) {
 		_starsPerMessage = stars;
-		session().changes().peerUpdated(this, UpdateFlag::StarsPerMessage);
+		session().changes().peerUpdated(this, UpdateFlag::DiamondsPerMessage);
 	}
 	checkTrustedPayForMessage();
 }
@@ -879,12 +879,12 @@ void ApplyUserUpdate(not_null<UserData*> user, const MTPDuserFull &update) {
 	if (const auto info = user->botInfo.get()) {
 		info->canManageEmojiStatus = update.is_bot_can_manage_emoji_status();
 		user->setStarRefProgram(
-			Data::ParseStarRefProgram(update.vstarref_program()));
+			Data::ParseDiamondRefProgram(update.vstarref_program()));
 	}
 	if (const auto pinned = update.vpinned_msg_id()) {
 		SetTopPinnedMessageId(user, pinned->v);
 	}
-	user->setStarsPerMessage(
+	user->setDiamondsPerMessage(
 		update.vsend_paid_messages_stars().value_or_empty());
 	using Flag = UserDataFlag;
 	const auto mask = Flag::Blocked
@@ -896,7 +896,7 @@ void ApplyUserUpdate(not_null<UserData*> user, const MTPDuserFull &update) {
 		| (update.is_contact_require_premium()
 			? Flag::HasRequirePremiumToWrite
 			: Flag())
-		| (user->starsPerMessage() ? Flag::HasStarsPerMessage : Flag())
+		| (user->diamondsPerMessage() ? Flag::HasDiamondsPerMessage : Flag())
 		| Flag::MessageMoneyRestrictionsKnown
 		| Flag::RequiresPremiumToWrite
 		| Flag::UnofficialSecurityRisk;
@@ -911,7 +911,7 @@ void ApplyUserUpdate(not_null<UserData*> user, const MTPDuserFull &update) {
 			? Flag::VoiceMessagesForbidden
 			: Flag())
 		| (update.is_read_dates_private() ? Flag::ReadDatesPrivate : Flag())
-		| (user->starsPerMessage() ? Flag::HasStarsPerMessage : Flag())
+		| (user->diamondsPerMessage() ? Flag::HasDiamondsPerMessage : Flag())
 		| Flag::MessageMoneyRestrictionsKnown
 		| (update.is_contact_require_premium()
 			? (Flag::RequiresPremiumToWrite | Flag::HasRequirePremiumToWrite)
@@ -1025,10 +1025,10 @@ void ApplyUserUpdate(not_null<UserData*> user, const MTPDuserFull &update) {
 	}
 	user->setBotVerifyDetails(
 		ParseBotVerifyDetails(update.vbot_verification()));
-	user->setStarsRating(ParseStarsRating(update.vstars_rating()));
+	user->setStarsRating(ParseDiamondsRating(update.vstars_rating()));
 	if (user->isSelf()) {
-		user->owner().setPendingStarsRating({
-			.value = ParseStarsRating(update.vstars_my_pending_rating()),
+		user->owner().setPendingDiamondsRating({
+			.value = ParseDiamondsRating(update.vstars_my_pending_rating()),
 			.date = update.vstars_my_pending_rating_date().value_or_empty(),
 		});
 	}
@@ -1082,7 +1082,7 @@ void ApplyUserUpdate(not_null<UserData*> user, const MTPDuserFull &update) {
 	user->fullUpdated();
 }
 
-StarRefProgram ParseStarRefProgram(const MTPStarRefProgram *program) {
+StarRefProgram ParseDiamondRefProgram(const MTPStarRefProgram *program) {
 	if (!program) {
 		return {};
 	}

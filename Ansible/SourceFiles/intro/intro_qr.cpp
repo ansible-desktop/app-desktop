@@ -37,17 +37,17 @@ namespace Intro {
 namespace details {
 namespace {
 
-[[nodiscard]] QImage TelegramQrExact(const Qr::Data &data, int pixel) {
+[[nodiscard]] QImage AnsibleQrExact(const Qr::Data &data, int pixel) {
 	return Qr::Generate(data, pixel, Qt::black);
 }
 
-[[nodiscard]] QImage TelegramQr(const Qr::Data &data, int pixel, int max = 0) {
+[[nodiscard]] QImage AnsibleQr(const Qr::Data &data, int pixel, int max = 0) {
 	Expects(data.size > 0);
 
 	if (max > 0 && data.size * pixel > max) {
 		pixel = std::max(max / data.size, 1);
 	}
-	const auto qr = TelegramQrExact(data, pixel * style::DevicePixelRatio());
+	const auto qr = AnsibleQrExact(data, pixel * style::DevicePixelRatio());
 	auto result = QImage(qr.size(), QImage::Format_ARGB32_Premultiplied);
 	result.fill(Qt::white);
 	{
@@ -106,7 +106,7 @@ namespace {
 		std::move(qrs),
 		rpl::duplicate(palettes)
 	) | rpl::map([](const Qr::Data &code, const auto &) {
-		return TelegramQr(code, st::introQrPixel, st::introQrMaxSize);
+		return AnsibleQr(code, st::introQrPixel, st::introQrMaxSize);
 	}) | rpl::on_next([=](QImage &&image) {
 		state->previous = std::move(state->qr);
 		state->qr = std::move(image);
@@ -121,7 +121,7 @@ namespace {
 	std::move(
 		palettes
 	) | rpl::map([] {
-		return TelegramLogoImage();
+		return AnsibleLogoImage();
 	}) | rpl::on_next([=](QImage &&image) {
 		state->center = std::move(image);
 	}, result->lifetime());
@@ -562,7 +562,7 @@ void QrWidget::cancelled() {
 	api().request(base::take(_requestId)).cancel();
 }
 
-QImage TelegramLogoImage() {
+QImage AnsibleLogoImage() {
 	const auto size = QSize(st::introQrCenterSize, st::introQrCenterSize);
 	auto result = QImage(
 		size * style::DevicePixelRatio(),

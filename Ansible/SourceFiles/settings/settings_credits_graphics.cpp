@@ -185,9 +185,9 @@ private:
 
 };
 
-void ToggleStarGiftSaved(
+void ToggleDiamondGiftSaved(
 		std::shared_ptr<ChatHelpers::Show> show,
-		Data::SavedStarGiftId savedId,
+		Data::SavedDiamondGiftId savedId,
 		bool save,
 		Fn<void(bool)> done = nullptr) {
 	using Flag = MTPpayments_SaveStarGift::Flag;
@@ -195,7 +195,7 @@ void ToggleStarGiftSaved(
 	const auto channelGift = savedId.chat();
 	api->request(MTPpayments_SaveStarGift(
 		MTP_flags(save ? Flag(0) : Flag::f_unsave),
-		Api::InputSavedStarGiftId(savedId)
+		Api::InputSavedDiamondGiftId(savedId)
 	)).done([=] {
 		using GiftAction = Data::GiftUpdate::Action;
 		show->session().data().notifyGiftUpdate({
@@ -223,7 +223,7 @@ void ToggleStarGiftSaved(
 	}).send();
 }
 
-void ConfirmConvertStarGift(
+void ConfirmConvertDiamondGift(
 		std::shared_ptr<Ui::Show> show,
 		rpl::producer<TextWithEntities> confirmText,
 		int stars,
@@ -252,12 +252,12 @@ void ConfirmConvertStarGift(
 
 void ConvertStarGift(
 		std::shared_ptr<ChatHelpers::Show> show,
-		Data::SavedStarGiftId savedId,
+		Data::SavedDiamondGiftId savedId,
 		int stars,
 		Fn<void(bool)> done) {
 	const auto api = &show->session().api();
 	api->request(MTPpayments_ConvertStarGift(
-		Api::InputSavedStarGiftId(savedId)
+		Api::InputSavedDiamondGiftId(savedId)
 	)).done([=] {
 		if (const auto window = show->resolveWindow()) {
 			if (const auto channel = savedId.chat()) {
@@ -406,7 +406,7 @@ void AddViewMediaHandler(
 		return PeerId();
 	}, [](SmallBalanceDeepLink) {
 		return PeerId();
-	}, [](SmallBalanceStarGift) {
+	}, [](SmallBalanceDiamondGift) {
 		return PeerId();
 	}, [&](SmallBalanceForMessage value) {
 		return peerIfBotOrChannel(value.recipientId);
@@ -421,25 +421,25 @@ void AddViewMediaHandler(
 
 } // namespace
 
-void AddMiniStars(
+void AddMiniDiamonds(
 		not_null<Ui::VerticalLayout*> content,
 		not_null<Ui::RpWidget*> widget,
 		int photoSize,
 		int boxWidth,
 		float64 heightRatio) {
-	using ColoredMiniStars = Ui::Premium::ColoredMiniStars;
-	const auto stars = widget->lifetime().make_state<ColoredMiniStars>(
+	using ColoredMiniDiamonds = Ui::Premium::ColoredMiniDiamonds;
+	const auto stars = widget->lifetime().make_state<ColoredMiniDiamonds>(
 		widget,
 		false,
-		Ui::Premium::MiniStarsType::BiStars);
+		Ui::Premium::MiniDiamondsType::BiDiamonds);
 	stars->setColorOverride(Ui::Premium::CreditsIconGradientStops());
 	widget->resize(boxWidth - photoSize, photoSize * heightRatio);
 	content->sizeValue(
 	) | rpl::on_next([=](const QSize &size) {
 		widget->moveToLeft(photoSize / 2, 0);
-		const auto starsRect = Rect(widget->size());
-		stars->setPosition(starsRect.topLeft());
-		stars->setSize(starsRect.size());
+		const auto diamondsRect = Rect(widget->size());
+		stars->setPosition(diamondsRect.topLeft());
+		stars->setSize(diamondsRect.size());
 		widget->lower();
 	}, widget->lifetime());
 	widget->paintRequest(
@@ -455,12 +455,12 @@ SubscriptionRightLabel PaintSubscriptionRightLabelCallback(
 		const style::PeerListItem &st,
 		int amount) {
 	auto helper = Ui::Text::CustomEmojiHelper();
-	auto starIcon = helper.paletteDependent(
+	auto diamondIcon = helper.paletteDependent(
 		Ui::Earn::IconCreditsEmoji());
 	const auto text = std::make_shared<Ui::Text::String>();
 	text->setMarkedText(
 		st::semiboldTextStyle,
-		starIcon.append(' ').append(Lang::FormatCountDecimal(amount)),
+		diamondIcon.append(' ').append(Lang::FormatCountDecimal(amount)),
 		kMarkupTextOptions,
 		helper.context());
 	const auto &font = text->style()->font;
@@ -509,25 +509,25 @@ void FillCreditOptions(
 			object_ptr<Ui::VerticalLayout>(container)));
 	const auto content = options->entity();
 
-	const auto singleStarWidth = Ui::GenerateStars(
+	const auto singleDiamondWidth = Ui::GenerateDiamonds(
 		st::creditsTopupButton.height,
 		1).width() / style::DevicePixelRatio();
 
-	struct StarsState {
+	struct DiamondsState {
 		base::flat_map<int, QImage> cache;
 		rpl::variable<bool> ready = false;
 	};
-	const auto starsState = content->lifetime().make_state<StarsState>();
+	const auto diamondsState = content->lifetime().make_state<DiamondsState>();
 	const auto weak = base::make_weak(content);
 	crl::async([=]() mutable {
 		constexpr auto kPreloadCount = 10;
 		auto cache = base::flat_map<int, QImage>();
 		for (auto i = 1; i <= kPreloadCount; ++i) {
-			cache[i] = Ui::GenerateStars(st::creditsTopupButton.height, i);
+			cache[i] = Ui::GenerateDiamonds(st::creditsTopupButton.height, i);
 		}
 		crl::on_main(weak, [=, result = std::move(cache)]() mutable {
-			starsState->cache = std::move(result);
-			starsState->ready = true;
+			diamondsState->cache = std::move(result);
+			diamondsState->ready = true;
 		});
 	});
 
@@ -615,9 +615,9 @@ void FillCreditOptions(
 		const auto &st = dark
 			? st::videoStreamTopupButton
 			: st::creditsTopupButton;
-		const auto diffBetweenTextAndStar = st.padding.left()
+		const auto diffBetweenTextAndDiamond = st.padding.left()
 			- st.iconLeft
-			- int(singleStarWidth * 1.5);
+			- int(singleDiamondWidth * 1.5);
 		const auto buttonHeight = st.height + rect::m::sum::v(st.padding);
 		const auto minCredits = (!options.empty()
 				&& (minimumCredits > CreditsAmount(options.back().credits)))
@@ -657,15 +657,15 @@ void FillCreditOptions(
 				Ui::FillAmountAndCurrency(option.amount, option.currency),
 				dark ? st::videoStreamTopupPrice : st::creditsTopupPrice);
 			const auto inner = Ui::CreateChild<Ui::RpWidget>(button);
-			const auto getStars = [=] {
-				const auto starIndex = i + 1;
-				if (starsState->cache.contains(starIndex)) {
-					return starsState->cache[starIndex];
+			const auto getDiamonds = [=] {
+				const auto diamondIndex = i + 1;
+				if (diamondsState->cache.contains(diamondIndex)) {
+					return diamondsState->cache[diamondIndex];
 				}
-				return Ui::GenerateStars(st.height, starIndex);
+				return Ui::GenerateDiamonds(st.height, diamondIndex);
 			};
-			const auto stars = getStars();
-			const auto textLeft = diffBetweenTextAndStar
+			const auto stars = getDiamonds();
+			const auto textLeft = diffBetweenTextAndDiamond
 				+ stars.width() / style::DevicePixelRatio();
 			inner->paintRequest(
 			) | rpl::on_next([=](const QRect &rect) {
@@ -749,7 +749,7 @@ void FillCreditOptions(
 				) | rpl::on_error_done([=](const QString &error) {
 					show->showToast(error);
 				}, [=] {
-					starsState->ready.value() | rpl::filter(
+					diamondsState->ready.value() | rpl::filter(
 						rpl::mappers::_1
 					) | rpl::on_next([=] {
 						fill(apiCredits->options());
@@ -870,7 +870,7 @@ void BoostCreditsBox(
 	{
 		const auto &stUser = st::premiumGiftsUserpicButton;
 		const auto widget = content->add(object_ptr<Ui::RpWidget>(content));
-		AddMiniStars(content, widget, stUser.photoSize, st::boxWidth, 1.3);
+		AddMiniDiamonds(content, widget, stUser.photoSize, st::boxWidth, 1.3);
 		const auto svg = std::make_shared<QSvgRenderer>(
 			Ui::Premium::ColorizedSvg(
 				Ui::Premium::CreditsIconGradientStops()));
@@ -1039,7 +1039,7 @@ void ProcessReceivedSubscriptions(
 	return owner
 		&& owner->isUser()
 		&& !owner->isSelf()
-		&& (unique->starsMinOffer >= 0);
+		&& (unique->diamondsMinOffer >= 0);
 	// Currently we're not making offers for channel gifts.
 	// (owner->isChannel() && !owner->asChannel()->canTransferGifts());
 }
@@ -1048,10 +1048,10 @@ void FillUniqueGiftMenu(
 		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<Ui::PopupMenu*> menu,
 		const Data::CreditsHistoryEntry &e,
-		SavedStarGiftMenuType type,
+		SavedDiamondGiftMenuType type,
 		CreditsEntryBoxStyleOverrides st) {
 	const auto session = &show->session();
-	const auto savedId = EntryToSavedStarGiftId(session, e);
+	const auto savedId = EntryToSavedDiamondGiftId(session, e);
 	const auto giftChannel = savedId.chat();
 	const auto canToggle = savedId
 		&& e.id.isEmpty()
@@ -1068,10 +1068,10 @@ void FillUniqueGiftMenu(
 		const auto pinned = e.pinnedSavedGifts;
 		const auto ids = [session](
 				const std::vector<Data::CreditsHistoryEntry> &pinned) {
-			auto result = std::vector<Data::SavedStarGiftId>();
+			auto result = std::vector<Data::SavedDiamondGiftId>();
 			result.reserve(pinned.size());
 			for (const auto &entry : pinned) {
-				result.push_back(EntryToSavedStarGiftId(session, entry));
+				result.push_back(EntryToSavedDiamondGiftId(session, entry));
 			}
 			return result;
 		};
@@ -1092,7 +1092,7 @@ void FillUniqueGiftMenu(
 				auto already = ids(list);
 				if (list.size() >= limit) {
 					Info::PeerGifts::SelectGiftToUnpin(show, list, [=](
-							Data::SavedStarGiftId id) {
+							Data::SavedDiamondGiftId id) {
 						auto copy = already;
 						const auto i = ranges::find(copy, id);
 						const auto replaced = (i != end(copy))
@@ -1148,14 +1148,14 @@ void FillUniqueGiftMenu(
 		}, st.share ? st.share : &st::menuIconShare);
 	}
 
-	if (canToggle && type == SavedStarGiftMenuType::List) {
+	if (canToggle && type == SavedDiamondGiftMenuType::List) {
 		if (e.savedToProfile) {
 			menu->addAction(tr::lng_gift_menu_hide(tr::now), [=] {
-				ToggleStarGiftSaved(show, savedId, false);
+				ToggleDiamondGiftSaved(show, savedId, false);
 			}, st.hide ? st.hide : &st::menuIconStealth);
 		} else {
 			menu->addAction(tr::lng_gift_menu_show(tr::now), [=] {
-				ToggleStarGiftSaved(show, savedId, true);
+				ToggleDiamondGiftSaved(show, savedId, true);
 			}, st.show ? st.show : &st::menuIconShowInChat);
 		}
 	}
@@ -1188,7 +1188,7 @@ void FillUniqueGiftMenu(
 			if (Ui::ShowCraftAddressError(show, unique)) {
 				return;
 			}
-			const auto savedId = EntryToSavedStarGiftId(&show->session(), e);
+			const auto savedId = EntryToSavedDiamondGiftId(&show->session(), e);
 			if (const auto window = show->resolveWindow()) {
 				Ui::ShowGiftCraftInfoBox(window, unique, savedId);
 			}
@@ -1196,7 +1196,7 @@ void FillUniqueGiftMenu(
 	}
 	const auto transfer = savedId
 		&& (savedId.isUser() ? e.in : savedId.chat()->canTransferGifts())
-		&& (unique->starsForTransfer >= 0);
+		&& (unique->diamondsForTransfer >= 0);
 	if (transfer) {
 		menu->addAction(tr::lng_gift_transfer_button(tr::now), [=] {
 			if (!owner) {
@@ -1226,7 +1226,7 @@ void FillUniqueGiftMenu(
 	}
 	if (ShowResellButton(&show->session(), e)) {
 		const auto can = CanResellGift(&show->session(), e);
-		const auto inResale = (unique->starsForResale > 0);
+		const auto inResale = (unique->diamondsForResale > 0);
 		const auto editPrice = (inResale
 			? tr::lng_gift_transfer_update
 			: tr::lng_gift_transfer_sell)(tr::now);
@@ -1325,7 +1325,7 @@ rpl::producer<CreditsAmount> UniqueGiftResalePrice(
 }
 
 bool UniqueGiftCanRemoveDetails(const Data::CreditsHistoryEntry &entry) {
-	return entry.uniqueGift && (entry.starsForDetailsRemove > 0);
+	return entry.uniqueGift && (entry.diamondsForDetailsRemove > 0);
 }
 
 Fn<void(Fn<void()> removed)> UniqueGiftRemoveDetailsHandler(
@@ -1334,7 +1334,7 @@ Fn<void(Fn<void()> removed)> UniqueGiftRemoveDetailsHandler(
 	return [=](Fn<void()> removed) {
 		const auto session = &show->session();
 		const auto unique = entry.uniqueGift;
-		const auto savedId = EntryToSavedStarGiftId(session, entry);
+		const auto savedId = EntryToSavedDiamondGiftId(session, entry);
 		auto done = [=](
 				Payments::CheckoutResult result,
 				const MTPUpdates *updates) {
@@ -1350,10 +1350,10 @@ Fn<void(Fn<void()> removed)> UniqueGiftRemoveDetailsHandler(
 				unique->originalDetails = Data::UniqueGiftOriginalDetails();
 			}
 		};
-		RequestStarsFormAndSubmit(
+		RequestDiamondsFormAndSubmit(
 			show,
 			MTP_inputInvoiceStarGiftDropOriginalDetails(
-				Api::InputSavedStarGiftId(savedId, unique)),
+				Api::InputSavedDiamondGiftId(savedId, unique)),
 			std::move(done));
 	};
 }
@@ -1366,7 +1366,7 @@ void GenericCreditsEntryCover(
 		CreditsEntryBoxStyleOverrides st = {}) {
 	const auto session = &show->session();
 	const auto owner = &session->data();
-	const auto isStarGift = e.stargift || e.soldOutInfo;
+	const auto isDiamondGift = e.stargift || e.soldOutInfo;
 	const auto uniqueGift = e.uniqueGift.get();
 
 	box->setStyle(st.box ? *st.box : st::giveawayGiftCodeBox);
@@ -1382,7 +1382,7 @@ void GenericCreditsEntryCover(
 
 	const auto &stUser = st::boostReplaceUserpic;
 	const auto isPrize = e.bareGiveawayMsgId > 0;
-	const auto starGiftSticker = (isStarGift && e.bareGiftStickerId)
+	const auto diamondGiftSticker = (isDiamondGift && e.bareGiftStickerId)
 		? owner->document(e.bareGiftStickerId).get()
 		: nullptr;
 	const auto peer = isPrize
@@ -1421,7 +1421,7 @@ void GenericCreditsEntryCover(
 		const auto wearSt = st.giftWearBox
 			? *st.giftWearBox
 			: GiftWearBoxStyleOverride();
-		const auto savedId = EntryToSavedStarGiftId(session, e);
+		const auto savedId = EntryToSavedDiamondGiftId(session, e);
 		const auto resaleClick = CanResellGift(session, e)
 			? [=] {
 				ShowUniqueGiftSellBox(show, e.uniqueGift, savedId, wearSt);
@@ -1451,7 +1451,7 @@ void GenericCreditsEntryCover(
 		if (!(s.cancelled || s.expired || s.cancelledByBot)) {
 			const auto widget = Ui::CreateChild<Ui::RpWidget>(content);
 			const auto photoSize = stUser.photoSize;
-			AddMiniStars(content, widget, photoSize, st::boxWideWidth, 1.5);
+			AddMiniDiamonds(content, widget, photoSize, st::boxWideWidth, 1.5);
 		}
 		const auto photoId = s.photoId ? s.photoId : e.photoId;
 		const auto callback = [=](Fn<void()> update) {
@@ -1464,7 +1464,7 @@ void GenericCreditsEntryCover(
 			style::al_top);
 	} else if (peer
 		&& !e.gift
-		&& !e.premiumMonthsForStars
+		&& !e.premiumMonthsForDiamonds
 		&& !e.postsSearch) {
 		if (e.subscriptionUntil.isNull() && s.until.isNull()) {
 			content->add(
@@ -1475,33 +1475,33 @@ void GenericCreditsEntryCover(
 				SubscriptionUserpic(content, peer, stUser.photoSize),
 				style::al_top);
 		}
-	} else if (e.gift || isPrize || e.premiumMonthsForStars) {
+	} else if (e.gift || isPrize || e.premiumMonthsForDiamonds) {
 		struct State final {
 			DocumentData *sticker = nullptr;
 			std::shared_ptr<Data::DocumentMedia> media;
 			std::unique_ptr<Lottie::SinglePlayer> lottie;
 			rpl::lifetime downloadLifetime;
 		};
-		Ui::AddSkip(content, isStarGift
+		Ui::AddSkip(content, isDiamondGift
 			? st::creditsHistoryEntryStarGiftSpace
 			: st::creditsHistoryEntryGiftStickerSpace);
 		const auto icon = Ui::CreateChild<Ui::RpWidget>(content);
-		icon->resize(Size(isStarGift
+		icon->resize(Size(isDiamondGift
 			? st::creditsHistoryEntryStarGiftSize
 			: st::creditsHistoryEntryGiftStickerSize));
 		const auto state = icon->lifetime().make_state<State>();
 		const auto &packs = session->giftBoxStickersPacks();
-		const auto document = starGiftSticker
-			? starGiftSticker
+		const auto document = diamondGiftSticker
+			? diamondGiftSticker
 			: e.credits.ton()
 			? packs.tonLookup(e.credits.whole())
 			: packs.lookup(
-				e.premiumMonthsForStars
-					? e.premiumMonthsForStars
-					: packs.monthsForStars(e.credits.whole()));
+				e.premiumMonthsForDiamonds
+					? e.premiumMonthsForDiamonds
+					: packs.monthsForDiamonds(e.credits.whole()));
 		if (document && document->sticker()) {
-			const auto origin = starGiftSticker
-				? starGiftSticker->stickerOrGifOrigin()
+			const auto origin = diamondGiftSticker
+				? diamondGiftSticker->stickerOrGifOrigin()
 				: e.credits.ton()
 				? packs.tonOrigin()
 				: packs.origin();
@@ -1547,7 +1547,7 @@ void GenericCreditsEntryCover(
 		}, icon->lifetime());
 		content->sizeValue(
 		) | rpl::on_next([=](const QSize &size) {
-			icon->move((size.width() - icon->width()) / 2, isStarGift
+			icon->move((size.width() - icon->width()) / 2, isDiamondGift
 				? st::creditsHistoryEntryStarGiftSkip
 				: st::creditsHistoryEntryGiftStickerSkip);
 		}, icon->lifetime());
@@ -1598,13 +1598,13 @@ void GenericCreditsEntryBody(
 	const auto item = owner->message(
 		PeerId(e.barePeerId),
 		MsgId(e.bareMsgId));
-	const auto isStarGift = e.stargift || e.soldOutInfo;
-	const auto creditsHistoryStarGift = isStarGift && !e.id.isEmpty();
-	const auto sentStarGift = creditsHistoryStarGift && !e.in;
-	const auto giftToSelf = isStarGift
+	const auto isDiamondGift = e.stargift || e.soldOutInfo;
+	const auto creditsHistoryDiamondGift = isDiamondGift && !e.id.isEmpty();
+	const auto sentDiamondGift = creditsHistoryDiamondGift && !e.in;
+	const auto giftToSelf = isDiamondGift
 		&& (e.barePeerId == selfPeerId)
 		&& (e.in || e.bareGiftOwnerId == selfPeerId);
-	const auto giftChannel = (isStarGift && e.giftChannelSavedId)
+	const auto giftChannel = (isDiamondGift && e.giftChannelSavedId)
 		? session->data().peer(
 			PeerId(e.bareEntryOwnerId))->asChannel()
 		: nullptr;
@@ -1613,19 +1613,19 @@ void GenericCreditsEntryBody(
 		&& giftChannel->canManageGifts();
 	const auto giftToChannelCanTransfer = giftToChannel
 		&& giftChannel->canTransferGifts();
-	const auto starGiftCanManage = isStarGift
-		&& !creditsHistoryStarGift
+	const auto diamondGiftCanManage = isDiamondGift
+		&& !creditsHistoryDiamondGift
 		&& (e.in || giftToChannelCanManage)
 		&& !e.fromGiftSlug
 		&& !e.converted;
-	const auto starGiftCanTransfer = isStarGift
-		&& !creditsHistoryStarGift
+	const auto diamondGiftCanTransfer = isDiamondGift
+		&& !creditsHistoryDiamondGift
 		&& (e.in || giftToChannelCanTransfer);
-	const auto starGiftSender = (isStarGift && item)
+	const auto diamondGiftSender = (isDiamondGift && item)
 		? item->history()->peer->asUser()
-		: (isStarGift && e.in)
+		: (isDiamondGift && e.in)
 		? owner->peer(PeerId(e.barePeerId))->asUser()
-		: (isStarGift && e.bareActorId)
+		: (isDiamondGift && e.bareActorId)
 		? owner->peer(PeerId(e.bareActorId)).get()
 		: nullptr;
 	const auto convertLast = base::unixtime::serialize(e.date)
@@ -1633,16 +1633,16 @@ void GenericCreditsEntryBody(
 	const auto timeLeft = int64(convertLast) - int64(base::unixtime::now());
 	const auto timeExceeded = (timeLeft <= 0);
 	const auto uniqueGift = e.uniqueGift.get();
-	const auto forConvert = starGiftCanTransfer
-		&& e.starsConverted
+	const auto forConvert = diamondGiftCanTransfer
+		&& e.diamondsConverted
 		&& !e.converted
-		&& starGiftSender;
+		&& diamondGiftSender;
 	const auto canConvert = forConvert && !timeExceeded;
-	const auto inResale = uniqueGift && (uniqueGift->starsForResale > 0);
+	const auto inResale = uniqueGift && (uniqueGift->diamondsForResale > 0);
 	const auto canBuyResold = inResale && (e.bareGiftOwnerId != selfPeerId);
 	const auto &stUser = st::boostReplaceUserpic;
 	const auto isPrize = e.bareGiveawayMsgId > 0;
-	const auto starGiftSticker = (isStarGift && e.bareGiftStickerId)
+	const auto diamondGiftSticker = (isDiamondGift && e.bareGiftStickerId)
 		? owner->document(e.bareGiftStickerId).get()
 		: nullptr;
 	const auto peer = isPrize
@@ -1657,7 +1657,7 @@ void GenericCreditsEntryBody(
 		? owner->peer(PeerId(e.barePeerId)).get()
 		: nullptr;
 
-	if (auto savedId = EntryToSavedStarGiftId(session, e)) {
+	if (auto savedId = EntryToSavedDiamondGiftId(session, e)) {
 		session->data().giftUpdates(
 		) | rpl::on_next([=](const Data::GiftUpdate &update) {
 			if (update.id == savedId
@@ -1680,13 +1680,13 @@ void GenericCreditsEntryBody(
 			if (Ui::ShowCraftAddressError(show, unique)) {
 				return;
 			}
-			const auto savedId = EntryToSavedStarGiftId(&show->session(), e);
+			const auto savedId = EntryToSavedDiamondGiftId(&show->session(), e);
 			if (const auto window = show->resolveWindow()) {
 				Ui::ShowGiftCraftInfoBox(window, unique, savedId);
 			}
 		} : Fn<void()>();
 		AddUniqueCloseMoreButton(box, st, [=](not_null<Ui::PopupMenu*> menu) {
-			const auto type = SavedStarGiftMenuType::View;
+			const auto type = SavedDiamondGiftMenuType::View;
 			FillUniqueGiftMenu(show, menu, e, type, st);
 		}, craft);
 
@@ -1717,7 +1717,7 @@ void GenericCreditsEntryBody(
 						e.paidMessagesCount)
 					: e.postsSearch
 					? tr::lng_diamonds_box_history_entry_posts_search(tr::now)
-					: e.premiumMonthsForStars
+					: e.premiumMonthsForDiamonds
 					? tr::lng_premium_summary_title(tr::now)
 					: e.giftOffer
 					? tr::lng_diamonds_box_history_entry_gift_offer(tr::now)
@@ -1727,16 +1727,16 @@ void GenericCreditsEntryBody(
 					? tr::lng_diamonds_commission(
 						tr::now,
 						lt_amount,
-						Info::BotStarRef::FormatCommission(e.starrefCommission))
+						Info::BotDiamondRef::FormatCommission(e.starrefCommission))
 					: e.soldOutInfo
 					? tr::lng_diamonds_box_history_entry_gift_unavailable(tr::now)
-					: sentStarGift
+					: sentDiamondGift
 					? tr::lng_diamonds_box_history_entry_gift_sent(tr::now)
 					: e.converted
 					? tr::lng_diamonds_box_history_entry_gift_converted(tr::now)
 					: (e.giftNumber && !e.giftTitle.isEmpty())
 					? Data::UniqueGiftName(e.giftTitle, e.giftNumber)
-					: (isStarGift && !starGiftCanManage)
+					: (isDiamondGift && !diamondGiftCanManage)
 					? tr::lng_gift_link_label_gift(tr::now)
 					: giftToSelf
 					? ((uniqueGift && uniqueGift->crafted)
@@ -1767,7 +1767,7 @@ void GenericCreditsEntryBody(
 			Ui::GiftReleasedByHandler(peer);
 			return false;
 		});
-	} else if (!isStarGift || creditsHistoryStarGift || e.soldOutInfo) {
+	} else if (!isDiamondGift || creditsHistoryDiamondGift || e.soldOutInfo) {
 		constexpr auto kMinus = QChar(0x2212);
 		auto &lifetime = content->lifetime();
 		const auto text = lifetime.make_state<Ui::Text::String>();
@@ -1790,7 +1790,7 @@ void GenericCreditsEntryBody(
 				content,
 				st::defaultTextStyle.font->height));
 		auto helper = Ui::Text::CustomEmojiHelper();
-		const auto starEmoji = helper.paletteDependent(
+		const auto diamondEmoji = helper.paletteDependent(
 			Ui::Earn::IconCreditsEmoji());
 		if (e.soldOutInfo) {
 			text->setText(
@@ -1802,7 +1802,7 @@ void GenericCreditsEntryBody(
 				tr::lng_diamonds_subscription_subtitle(
 					tr::now,
 					lt_emoji,
-					starEmoji,
+					diamondEmoji,
 					lt_cost,
 					{ QString::number(s.subscription.credits) },
 					tr::marked),
@@ -1810,14 +1810,14 @@ void GenericCreditsEntryBody(
 				helper.context([=] { amount->update(); }));
 		} else if (e.credits.stars()) {
 			auto t = TextWithEntities()
-				.append((e.in && (creditsHistoryStarGift || !isStarGift))
+				.append((e.in && (creditsHistoryDiamondGift || !isDiamondGift))
 					? QChar('+')
-					: (e.gift && !creditsHistoryStarGift)
+					: (e.gift && !creditsHistoryDiamondGift)
 					? QChar()
 					: kMinus)
 				.append(Lang::FormatCreditsAmountDecimal(e.credits.abs()))
 				.append(QChar(' '))
-				.append(starEmoji);
+				.append(diamondEmoji);
 			text->setMarkedText(
 				st::semiboldTextStyle,
 				std::move(t),
@@ -1864,9 +1864,9 @@ void GenericCreditsEntryBody(
 				? st::windowSubTextFg
 				: e.pending
 				? st::creditsStroke
-				: (e.in || (isStarGift && !creditsHistoryStarGift))
+				: (e.in || (isDiamondGift && !creditsHistoryDiamondGift))
 				? st::boxTextFgGood
-				: (e.gift && !creditsHistoryStarGift)
+				: (e.gift && !creditsHistoryDiamondGift)
 				? st::windowBoldFg
 				: st::menuIconAttentionColor);
 			const auto x = (amount->width() - fullWidth) / 2;
@@ -1918,7 +1918,7 @@ void GenericCreditsEntryBody(
 		}, amount->lifetime());
 	}
 
-	if (!isStarGift && !e.description.empty()) {
+	if (!isDiamondGift && !e.description.empty()) {
 		Ui::AddSkip(content);
 		box->addRow(
 			object_ptr<Ui::FlatLabel>(
@@ -1929,7 +1929,7 @@ void GenericCreditsEntryBody(
 	}
 
 	const auto arrow = Ui::Text::IconEmoji(&st::textMoreIconEmoji);
-	if (!uniqueGift && (starGiftCanManage || e.converted)) {
+	if (!uniqueGift && (diamondGiftCanManage || e.converted)) {
 		Ui::AddSkip(content);
 		const auto about = box->addRow(
 			object_ptr<Ui::FlatLabel>(
@@ -1937,15 +1937,15 @@ void GenericCreditsEntryBody(
 				(e.giftRefunded
 					? tr::lng_action_gift_refunded(
 						tr::rich)
-					: e.starsUpgradedBySender
+					: e.diamondsUpgradedBySender
 					? tr::lng_action_gift_got_upgradable_text(
 						tr::rich)
-					: (e.starsToUpgrade
+					: (e.diamondsToUpgrade
 						&& giftToSelf
 						&& !e.giftTransferred)
 					? tr::lng_action_gift_self_about_unique(
 						tr::marked)
-					: (e.starsToUpgrade
+					: (e.diamondsToUpgrade
 						&& giftToChannelCanManage
 						&& !e.giftTransferred)
 					? tr::lng_action_gift_channel_about_unique(
@@ -1962,7 +1962,7 @@ void GenericCreditsEntryBody(
 									? tr::lng_gift_channel_got
 									: tr::lng_gift_got_diamonds))(
 									lt_count,
-									rpl::single(e.starsConverted * 1.),
+									rpl::single(e.diamondsConverted * 1.),
 									tr::rich),
 							tr::lng_paid_about_link()
 						) | rpl::map([](
@@ -1990,7 +1990,7 @@ void GenericCreditsEntryBody(
 		if (e.giftRefunded) {
 			about->setTextColorOverride(st::menuIconAttentionColor->c);
 		}
-	} else if (isStarGift) {
+	} else if (isDiamondGift) {
 	} else if ((e.gift || isPrize) && e.credits.stars()) {
 		Ui::AddSkip(content);
 		auto link = tr::lng_diamonds_box_history_entry_gift_about_link(
@@ -2074,7 +2074,7 @@ void GenericCreditsEntryBody(
 		});
 	};
 
-	if (starGiftCanManage) {
+	if (diamondGiftCanManage) {
 		addGiftLinkTON();
 	}
 
@@ -2086,13 +2086,13 @@ void GenericCreditsEntryBody(
 	};
 	const auto state = box->lifetime().make_state<State>();
 
-	const auto canToggle = starGiftCanManage
+	const auto canToggle = diamondGiftCanManage
 		&& !e.giftTransferred
 		&& !e.giftRefunded
 		&& !e.converted;
 	const auto toggleVisibility = [=, weak = base::make_weak(box)](bool save) {
 		const auto showSection = !e.fromGiftsList;
-		const auto savedId = EntryToSavedStarGiftId(&show->session(), e);
+		const auto savedId = EntryToSavedDiamondGiftId(&show->session(), e);
 		const auto done = [=](bool ok) {
 			if (ok && showSection) {
 				if (const auto window = show->resolveWindow()) {
@@ -2108,14 +2108,14 @@ void GenericCreditsEntryBody(
 				}
 			}
 		};
-		ToggleStarGiftSaved(show, savedId, save, done);
+		ToggleDiamondGiftSaved(show, savedId, save, done);
 	};
 
 	const auto canUpgrade = e.stargiftId
 		&& e.canUpgradeGift
 		&& (e.in || giftToSelf || giftToChannelCanManage)
 		&& !e.uniqueGift;
-	const auto canUpgradeFree = canUpgrade && (e.starsUpgradedBySender > 0);
+	const auto canUpgradeFree = canUpgrade && (e.diamondsUpgradedBySender > 0);
 	const auto canGiftUpgrade = !e.uniqueGift
 		&& !e.in
 		&& !e.giftPrepayUpgradeHash.isEmpty();
@@ -2124,22 +2124,22 @@ void GenericCreditsEntryBody(
 	const auto upgradeGuard = std::make_shared<bool>();
 	const auto upgrade = [=] {
 		const auto window = show->resolveWindow();
-		if (!window || *upgradeGuard || !starGiftSticker) {
+		if (!window || *upgradeGuard || !diamondGiftSticker) {
 			return;
 		}
 		*upgradeGuard = true;
-		const auto savedId = EntryToSavedStarGiftId(&window->session(), e);
+		const auto savedId = EntryToSavedDiamondGiftId(&window->session(), e);
 		const auto openWhenDone = (giftToChannel || canGiftUpgrade)
 			? window->session().data().peer(PeerId(e.bareGiftOwnerId)).get()
-			: starGiftSender;
+			: diamondGiftSender;
 		using namespace Ui;
-		ShowStarGiftUpgradeBox({
+		ShowDiamondGiftUpgradeBox({
 			.controller = window,
 			.stargift = Data::StarGift{
 				.id = e.stargiftId,
 				.unique = e.uniqueGift,
 				.stars = e.credits.ton() ? 0 : int(e.credits.whole()),
-				.document = starGiftSticker,
+				.document = diamondGiftSticker,
 				.limitedLeft = e.limitedLeft,
 				.limitedCount = e.limitedCount,
 			},
@@ -2148,22 +2148,22 @@ void GenericCreditsEntryBody(
 			.peer = openWhenDone,
 			.savedId = savedId,
 			.giftPrepayUpgradeHash = e.giftPrepayUpgradeHash,
-			.cost = e.starsUpgradedBySender ? 0 : e.starsToUpgrade,
+			.cost = e.diamondsUpgradedBySender ? 0 : e.diamondsToUpgrade,
 			.canAddSender = !giftToSelf && !e.anonymous,
 			.canAddComment = (!giftToSelf
 				&& !e.anonymous
 				&& e.hasGiftComment),
 			.canAddMyComment = (giftToSelf && e.hasGiftComment),
 			.addDetailsDefault = (giftToSelf
-				|| (e.starsUpgradedBySender
+				|| (e.diamondsUpgradedBySender
 					&& !e.giftUpgradeSeparate
 					&& !e.anonymous)),
 		});
 	};
 
-	if (isStarGift && e.id.isEmpty()) {
+	if (isDiamondGift && e.id.isEmpty()) {
 		const auto convert = [=, weak = base::make_weak(box)] {
-			const auto stars = e.starsConverted;
+			const auto stars = e.diamondsConverted;
 			const auto days = canConvert ? ((timeLeft + 86399) / 86400) : 0;
 			auto text = giftToChannelCanManage
 				? tr::lng_gift_convert_sure_confirm_channel(
@@ -2176,15 +2176,15 @@ void GenericCreditsEntryBody(
 					lt_count,
 					rpl::single(stars * 1.),
 					lt_user,
-					rpl::single(tr::bold(starGiftSender->shortName())),
+					rpl::single(tr::bold(diamondGiftSender->shortName())),
 					tr::rich);
-			ConfirmConvertStarGift(show, std::move(text), stars, days, [=] {
+			ConfirmConvertDiamondGift(show, std::move(text), stars, days, [=] {
 				if (state->convertButtonBusy.current()
 					|| state->confirmButtonBusy.current()) {
 					return;
 				}
 				state->convertButtonBusy = true;
-				const auto savedId = EntryToSavedStarGiftId(
+				const auto savedId = EntryToSavedDiamondGiftId(
 					&show->session(),
 					e);
 				if (stars) {
@@ -2208,7 +2208,7 @@ void GenericCreditsEntryBody(
 				}
 			});
 		};
-		AddStarGiftTable(
+		AddDiamondGiftTable(
 			show,
 			content,
 			st,
@@ -2225,9 +2225,9 @@ void GenericCreditsEntryBody(
 	Ui::AddSkip(content);
 
 	const auto showNextToUpgrade = e.nextToUpgradeShow;
-	if (!isStarGift && e.credits.stars() && e.credits.value()) {
+	if (!isDiamondGift && e.credits.stars() && e.credits.value()) {
 		box->addRow(CreateCreditsTermsLabel(box), style::al_top);
-	} else if (starGiftCanManage) {
+	} else if (diamondGiftCanManage) {
 		const auto hiddenPhrase = giftToChannelCanManage
 			? tr::lng_gift_hidden_hint_channel
 			: uniqueGift
@@ -2342,7 +2342,7 @@ void GenericCreditsEntryBody(
 
 	if (e.peerType == Data::CreditsHistoryEntry::PeerType::PremiumBot) {
 		const auto widget = Ui::CreateChild<Ui::RpWidget>(content);
-		AddMiniStars(content, widget, stUser.photoSize, st::boxWideWidth, 2);
+		AddMiniDiamonds(content, widget, stUser.photoSize, st::boxWideWidth, 2);
 	}
 
 	const auto rejoinByApi = base::unixtime::serialize(s.until)
@@ -2476,7 +2476,7 @@ void GenericCreditsEntryBody(
 						rpl::single(Ui::Text::IconEmoji(
 							&st::starIconEmojiSmall
 						).append(Lang::FormatCountDecimal(
-							uniqueGift->starsForResale))),
+							uniqueGift->diamondsForResale))),
 						tr::marked),
 					st::resaleButtonTitle,
 					st::resaleButtonSubtitle);
@@ -2484,7 +2484,7 @@ void GenericCreditsEntryBody(
 				button->setText(tr::lng_gift_buy_resale_button(
 					lt_cost,
 					rpl::single(Ui::Text::IconEmoji(&st::starIconEmoji).append(
-						Lang::FormatCountDecimal(uniqueGift->starsForResale))),
+						Lang::FormatCountDecimal(uniqueGift->diamondsForResale))),
 					tr::marked));
 			}
 		} else if (showNextToUpgrade) {
@@ -2689,13 +2689,13 @@ void UniqueGiftValueBox(
 			style::al_top);
 	};
 
-	if (const auto count = value->forSaleOnTelegram; count > 0) {
+	if (const auto count = value->forSaleOnAnsible; count > 0) {
 		addAvailability(
 			count,
 			tr::lng_gift_value_ansible
 		)->setClickHandlerFilter([=](const auto &...) {
 			if (const auto window = show->resolveWindow()) {
-				state->buyLifetime = Ui::ShowStarGiftResale(
+				state->buyLifetime = Ui::ShowDiamondGiftResale(
 					window,
 					window->session().user(),
 					unique->initialGiftId,
@@ -2780,11 +2780,11 @@ void CreditsPrizeBox(
 		Data::SubscriptionEntry());
 }
 
-void GlobalStarGiftBox(
+void GlobalDiamondGiftBox(
 		not_null<Ui::GenericBox*> box,
 		std::shared_ptr<ChatHelpers::Show> show,
 		const Data::StarGift &data,
-		StarGiftResaleInfo resale,
+		DiamondGiftResaleInfo resale,
 		CreditsEntryBoxStyleOverrides st) {
 	const auto selfId = show->session().userPeerId();
 	const auto ownerId = data.unique ? data.unique->ownerId.value : 0;
@@ -2815,7 +2815,7 @@ void GlobalStarGiftBox(
 		st);
 }
 
-Data::CreditsHistoryEntry SavedStarGiftEntry(
+Data::CreditsHistoryEntry SavedDiamondGiftEntry(
 		not_null<PeerData*> owner,
 		const Data::SavedStarGift &data) {
 	const auto chatGiftPeer = data.manageId.chat();
@@ -2845,10 +2845,10 @@ Data::CreditsHistoryEntry SavedStarGiftEntry(
 		.peerType = Data::CreditsHistoryEntry::PeerType::Peer,
 		.limitedCount = data.info.limitedCount,
 		.limitedLeft = data.info.limitedLeft,
-		.starsConverted = int(data.starsConverted),
-		.starsToUpgrade = int(data.info.starsToUpgrade),
-		.starsUpgradedBySender = int(data.starsUpgradedBySender),
-		.starsForDetailsRemove = int(data.starsForDetailsRemove),
+		.diamondsConverted = int(data.diamondsConverted),
+		.diamondsToUpgrade = int(data.info.diamondsToUpgrade),
+		.diamondsUpgradedBySender = int(data.diamondsUpgradedBySender),
+		.diamondsForDetailsRemove = int(data.diamondsForDetailsRemove),
 		.giftNumber = data.giftNum,
 		.converted = false,
 		.anonymous = data.anonymous,
@@ -2864,25 +2864,25 @@ Data::CreditsHistoryEntry SavedStarGiftEntry(
 	};
 }
 
-Data::SavedStarGiftId EntryToSavedStarGiftId(
+Data::SavedDiamondGiftId EntryToSavedDiamondGiftId(
 		not_null<Main::Session*> session,
 		const Data::CreditsHistoryEntry &entry) {
 	return (!entry.stargift || (!entry.in && !entry.giftChannelSavedId))
-		? Data::SavedStarGiftId()
+		? Data::SavedDiamondGiftId()
 		: (entry.bareEntryOwnerId && entry.giftChannelSavedId)
-		? Data::SavedStarGiftId::Chat(
+		? Data::SavedDiamondGiftId::Chat(
 			session->data().peer(PeerId(entry.bareEntryOwnerId)),
 			entry.giftChannelSavedId)
-		: Data::SavedStarGiftId::User(MsgId(entry.bareMsgId));
+		: Data::SavedDiamondGiftId::User(MsgId(entry.bareMsgId));
 }
 
-void ShowSavedStarGiftBox(
+void ShowSavedDiamondGiftBox(
 		not_null<Window::SessionController*> controller,
 		not_null<PeerData*> owner,
 		const Data::SavedStarGift &data,
 		Fn<std::vector<Data::CreditsHistoryEntry>()> pinned) {
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-		auto entry = SavedStarGiftEntry(owner, data);
+		auto entry = SavedDiamondGiftEntry(owner, data);
 		entry.pinnedSavedGifts = std::move(pinned);
 		Settings::ReceiptCreditsBox(
 			box,
@@ -2892,16 +2892,16 @@ void ShowSavedStarGiftBox(
 	}));
 }
 
-void FillSavedStarGiftMenu(
+void FillSavedDiamondGiftMenu(
 		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<Ui::PopupMenu*> menu,
 		const Data::CreditsHistoryEntry &e,
-		SavedStarGiftMenuType type,
+		SavedDiamondGiftMenuType type,
 		CreditsEntryBoxStyleOverrides st) {
 	FillUniqueGiftMenu(show, menu, e, type, st);
 }
 
-void ShowStarGiftViewBox(
+void ShowDiamondGiftViewBox(
 		not_null<Window::SessionController*> controller,
 		const Data::GiftCode &data,
 		FullMsgId itemId,
@@ -2928,7 +2928,7 @@ void ShowStarGiftViewBox(
 		? upgradeNext->info.document->id
 		: uint64();
 	const auto nextToUpgradeShow = upgradeNext
-		? [=] { ShowSavedStarGiftBox(
+		? [=] { ShowSavedDiamondGiftBox(
 			controller,
 			controller->session().data().peer(ownerId),
 			*upgradeNext); }
@@ -2963,10 +2963,10 @@ void ShowStarGiftViewBox(
 		.peerType = Data::CreditsHistoryEntry::PeerType::Peer,
 		.limitedCount = data.limitedCount,
 		.limitedLeft = data.limitedLeft,
-		.starsConverted = data.starsConverted,
-		.starsToUpgrade = data.starsToUpgrade,
-		.starsUpgradedBySender = data.starsUpgradedBySender,
-		.starsForDetailsRemove = data.starsForDetailsRemove,
+		.diamondsConverted = data.diamondsConverted,
+		.diamondsToUpgrade = data.diamondsToUpgrade,
+		.diamondsUpgradedBySender = data.diamondsUpgradedBySender,
+		.diamondsForDetailsRemove = data.diamondsForDetailsRemove,
 		.giftNumber = data.giftNum,
 		.converted = data.converted,
 		.anonymous = data.anonymous,
@@ -2989,7 +2989,7 @@ void ShowStarGiftViewBox(
 		Data::SubscriptionEntry()));
 }
 
-void ShowStarGiftViewBox(
+void ShowDiamondGiftViewBox(
 		not_null<Window::SessionController*> controller,
 		const Data::GiftCode &data,
 		FullMsgId itemId) {
@@ -3018,7 +3018,7 @@ void ShowStarGiftViewBox(
 	//			std::move(nextToUpgrade));
 	//	}));
 	//} else {
-		ShowStarGiftViewBox(controller, data, itemId, std::nullopt);
+		ShowDiamondGiftViewBox(controller, data, itemId, std::nullopt);
 	//}
 }
 
@@ -3161,7 +3161,7 @@ void SmallBalanceBox(
 		return value.name;
 	}, [](SmallBalanceDeepLink) {
 		return QString();
-	}, [&](SmallBalanceStarGift value) {
+	}, [&](SmallBalanceDiamondGift value) {
 		return owner->peer(value.recipientId)->shortName();
 	}, [&](SmallBalanceForMessage value) {
 		return value.recipientId
@@ -3215,7 +3215,7 @@ void SmallBalanceBox(
 					: v::is<SmallBalanceDeepLink>(source)
 					? DeepLinkBalanceAbout(
 						v::get<SmallBalanceDeepLink>(source).purpose)
-					: v::is<SmallBalanceStarGift>(source)
+					: v::is<SmallBalanceDiamondGift>(source)
 					? tr::lng_diamonds_small_balance_diamond_gift(
 						lt_user,
 						rpl::single(tr::bold(name)),
@@ -3329,7 +3329,7 @@ void AddWithdrawalWidget(
 			return Lang::FormatCreditsAmountDecimal(v);
 		}),
 		st::channelEarnBalanceMajorLabel);
-	const auto icon = Ui::CreateSingleStarWidget(
+	const auto icon = Ui::CreateSingleDiamondWidget(
 		labels,
 		majorLabel->height());
 	majorLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -3358,14 +3358,14 @@ void AddWithdrawalWidget(
 		object_ptr<Ui::SlideWrap<Ui::VerticalLayout>>(
 			container,
 			object_ptr<Ui::VerticalLayout>(container)));
-	const auto starsWithdrawMax = CreditsAmount(
-		controller->session().appConfig().starsWithdrawMax());
+	const auto diamondsWithdrawMax = CreditsAmount(
+		controller->session().appConfig().diamondsWithdrawMax());
 	const auto input = Ui::AddInputFieldForCredits(
 		withdrawalWrap->entity(),
 		rpl::duplicate(
 			availableBalanceValue
 		) | rpl::map([=](CreditsAmount amount) {
-			return (amount > starsWithdrawMax) ? starsWithdrawMax : amount;
+			return (amount > diamondsWithdrawMax) ? diamondsWithdrawMax : amount;
 		}));
 
 	Ui::AddSkip(withdrawalWrap->entity());
@@ -3692,7 +3692,7 @@ void MaybeRequestBalanceIncrease(
 			if (const auto onstack = done) {
 				onstack(SmallBalanceResult::Already);
 			}
-		} else if (session->appConfig().starsSpendTopupInvoiceDisabled()
+		} else if (session->appConfig().diamondsSpendTopupInvoiceDisabled()
 			&& SpendPurposePeerId(&session->data(), source)) {
 			show->showToast(tr::lng_diamonds_topup_disabled(tr::now));
 			if (const auto onstack = done) {

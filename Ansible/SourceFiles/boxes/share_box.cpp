@@ -529,7 +529,7 @@ SendMenu::Details ShareBox::sendMenuDetails() const {
 	const auto selected = _inner->selected();
 	const auto hasPaid = [&] {
 		for (const auto &thread : selected) {
-			if (thread->peer()->starsPerMessageChecked()) {
+			if (thread->peer()->diamondsPerMessageChecked()) {
 				return true;
 			}
 		}
@@ -695,12 +695,12 @@ void ShareBox::submit(Api::SendOptions options) {
 		}
 		const auto withPaymentApproved = crl::guard(weak, [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			submit(copy);
 		});
 		const auto messagesCount = _descriptor.countMessagesCallback(
 			comment);
-		const auto alreadyApproved = options.starsApproved;
+		const auto alreadyApproved = options.diamondsApproved;
 		auto paid = std::vector<not_null<PeerData*>>();
 		auto waiting = base::flat_set<not_null<PeerData*>>();
 		auto totalStars = 0;
@@ -782,14 +782,14 @@ void ShareBox::selectedChanged() {
 		_comment->toggle(_hasSelected, anim::type::normal);
 		_comment->resizeToWidth(st::boxWideWidth);
 	}
-	computeStarsCount();
+	computeDiamondsCount();
 	update();
 }
 
-void ShareBox::computeStarsCount() {
+void ShareBox::computeDiamondsCount() {
 	auto perMessage = 0;
 	for (const auto &thread : _inner->selected()) {
-		perMessage += thread->peer()->starsPerMessageChecked();
+		perMessage += thread->peer()->diamondsPerMessageChecked();
 	}
 	const auto messagesCount = _descriptor.countMessagesCallback
 		? _descriptor.countMessagesCallback(_comment
@@ -1204,7 +1204,7 @@ void ShareBox::Inner::paintChat(
 		PaintRestrictionBadge(
 			p,
 			&_st.item,
-			chat->restriction.starsPerMessage,
+			chat->restriction.diamondsPerMessage,
 			chat->badgeCache,
 			x + photoLeft,
 			y + photoTop,
@@ -1939,11 +1939,11 @@ ShareBox::SubmitCallback ShareBox::DefaultForwardCallback(
 					continue;
 				}
 				const auto msgCount = int(mtpMsgIds.size());
-				const auto starsPaid = std::min(
-					options.starsApproved,
-					msgCount * peer->starsPerMessageChecked());
-				if (starsPaid) {
-					options.starsApproved -= starsPaid;
+				const auto diamondsPaid = std::min(
+					options.diamondsApproved,
+					msgCount * peer->diamondsPerMessageChecked());
+				if (diamondsPaid) {
+					options.diamondsApproved -= diamondsPaid;
 				}
 				const auto sendFlags = commonSendFlags
 					| (ShouldSendSilent(peer, options)
@@ -1952,7 +1952,7 @@ ShareBox::SubmitCallback ShareBox::DefaultForwardCallback(
 					| (options.shortcutId
 						? Flag::f_quick_reply_shortcut
 						: Flag(0))
-					| (starsPaid ? Flag::f_allow_paid_stars : Flag())
+					| (diamondsPaid ? Flag::f_allow_paid_diamonds : Flag())
 					| (sublistPeer ? Flag::f_reply_to : Flag())
 					| (options.suggest ? Flag::f_suggested_post : Flag())
 					| (options.effectId ? Flag::f_effect : Flag())
@@ -1998,7 +1998,7 @@ ShareBox::SubmitCallback ShareBox::DefaultForwardCallback(
 							options.shortcutId),
 						MTP_long(options.effectId),
 						MTP_int(videoTimestamp.value_or(0)),
-						MTP_long(starsPaid),
+						MTP_long(diamondsPaid),
 						Api::SuggestToMTP(options.suggest));
 				};
 				const auto requestKey = ++state->nextRequestKey;

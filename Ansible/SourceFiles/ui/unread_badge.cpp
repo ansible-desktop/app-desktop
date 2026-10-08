@@ -252,7 +252,7 @@ int PeerBadge::drawGetWidth(Painter &p, Descriptor &&descriptor) {
 	const auto emojiStatus = premiumMark
 		&& peer->emojiStatusId()
 		&& (peer->isPremium() || peer->isChannel());
-	const auto premiumStar = premiumMark
+	const auto premiumDiamond = premiumMark
 		&& !emojiStatus
 		&& peer->isPremium();
 
@@ -262,7 +262,7 @@ int PeerBadge::drawGetWidth(Painter &p, Descriptor &&descriptor) {
 			|| !emojiStatus);
 	const auto paintEmoji = emojiStatus
 		&& (!paintVerify || descriptor.bothVerifyAndStatus);
-	const auto paintStar = premiumStar && !paintVerify;
+	const auto paintDiamond = premiumDiamond && !paintVerify;
 
 	auto result = 0;
 	if (paintEmoji) {
@@ -283,8 +283,8 @@ int PeerBadge::drawGetWidth(Painter &p, Descriptor &&descriptor) {
 	if (paintVerify) {
 		result += drawVerifyCheck(p, descriptor);
 		return result;
-	} else if (paintStar) {
-		return drawPremiumStar(p, descriptor);
+	} else if (paintDiamond) {
+		return drawPremiumDiamond(p, descriptor);
 	}
 	return 0;
 }
@@ -382,7 +382,7 @@ int PeerBadge::drawPremiumEmojiStatus(
 	return iconw - 4 * _emojiStatus->skip;
 }
 
-int PeerBadge::drawPremiumStar(Painter &p, const Descriptor &descriptor) {
+int PeerBadge::drawPremiumDiamond(Painter &p, const Descriptor &descriptor) {
 	const auto rectForName = descriptor.rectForName;
 	const auto iconw = descriptor.premium->width();
 	const auto iconx = rectForName.x()

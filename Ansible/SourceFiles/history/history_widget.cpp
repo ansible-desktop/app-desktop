@@ -665,7 +665,7 @@ HistoryWidget::HistoryWidget(
 		session().attachWebView().attachBotsUpdates(),
 		session().changes().peerUpdates(
 			Data::PeerUpdate::Flag::Rights
-			| Data::PeerUpdate::Flag::StarsPerMessage
+			| Data::PeerUpdate::Flag::DiamondsPerMessage
 		) | rpl::filter([=](const Data::PeerUpdate &update) {
 			return update.peer == _peer;
 		}) | rpl::to_empty
@@ -967,7 +967,7 @@ HistoryWidget::HistoryWidget(
 		| PeerUpdateFlag::ChatThemeToken
 		| PeerUpdateFlag::FullInfo
 		| PeerUpdateFlag::ManagedBot
-		| PeerUpdateFlag::StarsPerMessage
+		| PeerUpdateFlag::DiamondsPerMessage
 		| PeerUpdateFlag::GiftSettings
 	) | rpl::filter([=](const Data::PeerUpdate &update) {
 		if (update.peer.get() == _peer) {
@@ -1012,7 +1012,7 @@ HistoryWidget::HistoryWidget(
 				return;
 			}
 		}
-		if (flags & PeerUpdateFlag::StarsPerMessage) {
+		if (flags & PeerUpdateFlag::DiamondsPerMessage) {
 			updateFieldPlaceholder();
 			updateSendButtonType();
 		}
@@ -1063,7 +1063,7 @@ HistoryWidget::HistoryWidget(
 		if (flags & PeerUpdateFlag::FullInfo) {
 			fullInfoUpdated();
 			updateSendButtonType();
-			if (_peer->starsPerMessageChecked()) {
+			if (_peer->diamondsPerMessageChecked()) {
 				session().credits().load();
 			} else if (const auto channel = _peer->asChannel()) {
 				if (channel->allowedReactions().paidEnabled) {
@@ -2756,7 +2756,7 @@ void HistoryWidget::setupGiftToChannelButton() {
 		_giftToChannel->moveToRight(0, 0, width);
 	}, _giftToChannel->lifetime());
 	_giftToChannel->setClickedCallback([=] {
-		Ui::ShowStarGiftBox(controller(), _peer);
+		Ui::ShowDiamondGiftBox(controller(), _peer);
 	});
 	rpl::combine(
 		_muteUnmute->shownValue(),
@@ -3916,7 +3916,7 @@ void HistoryWidget::refreshSendGiftToggle() {
 		_giftToUser->setAccessibleName(tr::lng_gift_send_title(tr::now));
 		_giftToUser->show();
 		_giftToUser->addClickHandler([=] {
-			Ui::ShowStarGiftBox(controller(), _peer);
+			Ui::ShowDiamondGiftBox(controller(), _peer);
 		});
 		orderWidgets(); // Raise drag areas to the top.
 	} else if (_giftToUser && !has) {
@@ -5497,7 +5497,7 @@ void HistoryWidget::saveEditMessage(Api::SendOptions options) {
 		== SuggestionActions::AcceptAndDecline) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			saveEditMessage(copy);
 		};
 		const auto checked = checkSendPayment(
@@ -5623,7 +5623,7 @@ void HistoryWidget::sendVoice(const VoiceToSend &data) {
 
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = data;
-		copy.options.starsApproved = approved;
+		copy.options.diamondsApproved = approved;
 		sendVoice(copy);
 	};
 	auto action = prepareSendAction(data.options);
@@ -5721,7 +5721,7 @@ void HistoryWidget::sendRichDraft(
 	if (!options.scheduled) {
 		withPaymentApproved = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			sendRichDraft(page, copy);
 		};
 	}
@@ -5817,7 +5817,7 @@ void HistoryWidget::sendTextWithTags(
 	const auto ignoreSlowmodeCountdown = (options.scheduled != 0);
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = options;
-		copy.starsApproved = approved;
+		copy.diamondsApproved = approved;
 		sendTextWithTags(textWithTags, useWebPageDraft, copy, done);
 	};
 	if (showSendMessageError(
@@ -5915,7 +5915,7 @@ SendMenu::Details HistoryWidget::sendMenuDetails() const {
 		.isEphemeralBotReply(replyTo().messageId);
 	const auto type = (!_peer || ephemeralReply)
 		? SendMenu::Type::Disabled
-		: _peer->starsPerMessageChecked()
+		: _peer->diamondsPerMessageChecked()
 		? SendMenu::Type::SilentOnly
 		: _peer->isSelf()
 		? SendMenu::Type::Reminder
@@ -5960,7 +5960,7 @@ bool HistoryWidget::canSendAiComposeDirect() const {
 		&& (computeSendButtonType() == Type::Send)
 		&& !_peer->slowmodeSecondsLeft()
 		&& !(_peer->slowmodeApplied() && _history->latestSendingMessage())
-		&& !_peer->starsPerMessageChecked();
+		&& !_peer->diamondsPerMessageChecked();
 }
 
 SendMenu::Details HistoryWidget::sendButtonMenuDetails() const {
@@ -6464,7 +6464,7 @@ void HistoryWidget::sendBotCommand(
 	if (!ephemeral) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			sendBotCommand(request, copy);
 		};
 		const auto checked = checkSendPayment(
@@ -6758,7 +6758,7 @@ void HistoryWidget::updateSendButtonType() {
 	const auto ephemeralReply = session().ephemeralMessages()
 		.isEphemeralBotReply(replyTo().messageId);
 	const auto perMessage = (_peer && !ephemeralReply)
-		? _peer->starsPerMessageChecked()
+		? _peer->diamondsPerMessageChecked()
 		: 0;
 	const auto richPage = shownRichMessage();
 	const auto richMessage = (richPage != nullptr);
@@ -6778,7 +6778,7 @@ void HistoryWidget::updateSendButtonType() {
 	_send->setState({
 		.type = (delay > 0) ? Type::Slowmode : type,
 		.slowmodeDelay = delay,
-		.starsToSend = stars,
+		.diamondsToSend = stars,
 		.forbidden = forbidden,
 	});
 	_send->setDisabled(disabledBySlowmode
@@ -7587,7 +7587,7 @@ void HistoryWidget::fieldFocused() {
 
 void HistoryWidget::updateFieldPlaceholder() {
 	_voiceRecordBar->setPauseInsteadSend(_history
-		&& _history->peer->starsPerMessageChecked() > 0);
+		&& _history->peer->diamondsPerMessageChecked() > 0);
 
 	if (!_editMsgId && _inlineBot && !_inlineLookingUpBot) {
 		_field->setPlaceholder(
@@ -7609,7 +7609,7 @@ void HistoryWidget::updateFieldPlaceholder() {
 			return rpl::single(_keyboard->placeholder());
 		} else if (const auto stars = ephemeralReply
 			? 0
-			: peer->starsPerMessageChecked()) {
+			: peer->diamondsPerMessageChecked()) {
 			return tr::lng_message_diamonds_ph(
 				lt_count,
 				rpl::single(stars * 1.));
@@ -7719,7 +7719,7 @@ Data::ForumTopic *HistoryWidget::resolveReplyToTopic() {
 bool HistoryWidget::showSendMessageError(
 		const TextWithTags &textWithTags,
 		bool ignoreSlowmodeCountdown,
-		Fn<void(int starsApproved)> withPaymentApproved,
+		Fn<void(int diamondsApproved)> withPaymentApproved,
 		Api::SendOptions options,
 		bool ephemeral) {
 	if (!_canSendMessages) {
@@ -7750,7 +7750,7 @@ bool HistoryWidget::showSendMessageError(
 
 bool HistoryWidget::showSendRichDraftError(
 		bool ignoreSlowmodeCountdown,
-		Fn<void(int starsApproved)> withPaymentApproved,
+		Fn<void(int diamondsApproved)> withPaymentApproved,
 		Api::SendOptions options,
 		bool ephemeral) {
 	if (!_canSendMessages || !_history || !_peer) {
@@ -7885,7 +7885,7 @@ void HistoryWidget::sendingFilesConfirmed(
 	if (!ephemeralReply) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			sendingFilesConfirmed(bundle, copy);
 		};
 		const auto checked = checkSendPayment(
@@ -9312,7 +9312,7 @@ void HistoryWidget::sendInlineResult(InlineBots::ResultSelected result) {
 
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = result;
-		copy.options.starsApproved = approved;
+		copy.options.diamondsApproved = approved;
 		sendInlineResult(copy);
 	};
 
@@ -9972,7 +9972,7 @@ bool HistoryWidget::sendExistingDocument(
 	if (!ephemeralReply) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = messageToSend;
-			copy.action.options.starsApproved = approved;
+			copy.action.options.diamondsApproved = approved;
 			sendExistingDocument(document, std::move(copy), localId);
 		};
 		const auto checked = checkSendPayment(
@@ -10024,7 +10024,7 @@ bool HistoryWidget::sendExistingPhoto(
 	if (!ephemeralReply) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			sendExistingPhoto(photo, copy);
 		};
 		const auto checked = checkSendPayment(

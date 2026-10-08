@@ -315,7 +315,7 @@ CompleteParticles::CompleteParticles()
 	sprites.reserve(std::size(sizes));
 	for (const auto size : sizes) {
 		sprites.push_back({
-			.image = Ui::FourPointStarImage({ .size = size }),
+			.image = Ui::FourPointDiamondImage({ .size = size }),
 		});
 	}
 	return Ui::DriftingParticles::Config{

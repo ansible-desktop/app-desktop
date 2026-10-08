@@ -500,7 +500,7 @@ EmojiListWidget::EmojiListWidget(
 , _api(&session().mtp())
 , _staticCount(_mode == Mode::Full ? kEmojiSectionCount : 1)
 , _premiumIcon(_mode == Mode::EmojiStatus
-	? std::make_unique<GradientPremiumStar>()
+	? std::make_unique<GradientPremiumDiamond>()
 	: nullptr)
 , _localSetsManager(
 	std::make_unique<LocalStickersManager>(&session()))

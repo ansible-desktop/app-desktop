@@ -58,9 +58,9 @@ void Activate(ActivateArgs args) {
 		content->setRightIcon(RightIcon::Close);
 		content->setClickedCallback([=] {
 			if (isSingle) {
-				Ui::ShowStarGiftBox(controller, first);
+				Ui::ShowDiamondGiftBox(controller, first);
 			} else {
-				Ui::ChooseStarGiftRecipient(controller);
+				Ui::ChooseDiamondGiftRecipient(controller);
 			}
 		});
 		content->setHideCallback([=] {

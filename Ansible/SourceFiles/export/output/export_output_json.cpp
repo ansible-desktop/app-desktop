@@ -1940,7 +1940,7 @@ QByteArray SerializeMessage(
 			push("amount_whole", data.amount.whole());
 			push("amount_nano", data.amount.nano());
 		}
-	}, [&](const ActionPrizeStars &data) {
+	}, [&](const ActionPrizeDiamonds &data) {
 		pushActor();
 		pushAction("stars_prize");
 		push("boost_peer_id", data.peerId);
@@ -1949,7 +1949,7 @@ QByteArray SerializeMessage(
 		push("is_unclaimed", data.isUnclaimed);
 		push("giveaway_msg_id", data.giveawayMsgId);
 		push("transaction_id", data.transactionId);
-	}, [&](const ActionStarGift &data) {
+	}, [&](const ActionDiamondGift &data) {
 		pushActor();
 		pushAction("send_star_gift");
 		push("gift_id", data.giftId);
@@ -2444,7 +2444,7 @@ Result JsonWriter::start(
 	}
 	auto block = pushNesting(Context::kObject);
 	block.append(prepareObjectItemStart("about"));
-	block.append(SerializeString(_environment.aboutTelegram));
+	block.append(SerializeString(_environment.aboutAnsible));
 	return _output->writeBlock(block);
 }
 

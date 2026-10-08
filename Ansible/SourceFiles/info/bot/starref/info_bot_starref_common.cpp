@@ -49,10 +49,10 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 #include <QtWidgets/QApplication>
 
-namespace Info::BotStarRef {
+namespace Info::BotDiamondRef {
 namespace {
 
-void ConnectStarRef(
+void ConnectDiamondRef(
 		not_null<UserData*> bot,
 		not_null<PeerData*> peer,
 		Fn<void(ConnectedBot)> done,
@@ -396,7 +396,7 @@ object_ptr<Ui::AbstractButton> MakeLinkLabel(
 	return result;
 }
 
-object_ptr<Ui::BoxContent> StarRefLinkBox(
+object_ptr<Ui::BoxContent> DiamondRefLinkBox(
 		ConnectedBot row,
 		not_null<PeerData*> peer) {
 	return Box([=](not_null<Ui::GenericBox*> box) {
@@ -494,7 +494,7 @@ object_ptr<Ui::BoxContent> StarRefLinkBox(
 	});
 }
 
-object_ptr<Ui::BoxContent> JoinStarRefBox(
+object_ptr<Ui::BoxContent> JoinDiamondRefBox(
 		ConnectedBot row,
 		not_null<PeerData*> initialRecipient,
 		std::vector<not_null<PeerData*>> recipients,
@@ -543,7 +543,7 @@ object_ptr<Ui::BoxContent> JoinStarRefBox(
 					box,
 					rpl::single(std::vector{ not_null<PeerData*>(bot) }),
 					recipient,
-					UserpicsTransferType::StarRefJoin),
+					UserpicsTransferType::DiamondRefJoin),
 				st::boxRowPadding + st::starrefJoinUserpicsPadding);
 			userpicsWrap->resizeToWidth(box->width());
 		}, box->lifetime());
@@ -674,13 +674,13 @@ object_ptr<Ui::BoxContent> JoinStarRefBox(
 			}
 			state->sent = true;
 			const auto recipient = state->recipient.current();
-			ConnectStarRef(bot->asUser(), recipient, [=](ConnectedBot info) {
+			ConnectDiamondRef(bot->asUser(), recipient, [=](ConnectedBot info) {
 				if (recipient == initialRecipient) {
 					if (const auto onstack = done) {
 						onstack(info.state);
 					}
 				}
-				show->show(StarRefLinkBox(info, recipient));
+				show->show(DiamondRefLinkBox(info, recipient));
 				if (const auto strong = state->weak.get()) {
 					strong->closeBox();
 				}
@@ -982,7 +982,7 @@ void UpdateProgram(
 		MTP_int(program.commission),
 		MTP_int(program.durationMonths)
 	)).done([=](const MTPStarRefProgram &result) {
-		bot->setStarRefProgram(Data::ParseStarRefProgram(&result));
+		bot->setStarRefProgram(Data::ParseDiamondRefProgram(&result));
 		done(true);
 	}).fail([=](const MTP::Error &error) {
 		show->showToast(u"Failed: "_q + error.type());

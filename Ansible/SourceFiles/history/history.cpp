@@ -279,7 +279,7 @@ void History::itemVanished(not_null<HistoryItem*> item) {
 		if (media->gift()) {
 			using GiftAction = Data::GiftUpdate::Action;
 			owner().notifyGiftUpdate({
-				.id = Data::SavedStarGiftId::User(item->id),
+				.id = Data::SavedDiamondGiftId::User(item->id),
 				.action = GiftAction::Delete,
 			});
 		}
@@ -594,7 +594,7 @@ not_null<HistoryItem*> History::createItem(
 	});
 	if (newMessage && result->out() && result->isRegular()) {
 		session().topPeers().increment(peer, result->date());
-		if (result->starsPaid()) {
+		if (result->diamondsPaid()) {
 			session().credits().load(true);
 		}
 	}

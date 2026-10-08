@@ -23,13 +23,13 @@ class Show;
 
 struct GiftForCraftEntry {
 	std::shared_ptr<Data::UniqueGift> unique;
-	Data::SavedStarGiftId manageId;
+	Data::SavedDiamondGiftId manageId;
 };
 
 void ShowGiftCraftInfoBox(
 	not_null<Window::SessionController*> controller,
 	std::shared_ptr<Data::UniqueGift> gift,
-	Data::SavedStarGiftId savedId);
+	Data::SavedDiamondGiftId savedId);
 
 void ShowTestGiftCraftBox(
 	not_null<Window::SessionController*> controller,

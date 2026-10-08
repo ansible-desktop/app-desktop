@@ -23,9 +23,9 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace {
 
 // Extra room to the right of the premium star in menu actions.
-constexpr auto kPremiumStarRightSkip = 10;
+constexpr auto kPremiumDiamondRightSkip = 10;
 
-[[nodiscard]] QImage PremiumStarImage(int size) {
+[[nodiscard]] QImage PremiumDiamondImage(int size) {
 	const auto factor = style::DevicePixelRatio();
 	const auto side = QSize(size, size);
 	auto image = QImage(
@@ -45,7 +45,7 @@ constexpr auto kPremiumStarRightSkip = 10;
 [[nodiscard]] style::Menu PatchedActiveStyle(
 		const style::Menu &base,
 		bool active,
-		int premiumStarSize,
+		int premiumDiamondSize,
 		bool withShortcut) {
 	auto result = base;
 	if (active) {
@@ -54,10 +54,10 @@ constexpr auto kPremiumStarRightSkip = 10;
 		result.itemFgShortcut = st::windowActiveTextFg;
 		result.itemFgShortcutOver = st::windowActiveTextFg;
 	}
-	if (premiumStarSize > 0 && withShortcut) {
+	if (premiumDiamondSize > 0 && withShortcut) {
 		result.itemPadding.setRight(result.itemRightSkip
-			+ style::ConvertScale(kPremiumStarRightSkip)
-			+ premiumStarSize
+			+ style::ConvertScale(kPremiumDiamondRightSkip)
+			+ premiumDiamondSize
 			+ result.itemRightSkip);
 	}
 	return result;
@@ -82,14 +82,14 @@ public:
 		not_null<QAction*> action,
 		const style::icon *icon,
 		bool active,
-		int premiumStarSize);
+		int premiumDiamondSize);
 
 private:
 	void paintEvent(QPaintEvent *e) override;
 
 	const style::icon *_activeIcon = nullptr;
 	const bool _active = false;
-	QImage _premiumStar;
+	QImage _premiumDiamond;
 
 };
 
@@ -99,24 +99,24 @@ ActiveColorAction::ActiveColorAction(
 	not_null<QAction*> action,
 	const style::icon *icon,
 	bool active,
-	int premiumStarSize)
+	int premiumDiamondSize)
 : OwnedMenuStyle(PatchedActiveStyle(
 	st,
 	active,
-	premiumStarSize,
+	premiumDiamondSize,
 	action->text().contains(QChar('\t'))))
 , Ui::Menu::Action(parent, OwnedMenuStyle::value, action, icon, icon)
 , _activeIcon(icon)
 , _active(active)
-, _premiumStar((premiumStarSize > 0)
-	? PremiumStarImage(premiumStarSize)
+, _premiumDiamond((premiumDiamondSize > 0)
+	? PremiumDiamondImage(premiumDiamondSize)
 	: QImage()) {
-	if (premiumStarSize > 0
+	if (premiumDiamondSize > 0
 		&& !action->text().contains(QChar('\t'))) {
 		setMinWidth(minWidth()
 			+ OwnedMenuStyle::value.itemRightSkip
-			+ style::ConvertScale(kPremiumStarRightSkip)
-			+ premiumStarSize);
+			+ style::ConvertScale(kPremiumDiamondRightSkip)
+			+ premiumDiamondSize);
 	}
 }
 
@@ -131,16 +131,16 @@ void ActiveColorAction::paintEvent(QPaintEvent *e) {
 			width(),
 			st::windowActiveTextFg->c);
 	}
-	if (!_premiumStar.isNull()) {
+	if (!_premiumDiamond.isNull()) {
 		const auto factor = style::DevicePixelRatio();
-		const auto starWidth = _premiumStar.width() / factor;
-		const auto starHeight = _premiumStar.height() / factor;
+		const auto diamondWidth = _premiumDiamond.width() / factor;
+		const auto diamondHeight = _premiumDiamond.height() / factor;
 		const auto left = width()
 			- OwnedMenuStyle::value.itemRightSkip
-			- style::ConvertScale(kPremiumStarRightSkip)
-			- starWidth;
-		const auto top = (height() - starHeight) / 2;
-		p.drawImage(left, top, _premiumStar);
+			- style::ConvertScale(kPremiumDiamondRightSkip)
+			- diamondWidth;
+		const auto top = (height() - diamondHeight) / 2;
+		p.drawImage(left, top, _premiumDiamond);
 	}
 }
 
@@ -213,7 +213,7 @@ not_null<QAction*> AddActiveColorAction(
 		Fn<void()> callback,
 		const style::icon *icon,
 		bool active,
-		int premiumStarSize) {
+		int premiumDiamondSize) {
 	auto item = base::make_unique_q<ActiveColorAction>(
 		menu->menu(),
 		menu->st().menu,
@@ -223,7 +223,7 @@ not_null<QAction*> AddActiveColorAction(
 			std::move(callback)),
 		icon,
 		active,
-		premiumStarSize);
+		premiumDiamondSize);
 	return menu->addAction(std::move(item));
 }
 

@@ -32,7 +32,7 @@ CodeWidget::CodeWidget(
 	not_null<Main::Account*> account,
 	not_null<Data*> data)
 : Step(parent, account, data)
-, _noTelegramCode(this, tr::lng_code_no_ansible(tr::now), st::introLink)
+, _noAnsibleCode(this, tr::lng_code_no_ansible(tr::now), st::introLink)
 , _code(this)
 , _callTimer([=] { sendCall(); })
 , _callStatus(getData()->callStatus)
@@ -44,7 +44,7 @@ CodeWidget::CodeWidget(
 		refreshLang();
 	}, lifetime());
 
-	_noTelegramCode->addClickHandler([=] { noTelegramCode(); });
+	_noAnsibleCode->addClickHandler([=] { noAnsibleCode(); });
 
 	_code->setDigitsCountMax(getData()->codeLength);
 
@@ -69,8 +69,8 @@ CodeWidget::CodeWidget(
 }
 
 void CodeWidget::refreshLang() {
-	if (_noTelegramCode) {
-		_noTelegramCode->setText(tr::lng_code_no_ansible(tr::now));
+	if (_noAnsibleCode) {
+		_noAnsibleCode->setText(tr::lng_code_no_ansible(tr::now));
 	}
 	updateDescText();
 	updateControlsGeometry();
@@ -81,7 +81,7 @@ int CodeWidget::errorTop() const {
 }
 
 void CodeWidget::updateDescText() {
-	const auto byTelegram = getData()->codeByTelegram;
+	const auto byAnsible = getData()->codeByAnsible;
 	const auto isFragment = !getData()->codeByFragmentUrl.isEmpty();
 	_isFragment = isFragment;
 	const auto emailPattern = !getData()->emailPatternSetup.isEmpty()
@@ -98,13 +98,13 @@ void CodeWidget::updateDescText() {
 			rpl::single(
 				TextWithEntities::Simple(Ui::FormatPhone(getData()->phone))),
 			tr::rich)
-		: (byTelegram ? tr::lng_code_from_ansible : tr::lng_code_desc)(
+		: (byAnsible ? tr::lng_code_from_ansible : tr::lng_code_desc)(
 			tr::rich));
-	if (getData()->codeByTelegram) {
-		_noTelegramCode->show();
+	if (getData()->codeByAnsible) {
+		_noAnsibleCode->show();
 		_callTimer.cancel();
 	} else {
-		_noTelegramCode->hide();
+		_noAnsibleCode->hide();
 		_callStatus = getData()->callStatus;
 		_callTimeout = getData()->callTimeout;
 		if (_callStatus == CallStatus::Waiting && !_callTimer.isActive()) {
@@ -116,7 +116,7 @@ void CodeWidget::updateDescText() {
 
 void CodeWidget::updateCallText() {
 	auto text = ([this]() -> QString {
-		if (getData()->codeByTelegram) {
+		if (getData()->codeByAnsible) {
 			return QString();
 		}
 		switch (_callStatus) {
@@ -160,7 +160,7 @@ void CodeWidget::updateControlsGeometry() {
 		contentLeft() - st::shakeShift - st::lineWidth,
 		contentTop() + st::introStepFieldTop + st::introPhoneTop * 3);
 	auto linkTop = _code->y() + _code->height() + st::introLinkTop;
-	_noTelegramCode->moveToLeft(contentLeft() + st::buttonRadius, linkTop);
+	_noAnsibleCode->moveToLeft(contentLeft() + st::buttonRadius, linkTop);
 	_callLabel->moveToLeft(contentLeft() + st::buttonRadius, linkTop);
 }
 
@@ -176,8 +176,8 @@ void CodeWidget::setInnerFocus() {
 void CodeWidget::activate() {
 	Step::activate();
 	_code->show();
-	if (getData()->codeByTelegram) {
-		_noTelegramCode->show();
+	if (getData()->codeByAnsible) {
+		_noAnsibleCode->show();
 	} else {
 		_callLabel->show();
 	}
@@ -435,24 +435,24 @@ rpl::producer<const style::RoundButton*> CodeWidget::nextButtonStyle() const {
 	});
 }
 
-void CodeWidget::noTelegramCode() {
-	if (_noTelegramCodeRequestId) {
+void CodeWidget::noAnsibleCode() {
+	if (_noAnsibleCodeRequestId) {
 		return;
 	}
-	_noTelegramCodeRequestId = api().request(MTPauth_ResendCode(
+	_noAnsibleCodeRequestId = api().request(MTPauth_ResendCode(
 		MTP_flags(0),
 		MTP_string(getData()->phone),
 		MTP_bytes(getData()->phoneHash),
 		MTPstring() // reason
 	)).done([=](const MTPauth_SentCode &result) {
-		noTelegramCodeDone(result);
+		noAnsibleCodeDone(result);
 	}).fail([=](const MTP::Error &error) {
-		noTelegramCodeFail(error);
+		noAnsibleCodeFail(error);
 	}).handleFloodErrors().send();
 }
 
-void CodeWidget::noTelegramCodeDone(const MTPauth_SentCode &result) {
-	_noTelegramCodeRequestId = 0;
+void CodeWidget::noAnsibleCodeDone(const MTPauth_SentCode &result) {
+	_noAnsibleCodeRequestId = 0;
 
 	result.match([&](const MTPDauth_sentCode &data) {
 		const auto &d = result.c_auth_sentCode();
@@ -466,7 +466,7 @@ void CodeWidget::noTelegramCodeDone(const MTPauth_SentCode &result) {
 			getData()->callStatus = CallStatus::Disabled;
 			getData()->callTimeout = 0;
 		}
-		getData()->codeByTelegram = false;
+		getData()->codeByAnsible = false;
 		updateDescText();
 	}, [&](const MTPDauth_sentCodeSuccess &data) {
 		finish(data.vauthorization());
@@ -476,8 +476,8 @@ void CodeWidget::noTelegramCodeDone(const MTPauth_SentCode &result) {
 	});
 }
 
-void CodeWidget::noTelegramCodeFail(const MTP::Error &error) {
-	_noTelegramCodeRequestId = 0;
+void CodeWidget::noAnsibleCodeFail(const MTP::Error &error) {
+	_noAnsibleCodeRequestId = 0;
 	if (MTP::IsFloodError(error)) {
 		showCodeError(tr::lng_flood_error());
 	} else if (error.type() != u"SEND_CODE_UNAVAILABLE"_q

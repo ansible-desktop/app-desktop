@@ -120,12 +120,12 @@ void RecentSharedMediaGifts::updatePinnedOrder(
 		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<PeerData*> peer,
 		const std::vector<SavedStarGift> &gifts,
-		const std::vector<Data::SavedStarGiftId> &manageIds,
+		const std::vector<Data::SavedDiamondGiftId> &manageIds,
 		Fn<void()> done) {
 	auto inputs = QVector<MTPInputSavedStarGift>();
 	inputs.reserve(manageIds.size());
 	for (const auto &id : manageIds) {
-		inputs.push_back(Api::InputSavedStarGiftId(id));
+		inputs.push_back(Api::InputSavedDiamondGiftId(id));
 	}
 
 	_session->api().request(MTPpayments_ToggleStarGiftsPinnedToTop(
@@ -155,13 +155,13 @@ void RecentSharedMediaGifts::updatePinnedOrder(
 void RecentSharedMediaGifts::togglePinned(
 		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<PeerData*> peer,
-		const Data::SavedStarGiftId &manageId,
+		const Data::SavedDiamondGiftId &manageId,
 		bool pinned,
 		std::shared_ptr<Data::UniqueGift> uniqueData,
 		std::shared_ptr<Data::UniqueGift> replacingData) {
 	const auto performToggle = [=](const std::vector<SavedStarGift> &gifts) {
 		const auto limit = _session->appConfig().pinnedGiftsLimit();
-		auto manageIds = std::vector<Data::SavedStarGiftId>();
+		auto manageIds = std::vector<Data::SavedDiamondGiftId>();
 
 		if (pinned) {
 			for (const auto &gift : gifts) {
@@ -217,7 +217,7 @@ void RecentSharedMediaGifts::togglePinned(
 				_session->api().request(MTPpayments_GetSavedStarGift(
 					MTP_vector<MTPInputSavedStarGift>(
 						1,
-						Api::InputSavedStarGiftId(manageId))
+						Api::InputSavedDiamondGiftId(manageId))
 				)).done([=](const MTPpayments_SavedStarGifts &result) {
 					const auto &tlGift = result.data().vgifts().v.front();
 					if (auto parsed = Api::FromTL(peer, tlGift)) {
@@ -255,7 +255,7 @@ void RecentSharedMediaGifts::reorderPinned(
 			return;
 		}
 
-		auto manageIds = std::vector<Data::SavedStarGiftId>();
+		auto manageIds = std::vector<Data::SavedDiamondGiftId>();
 		manageIds.reserve(gifts.size());
 		for (const auto &gift : gifts) {
 			manageIds.push_back(gift.manageId);

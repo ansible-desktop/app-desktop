@@ -35,7 +35,7 @@ class DocumentMedia;
 
 namespace HistoryView::Controls {
 enum class ToggleCommentsState;
-struct SendStarButtonEffect;
+struct SendDiamondButtonEffect;
 } // namespace HistoryView::Controls
 
 namespace HistoryView::Reactions {
@@ -51,7 +51,7 @@ namespace Ui {
 class RpWidget;
 class BoxContent;
 class PopupMenu;
-struct SendStarButtonState;
+struct SendDiamondButtonState;
 } // namespace Ui
 
 namespace Ui::Toast {
@@ -87,7 +87,7 @@ struct RepostClickHandler;
 
 using CommentsState = HistoryView::Controls::ToggleCommentsState;
 using PaidReactionToast = HistoryView::PaidReactionToast;
-using SendStarButtonEffect = HistoryView::Controls::SendStarButtonEffect;
+using SendDiamondButtonEffect = HistoryView::Controls::SendDiamondButtonEffect;
 
 enum class HeaderLayout {
 	Normal,
@@ -186,11 +186,11 @@ public:
 
 	[[nodiscard]] rpl::producer<CommentsState> commentsStateValue() const;
 	void setCommentsShownToggles(rpl::producer<> toggles);
-	[[nodiscard]] auto starsReactionsValue() const
-		-> rpl::producer<Ui::SendStarButtonState>;
-	[[nodiscard]] auto starsReactionsEffects() const
-		-> rpl::producer<SendStarButtonEffect>;
-	void setStarsReactionIncrements(rpl::producer<int> increments);
+	[[nodiscard]] auto diamondsReactionsValue() const
+		-> rpl::producer<Ui::SendDiamondButtonState>;
+	[[nodiscard]] auto diamondsReactionsEffects() const
+		-> rpl::producer<SendDiamondButtonEffect>;
+	void setDiamondsReactionIncrements(rpl::producer<int> increments);
 
 	void unfocusReply();
 	void shareRequested();
@@ -358,7 +358,7 @@ private:
 	MsgId _commentsLastId = 0;
 	rpl::variable<int> _starsReactions;
 	rpl::variable<bool> _starsReactionHighlighted;
-	rpl::event_stream<SendStarButtonEffect> _starsReactionEffects;
+	rpl::event_stream<SendDiamondButtonEffect> _starsReactionEffects;
 
 	std::vector<CachedSource> _cachedSourcesList;
 	int _cachedSourceIndex = -1;

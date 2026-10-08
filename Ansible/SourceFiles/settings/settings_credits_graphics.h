@@ -24,7 +24,7 @@ struct SubscriptionEntry;
 struct GiftCode;
 struct CreditTopupOption;
 struct SavedStarGift;
-class SavedStarGiftId;
+class SavedDiamondGiftId;
 struct StarGift;
 struct UniqueGift;
 struct GiftUpgradeSpinner;
@@ -191,40 +191,40 @@ void CreditsPrizeBox(
 	const Data::GiftCode &data,
 	TimeId date);
 
-struct StarGiftResaleInfo {
+struct DiamondGiftResaleInfo {
 	PeerId recipientId;
 	bool forceTon = false;
 };
-void GlobalStarGiftBox(
+void GlobalDiamondGiftBox(
 	not_null<Ui::GenericBox*> box,
 	std::shared_ptr<ChatHelpers::Show> show,
 	const Data::StarGift &data,
-	StarGiftResaleInfo resale,
+	DiamondGiftResaleInfo resale,
 	CreditsEntryBoxStyleOverrides st = {});
 
-[[nodiscard]] Data::CreditsHistoryEntry SavedStarGiftEntry(
+[[nodiscard]] Data::CreditsHistoryEntry SavedDiamondGiftEntry(
 	not_null<PeerData*> owner,
 	const Data::SavedStarGift &data);
-[[nodiscard]] Data::SavedStarGiftId EntryToSavedStarGiftId(
+[[nodiscard]] Data::SavedDiamondGiftId EntryToSavedDiamondGiftId(
 	not_null<::Main::Session*> session,
 	const Data::CreditsHistoryEntry &entry);
-void ShowSavedStarGiftBox(
+void ShowSavedDiamondGiftBox(
 	not_null<Window::SessionController*> controller,
 	not_null<PeerData*> owner,
 	const Data::SavedStarGift &data,
 	Fn<std::vector<Data::CreditsHistoryEntry>()> pinned = nullptr);
-enum class SavedStarGiftMenuType {
+enum class SavedDiamondGiftMenuType {
 	List,
 	View,
 };
-void FillSavedStarGiftMenu(
+void FillSavedDiamondGiftMenu(
 	std::shared_ptr<ChatHelpers::Show> show,
 	not_null<Ui::PopupMenu*> menu,
 	const Data::CreditsHistoryEntry &e,
-	SavedStarGiftMenuType type,
+	SavedDiamondGiftMenuType type,
 	CreditsEntryBoxStyleOverrides st = {});
 
-void ShowStarGiftViewBox(
+void ShowDiamondGiftViewBox(
 	not_null<Window::SessionController*> controller,
 	const Data::GiftCode &data,
 	FullMsgId itemId);
@@ -269,7 +269,7 @@ struct SmallBalanceSubscription {
 struct SmallBalanceDeepLink {
 	QString purpose;
 };
-struct SmallBalanceStarGift {
+struct SmallBalanceDiamondGift {
 	PeerId recipientId;
 };
 struct SmallBalanceForMessage {
@@ -288,7 +288,7 @@ struct SmallBalanceSource : std::variant<
 	SmallBalanceVideoStream,
 	SmallBalanceSubscription,
 	SmallBalanceDeepLink,
-	SmallBalanceStarGift,
+	SmallBalanceDiamondGift,
 	SmallBalanceForMessage,
 	SmallBalanceForSuggest,
 	SmallBalanceForOffer,
@@ -316,7 +316,7 @@ void MaybeRequestBalanceIncrease(
 	SmallBalanceSource source,
 	Fn<void(SmallBalanceResult)> done);
 
-void AddMiniStars(
+void AddMiniDiamonds(
 	not_null<Ui::VerticalLayout*> content,
 	not_null<Ui::RpWidget*> widget,
 	int photoSize,

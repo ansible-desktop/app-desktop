@@ -76,7 +76,7 @@ constexpr auto kPreloadButtonRows = 2;
 		const auto loaded = to->owner().peerLoaded(gift.fromId);
 		sender = (loaded && !loaded->isServiceUser()) ? loaded : nullptr;
 	}
-	return GiftTypeStars{
+	return GiftTypeDiamonds{
 		.info = gift.info,
 		.from = sender,
 		.date = gift.date,
@@ -174,7 +174,7 @@ private:
 	};
 	struct View {
 		std::unique_ptr<GiftButton> button;
-		Data::SavedStarGiftId manageId;
+		Data::SavedDiamondGiftId manageId;
 		uint64 giftId = 0;
 		int index = 0;
 	};
@@ -235,10 +235,10 @@ private:
 	void collectionRenamed(int id, QString name);
 	void collectionRemoved(int id);
 	void removeGiftFromCollection(
-		Data::SavedStarGiftId giftId,
+		Data::SavedDiamondGiftId giftId,
 		int collectionId);
 	void addGiftToCollection(
-		Data::SavedStarGiftId giftId,
+		Data::SavedDiamondGiftId giftId,
 		int collectionId);
 	void fillCollectionsMenu(
 		not_null<Ui::PopupMenu*> menu,
@@ -273,7 +273,7 @@ private:
 	not_null<Entries*> _entries;
 	not_null<std::vector<Entry>*> _list;
 	rpl::variable<Data::GiftsUpdate> _collectionChanges;
-	base::flat_set<Data::SavedStarGiftId> _inCollection;
+	base::flat_set<Data::SavedDiamondGiftId> _inCollection;
 
 	MTP::Sender _api;
 	mtpRequestId _loadMoreRequestId = 0;
@@ -374,11 +374,11 @@ InnerWidget::InnerWidget(
 		if (update.peer != _peer) {
 			return;
 		}
-		const auto added = base::flat_set<Data::SavedStarGiftId>{
+		const auto added = base::flat_set<Data::SavedDiamondGiftId>{
 			begin(update.added),
 			end(update.added)
 		};
-		const auto removed = base::flat_set<Data::SavedStarGiftId>{
+		const auto removed = base::flat_set<Data::SavedDiamondGiftId>{
 			begin(update.removed),
 			end(update.removed)
 		};
@@ -495,7 +495,7 @@ void InnerWidget::applyUpdateTo(
 
 		const auto unpin = i->gift.hidden && i->gift.pinned;
 		v::match(i->descriptor, [](GiftTypePremium &) {
-		}, [&](GiftTypeStars &data) {
+		}, [&](GiftTypeDiamonds &data) {
 			data.hidden = i->gift.hidden;
 		});
 		for (auto &view : _views) {
@@ -538,7 +538,7 @@ void InnerWidget::markPinned(std::vector<Entry>::iterator i) {
 
 	i->gift.pinned = true;
 	v::match(i->descriptor, [](const GiftTypePremium &) {
-	}, [&](GiftTypeStars &data) {
+	}, [&](GiftTypeDiamonds &data) {
 		data.pinned = true;
 	});
 
@@ -579,7 +579,7 @@ void InnerWidget::markUnpinned(std::vector<Entry>::iterator i) {
 
 	i->gift.pinned = false;
 	v::match(i->descriptor, [](const GiftTypePremium &) {
-	}, [&](GiftTypeStars &data) {
+	}, [&](GiftTypeDiamonds &data) {
 		data.pinned = false;
 	});
 	auto after = index + 1;
@@ -965,7 +965,7 @@ void InnerWidget::validateButtons() {
 auto InnerWidget::pinnedSavedGifts()
 -> Fn<std::vector<Data::CreditsHistoryEntry>()> {
 	struct Entry {
-		Data::SavedStarGiftId id;
+		Data::SavedDiamondGiftId id;
 		std::shared_ptr<Data::UniqueGift> unique;
 	};
 	auto entries = std::vector<Entry>();
@@ -1110,7 +1110,7 @@ void InnerWidget::fillCollectionsMenu(
 }
 
 void InnerWidget::addGiftToCollection(
-		Data::SavedStarGiftId giftId,
+		Data::SavedDiamondGiftId giftId,
 		int collectionId) {
 	auto changes = Data::GiftsUpdate{
 		.peer = _peer,
@@ -1126,7 +1126,7 @@ void InnerWidget::addGiftToCollection(
 			MTPstring(),
 			MTPVector<MTPInputSavedStarGift>(),
 			MTP_vector<MTPInputSavedStarGift>({
-				Api::InputSavedStarGiftId(giftId)
+				Api::InputSavedDiamondGiftId(giftId)
 			}),
 			MTPVector<MTPInputSavedStarGift>())
 	).done([=](const MTPStarGiftCollection &result) {
@@ -1182,7 +1182,7 @@ void InnerWidget::showMenuFor(not_null<GiftButton*> button, QPoint point) {
 		return;
 	}
 
-	auto entry = ::Settings::SavedStarGiftEntry(
+	auto entry = ::Settings::SavedDiamondGiftEntry(
 		_peer,
 		(*_list)[index].gift);
 	const auto collectionId = _descriptor.current().collectionId;
@@ -1200,11 +1200,11 @@ void InnerWidget::showMenuFor(not_null<GiftButton*> button, QPoint point) {
 			},
 		});
 	}
-	::Settings::FillSavedStarGiftMenu(
+	::Settings::FillSavedDiamondGiftMenu(
 		_window->uiShow(),
 		_menu.get(),
 		entry,
-		::Settings::SavedStarGiftMenuType::List);
+		::Settings::SavedDiamondGiftMenuType::List);
 
 	if (collectionId > 0 && _peer->canManageGifts()) {
 		const auto &gift = (*_list)[index].gift;
@@ -1263,7 +1263,7 @@ void InnerWidget::showGift(int index) {
 		}
 		return;
 	}
-	::Settings::ShowSavedStarGiftBox(
+	::Settings::ShowSavedDiamondGiftBox(
 		_window,
 		_peer,
 		(*_list)[index].gift,
@@ -1440,10 +1440,10 @@ void InnerWidget::editCollectionGifts(int id) {
 			auto remove = QVector<MTPInputSavedStarGift>();
 			const auto &changes = state->changes.current();
 			for (const auto &id : changes.added) {
-				add.push_back(Api::InputSavedStarGiftId(id));
+				add.push_back(Api::InputSavedDiamondGiftId(id));
 			}
 			for (const auto &id : changes.removed) {
-				remove.push_back(Api::InputSavedStarGiftId(id));
+				remove.push_back(Api::InputSavedDiamondGiftId(id));
 			}
 			if (add.empty() && remove.empty()) {
 				box->closeBox();
@@ -1556,7 +1556,7 @@ void InnerWidget::refreshCollectionsTabs() {
 					NewCollectionBox,
 					_window,
 					peer(),
-					Data::SavedStarGiftId(),
+					Data::SavedDiamondGiftId(),
 					added));
 			} else {
 				_collectionsTabs->setActiveTab(id);
@@ -1605,7 +1605,7 @@ void InnerWidget::collectionRenamed(int id, QString name) {
 }
 
 void InnerWidget::removeGiftFromCollection(
-		Data::SavedStarGiftId giftId,
+		Data::SavedDiamondGiftId giftId,
 		int collectionId) {
 	auto changes = Data::GiftsUpdate{
 		.peer = _peer,
@@ -1620,7 +1620,7 @@ void InnerWidget::removeGiftFromCollection(
 			MTP_int(collectionId),
 			MTPstring(),
 			MTP_vector<MTPInputSavedStarGift>({
-				Api::InputSavedStarGiftId(giftId)
+				Api::InputSavedDiamondGiftId(giftId)
 			}),
 			MTPVector<MTPInputSavedStarGift>(),
 			MTPVector<MTPInputSavedStarGift>())
@@ -1798,7 +1798,7 @@ void InnerWidget::fillMenu(const Ui::Menu::MenuCallback &addAction) {
 						NewCollectionBox,
 						strong,
 						peer,
-						Data::SavedStarGiftId(),
+						Data::SavedDiamondGiftId(),
 						crl::guard(this, added)));
 				}
 			}, &st::menuIconAddToFolder);
@@ -2300,7 +2300,7 @@ void InnerWidget::requestReorder(int fromIndex, int toIndex) {
 		auto order = QVector<MTPInputSavedStarGift>();
 		order.reserve(_list->size());
 		for (const auto &entry : *_list) {
-			order.push_back(Api::InputSavedStarGiftId(entry.gift.manageId));
+			order.push_back(Api::InputSavedDiamondGiftId(entry.gift.manageId));
 		}
 
 		_api.request(

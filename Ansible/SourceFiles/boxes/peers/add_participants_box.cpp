@@ -108,7 +108,7 @@ public:
 	[[nodiscard]] rpl::producer<int> selectedValue() const {
 		return _selected.value();
 	}
-	[[nodiscard]] rpl::producer<int> starsToSend() const {
+	[[nodiscard]] rpl::producer<int> diamondsToSend() const {
 		return _starsToSend.value();
 	}
 
@@ -394,7 +394,7 @@ Api::MessageMoneyRestriction ForbiddenRow::restriction() const {
 }
 
 void ForbiddenRow::setRestriction(Api::MessageMoneyRestriction restriction) {
-	if (!restriction || !restriction.starsPerMessage) {
+	if (!restriction || !restriction.diamondsPerMessage) {
 		_restriction = nullptr;
 		return;
 	} else if (!_restriction) {
@@ -413,7 +413,7 @@ void ForbiddenRow::paintUserpicOverlay(
 		PaintRestrictionBadge(
 			p,
 			_lockSt,
-			r->value.starsPerMessage,
+			r->value.diamondsPerMessage,
 			r->cache,
 			x,
 			y,
@@ -428,7 +428,7 @@ bool ForbiddenRow::refreshLock() {
 	} else if (const auto user = peer()->asUser()) {
 		using Restriction = Api::MessageMoneyRestriction;
 		auto r = Api::ResolveMessageMoneyRestrictions(user, nullptr);
-		if (!r || !r.starsPerMessage) {
+		if (!r || !r.diamondsPerMessage) {
 			r = Restriction();
 		}
 		if ((_restriction ? _restriction->value : Restriction()) != r) {
@@ -564,7 +564,7 @@ void InviteForbiddenController::prepare() {
 				delegate()->peerListUpdateRow(raw);
 			}
 			if (const auto r = row->restriction()) {
-				stars += r.starsPerMessage;
+				stars += r.diamondsPerMessage;
 			}
 		};
 		auto count = delegate()->peerListFullRowsCount();
@@ -609,9 +609,9 @@ void InviteForbiddenController::rowClicked(not_null<PeerListRow*> row) {
 	delegate()->peerListSetRowChecked(row, !checked);
 	_selected = _selected.current() + (checked ? -1 : 1);
 	const auto r = static_cast<ForbiddenRow*>(row.get())->restriction();
-	if (r.starsPerMessage) {
+	if (r.diamondsPerMessage) {
 		_starsToSend = _starsToSend.current()
-			+ (checked ? -r.starsPerMessage : r.starsPerMessage);
+			+ (checked ? -r.diamondsPerMessage : r.diamondsPerMessage);
 	}
 }
 
@@ -623,7 +623,7 @@ void InviteForbiddenController::appendRow(not_null<UserData*> user) {
 		if (canInvite(user)) {
 			delegate()->peerListSetRowChecked(raw, true);
 			if (const auto r = raw->restriction()) {
-				_starsToSend = _starsToSend.current() + r.starsPerMessage;
+				_starsToSend = _starsToSend.current() + r.diamondsPerMessage;
 			}
 		}
 	}
@@ -648,11 +648,11 @@ void InviteForbiddenController::send(
 
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = options;
-		copy.starsApproved = approved;
+		copy.diamondsApproved = approved;
 		send(list, show, close, copy);
 	};
 	const auto messagesCount = 1;
-	const auto alreadyApproved = options.starsApproved;
+	const auto alreadyApproved = options.diamondsApproved;
 	auto paid = std::vector<not_null<PeerData*>>();
 	auto waiting = base::flat_set<not_null<PeerData*>>();
 	auto totalStars = 0;
@@ -705,10 +705,10 @@ void InviteForbiddenController::send(
 		auto &api = _peer->session().api();
 		for (const auto &to : list) {
 			auto copy = full;
-			copy.starsApproved = std::min(
-				to->starsPerMessageChecked(),
-				full.starsApproved);
-			full.starsApproved -= copy.starsApproved;
+			copy.diamondsApproved = std::min(
+				to->diamondsPerMessageChecked(),
+				full.diamondsApproved);
+			full.diamondsApproved -= copy.diamondsApproved;
 
 			const auto history = to->owner().history(to);
 			auto message = Api::MessageToSend(
@@ -1156,7 +1156,7 @@ bool ChatInviteForbidden(
 						crl::guard(box, [=] { box->closeBox(); }));
 				});
 				send->setText(PaidSendButtonText(
-					weak->starsToSend(),
+					weak->diamondsToSend(),
 					tr::lng_via_link_send()));
 			}
 			box->addButton(tr::lng_create_group_skip(), [=] {

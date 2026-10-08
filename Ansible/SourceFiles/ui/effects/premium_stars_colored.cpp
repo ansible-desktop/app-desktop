@@ -18,7 +18,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 namespace Ui::Premium {
 namespace {
 
-constexpr auto kStarsCount = 16;
+constexpr auto kDiamondsCount = 16;
 constexpr auto kTravelMax = 0.5;
 constexpr auto kExcludeRadius = 0.7;
 constexpr auto kFading = crl::time(200);
@@ -65,7 +65,7 @@ private:
 
 	QString _entityData;
 	QSvgRenderer _svg;
-	std::vector<Star> _stars;
+	std::vector<Star> _diamonds;
 	QColor _centerColor;
 	QColor _edgeColor;
 	std::unique_ptr<Text::CustomEmoji> _inner;
@@ -100,17 +100,17 @@ CollectibleEmoji::CollectibleEmoji(
 }
 
 void CollectibleEmoji::fill() {
-	_stars.reserve(kStarsCount);
+	_diamonds.reserve(kDiamondsCount);
 	const auto now = crl::now();
-	auto random = base::BufferedRandom<uint32>(kStarsCount * 12);
-	for (auto i = 0; i != kStarsCount; ++i) {
+	auto random = base::BufferedRandom<uint32>(kDiamondsCount * 12);
+	for (auto i = 0; i != kDiamondsCount; ++i) {
 		const auto life = ChooseLife(random);
 		const auto shift = base::RandomIndex(life - kFading, random);
-		_stars.push_back({
+		_diamonds.push_back({
 			.birthTime = now - crl::time(shift),
 			.deathTime = now - crl::time(shift) + crl::time(life),
 		});
-		refill(_stars.back(), random);
+		refill(_diamonds.back(), random);
 	}
 }
 
@@ -166,13 +166,13 @@ void CollectibleEmoji::prepareFrame() {
 	auto hq = PainterHighQualityEnabler(p);
 	auto random = std::optional<base::BufferedRandom<uint32>>();
 	const auto now = crl::now();
-	for (auto &star : _stars) {
+	for (auto &star : _diamonds) {
 		// crl::now() is not strictly monotonic everywhere: on Windows it is
 		// built on QueryPerformanceCounter, which steps backwards on some
 		// old machines. A star born "in the future" is restarted.
 		if (star.deathTime <= now || star.birthTime > now) {
 			if (!random) {
-				random.emplace(kStarsCount * 10);
+				random.emplace(kDiamondsCount * 10);
 			}
 			const auto life = ChooseLife(*random);
 			star.birthTime = now;
@@ -237,10 +237,10 @@ bool CollectibleEmoji::readyInDefaultState() {
 
 } // namespace
 
-ColoredMiniStars::ColoredMiniStars(
+ColoredMiniDiamonds::ColoredMiniDiamonds(
 	not_null<Ui::RpWidget*> parent,
 	bool optimizeUpdate,
-	MiniStarsType type)
+	MiniDiamondsType type)
 : _ministars(
 	optimizeUpdate
 		? Fn<void(const QRect &)>([=](const QRect &r) {
@@ -251,13 +251,13 @@ ColoredMiniStars::ColoredMiniStars(
 	type) {
 }
 
-ColoredMiniStars::ColoredMiniStars(
+ColoredMiniDiamonds::ColoredMiniDiamonds(
 	Fn<void(const QRect &)> update,
-	MiniStarsType type)
+	MiniDiamondsType type)
 : _ministars(update, true, type) {
 }
 
-void ColoredMiniStars::setSize(const QSize &size) {
+void ColoredMiniDiamonds::setSize(const QSize &size) {
 	_frame = QImage(
 		size * style::DevicePixelRatio(),
 		QImage::Format_ARGB32_Premultiplied);
@@ -284,7 +284,7 @@ void ColoredMiniStars::setSize(const QSize &size) {
 	_size = size;
 
 	{
-		const auto s = _size / Ui::Premium::MiniStars::kSizeFactor;
+		const auto s = _size / Ui::Premium::MiniDiamonds::kSizeFactor;
 		const auto margins = QMarginsF(
 			s.width() / 2.,
 			s.height() / 2.,
@@ -294,15 +294,15 @@ void ColoredMiniStars::setSize(const QSize &size) {
 	}
 }
 
-void ColoredMiniStars::setPosition(QPoint position) {
+void ColoredMiniDiamonds::setPosition(QPoint position) {
 	_position = std::move(position);
 }
 
-void ColoredMiniStars::setColorOverride(std::optional<QGradientStops> stops) {
+void ColoredMiniDiamonds::setColorOverride(std::optional<QGradientStops> stops) {
 	_stopsOverride = stops;
 }
 
-void ColoredMiniStars::paint(QPainter &p) {
+void ColoredMiniDiamonds::paint(QPainter &p) {
 	_frame.fill(Qt::transparent);
 	{
 		auto q = QPainter(&_frame);
@@ -314,14 +314,14 @@ void ColoredMiniStars::paint(QPainter &p) {
 	p.drawImage(_position, _frame);
 }
 
-void ColoredMiniStars::setPaused(bool paused) {
+void ColoredMiniDiamonds::setPaused(bool paused) {
 	_ministars.setPaused(paused);
 }
 
-void ColoredMiniStars::setCenter(const QRect &rect) {
+void ColoredMiniDiamonds::setCenter(const QRect &rect) {
 	const auto center = rect.center();
 	const auto size = QSize(
-		rect.width() * Ui::Premium::MiniStars::kSizeFactor,
+		rect.width() * Ui::Premium::MiniDiamonds::kSizeFactor,
 		rect.height());
 	const auto ministarsRect = QRect(
 		QPoint(center.x() - size.width(), center.y() - size.height()),

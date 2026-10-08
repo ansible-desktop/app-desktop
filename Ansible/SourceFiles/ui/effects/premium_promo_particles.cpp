@@ -33,14 +33,14 @@ constexpr auto kMaxDelta = crl::time(50);
 constexpr auto kDistributionTries = 10;
 
 constexpr auto kIconParticlesCount = 40;
-constexpr auto kStarParticlesCount = 400;
+constexpr auto kDiamondParticlesCount = 400;
 constexpr auto kSpeedLinesCount = 200;
 constexpr auto kHelloWordsCount = 25;
 
-constexpr auto kStarsRectFactor = 0.4;
-constexpr auto kStarsCornerFactor = 0.98;
-constexpr auto kStarsSpeedScale = 4.;
-constexpr auto kStarsBlurRadius = 2;
+constexpr auto kDiamondsRectFactor = 0.4;
+constexpr auto kDiamondsCornerFactor = 0.98;
+constexpr auto kDiamondsSpeedScale = 4.;
+constexpr auto kDiamondsBlurRadius = 2;
 
 constexpr auto kMatrixGlyphsCount = 16;
 constexpr auto kMatrixStepTime = crl::time(50);
@@ -129,11 +129,11 @@ struct SpriteConfig {
 		(sprite.bright ? kBrightAlpha : kIconAlpha) / 255.);
 	return {
 		.image = (sprite.path.isEmpty()
-			? FourPointStarImage({
+			? FourPointDiamondImage({
 				.size = sprite.size,
 				.corner = corner,
 				.cornerRadius = roundEffect ? (sprite.size / 5.) : 0.,
-				.blurRadius = blur ? kStarsBlurRadius : 0,
+				.blurRadius = blur ? kDiamondsBlurRadius : 0,
 				.color = color,
 			})
 			: RenderIconSprite(sprite.path, sprite.size, color)),
@@ -144,13 +144,13 @@ struct SpriteConfig {
 	};
 }
 
-class StarParticles final : public PromoParticlesPainter {
+class DiamondParticles final : public PromoParticlesPainter {
 public:
 	struct Config {
 		std::vector<SpriteConfig> sprites;
 		int count = kIconParticlesCount;
-		float64 corner = kStarsCornerFactor;
-		float64 speedScale = kStarsSpeedScale;
+		float64 corner = kDiamondsCornerFactor;
+		float64 speedScale = kDiamondsSpeedScale;
 		bool orbit = false;
 		bool blur = false;
 		bool roundEffect = true;
@@ -158,7 +158,7 @@ public:
 		bool aroundDevice = true;
 	};
 
-	explicit StarParticles(Config config);
+	explicit DiamondParticles(Config config);
 
 	void setGeometry(QRect outer, QRect device) override;
 	void paint(QPainter &p) override;
@@ -170,7 +170,7 @@ private:
 
 };
 
-StarParticles::StarParticles(Config config)
+DiamondParticles::DiamondParticles(Config config)
 : _aroundDevice(config.aroundDevice)
 , _particles([&] {
 	auto sprites = std::vector<DriftingSprite>();
@@ -194,13 +194,13 @@ StarParticles::StarParticles(Config config)
 }()) {
 }
 
-void StarParticles::setGeometry(QRect outer, QRect device) {
+void DiamondParticles::setGeometry(QRect outer, QRect device) {
 	const auto field = [&] {
 		if (!_aroundDevice) {
 			const auto inset = float64(st::premiumPromoParticlesInset);
 			return QRectF(outer).marginsRemoved(Margins(inset));
 		}
-		const auto half = base::SafeRound(device.width() * kStarsRectFactor);
+		const auto half = base::SafeRound(device.width() * kDiamondsRectFactor);
 		const auto center = rect::center(device);
 		return Rect(center.x() - half, center.y() - half, Size(half * 2.));
 	}();
@@ -211,7 +211,7 @@ void StarParticles::setGeometry(QRect outer, QRect device) {
 		QRectF(device).marginsRemoved(Margins(skip)));
 }
 
-void StarParticles::paint(QPainter &p) {
+void DiamondParticles::paint(QPainter &p) {
 	_particles.paint(p);
 }
 
@@ -727,7 +727,7 @@ void HelloParticles::paint(QPainter &p) {
 		std::vector<int> sizes,
 		bool randomRotate = true,
 		bool orbit = false) {
-	return std::make_unique<StarParticles>(StarParticles::Config{
+	return std::make_unique<DiamondParticles>(DiamondParticles::Config{
 		.sprites = IconSprites(
 			std::move(names),
 			std::move(sizes),
@@ -737,14 +737,14 @@ void HelloParticles::paint(QPainter &p) {
 	});
 }
 
-[[nodiscard]] std::unique_ptr<PromoParticlesPainter> MakeStars() {
-	return std::make_unique<StarParticles>(StarParticles::Config{
+[[nodiscard]] std::unique_ptr<PromoParticlesPainter> MakeDiamonds() {
+	return std::make_unique<DiamondParticles>(DiamondParticles::Config{
 		.sprites = {
 			{ .size = st::premiumPromoStarSmall, .bright = true },
 			{ .size = st::premiumPromoStarLarge, .bright = true },
 			{ .size = st::premiumPromoStarMedium, .bright = true },
 		},
-		.count = kStarParticlesCount,
+		.count = kDiamondParticlesCount,
 		.orbit = true,
 		.blur = true,
 		.roundEffect = false,
@@ -754,7 +754,7 @@ void HelloParticles::paint(QPainter &p) {
 
 [[nodiscard]] std::unique_ptr<PromoParticlesPainter> MakeProfileBadge() {
 	const auto star = u":/gui/icons/settings/star.svg"_q;
-	return std::make_unique<StarParticles>(StarParticles::Config{
+	return std::make_unique<DiamondParticles>(DiamondParticles::Config{
 		.sprites = {
 			{ .size = st::premiumPromoIconSmall, .bright = true },
 			{
@@ -780,7 +780,7 @@ std::unique_ptr<PromoParticlesPainter> MakePromoParticles(
 		PromoParticles type) {
 	switch (type) {
 	case PromoParticles::Stars:
-		return MakeStars();
+		return MakeDiamonds();
 	case PromoParticles::Matrix:
 		return std::make_unique<MatrixParticles>();
 	case PromoParticles::SpeedLines:

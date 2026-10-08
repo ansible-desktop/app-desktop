@@ -32,7 +32,7 @@ public:
 	[[nodiscard]] rpl::producer<PostsSearchState> pagesUpdates() const;
 
 	void setQuery(const QString &query);
-	int setAllowedStars(int stars);
+	int setAllowedDiamonds(int stars);
 	void requestMore();
 
 private:
@@ -44,7 +44,7 @@ private:
 		PeerData *offsetPeer = nullptr;
 		MsgId offsetId = 0;
 		int offsetRate = 0;
-		int allowedStars = 0;
+		int allowedDiamonds = 0;
 		mutable int pagesPushed = 0;
 		bool loaded = false;
 	};

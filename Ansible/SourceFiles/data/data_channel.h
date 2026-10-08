@@ -84,8 +84,8 @@ enum class ChannelDataFlag : uint64 {
 	MonoforumAdmin = (1ULL << 40),
 	MonoforumDisabled = (1ULL << 41),
 	ForumTabs = (1ULL << 42),
-	HasStarsPerMessage = (1ULL << 43),
-	StarsPerMessageKnown = (1ULL << 44),
+	HasDiamondsPerMessage = (1ULL << 43),
+	DiamondsPerMessageKnown = (1ULL << 44),
 	HasActiveVideoStream = (1ULL << 45),
 	Community = (1ULL << 46),
 	CommunityCollapsed = (1ULL << 47),
@@ -290,11 +290,11 @@ public:
 	[[nodiscard]] bool paidMessagesAvailable() const {
 		return flags() & Flag::PaidMessagesAvailable;
 	}
-	[[nodiscard]] bool hasStarsPerMessage() const {
-		return flags() & Flag::HasStarsPerMessage;
+	[[nodiscard]] bool hasDiamondsPerMessage() const {
+		return flags() & Flag::HasDiamondsPerMessage;
 	}
-	[[nodiscard]] bool starsPerMessageKnown() const {
-		return flags() & Flag::StarsPerMessageKnown;
+	[[nodiscard]] bool diamondsPerMessageKnown() const {
+		return flags() & Flag::DiamondsPerMessageKnown;
 	}
 	[[nodiscard]] bool hasWelcomeMessages() const {
 		return flags() & Flag::HasWelcomeMessages;
@@ -534,9 +534,9 @@ public:
 	[[nodiscard]] TimeId slowmodeLastMessage() const;
 	void growSlowmodeLastMessage(TimeId when);
 
-	void setStarsPerMessage(int stars);
-	[[nodiscard]] int starsPerMessage() const;
-	[[nodiscard]] int commonStarsPerMessage() const;
+	void setDiamondsPerMessage(int stars);
+	[[nodiscard]] int diamondsPerMessage() const;
+	[[nodiscard]] int commonDiamondsPerMessage() const;
 
 	[[nodiscard]] int peerGiftsCount() const;
 	void setPeerGiftsCount(int count);

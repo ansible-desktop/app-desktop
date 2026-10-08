@@ -22,7 +22,7 @@ namespace Ui {
 
 class GenericBox;
 
-void StarGiftPreviewBox(
+void DiamondGiftPreviewBox(
 	not_null<GenericBox*> box,
 	const QString &title,
 	Data::UniqueGiftAttributes attributes,

@@ -71,7 +71,7 @@ public:
 	Controller(
 		not_null<Window::SessionController*> window,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId savedId,
+		Data::SavedDiamondGiftId savedId,
 		Fn<void(not_null<PeerData*>, Fn<void()>)> choose);
 
 	void init(not_null<PeerListBox*> box);
@@ -92,7 +92,7 @@ private:
 
 	const not_null<Window::SessionController*> _window;
 	const std::shared_ptr<Data::UniqueGift> _gift;
-	const Data::SavedStarGiftId _giftId;
+	const Data::SavedDiamondGiftId _giftId;
 	const Fn<void(not_null<PeerData*>, Fn<void()>)> _choose;
 	ExportOption _exportOption;
 	QPointer<PeerListBox> _box;
@@ -127,7 +127,7 @@ void ExportOnBlockchain(
 		not_null<Window::SessionController*> window,
 		not_null<Ui::RpWidget*> parent,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId giftId,
+		Data::SavedDiamondGiftId giftId,
 		Fn<void()> boxShown,
 		Fn<void()> wentToUrl) {
 	struct State {
@@ -140,7 +140,7 @@ void ExportOnBlockchain(
 	session->api().cloudPassword().reload();
 	session->api().request(
 		MTPpayments_GetStarGiftWithdrawalUrl(
-			Api::InputSavedStarGiftId(giftId),
+			Api::InputSavedDiamondGiftId(giftId),
 			MTP_inputCheckPasswordEmpty())
 	).fail([=](const MTP::Error &error) {
 		auto box = PrePasswordErrorBox(
@@ -171,7 +171,7 @@ void ExportOnBlockchain(
 				using ExportUrl = MTPpayments_StarGiftWithdrawalUrl;
 				session->api().request(
 					MTPpayments_GetStarGiftWithdrawalUrl(
-						Api::InputSavedStarGiftId(giftId),
+						Api::InputSavedDiamondGiftId(giftId),
 						result.result)
 				).done([=](const ExportUrl &result) {
 					UrlClickHandler::Open(qs(result.data().vurl()));
@@ -196,7 +196,7 @@ void ExportOnBlockchain(
 		not_null<Window::SessionController*> window,
 		not_null<PeerListBox*> box,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId giftId,
+		Data::SavedDiamondGiftId giftId,
 		TimeId when) {
 	struct State {
 		bool exporting = false;
@@ -382,7 +382,7 @@ void ExportOnBlockchain(
 Controller::Controller(
 	not_null<Window::SessionController*> window,
 	std::shared_ptr<Data::UniqueGift> gift,
-	Data::SavedStarGiftId giftId,
+	Data::SavedDiamondGiftId giftId,
 	Fn<void(not_null<PeerData*>, Fn<void()>)> choose)
 : ContactsBoxController(&window->session())
 , _window(window)
@@ -446,7 +446,7 @@ void TransferGift(
 		not_null<Window::SessionController*> window,
 		not_null<PeerData*> to,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId savedId,
+		Data::SavedDiamondGiftId savedId,
 		Fn<void(Payments::CheckoutResult)> done,
 		bool skipPaymentForm = false) {
 	const auto session = &window->session();
@@ -476,7 +476,7 @@ void TransferGift(
 		// Sometimes we don't know the price for transfer.
 		// Like when we transfer a gift from Resale tab.
 		session->api().request(MTPpayments_TransferStarGift(
-			Api::InputSavedStarGiftId(savedId, gift),
+			Api::InputSavedDiamondGiftId(savedId, gift),
 			to->input()
 		)).done([=](const MTPUpdates &result) {
 			session->api().applyUpdates(result);
@@ -499,10 +499,10 @@ void TransferGift(
 			}
 		}).send();
 	} else {
-		Ui::RequestStarsFormAndSubmit(
+		Ui::RequestDiamondsFormAndSubmit(
 			window->uiShow(),
 			MTP_inputInvoiceStarGiftTransfer(
-				Api::InputSavedStarGiftId(savedId, gift),
+				Api::InputSavedDiamondGiftId(savedId, gift),
 				to->input()),
 			std::move(formDone));
 	}
@@ -577,7 +577,7 @@ void BuyResaleGift(
 		}
 		*completed = true;
 		if (result == Payments::CheckoutResult::Paid) {
-			purchase.gift->starsForResale = 0;
+			purchase.gift->diamondsForResale = 0;
 		}
 		done(result);
 		if (result == Payments::CheckoutResult::Paid) {
@@ -603,7 +603,7 @@ void BuyResaleGift(
 		}
 		const auto submit = [=] {
 			if (price.stars()) {
-				SubmitStarsForm(
+				SubmitDiamondsForm(
 					show,
 					invoice,
 					formId,
@@ -615,7 +615,7 @@ void BuyResaleGift(
 		};
 		const auto was = (purchase.currency == CreditsType::Ton)
 			? Data::UniqueGiftResaleTon(*purchase.gift)
-			: Data::UniqueGiftResaleStars(*purchase.gift);
+			: Data::UniqueGiftResaleDiamonds(*purchase.gift);
 		if (failure) {
 			paymentDone(*failure, nullptr);
 		} else if (price != was) {
@@ -714,7 +714,7 @@ base::weak_qptr<Ui::GenericBox> ShowBuyResaleGiftConfirm(
 				lt_cost,
 				rpl::single(ton
 					? Data::FormatGiftResaleTon(*gift)
-					: Data::FormatGiftResaleStars(*gift)),
+					: Data::FormatGiftResaleDiamonds(*gift)),
 				tr::marked);
 		}) | rpl::flatten_latest();
 
@@ -757,7 +757,7 @@ base::weak_qptr<Ui::GenericBox> ShowBuyResaleGiftConfirm(
 					tr::bold)
 				: tr::lng_action_gift_for_diamonds(
 					lt_count_decimal,
-					rpl::single(gift->starsForResale * 1.),
+					rpl::single(gift->diamondsForResale * 1.),
 					tr::bold);
 		}) | rpl::flatten_latest();
 		Ui::ConfirmBox(box, {
@@ -788,9 +788,9 @@ void ShowTransferToBox(
 		not_null<Window::SessionController*> controller,
 		not_null<PeerData*> peer,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId savedId,
+		Data::SavedDiamondGiftId savedId,
 		Fn<void()> closeParentBox) {
-	const auto stars = gift->starsForTransfer;
+	const auto stars = gift->diamondsForTransfer;
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
 		auto transfer = (stars > 0)
 			? tr::lng_gift_transfer_button_for(
@@ -869,7 +869,7 @@ void ShowTransferToBox(
 void ShowTransferGiftBox(
 		not_null<Window::SessionController*> window,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId savedId) {
+		Data::SavedDiamondGiftId savedId) {
 	if (ShowTransferGiftLater(window->uiShow(), gift)) {
 		return;
 	}
@@ -905,7 +905,7 @@ void ShowGiftSaleAcceptBox(
 	const auto price = suggestion->price;
 
 	const auto &appConfig = controller->session().appConfig();
-	const auto starsThousandths = appConfig.giftResaleStarsThousandths();
+	const auto diamondsThousandths = appConfig.giftResaleDiamondsThousandths();
 	const auto nanoTonThousandths = appConfig.giftResaleNanoTonThousandths();
 
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
@@ -935,7 +935,7 @@ void ShowGiftSaleAcceptBox(
 
 		const auto receive = price.ton()
 			? ((price.value() * nanoTonThousandths) / 1000.)
-			: ((int64(price.value()) * starsThousandths) / 1000);
+			: ((int64(price.value()) * diamondsThousandths) / 1000);
 
 		auto button = tr::lng_gift_offer_sell_for(
 			lt_price,
@@ -990,7 +990,7 @@ void ShowGiftSaleAcceptBox(
 			if (std::abs(value) >= 0.01) {
 				const auto rate = price.ton()
 					? appConfig->currencySellRate()
-					: (appConfig->starsSellRate() / 100.);
+					: (appConfig->diamondsSellRate() / 100.);
 				const auto offered = receive * rate;
 				const auto diff = offered - value;
 				const auto percent = std::abs(diff / value * 100.);
@@ -1171,7 +1171,7 @@ void ShowBuyResaleGiftBox(
 		};
 		const auto state = box->lifetime().make_state<State>();
 		state->hideName = to->isSelf();
-		state->messageAllowed = Ui::StarGiftMessageAllowedValue(to);
+		state->messageAllowed = Ui::DiamondGiftMessageAllowedValue(to);
 		state->attempt = attempt;
 
 		box->setStyle(st::giftBox);
@@ -1186,7 +1186,7 @@ void ShowBuyResaleGiftBox(
 		const auto initiallyTon = gift->onlyAcceptTon || forceTon;
 		const auto initialCost = initiallyTon
 			? Data::FormatGiftResaleTon(*gift)
-			: Data::FormatGiftResaleStars(*gift);
+			: Data::FormatGiftResaleDiamonds(*gift);
 		auto message = rpl::combine(
 			state->message.value(),
 			tr::lng_gift_send_message_preview(),
@@ -1217,7 +1217,7 @@ void ShowBuyResaleGiftBox(
 				object_ptr<Ui::VerticalLayout>(container)));
 		messageWrap->toggleOn(state->messageAllowed.value());
 		messageWrap->finishAnimating();
-		const auto field = Ui::AddStarGiftMessageField(
+		const auto field = Ui::AddDiamondGiftMessageField(
 			show,
 			messageWrap->entity(),
 			box->getDelegate()->outerContainer(),

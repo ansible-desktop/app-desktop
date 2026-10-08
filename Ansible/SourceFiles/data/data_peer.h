@@ -335,8 +335,8 @@ public:
 	[[nodiscard]] bool canManageWelcomeMessages() const;
 	[[nodiscard]] bool amMonoforumAdmin() const;
 
-	[[nodiscard]] int starsPerMessage() const;
-	[[nodiscard]] int starsPerMessageChecked() const;
+	[[nodiscard]] int diamondsPerMessage() const;
+	[[nodiscard]] int diamondsPerMessageChecked() const;
 	[[nodiscard]] Data::StarsRating starsRating() const;
 
 	[[nodiscard]] UserData *asBot();

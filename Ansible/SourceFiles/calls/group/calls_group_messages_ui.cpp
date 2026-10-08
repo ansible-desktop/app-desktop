@@ -184,7 +184,7 @@ bool TransparentMessagesEventFilter::wheelFilter(
 	return height / 2;
 }
 
-[[nodiscard]] uint64 ColoringKey(const Ui::StarsColoring &value) {
+[[nodiscard]] uint64 ColoringKey(const Ui::DiamondsColoring &value) {
 	return uint64(uint32(value.bgLight))
 		| (uint64(uint32(value.bgDark)) << 32);
 }
@@ -363,7 +363,7 @@ struct MessagesUi::PinnedView {
 	bool requiresSmooth = false;
 };
 
-MessagesUi::PayedBg::PayedBg(const Ui::StarsColoring &coloring)
+MessagesUi::PayedBg::PayedBg(const Ui::DiamondsColoring &coloring)
 : light(Ui::ColorFromSerialized(coloring.bgLight))
 , dark(Ui::ColorFromSerialized(coloring.bgDark))
 , pinnedLight(CountPinnedRadius(), light.color())
@@ -1258,7 +1258,7 @@ void MessagesUi::setupMessagesWidget() {
 			if (!_streamMode) {
 				_messageBgRect.paint(p, { x, y, width, use });
 			} else if (entry.stars) {
-				const auto coloring = Ui::StarsColoringForCount(
+				const auto coloring = Ui::DiamondsColoringForCount(
 					colorings,
 					entry.stars);
 				bg = &_bgs[ColoringKey(coloring)];
@@ -1647,7 +1647,7 @@ void MessagesUi::setupPinnedWidget() {
 				p.setOpacity(scale);
 				p.translate(-mx, -my);
 			}
-			const auto coloring = Ui::StarsColoringForCount(
+			const auto coloring = Ui::DiamondsColoringForCount(
 				colorings,
 				entry.stars);
 			auto &bg = _bgs[ColoringKey(coloring)];

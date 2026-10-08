@@ -37,7 +37,7 @@ public:
 	[[nodiscard]] static int Height();
 
 private:
-	static constexpr auto kStarsCount = 5;
+	static constexpr auto kDiamondsCount = 5;
 
 	struct Burst {
 		std::unique_ptr<Lottie::Icon> icon;
@@ -60,7 +60,7 @@ private:
 	void leaveEventHook(QEvent *e) override;
 
 	void paintCard(QPainter &p, float64 shown);
-	void paintStar(QPainter &p, int index, float64 shown);
+	void paintDiamond(QPainter &p, int index, float64 shown);
 	void paintBurst(QPainter &p);
 
 	void setOver(int index);
@@ -69,16 +69,16 @@ private:
 	void startBurst(int index);
 
 	[[nodiscard]] QRect cardRect() const;
-	[[nodiscard]] QRect starRect(int index) const;
-	[[nodiscard]] int starByPosition(QPoint position) const;
+	[[nodiscard]] QRect diamondRect(int index) const;
+	[[nodiscard]] int diamondByPosition(QPoint position) const;
 	[[nodiscard]] QColor textColor() const;
 	[[nodiscard]] float64 cardShown() const;
-	[[nodiscard]] float64 starShown(int index) const;
-	[[nodiscard]] const QImage &starImage(bool filled) const;
+	[[nodiscard]] float64 diamondShown(int index) const;
+	[[nodiscard]] const QImage &diamondImage(bool filled) const;
 
 	Ui::Text::String _title;
 	Ui::Text::String _description;
-	std::array<Star, kStarsCount> _stars;
+	std::array<Star, kDiamondsCount> _diamonds;
 	std::vector<Burst> _bursts;
 	Ui::Animations::Simple _showAnimation;
 	std::optional<QColor> _textColorOverride;

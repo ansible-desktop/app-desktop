@@ -115,7 +115,7 @@ void GlobalPrivacy::updateHideReadTime(bool hide) {
 		unarchiveOnNewMessageCurrent(),
 		hide,
 		newRequirePremiumCurrent(),
-		newChargeStarsCurrent(),
+		newChargeDiamondsCurrent(),
 		disallowedGiftTypesCurrent());
 }
 
@@ -135,23 +135,23 @@ rpl::producer<bool> GlobalPrivacy::newRequirePremium() const {
 	return _newRequirePremium.value();
 }
 
-int GlobalPrivacy::newChargeStarsCurrent() const {
-	return _newChargeStars.current();
+int GlobalPrivacy::newChargeDiamondsCurrent() const {
+	return _newChargeDiamonds.current();
 }
 
-rpl::producer<int> GlobalPrivacy::newChargeStars() const {
-	return _newChargeStars.value();
+rpl::producer<int> GlobalPrivacy::newChargeDiamonds() const {
+	return _newChargeDiamonds.value();
 }
 
 void GlobalPrivacy::updateMessagesPrivacy(
 		bool requirePremium,
-		int chargeStars) {
+		int chargeDiamonds) {
 	update(
 		archiveAndMuteCurrent(),
 		unarchiveOnNewMessageCurrent(),
 		hideReadTimeCurrent(),
 		requirePremium,
-		chargeStars,
+		chargeDiamonds,
 		disallowedGiftTypesCurrent());
 }
 
@@ -170,7 +170,7 @@ void GlobalPrivacy::updateDisallowedGiftTypes(DisallowedGiftTypes types) {
 		unarchiveOnNewMessageCurrent(),
 		hideReadTimeCurrent(),
 		newRequirePremiumCurrent(),
-		newChargeStarsCurrent(),
+		newChargeDiamondsCurrent(),
 		types);
 }
 
@@ -203,7 +203,7 @@ void GlobalPrivacy::updateArchiveAndMute(bool value) {
 		unarchiveOnNewMessageCurrent(),
 		hideReadTimeCurrent(),
 		newRequirePremiumCurrent(),
-		newChargeStarsCurrent(),
+		newChargeDiamondsCurrent(),
 		disallowedGiftTypesCurrent());
 }
 
@@ -214,7 +214,7 @@ void GlobalPrivacy::updateUnarchiveOnNewMessage(
 		value,
 		hideReadTimeCurrent(),
 		newRequirePremiumCurrent(),
-		newChargeStarsCurrent(),
+		newChargeDiamondsCurrent(),
 		disallowedGiftTypesCurrent());
 }
 
@@ -223,7 +223,7 @@ void GlobalPrivacy::update(
 		UnarchiveOnNewMessage unarchiveOnNewMessage,
 		bool hideReadTime,
 		bool newRequirePremium,
-		int newChargeStars,
+		int newChargeDiamonds,
 		DisallowedGiftTypes disallowedGiftTypes) {
 	using Flag = MTPDglobalPrivacySettings::Flag;
 	using DisallowedFlag = MTPDdisallowedGiftsSettings::Flag;
@@ -247,7 +247,7 @@ void GlobalPrivacy::update(
 		| ((newRequirePremium && newRequirePremiumAllowed)
 			? Flag::f_new_noncontact_peers_require_premium
 			: Flag())
-		| Flag::f_noncontact_peers_paid_stars
+		| Flag::f_noncontact_peers_paid_diamonds
 		| (showGiftIcon ? Flag::f_display_gifts_button : Flag())
 		| Flag::f_disallowed_gifts;
 	const auto disallowedFlags = DisallowedFlag()
@@ -271,7 +271,7 @@ void GlobalPrivacy::update(
 	_requestId = _api.request(MTPaccount_SetGlobalPrivacySettings(
 		MTP_globalPrivacySettings(
 			MTP_flags(flags),
-			MTP_long(newChargeStars),
+			MTP_long(newChargeDiamonds),
 			MTP_disallowedGiftsSettings(MTP_flags(disallowedFlags)))
 	)).done([=](const MTPGlobalPrivacySettings &result) {
 		_requestId = 0;
@@ -295,7 +295,7 @@ void GlobalPrivacy::update(
 	_unarchiveOnNewMessage = unarchiveOnNewMessage;
 	_hideReadTime = hideReadTime;
 	_newRequirePremium = newRequirePremium;
-	_newChargeStars = newChargeStars;
+	_newChargeDiamonds = newChargeDiamonds;
 	_disallowedGiftTypes = disallowedGiftTypes;
 }
 
@@ -309,7 +309,7 @@ void GlobalPrivacy::apply(const MTPGlobalPrivacySettings &settings) {
 		: UnarchiveOnNewMessage::AnyUnmuted;
 	_hideReadTime = data.is_hide_read_marks();
 	_newRequirePremium = data.is_new_noncontact_peers_require_premium();
-	_newChargeStars = data.vnoncontact_peers_paid_stars().value_or_empty();
+	_newChargeDiamonds = data.vnoncontact_peers_paid_stars().value_or_empty();
 	if (const auto gifts = data.vdisallowed_gifts()) {
 		const auto &disallow = gifts->data();
 		_disallowedGiftTypes = DisallowedGiftType()

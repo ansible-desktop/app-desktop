@@ -144,7 +144,7 @@ void Star::ensureSurface() {
 	if (_surface) {
 		return;
 	}
-	auto renderer = std::make_unique<StarRenderer>();
+	auto renderer = std::make_unique<DiamondRenderer>();
 	_renderer = renderer.get();
 	_renderer->setGolden(_golden);
 	if (_gradient1.isValid() && _gradient2.isValid()) {

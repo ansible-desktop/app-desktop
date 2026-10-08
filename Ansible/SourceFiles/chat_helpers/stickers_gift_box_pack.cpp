@@ -31,7 +31,7 @@ rpl::producer<> GiftBoxPack::tonUpdated() const {
 	return _ton.updated.events();
 }
 
-int GiftBoxPack::monthsForStars(int stars) const {
+int GiftBoxPack::monthsForDiamonds(int stars) const {
 	if (stars <= 1000) {
 		return 3;
 	} else if (stars < 2500) {

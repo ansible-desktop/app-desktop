@@ -1288,14 +1288,14 @@ bool EditPeer(
 	return true;
 }
 
-bool ShowStarsExamples(
+bool ShowDiamondsExamples(
 		Window::SessionController *controller,
 		const Match &match,
 		const QVariant &context) {
 	if (!controller) {
 		return false;
 	}
-	controller->show(Dialogs::StarsExamplesBox(controller));
+	controller->show(Dialogs::DiamondsExamplesBox(controller));
 	return true;
 }
 
@@ -1511,7 +1511,7 @@ bool ResolvePremiumMultigift(
 	if (!controller) {
 		return false;
 	}
-	Ui::ChooseStarGiftRecipient(controller);
+	Ui::ChooseDiamondGiftRecipient(controller);
 	controller->window().activate();
 	return true;
 }
@@ -1653,7 +1653,7 @@ bool ResolveGiftAuction(
 	if (slug.isEmpty()) {
 		return false;
 	}
-	controller->showStarGiftAuction(slug);
+	controller->showDiamondGiftAuction(slug);
 	return true;
 }
 
@@ -1674,7 +1674,7 @@ bool ResolveConferenceCall(
 	return true;
 }
 
-bool ResolveStarsSettings(
+bool ResolveDiamondsSettings(
 		Window::SessionController *controller,
 		const Match &match,
 		const QVariant &context) {
@@ -1836,7 +1836,7 @@ const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 		},
 		{
 			u"^stars/?(^\\?.*)?(#|$)"_q,
-			ResolveStarsSettings
+			ResolveDiamondsSettings
 		},
 		{
 			u"^(ton|grams)/?(^\\?.*)?(#|$)"_q,
@@ -1918,7 +1918,7 @@ const std::vector<LocalUrlHandler> &InternalUrlHandlers() {
 		},
 		{
 			u"^stars_examples$"_q,
-			ShowStarsExamples,
+			ShowDiamondsExamples,
 		},
 		{
 			u"^about_popular_apps$"_q,
@@ -2204,10 +2204,10 @@ void ResolveAndShowUniqueGift(
 
 			using namespace ::Settings;
 			show->show(Box(
-				GlobalStarGiftBox,
+				GlobalDiamondGiftBox,
 				show,
 				*gift,
-				StarGiftResaleInfo(),
+				DiamondGiftResaleInfo(),
 				st));
 			show->activate();
 		}

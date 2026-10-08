@@ -212,7 +212,7 @@ struct Released {
 	}
 
 	rpl::variable<TextWithEntities> subtitleText;
-	std::optional<Premium::ColoredMiniStars> stars;
+	std::optional<Premium::ColoredMiniDiamonds> stars;
 	style::owned_color link;
 	style::FlatLabel st;
 	rpl::variable<PeerData*> by;
@@ -613,7 +613,7 @@ UniqueGiftCoverWidget::UniqueGiftCoverWidget(
 		_state->released.stars.emplace(
 			this,
 			true,
-			Premium::MiniStarsType::SlowStars);
+			Premium::MiniDiamondsType::SlowDiamonds);
 		const auto white = QColor(255, 255, 255);
 		_state->released.stars->setColorOverride(QGradientStops{
 			{ 0., anim::with_alpha(white, .3) },

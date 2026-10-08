@@ -102,11 +102,11 @@ struct CreditsHistoryEntry final {
 	int paidMessagesCommission = 0;
 	int limitedCount = 0;
 	int limitedLeft = 0;
-	int starsConverted = 0;
-	int starsToUpgrade = 0;
-	int starsUpgradedBySender = 0;
-	int starsForDetailsRemove = 0;
-	int premiumMonthsForStars = 0;
+	int diamondsConverted = 0;
+	int diamondsToUpgrade = 0;
+	int diamondsUpgradedBySender = 0;
+	int diamondsForDetailsRemove = 0;
+	int premiumMonthsForDiamonds = 0;
 	int floodSkip = 0;
 	int giftNumber = 0;
 	bool converted : 1 = false;

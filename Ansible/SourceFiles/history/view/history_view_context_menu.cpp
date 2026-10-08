@@ -784,7 +784,7 @@ bool AddRescheduleAction(
 		const auto peer = firstItem->history()->peer;
 		const auto sendMenuType = !peer
 			? SendMenu::Type::Disabled
-			: peer->starsPerMessageChecked()
+			: peer->diamondsPerMessageChecked()
 			? SendMenu::Type::SilentOnly
 			: peer->isSelf()
 			? SendMenu::Type::Reminder
@@ -1871,18 +1871,18 @@ void FillContextMenuItems(
 				|| (!user->isInaccessible()
 					&& !user->isNotificationsUser())) {
 				const auto controller = list->controller();
-				const auto starGiftUpgrade = gift->upgrade
+				const auto diamondGiftUpgrade = gift->upgrade
 					&& (gift->type == Data::GiftType::StarGift);
 				const auto isGift = gift->slug.isEmpty() || !gift->channel;
 				const auto out = view->data()->out();
 				const auto outgoingGift = isGift
-					&& (starGiftUpgrade ? !out : out);
+					&& (diamondGiftUpgrade ? !out : out);
 				if (outgoingGift
 					&& gift->type != Data::GiftType::BirthdaySuggest) {
 					result->addAction(
 						tr::lng_context_gift_send(tr::now),
 						crl::guard(controller, [=] {
-							Ui::ShowStarGiftBox(controller, peer);
+							Ui::ShowDiamondGiftBox(controller, peer);
 						}),
 						&st::menuIconGiftPremium);
 				}

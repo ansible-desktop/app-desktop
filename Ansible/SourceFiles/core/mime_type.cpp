@@ -55,7 +55,7 @@ QStringList MimeType::globPatterns() const {
 	switch (_type) {
 	case Known::WebP: return QStringList(u"*.webp"_q);
 	case Known::Ass: return QStringList(u"*.ass"_q);
-	case Known::Tgv: return QStringList(u"*.tgv"_q);
+	case Known::Asv: return QStringList(u"*.tgv"_q);
 	case Known::TDesktopTheme: return QStringList{
 		u"*.adesktop-theme"_q,
 		u"*.tdesktop-theme"_q };
@@ -71,7 +71,7 @@ QString MimeType::filterString() const {
 	switch (_type) {
 	case Known::WebP: return u"WebP image (*.webp)"_q;
 	case Known::Ass: return u"Ansible sticker (*.ass)"_q;
-	case Known::Tgv: return u"Wallpaper pattern (*.tgv)"_q;
+	case Known::Asv: return u"Wallpaper pattern (*.tgv)"_q;
 	case Known::TDesktopTheme:
 		return u"Theme files (*.adesktop-theme *.tdesktop-theme)"_q;
 	case Known::TDesktopPalette:
@@ -85,7 +85,7 @@ QString MimeType::name() const {
 	switch (_type) {
 	case Known::WebP: return u"image/webp"_q;
 	case Known::Ass: return u"application/x-ansible-sticker"_q;
-	case Known::Tgv: return u"application/x-tgwallpattern"_q;
+	case Known::Asv: return u"application/x-tgwallpattern"_q;
 	case Known::TDesktopTheme: return u"application/x-adesktop-theme"_q;
 	case Known::TDesktopPalette: return u"application/x-adesktop-palette"_q;
 	default: break;
@@ -99,7 +99,7 @@ MimeType MimeTypeForName(const QString &mime) {
 	} else if (mime == u"application/x-ansible-sticker"_q) {
 		return MimeType(MimeType::Known::Ass);
 	} else if (mime == u"application/x-tgwallpattern"_q) {
-		return MimeType(MimeType::Known::Tgv);
+		return MimeType(MimeType::Known::Asv);
 	} else if (mime == u"application/x-adesktop-theme"_q
 		|| mime == u"application/x-tdesktop-theme"_q
 		|| mime == u"application/x-tgtheme-tdesktop"_q) {
@@ -120,7 +120,7 @@ MimeType MimeTypeForFile(const QFileInfo &file) {
 	} else if (path.endsWith(u".ass"_q, Qt::CaseInsensitive)) {
 		return MimeType(MimeType::Known::Ass);
 	} else if (path.endsWith(u".tgv"_q)) {
-		return MimeType(MimeType::Known::Tgv);
+		return MimeType(MimeType::Known::Asv);
 	} else if (path.endsWith(u".adesktop-theme"_q, Qt::CaseInsensitive)
 		|| path.endsWith(u".tdesktop-theme"_q, Qt::CaseInsensitive)) {
 		return MimeType(MimeType::Known::TDesktopTheme);

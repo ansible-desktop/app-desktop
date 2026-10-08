@@ -34,7 +34,7 @@ constexpr auto kNearPlane = 1.f;
 constexpr auto kFarPlane = 200.f;
 constexpr auto kCameraDistance = 100.f;
 
-struct alignas(16) StarUniforms {
+struct alignas(16) DiamondUniforms {
 	float mvp[16];
 	float world[16];
 	float grad1[4];
@@ -42,8 +42,8 @@ struct alignas(16) StarUniforms {
 	float params[4];
 	float extra[4];
 };
-static_assert(sizeof(StarUniforms) == 192);
-static_assert(sizeof(StarUniforms) % 16 == 0);
+static_assert(sizeof(DiamondUniforms) == 192);
+static_assert(sizeof(DiamondUniforms) % 16 == 0);
 
 [[nodiscard]] QImage RenderBorderTexture() {
 	auto renderer = QSvgRenderer(u":/gui/art/premium/star_texture.svg"_q);
@@ -60,17 +60,17 @@ static_assert(sizeof(StarUniforms) % 16 == 0);
 
 } // namespace
 
-StarRenderer::StarRenderer() = default;
+DiamondRenderer::DiamondRenderer() = default;
 
-StarRenderer::~StarRenderer() {
+DiamondRenderer::~DiamondRenderer() {
 	releaseResources();
 }
 
-void StarRenderer::setState(State state) {
+void DiamondRenderer::setState(State state) {
 	_state = state;
 }
 
-void StarRenderer::setColors(QColor gradient1, QColor gradient2) {
+void DiamondRenderer::setColors(QColor gradient1, QColor gradient2) {
 	_gradient1 = { {
 		float(gradient1.redF()),
 		float(gradient1.greenF()),
@@ -83,11 +83,11 @@ void StarRenderer::setColors(QColor gradient1, QColor gradient2) {
 	} };
 }
 
-void StarRenderer::setGolden(bool golden) {
+void DiamondRenderer::setGolden(bool golden) {
 	_golden = golden;
 }
 
-void StarRenderer::initialize(
+void DiamondRenderer::initialize(
 		QRhi *rhi,
 		QRhiRenderTarget *rt,
 		QRhiCommandBuffer *cb) {
@@ -103,7 +103,7 @@ void StarRenderer::initialize(
 	}
 	_rhi = rhi;
 
-	const auto model = LoadStarModel();
+	const auto model = LoadDiamondModel();
 	if (model.isNull()) {
 		LOG(("PremiumStar: failed to load model"));
 		_creationFailed = true;
@@ -120,7 +120,7 @@ void StarRenderer::initialize(
 	_uniformBuffer = rhi->newBuffer(
 		QRhiBuffer::Dynamic,
 		QRhiBuffer::UniformBuffer,
-		sizeof(StarUniforms));
+		sizeof(DiamondUniforms));
 	_uniformBuffer->create();
 
 	const auto border = RenderBorderTexture();
@@ -166,7 +166,7 @@ void StarRenderer::initialize(
 		.arg(rhi->driverInfo().deviceName));
 }
 
-bool StarRenderer::createPipeline(QRhiRenderTarget *rt) {
+bool DiamondRenderer::createPipeline(QRhiRenderTarget *rt) {
 	const auto vertShader = LoadObject3dShader(u"premium_star.vert"_q);
 	const auto fragShader = LoadObject3dShader(u"premium_star.frag"_q);
 	if (!vertShader.isValid() || !fragShader.isValid()) {
@@ -230,7 +230,7 @@ bool StarRenderer::createPipeline(QRhiRenderTarget *rt) {
 	return _pipeline->create();
 }
 
-void StarRenderer::render(
+void DiamondRenderer::render(
 		QRhi *rhi,
 		QRhiRenderTarget *rt,
 		QRhiCommandBuffer *cb) {
@@ -267,7 +267,7 @@ void StarRenderer::render(
 
 	const auto mvp = rhi->clipSpaceCorrMatrix() * projection * view * world;
 
-	auto uni = StarUniforms();
+	auto uni = DiamondUniforms();
 	memcpy(uni.mvp, mvp.constData(), sizeof(uni.mvp));
 	memcpy(uni.world, world.constData(), sizeof(uni.world));
 	uni.grad1[0] = _gradient1[0];
@@ -304,7 +304,7 @@ void StarRenderer::render(
 	cb->endPass();
 }
 
-void StarRenderer::releaseResources() {
+void DiamondRenderer::releaseResources() {
 	if (!_rhi) {
 		return;
 	}

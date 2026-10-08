@@ -210,8 +210,8 @@ std::optional<SendPaymentDetails> ComputePaymentDetails(
 		int messagesCount) {
 	const auto user = peer->asUser();
 	const auto channel = user ? nullptr : peer->asChannel();
-	const auto has = (user && user->hasStarsPerMessage())
-		|| (channel && channel->hasStarsPerMessage());
+	const auto has = (user && user->hasDiamondsPerMessage())
+		|| (channel && channel->hasDiamondsPerMessage());
 	if (!has) {
 		return SendPaymentDetails();
 	}
@@ -223,14 +223,14 @@ std::optional<SendPaymentDetails> ComputePaymentDetails(
 
 	const auto known2 = user
 		? user->messageMoneyRestrictionsKnown()
-		: channel->starsPerMessageKnown();
+		: channel->diamondsPerMessageKnown();
 	if (!known2) {
 		peer->updateFull();
 	}
 
 	if (!known1 || !known2) {
 		return {};
-	} else if (const auto perMessage = peer->starsPerMessageChecked()) {
+	} else if (const auto perMessage = peer->diamondsPerMessageChecked()) {
 		return SendPaymentDetails{
 			.messages = messagesCount,
 			.stars = messagesCount * perMessage,
@@ -292,14 +292,14 @@ void ShowSendPaidConfirm(
 		SendPaymentDetails details,
 		Fn<void()> confirmed,
 		PaidConfirmStyles styles,
-		int suggestStarsPrice) {
+		int suggestDiamondsPrice) {
 	return ShowSendPaidConfirm(
 		navigation->uiShow(),
 		peer,
 		details,
 		confirmed,
 		styles,
-		suggestStarsPrice);
+		suggestDiamondsPrice);
 }
 
 void ShowSendPaidConfirm(
@@ -308,14 +308,14 @@ void ShowSendPaidConfirm(
 		SendPaymentDetails details,
 		Fn<void()> confirmed,
 		PaidConfirmStyles styles,
-		int suggestStarsPrice) {
+		int suggestDiamondsPrice) {
 	ShowSendPaidConfirm(
 		std::move(show),
 		std::vector<not_null<PeerData*>>{ peer },
 		details,
 		confirmed,
 		styles,
-		suggestStarsPrice);
+		suggestDiamondsPrice);
 }
 
 void ShowSendPaidConfirm(
@@ -324,7 +324,7 @@ void ShowSendPaidConfirm(
 		SendPaymentDetails details,
 		Fn<void()> confirmed,
 		PaidConfirmStyles styles,
-		int suggestStarsPrice) {
+		int suggestDiamondsPrice) {
 	Expects(!peers.empty());
 
 	const auto singlePeer = (peers.size() > 1)
@@ -332,7 +332,7 @@ void ShowSendPaidConfirm(
 		: peers.front().get();
 	const auto singlePeerId = singlePeer ? singlePeer->id : PeerId();
 	const auto check = [=] {
-		const auto required = details.stars + suggestStarsPrice;
+		const auto required = details.stars + suggestDiamondsPrice;
 		if (!required) {
 			return;
 		}
@@ -346,7 +346,7 @@ void ShowSendPaidConfirm(
 		MaybeRequestBalanceIncrease(
 			show,
 			required,
-			(suggestStarsPrice
+			(suggestDiamondsPrice
 				? SmallBalanceSource(SmallBalanceForSuggest{ singlePeerId })
 				: SmallBalanceForMessage{ singlePeerId }),
 			done);
@@ -358,14 +358,14 @@ void ShowSendPaidConfirm(
 			break;
 		}
 	}
-	const auto singlePeerStars = singlePeer
-		? singlePeer->starsPerMessageChecked()
+	const auto singlePeerDiamonds = singlePeer
+		? singlePeer->diamondsPerMessageChecked()
 		: 0;
 	if (singlePeer) {
 		const auto session = &singlePeer->session();
 		const auto trusted = session->local().isPeerTrustedPayForMessage(
 			singlePeerId,
-			singlePeerStars);
+			singlePeerDiamonds);
 		if (trusted) {
 			check();
 			return;
@@ -380,7 +380,7 @@ void ShowSendPaidConfirm(
 				const auto session = &singlePeer->session();
 				session->local().markPeerTrustedPayForMessage(
 					singlePeerId,
-					singlePeerStars);
+					singlePeerDiamonds);
 			}
 			check();
 			close();
@@ -461,8 +461,8 @@ bool SendPaymentHelper::check(
 
 	const auto admin = peer->amMonoforumAdmin();
 	const auto suggest = options.suggest;
-	const auto starsApproved = options.starsApproved;
-	const auto checkSuggestPriceStars = (admin || suggest.ton)
+	const auto diamondsApproved = options.diamondsApproved;
+	const auto checkSuggestPriceDiamonds = (admin || suggest.ton)
 		? 0
 		: int(base::SafeRound(suggest.price().value()));
 	const auto checkSuggestPriceTon = (!admin && suggest.ton)
@@ -471,7 +471,7 @@ bool SendPaymentHelper::check(
 	const auto details = ComputePaymentDetails(peer, messagesCount);
 	const auto suggestDetails = SuggestPaymentDataReady(peer, suggest);
 	if (!details || !suggestDetails) {
-		_resend = [=] { resend(starsApproved); };
+		_resend = [=] { resend(diamondsApproved); };
 
 		if ((!details || !suggest.ton)
 			&& !peer->session().credits().loaded()) {
@@ -507,19 +507,19 @@ bool SendPaymentHelper::check(
 		}, _lifetime);
 
 		return false;
-	} else if (const auto stars = details->stars; stars > starsApproved) {
+	} else if (const auto stars = details->stars; stars > diamondsApproved) {
 		ShowSendPaidConfirm(show, peer, *details, [=] {
 			resend(stars);
-		}, styles, checkSuggestPriceStars);
+		}, styles, checkSuggestPriceDiamonds);
 		return false;
-	} else if (checkSuggestPriceStars
-		&& (CreditsAmount(details->stars + checkSuggestPriceStars)
+	} else if (checkSuggestPriceDiamonds
+		&& (CreditsAmount(details->stars + checkSuggestPriceDiamonds)
 			> peer->session().credits().balance())) {
 		using namespace Settings;
 		const auto broadcast = peer->monoforumBroadcast();
 		const auto broadcastId = (broadcast ? broadcast : peer)->id;
 		const auto forMessages = details->stars;
-		const auto required = forMessages + checkSuggestPriceStars;
+		const auto required = forMessages + checkSuggestPriceDiamonds;
 		const auto done = [=](SmallBalanceResult result) {
 			if (result == SmallBalanceResult::Success
 				|| result == SmallBalanceResult::Already) {
@@ -967,8 +967,8 @@ MessageFlags FlagsFromMTP(
 			: Flag())
 		| ((flags & MTP::f_paid_suggested_post_ton)
 			? Flag::TonPaidSuggested
-			: (flags & MTP::f_paid_suggested_post_stars)
-			? Flag::StarsPaidSuggested
+			: (flags & MTP::f_paid_suggested_post_diamonds)
+			? Flag::DiamondsPaidSuggested
 			: Flag())
 		| ((flags & MTP::f_summary_from_language)
 			? Flag::CanBeSummarized

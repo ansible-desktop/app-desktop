@@ -22,7 +22,7 @@ struct GiftAuctionBidLevel {
 	TimeId date = 0;
 };
 
-struct StarGiftAuctionMyState {
+struct DiamondGiftAuctionMyState {
 	PeerData *to = nullptr;
 	int64 minBidAmount = 0;
 	int64 bid = 0;
@@ -40,7 +40,7 @@ struct GiftAuctionRound {
 
 struct GiftAuctionState {
 	std::optional<StarGift> gift;
-	StarGiftAuctionMyState my;
+	DiamondGiftAuctionMyState my;
 	std::vector<GiftAuctionBidLevel> bidLevels;
 	std::vector<not_null<UserData*>> topBidders;
 	std::vector<GiftAuctionRound> roundParameters;
@@ -137,7 +137,7 @@ private:
 		not_null<Entry*> entry,
 		const MTPStarGiftAuctionUserState &state);
 	void apply(
-		not_null<StarGiftAuctionMyState*> entry,
+		not_null<DiamondGiftAuctionMyState*> entry,
 		const MTPStarGiftAuctionUserState &state);
 	void checkSubscriptions();
 

@@ -38,7 +38,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "styles/style_premium.h"
 #include "styles/style_settings.h"
 
-namespace Info::BotStarRef::Setup {
+namespace Info::BotDiamondRef::Setup {
 namespace {
 
 constexpr auto kDurationForeverValue = 999;
@@ -827,7 +827,7 @@ Memento::Memento(not_null<PeerData*> peer)
 Memento::~Memento() = default;
 
 Section Memento::section() const {
-	return Section(Section::Type::BotStarRef);
+	return Section(Section::Type::BotDiamondRef);
 }
 
 object_ptr<ContentWidget> Memento::createWidget(

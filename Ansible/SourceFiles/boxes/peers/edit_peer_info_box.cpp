@@ -323,10 +323,10 @@ void SaveSlowmodeSeconds(
 	api->registerModifyRequest(key, requestId);
 }
 
-void SaveStarsPerMessage(
+void SaveDiamondsPerMessage(
 		std::shared_ptr<Ui::Show> show,
 		not_null<ChannelData*> channel,
-		int starsPerMessage,
+		int diamondsPerMessage,
 		Fn<void(bool)> done) {
 	const auto api = &channel->session().api();
 	const auto key = Api::RequestKey("stars_per_message", channel->id);
@@ -334,18 +334,18 @@ void SaveStarsPerMessage(
 	const auto broadcast = channel->isBroadcast();
 
 	using Flag = MTPchannels_UpdatePaidMessagesPrice::Flag;
-	const auto broadcastAllowed = broadcast && (starsPerMessage >= 0);
+	const auto broadcastAllowed = broadcast && (diamondsPerMessage >= 0);
 	const auto requestId = api->request(MTPchannels_UpdatePaidMessagesPrice(
 		MTP_flags(broadcastAllowed
 			? Flag::f_broadcast_messages_allowed
 			: Flag(0)),
 		channel->inputChannel(),
-		MTP_long(starsPerMessage)
+		MTP_long(diamondsPerMessage)
 	)).done([=](const MTPUpdates &result) {
 		api->clearModifyRequest(key);
 		api->applyUpdates(result);
 		if (!broadcast) {
-			channel->owner().editStarsPerMessage(channel, starsPerMessage);
+			channel->owner().editDiamondsPerMessage(channel, diamondsPerMessage);
 		}
 		done(true);
 	}).fail([=](const MTP::Error &error) {
@@ -355,9 +355,9 @@ void SaveStarsPerMessage(
 			done(false);
 		} else {
 			if (!broadcast) {
-				channel->owner().editStarsPerMessage(
+				channel->owner().editDiamondsPerMessage(
 					channel,
-					starsPerMessage);
+					diamondsPerMessage);
 			}
 			done(true);
 		}
@@ -419,8 +419,8 @@ void ShowEditPermissions(
 					channel,
 					result.boostsUnrestrict,
 					close);
-				const auto price = result.starsPerMessage;
-				SaveStarsPerMessage(show, channel, price, [=](bool ok) {
+				const auto price = result.diamondsPerMessage;
+				SaveDiamondsPerMessage(show, channel, price, [=](bool ok) {
 					close();
 				});
 			}
@@ -436,7 +436,7 @@ void ShowEditPermissions(
 			if (!chat
 				|| (!result.slowmodeSeconds
 					&& !result.boostsUnrestrict
-					&& !result.starsPerMessage)) {
+					&& !result.diamondsPerMessage)) {
 				save(saveFor, result);
 				return;
 			}
@@ -456,7 +456,7 @@ void ShowEditPermissions(
 		not_null<ChannelData*> broadcast) {
 	const auto monoforumLink = broadcast->monoforumLink();
 	return (monoforumLink && !monoforumLink->monoforumDisabled())
-		? monoforumLink->commonStarsPerMessage()
+		? monoforumLink->commonDiamondsPerMessage()
 		: -1;
 }
 
@@ -499,7 +499,7 @@ private:
 		std::optional<bool> requestToJoin;
 		std::optional<bool> requestToJoinApplyToInvites;
 		std::optional<ChannelData*> discussionLink;
-		std::optional<int> starsPerDirectMessage;
+		std::optional<int> diamondsPerDirectMessage;
 	};
 
 	[[nodiscard]] object_ptr<Ui::RpWidget> createPhotoAndTitleEdit();
@@ -1209,16 +1209,16 @@ void Controller::fillDirectMessagesButton() {
 	_starsPerDirectMessageSavedValue = rpl::variable<int>(perMessage);
 
 	auto label = _starsPerDirectMessageSavedValue->value(
-	) | rpl::map([](int starsPerMessage) {
-		return (starsPerMessage < 0)
+	) | rpl::map([](int diamondsPerMessage) {
+		return (diamondsPerMessage < 0)
 			? tr::lng_manage_monoforum_off(tr::marked)
-			: !starsPerMessage
+			: !diamondsPerMessage
 			? tr::lng_manage_monoforum_free(tr::marked)
 			: rpl::single(Ui::Text::IconEmoji(
 				&st::starIconEmojiColored
 			).append(' ').append(
 				Lang::FormatCreditsAmountDecimal(
-					CreditsAmount{ starsPerMessage })));
+					CreditsAmount{ diamondsPerMessage })));
 	}) | rpl::flatten_latest();
 	AddButtonWithText(
 		_controls.buttonsLayout,
@@ -1577,7 +1577,7 @@ void Controller::fillManageSection() {
 			: true);
 	const auto hasRecentActions = isChannel
 		&& (channel->hasAdminRights() || channel->amCreator());
-	const auto hasStarRef = Info::BotStarRef::Join::Allowed(_peer)
+	const auto hasDiamondRef = Info::BotDiamondRef::Join::Allowed(_peer)
 		&& isChannel
 		&& channel->canPostMessages();
 	const auto canEditStickers = isChannel && channel->canEditStickers();
@@ -1813,9 +1813,9 @@ void Controller::fillManageSection() {
 			std::move(callback),
 			{ &st::menuIconGroupLog });
 	}
-	if (hasStarRef) {
+	if (hasDiamondRef) {
 		auto callback = [=] {
-			_navigation->showSection(Info::BotStarRef::Join::Make(_peer));
+			_navigation->showSection(Info::BotDiamondRef::Join::Make(_peer));
 		};
 		AddButtonWithCount(
 			_controls.buttonsLayout,
@@ -2196,7 +2196,7 @@ void Controller::fillBotCreditsButton() {
 void Controller::fillBotAffiliateProgram() {
 	Expects(_isBot);
 
-	if (!Info::BotStarRef::Setup::Allowed(_peer)) {
+	if (!Info::BotDiamondRef::Setup::Allowed(_peer)) {
 		return;
 	}
 
@@ -2209,7 +2209,7 @@ void Controller::fillBotAffiliateProgram() {
 			? user->botInfo->starRefProgram.commission
 			: 0;
 		return commission
-			? Info::BotStarRef::FormatCommission(commission)
+			? Info::BotDiamondRef::FormatCommission(commission)
 			: tr::lng_manage_peer_bot_diamond_ref_off(tr::now);
 	});
 	AddButtonWithCount(
@@ -2217,7 +2217,7 @@ void Controller::fillBotAffiliateProgram() {
 		tr::lng_manage_peer_bot_diamond_ref(),
 		std::move(label),
 		[controller = _navigation->parentController(), user] {
-			controller->showSection(Info::BotStarRef::Setup::Make(user));
+			controller->showSection(Info::BotDiamondRef::Setup::Make(user));
 		},
 		{ .icon = &st::menuIconSharing });
 }
@@ -2374,7 +2374,7 @@ bool Controller::validateDirectMessagesPrice(Saving &to) const {
 	if (!_starsPerDirectMessageSavedValue) {
 		return true;
 	}
-	to.starsPerDirectMessage = _starsPerDirectMessageSavedValue->current();
+	to.diamondsPerDirectMessage = _starsPerDirectMessageSavedValue->current();
 	return true;
 }
 
@@ -2648,8 +2648,8 @@ void Controller::saveDirectMessagesPrice() {
 		return continueSave();
 	}
 	const auto current = CurrentPricePerDirectMessage(channel);
-	const auto desired = _savingData.starsPerDirectMessage
-		? *_savingData.starsPerDirectMessage
+	const auto desired = _savingData.diamondsPerDirectMessage
+		? *_savingData.diamondsPerDirectMessage
 		: current;
 	if (desired == current) {
 		return continueSave();
@@ -2662,7 +2662,7 @@ void Controller::saveDirectMessagesPrice() {
 			cancelSave();
 		}
 	};
-	SaveStarsPerMessage(show, channel, desired, crl::guard(this, done));
+	SaveDiamondsPerMessage(show, channel, desired, crl::guard(this, done));
 }
 
 void Controller::saveTitle() {

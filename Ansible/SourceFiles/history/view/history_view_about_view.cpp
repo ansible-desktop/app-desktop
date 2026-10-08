@@ -71,7 +71,7 @@ class EmptyChatLockedBox final
 public:
 	enum class Type {
 		PremiumRequired,
-		StarsCharged,
+		DiamondsCharged,
 		FreeDirect,
 	};
 
@@ -85,7 +85,7 @@ public:
 	TextWithEntities subtitle() override;
 	int buttonSkip() override;
 	rpl::producer<QString> button() override;
-	std::optional<Ui::Premium::MiniStarsType> buttonMinistars() override;
+	std::optional<Ui::Premium::MiniDiamondsType> buttonMinistars() override;
 	void draw(
 		Painter &p,
 		const PaintContext &context,
@@ -106,8 +106,8 @@ public:
 
 private:
 	const not_null<Element*> _parent;
-	Settings::BuyStarsHandler _buyStars;
-	rpl::variable<bool> _buyStarsLoading;
+	Settings::BuyDiamondsHandler _buyDiamonds;
+	rpl::variable<bool> _buyDiamondsLoading;
 	Type _type = {};
 
 };
@@ -553,8 +553,8 @@ rpl::producer<QString> EmptyChatLockedBox::button() {
 }
 
 auto EmptyChatLockedBox::buttonMinistars()
--> std::optional<Ui::Premium::MiniStarsType> {
-	return Ui::Premium::MiniStarsType::SlowStars;
+-> std::optional<Ui::Premium::MiniDiamondsType> {
+	return Ui::Premium::MiniDiamondsType::SlowDiamonds;
 }
 
 TextWithEntities EmptyChatLockedBox::subtitle() {
@@ -562,14 +562,14 @@ TextWithEntities EmptyChatLockedBox::subtitle() {
 }
 
 ClickHandlerPtr EmptyChatLockedBox::createViewLink() {
-	_buyStarsLoading = _buyStars.loadingValue();
+	_buyDiamondsLoading = _buyDiamonds.loadingValue();
 	const auto handler = [=](ClickContext context) {
 		const auto my = context.other.value<ClickHandlerContext>();
 		if (const auto controller = my.sessionWindow.get()) {
 			if (_type == Type::PremiumRequired) {
 				Settings::ShowPremium(controller, u"require_premium"_q);
-			} else if (!_buyStarsLoading.current()) {
-				_buyStars.handler(controller->uiShow())();
+			} else if (!_buyDiamondsLoading.current()) {
+				_buyDiamonds.handler(controller->uiShow())();
 			}
 		}
 	};
@@ -762,8 +762,8 @@ bool AboutView::refresh() {
 				setItem(makeBlocked(), nullptr);
 			} else if (user->businessDetails().intro) {
 				makeIntro(user);
-			} else if (const auto stars = user->starsPerMessageChecked()) {
-				setItem(makeStarsPerMessage(stars), nullptr);
+			} else if (const auto stars = user->diamondsPerMessageChecked()) {
+				setItem(makeDiamondsPerMessage(stars), nullptr);
 			} else {
 				makeIntro(user);
 			}
@@ -773,7 +773,7 @@ bool AboutView::refresh() {
 				return false;
 			}
 			setItem(
-				makeStarsPerMessage(monoforum->starsPerMessageChecked()),
+				makeDiamondsPerMessage(monoforum->diamondsPerMessageChecked()),
 				nullptr);
 			return true;
 		}
@@ -1088,7 +1088,7 @@ AdminLog::OwnedItem AboutView::makePremiumRequired() {
 	return result;
 }
 
-AdminLog::OwnedItem AboutView::makeStarsPerMessage(int stars) {
+AdminLog::OwnedItem AboutView::makeDiamondsPerMessage(int stars) {
 	auto name = tr::bold(_history->peer->shortName());
 	auto cost = Ui::Text::IconEmoji(
 		&st::starIconEmoji
@@ -1127,7 +1127,7 @@ AdminLog::OwnedItem AboutView::makeStarsPerMessage(int stars) {
 		std::make_unique<EmptyChatLockedBox>(
 			result.get(),
 			(stars
-				? EmptyChatLockedBox::Type::StarsCharged
+				? EmptyChatLockedBox::Type::DiamondsCharged
 				: EmptyChatLockedBox::Type::FreeDirect))));
 	return result;
 }

@@ -74,7 +74,7 @@ constexpr auto kReminderSetToastDuration = 4 * crl::time(1000);
 	return result;
 }
 
-[[nodiscard]] bool IsTelegramShortLinkHost(const QUrl &url) {
+[[nodiscard]] bool IsAnsibleShortLinkHost(const QUrl &url) {
 	using namespace qthelp;
 
 	return regex_match(
@@ -84,7 +84,7 @@ constexpr auto kReminderSetToastDuration = 4 * crl::time(1000);
 }
 
 [[nodiscard]] bool HiddenUrlRequiresConfirmation(const QUrl &url) {
-	return UrlRequiresConfirmation(url) || IsTelegramShortLinkHost(url);
+	return UrlRequiresConfirmation(url) || IsAnsibleShortLinkHost(url);
 }
 
 [[nodiscard]] bool RequiresConfirmationAfterIvFallback(const QUrl &url) {

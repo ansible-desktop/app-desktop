@@ -972,7 +972,7 @@ void Message::initPaidInformation() {
 	const auto media = this->media();
 	const auto mine = PaidInformation{
 		.messages = 1,
-		.stars = item->starsPaid(),
+		.stars = item->diamondsPaid(),
 	};
 	auto info = media ? media->paidInformation().value_or(mine) : mine;
 	if (!info) {

@@ -59,9 +59,9 @@ void TodoLists::create(
 		history->startSavingCloudDraft(topicRootId, monoforumPeerId);
 	}
 	const auto silentPost = ShouldSendSilent(peer, action.options);
-	const auto starsPaid = std::min(
-		peer->starsPerMessageChecked(),
-		action.options.starsApproved);
+	const auto diamondsPaid = std::min(
+		peer->diamondsPerMessageChecked(),
+		action.options.diamondsApproved);
 	if (silentPost) {
 		sendFlags |= MTPmessages_SendMedia::Flag::f_silent;
 	}
@@ -80,9 +80,9 @@ void TodoLists::create(
 	if (action.options.suggest) {
 		sendFlags |= MTPmessages_SendMedia::Flag::f_suggested_post;
 	}
-	if (starsPaid) {
-		action.options.starsApproved -= starsPaid;
-		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_stars;
+	if (diamondsPaid) {
+		action.options.diamondsApproved -= diamondsPaid;
+		sendFlags |= MTPmessages_SendMedia::Flag::f_allow_paid_diamonds;
 	}
 	const auto sendAs = action.options.sendAs;
 	if (sendAs) {
@@ -108,7 +108,7 @@ void TodoLists::create(
 			(sendAs ? sendAs->input() : MTP_inputPeerEmpty()),
 			Data::ShortcutIdToMTP(_session, action.options.shortcutId),
 			MTP_long(action.options.effectId),
-			MTP_long(starsPaid),
+			MTP_long(diamondsPaid),
 			SuggestToMTP(action.options.suggest)
 		), [=](const MTPUpdates &result, const MTP::Response &response) {
 		if (clearCloudDraft) {

@@ -41,7 +41,7 @@ private:
 	const InputSubmitSettings _sendWay;
 	int _rating = 0;
 
-	std::vector<object_ptr<Ui::IconButton>> _stars;
+	std::vector<object_ptr<Ui::IconButton>> _diamonds;
 	object_ptr<Ui::InputField> _comment = { nullptr };
 
 	rpl::event_stream<Result> _sends;

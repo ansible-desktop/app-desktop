@@ -102,9 +102,9 @@ struct StickerIcon {
 	mutable rpl::lifetime lifetime;
 };
 
-class GradientPremiumStar {
+class GradientPremiumDiamond {
 public:
-	GradientPremiumStar();
+	GradientPremiumDiamond();
 
 	[[nodiscard]] QImage image() const;
 

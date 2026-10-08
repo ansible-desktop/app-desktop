@@ -60,7 +60,7 @@ void SetupToolbarButton(
 	ToolbarButtonState state,
 	anim::type animated = anim::type::normal);
 
-void PaintPremiumStar(
+void PaintPremiumDiamond(
 	QPainter &p,
 	QRect inner,
 	std::optional<QColor> halo = std::nullopt);

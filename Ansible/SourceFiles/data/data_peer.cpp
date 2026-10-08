@@ -391,7 +391,7 @@ void PeerData::invalidateEmptyUserpic() {
 
 void PeerData::checkTrustedPayForMessage() {
 	if (!_checkedTrustedPayForMessage
-		&& !starsPerMessage()
+		&& !diamondsPerMessage()
 		&& session().local().peerTrustedPayForMessageRead()) {
 		_checkedTrustedPayForMessage = 1;
 		if (session().local().hasPeerTrustedPayForMessageEntry(id)) {
@@ -1923,16 +1923,16 @@ bool PeerData::amMonoforumAdmin() const {
 	return false;
 }
 
-int PeerData::starsPerMessage() const {
+int PeerData::diamondsPerMessage() const {
 	if (const auto user = asUser()) {
-		return user->starsPerMessage();
+		return user->diamondsPerMessage();
 	} else if (const auto channel = asChannel()) {
-		return channel->starsPerMessage();
+		return channel->diamondsPerMessage();
 	}
 	return 0;
 }
 
-int PeerData::starsPerMessageChecked() const {
+int PeerData::diamondsPerMessageChecked() const {
 	if (const auto channel = asChannel()) {
 		if (channel->adminRights()
 			|| channel->amCreator()
@@ -1940,7 +1940,7 @@ int PeerData::starsPerMessageChecked() const {
 			return 0;
 		}
 	}
-	return starsPerMessage();
+	return diamondsPerMessage();
 }
 
 Data::StarsRating PeerData::starsRating() const {

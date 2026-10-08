@@ -83,7 +83,7 @@ private:
 
 	ClickHandlerPtr _link;
 	std::unique_ptr<Ui::RippleAnimation> _ripple;
-	mutable Ui::Premium::ColoredMiniStars _stars;
+	mutable Ui::Premium::ColoredMiniDiamonds _diamonds;
 	mutable std::optional<QColor> _starsLastColor;
 	Fn<void()> _repaint;
 
@@ -339,9 +339,9 @@ ButtonPart::ButtonPart(
 		+ st::msgServiceGiftBoxButtonPadding.right()),
 	st::msgServiceGiftBoxButtonHeight)
 , _link(std::move(link))
-, _stars([=](const QRect &) {
+, _diamonds([=](const QRect &) {
 	repaint();
-}, Ui::Premium::MiniStarsType::SlowStars)
+}, Ui::Premium::MiniDiamondsType::SlowDiamonds)
 , _repaint(std::move(repaint)) {
 }
 
@@ -369,20 +369,20 @@ void ButtonPart::draw(
 	const auto fg = customColors ? white : context.st->msgServiceFg()->c;
 	if (!_starsLastColor || *_starsLastColor != fg) {
 		_starsLastColor = fg;
-		_stars.setColorOverride(QGradientStops{
+		_diamonds.setColorOverride(QGradientStops{
 			{ 0., anim::with_alpha(fg, .3) },
 			{ 1., fg },
 		});
 		const auto padding = _size.height() / 2;
-		_stars.setCenter(
+		_diamonds.setCenter(
 			Rect(_size) - QMargins(padding, 0, padding, 0));
 	}
 
 	auto clipPath = QPainterPath();
 	clipPath.addRoundedRect(r, radius, radius);
 	p.setClipPath(clipPath);
-	_stars.setPaused(context.paused);
-	_stars.paint(p);
+	_diamonds.setPaused(context.paused);
+	_diamonds.paint(p);
 	p.setClipping(false);
 
 	if (_ripple) {
@@ -574,7 +574,7 @@ auto GenerateUniqueGiftMedia(
 				QSize(0, st::chatUniqueButtonPadding.bottom()),
 				nullptr));
 		} else {
-			auto link = OpenStarGiftLink(item);
+			auto link = OpenDiamondGiftLink(item);
 			push(std::make_unique<ButtonPart>(
 				tr::lng_sticker_premium_view(tr::now),
 				st::chatUniqueButtonPadding,
@@ -768,7 +768,7 @@ auto AuctionBg(
 	struct State {
 		std::unique_ptr<Ui::Text::CustomEmoji> pattern;
 		base::flat_map<float64, QImage> cache;
-		std::optional<Ui::StarParticles> particles;
+		std::optional<Ui::DiamondParticles> particles;
 		std::unique_ptr<base::Timer> timer;
 		crl::time pausedAt = 0;
 		crl::time pauseOffset = 0;
@@ -781,7 +781,7 @@ auto AuctionBg(
 			Data::CustomEmojiSizeTag::Large);
 	}
 	state->particles.emplace(
-		Ui::StarParticles::Type::RadialInside,
+		Ui::DiamondParticles::Type::RadialInside,
 		25,
 		st::lineWidth * 8);
 	state->particles->setSpeed(0.05);

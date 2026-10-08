@@ -4223,13 +4223,13 @@ auto HtmlWriter::Wrap::pushMessage(
 			+ ": "
 			+ QString::number(data.amount.value()).toUtf8()
 			+ (data.amount.ton() ? " TON." : " Telegram Stars.");
-	}, [&](const ActionPrizeStars &data) {
+	}, [&](const ActionPrizeDiamonds &data) {
 		return "You won a prize in a giveaway organized by "
 			+ peers.wrapPeerName(data.peerId)
 			+ ".\n Your prize is "
 			+ QString::number(data.amount).toUtf8()
 			+ " Telegram Stars.";
-	}, [&](const ActionStarGift &data) {
+	}, [&](const ActionDiamondGift &data) {
 		return serviceFrom
 			+ " sent you a gift of "
 			+ QByteArray::number(data.stars)
@@ -5360,19 +5360,19 @@ QByteArray HtmlWriter::Wrap::pushGiveaway(
 	result.append(popTag());
 
 	result.append(pushDiv("section_body"));
-	const auto prize = [&, singleStar = (data.credits == 1)] {
+	const auto prize = [&, singleDiamond = (data.credits == 1)] {
 		if (data.credits && data.winnersCount == 1) {
 			return SerializeString("The winner received ")
 				+ "<b>"
 				+ Data::NumberToString(data.credits)
 				+ "</b>"
-				+ SerializeString(singleStar ? " Star." : " Stars.");
+				+ SerializeString(singleDiamond ? " Star." : " Stars.");
 		} else if (data.credits && data.winnersCount > 1) {
 			return SerializeString("All winners received ")
 				+ "<b>"
 				+ Data::NumberToString(data.credits)
 				+ "</b>"
-				+ SerializeString(singleStar
+				+ SerializeString(singleDiamond
 					? " Star in total."
 					: " Stars in total.");
 		} else if (data.unclaimedCount) {
@@ -6705,7 +6705,7 @@ Result HtmlWriter::finish() {
 		_haveSections = false;
 	}
 	block.append(_summary->pushAbout(
-		_environment.aboutTelegram,
+		_environment.aboutAnsible,
 		_summaryNeedDivider));
 	if (const auto result = _summary->writeBlock(block); !result) {
 		return result;

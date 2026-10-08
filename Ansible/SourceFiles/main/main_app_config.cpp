@@ -97,11 +97,11 @@ int AppConfig::starrefCommissionMax() const {
 	return get<int>(u"starref_max_commission_permille"_q, 900);
 }
 
-int AppConfig::starsWithdrawMax() const {
+int AppConfig::diamondsWithdrawMax() const {
 	return get<int>(u"stars_revenue_withdrawal_max"_q, 100);
 }
 
-float64 AppConfig::starsWithdrawRate() const {
+float64 AppConfig::diamondsWithdrawRate() const {
 	return get<float64>(u"stars_usd_withdraw_rate_x1000"_q, 1300) / 1000.;
 }
 
@@ -109,7 +109,7 @@ float64 AppConfig::currencyWithdrawRate() const {
 	return get<float64>(u"ton_usd_rate"_q, 1);
 }
 
-float64 AppConfig::starsSellRate() const {
+float64 AppConfig::diamondsSellRate() const {
 	return get<float64>(u"stars_usd_sell_rate_x1000"_q, 1410) / 1000.;
 }
 
@@ -117,7 +117,7 @@ float64 AppConfig::currencySellRate() const {
 	return get<float64>(u"ton_usd_rate"_q, 1);
 }
 
-bool AppConfig::starsSpendTopupInvoiceDisabled() const {
+bool AppConfig::diamondsSpendTopupInvoiceDisabled() const {
 	return get<bool>(u"stars_spend_topup_invoice_disabled"_q, false);
 }
 
@@ -125,7 +125,7 @@ bool AppConfig::paidMessagesAvailable() const {
 	return get<bool>(u"stars_paid_messages_available"_q, false);
 }
 
-int AppConfig::paidMessageStarsMax() const {
+int AppConfig::paidMessageDiamondsMax() const {
 	return get<int>(u"stars_paid_message_amount_max"_q, 10'000);
 }
 
@@ -133,7 +133,7 @@ int AppConfig::paidMessageCommission() const {
 	return get<int>(u"stars_paid_message_commission_permille"_q, 850);
 }
 
-int AppConfig::paidMessageChannelStarsDefault() const {
+int AppConfig::paidMessageChannelDiamondsDefault() const {
 	return get<int>(u"stars_paid_messages_channel_amount_default"_q, 10);
 }
 
@@ -168,15 +168,15 @@ bool AppConfig::confcallPrioritizeVP8() const {
 	return get<bool>(u"confcall_use_vp8"_q, false);
 }
 
-int AppConfig::giftResaleStarsMin() const {
+int AppConfig::giftResaleDiamondsMin() const {
 	return get<int>(u"stars_stargift_resale_amount_min"_q, 125);
 }
 
-int AppConfig::giftResaleStarsMax() const {
+int AppConfig::giftResaleDiamondsMax() const {
 	return get<int>(u"stars_stargift_resale_amount_max"_q, 35000);
 }
 
-int AppConfig::giftResaleStarsThousandths() const {
+int AppConfig::giftResaleDiamondsThousandths() const {
 	return get<int>(u"stars_stargift_resale_commission_permille"_q, 800);
 }
 
@@ -224,7 +224,7 @@ int AppConfig::todoListItemTextLimit() const {
 	return get<int>(u"todo_item_length_max"_q, 64);
 }
 
-int AppConfig::suggestedPostCommissionStars() const {
+int AppConfig::suggestedPostCommissionDiamonds() const {
 	return get<int>(u"stars_suggested_post_commission_permille"_q, 850);
 }
 
@@ -232,11 +232,11 @@ int AppConfig::suggestedPostCommissionTon() const {
 	return get<int>(u"ton_suggested_post_commission_permille"_q, 850);
 }
 
-int AppConfig::suggestedPostStarsMin() const {
+int AppConfig::suggestedPostDiamondsMin() const {
 	return get<int>(u"stars_suggested_post_amount_min"_q, 5);
 }
 
-int AppConfig::suggestedPostStarsMax() const {
+int AppConfig::suggestedPostDiamondsMax() const {
 	return get<int>(u"stars_suggested_post_amount_max"_q, 100'000);
 }
 
@@ -563,7 +563,7 @@ bool AppConfig::newRequirePremiumFree() const {
 		false);
 }
 
-auto AppConfig::groupCallColorings() const -> std::vector<StarsColoring> {
+auto AppConfig::groupCallColorings() const -> std::vector<DiamondsColoring> {
 	if (!_groupCallColorings.empty()) {
 		return _groupCallColorings;
 	}
@@ -632,7 +632,7 @@ auto AppConfig::groupCallColorings() const -> std::vector<StarsColoring> {
 						};
 						if (key == "stars"_q) {
 							if (const auto n = number()) {
-								entry.fromStars = *n;
+								entry.fromDiamonds = *n;
 							} else {
 								return _groupCallColorings.pop_back();
 							}
@@ -673,7 +673,7 @@ auto AppConfig::groupCallColorings() const -> std::vector<StarsColoring> {
 		}, [](const auto &) {});
 	});
 	if (_groupCallColorings.empty()) {
-		_groupCallColorings = std::vector<StarsColoring>{
+		_groupCallColorings = std::vector<DiamondsColoring>{
 			{ 0x955CDB, 0x49079B, 0, 30, 30, 0 }, // purple
 			{ 0x955CDB, 0x49079B, 10, 60, 60, 1 }, // still purple
 			{ 0x46A3EB, 0x00508E, 50, 120, 80, 2 }, // blue
@@ -684,7 +684,7 @@ auto AppConfig::groupCallColorings() const -> std::vector<StarsColoring> {
 			{ 0x596473, 0x252C36, 10'000, 3600, 400, 20 }, // silver
 		};
 	} else {
-		const auto proj = &StarsColoring::fromStars;
+		const auto proj = &DiamondsColoring::fromDiamonds;
 		if (!ranges::contains(_groupCallColorings, 0, proj)) {
 			_groupCallColorings.insert(
 				begin(_groupCallColorings),

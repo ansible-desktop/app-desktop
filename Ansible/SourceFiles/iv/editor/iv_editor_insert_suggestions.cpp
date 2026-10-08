@@ -234,7 +234,7 @@ struct Entry {
 	return false;
 }
 
-[[nodiscard]] QImage PremiumStarImage(int size) {
+[[nodiscard]] QImage PremiumDiamondImage(int size) {
 	const auto factor = style::DevicePixelRatio();
 	const auto side = QSize(size, size);
 	auto image = QImage(
@@ -282,17 +282,17 @@ protected:
 
 private:
 	[[nodiscard]] int indexAt(QPoint position) const;
-	[[nodiscard]] int starReserve() const;
+	[[nodiscard]] int diamondReserve() const;
 	[[nodiscard]] int rightPadding() const;
 	void setSelected(int index, bool scrollTo);
-	void refreshPremiumStar();
+	void refreshPremiumDiamond();
 
 	const style::Menu &_st;
 	const int _rowHeight = 0;
 	const bool _media = false;
 	const bool _map = false;
 	std::vector<not_null<const Entry*>> _entries;
-	QImage _premiumStar;
+	QImage _premiumDiamond;
 	bool _premium = false;
 	int _selected = -1;
 	int _pressed = -1;
@@ -321,22 +321,22 @@ InsertSuggestions::Inner::Inner(
 			return;
 		}
 		_premium = value;
-		refreshPremiumStar();
+		refreshPremiumDiamond();
 		update();
 	}, lifetime());
 
 	style::PaletteChanged() | rpl::on_next([=] {
-		refreshPremiumStar();
+		refreshPremiumDiamond();
 		update();
 	}, lifetime());
 
-	refreshPremiumStar();
+	refreshPremiumDiamond();
 }
 
-void InsertSuggestions::Inner::refreshPremiumStar() {
-	_premiumStar = _premium
+void InsertSuggestions::Inner::refreshPremiumDiamond() {
+	_premiumDiamond = _premium
 		? QImage()
-		: PremiumStarImage(st::ivEditorStyleMenuPremiumStarSize);
+		: PremiumDiamondImage(st::ivEditorStyleMenuPremiumStarSize);
 }
 
 int InsertSuggestions::Inner::rowHeight() const {
@@ -347,15 +347,15 @@ int InsertSuggestions::Inner::count() const {
 	return int(_entries.size());
 }
 
-int InsertSuggestions::Inner::starReserve() const {
-	return _premiumStar.isNull()
+int InsertSuggestions::Inner::diamondReserve() const {
+	return _premiumDiamond.isNull()
 		? 0
-		: ((_premiumStar.width() / style::DevicePixelRatio())
+		: ((_premiumDiamond.width() / style::DevicePixelRatio())
 			+ st::ivEditorSuggestionsShortcutSkip);
 }
 
 int InsertSuggestions::Inner::rightPadding() const {
-	return _st.itemPadding.right() + starReserve();
+	return _st.itemPadding.right() + diamondReserve();
 }
 
 int InsertSuggestions::Inner::naturalWidth() const {
@@ -489,13 +489,13 @@ void InsertSuggestions::Inner::paintEvent(QPaintEvent *e) {
 			width(),
 			entry->shortcut,
 			shortcutWidth);
-		if (entry->premium && !_premiumStar.isNull()) {
-			const auto side = _premiumStar.width()
+		if (entry->premium && !_premiumDiamond.isNull()) {
+			const auto side = _premiumDiamond.width()
 				/ style::DevicePixelRatio();
 			p.drawImage(
 				width() - _st.itemPadding.right() - side,
 				top + (_rowHeight - side) / 2,
-				_premiumStar);
+				_premiumDiamond);
 		}
 	}
 }

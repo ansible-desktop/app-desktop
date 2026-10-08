@@ -452,7 +452,7 @@ QByteArray ColorizedSvg(
 	return content.toUtf8();
 }
 
-QImage GenerateStarForLightTopBar(QRectF rect) {
+QImage GenerateDiamondForLightTopBar(QRectF rect) {
 	auto svg = QSvgRenderer(Ui::Premium::Svg());
 
 	const auto size = rect.size().toSize();
@@ -940,14 +940,14 @@ void AddGiftOptions(
 			}, *onceLifetime);
 		}
 
-		constexpr auto kStar = QChar(0x2B50);
-		const auto removedStar = [&](QString s) {
-			return s.replace(kStar, QChar());
+		constexpr auto kDiamond = QChar(0x2B50);
+		const auto removedDiamond = [&](QString s) {
+			return s.replace(kDiamond, QChar());
 		};
 		const auto &costPerMonthFont = st::shareBoxListItem.nameStyle.font;
 		const auto &costPerYearFont = st::normalFont;
-		const auto costPerMonthIcon = info.costPerMonth.startsWith(kStar)
-			? GenerateStars(costPerMonthFont->height, 1)
+		const auto costPerMonthIcon = info.costPerMonth.startsWith(kDiamond)
+			? GenerateDiamonds(costPerMonthFont->height, 1)
 			: QImage();
 		auto leftText = TextWithEntities();
 		if (!info.costNoDiscount.isEmpty()) {
@@ -958,7 +958,7 @@ void AddGiftOptions(
 		}
 		leftText.append(costPerMonthIcon.isNull()
 			? info.costPerMonth
-			: removedStar(info.costPerMonth));
+			: removedDiamond(info.costPerMonth));
 		const auto costPerMonthLabel
 			= row->lifetime().make_state<Ui::Text::String>();
 		costPerMonthLabel->setMarkedText(
@@ -969,11 +969,11 @@ void AddGiftOptions(
 			: info.total;
 
 		const auto costPerYearEntry = [&] {
-			if (!rightText.startsWith(kStar)) {
+			if (!rightText.startsWith(kDiamond)) {
 				return QImage();
 			}
-			const auto text = removedStar(rightText);
-			const auto icon = GenerateStars(costPerYearFont->height, 1);
+			const auto text = removedDiamond(rightText);
+			const auto icon = GenerateDiamonds(costPerYearFont->height, 1);
 			auto result = QImage(
 				QSize(costPerYearFont->spacew + costPerYearFont->width(text), 0)
 					* style::DevicePixelRatio()

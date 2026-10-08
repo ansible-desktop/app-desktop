@@ -12,17 +12,17 @@ namespace Data {
 struct StarsRating {
 	int level = 0;
 	int stars = 0;
-	int thisLevelStars = 0;
+	int thisLevelDiamonds = 0;
 	int nextLevelStars = 0;
 
 	explicit operator bool() const {
-		return level != 0 || thisLevelStars != 0;
+		return level != 0 || thisLevelDiamonds != 0;
 	}
 
 	friend inline bool operator==(StarsRating, StarsRating) = default;
 };
 
-struct StarsRatingPending {
+struct DiamondsRatingPending {
 	StarsRating value;
 	TimeId date = 0;
 

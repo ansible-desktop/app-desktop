@@ -231,13 +231,13 @@ void Search::setupCustomizations() {
 
 	add(u"main/credits"_q, {
 		.hook = [=](not_null<Ui::SettingsButton*> b) {
-			AddPremiumStar(b, true, isPaused);
+			AddPremiumDiamond(b, true, isPaused);
 		},
 		.st = &st::settingsSearchResult,
 	});
 	add(u"main/premium"_q, {
 		.hook = [=](not_null<Ui::SettingsButton*> b) {
-			AddPremiumStar(b, false, isPaused);
+			AddPremiumDiamond(b, false, isPaused);
 		},
 		.st = &st::settingsSearchResult,
 	});

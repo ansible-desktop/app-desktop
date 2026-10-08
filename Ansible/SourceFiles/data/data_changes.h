@@ -79,7 +79,7 @@ struct PeerUpdate {
 		BackgroundEmoji     = (1ULL << 16),
 		StoriesState        = (1ULL << 17),
 		VerifyInfo          = (1ULL << 18),
-		StarsPerMessage     = (1ULL << 19),
+		DiamondsPerMessage     = (1ULL << 19),
 
 		// For users
 		CanShareContact     = (1ULL << 20),

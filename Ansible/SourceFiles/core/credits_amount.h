@@ -19,7 +19,7 @@ class boxed;
 
 using MTPStarsAmount = tl::boxed<MTPstarsAmount>;
 
-inline constexpr auto kOneStarInNano = int64(1'000'000'000);
+inline constexpr auto kOneDiamondInNano = int64(1'000'000'000);
 
 enum class CreditsType {
 	Stars,
@@ -54,7 +54,7 @@ public:
 	}
 
 	[[nodiscard]] double value() const {
-		return double(_whole) + double(_nano) / kOneStarInNano;
+		return double(_whole) + double(_nano) / kOneDiamondInNano;
 	}
 
 	[[nodiscard]] bool ton() const {
@@ -82,7 +82,7 @@ public:
 		const auto result = value() * rate;
 		const auto abs = std::abs(result);
 		const auto whole = std::floor(abs);
-		const auto nano = base::SafeRound((abs - whole) * kOneStarInNano);
+		const auto nano = base::SafeRound((abs - whole) * kOneDiamondInNano);
 		return CreditsAmount(
 			(result < 0) ? -whole : whole,
 			(result < 0) ? -nano : nano,
@@ -139,13 +139,13 @@ public:
 private:
 	void normalize() {
 		if (_nano < 0) {
-			const auto shifts = (-_nano + kOneStarInNano - 1)
-				/ kOneStarInNano;
-			_nano += shifts * kOneStarInNano;
+			const auto shifts = (-_nano + kOneDiamondInNano - 1)
+				/ kOneDiamondInNano;
+			_nano += shifts * kOneDiamondInNano;
 			_whole -= shifts;
-		} else if (_nano >= kOneStarInNano) {
-			const auto shifts = _nano / kOneStarInNano;
-			_nano -= shifts * kOneStarInNano;
+		} else if (_nano >= kOneDiamondInNano) {
+			const auto shifts = _nano / kOneDiamondInNano;
+			_nano -= shifts * kOneDiamondInNano;
 			_whole += shifts;
 		}
 	}
@@ -180,6 +180,6 @@ private:
 	const MTPStarsAmount &amount);
 [[nodiscard]] CreditsAmount CreditsAmountFromTL(
 	const MTPStarsAmount *amount);
-[[nodiscard]] MTPStarsAmount StarsAmountToTL(CreditsAmount amount);
+[[nodiscard]] MTPStarsAmount DiamondsAmountToTL(CreditsAmount amount);
 
 [[nodiscard]] QString PrepareCreditsAmountText(CreditsAmount amount);

@@ -212,9 +212,9 @@ namespace {
 
 } // namespace
 
-not_null<NumberInput*> AddStarsInputField(
+not_null<NumberInput*> AddDiamondsInputField(
 		not_null<VerticalLayout*> container,
-		StarsInputFieldArgs &&args) {
+		DiamondsInputFieldArgs &&args) {
 	const auto wrap = container->add(
 		object_ptr<FixedHeightWidget>(
 			container,
@@ -277,7 +277,7 @@ void AddApproximateUsd(
 		const auto appConfig = &session->appConfig();
 		const auto rate = amount.ton()
 			? appConfig->currencySellRate()
-			: (appConfig->starsSellRate() / 100.);
+			: (appConfig->diamondsSellRate() / 100.);
 		return Info::ChannelEarn::ToUsd(amount, rate, 2);
 	});
 	const auto usd = Ui::CreateChild<Ui::FlatLabel>(

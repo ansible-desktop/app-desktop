@@ -13,12 +13,12 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 namespace Ui::Premium {
 
-StarModel LoadStarModel() {
+DiamondModel LoadDiamondModel() {
 	auto mesh = LoadObject3dMesh(
 		u":/gui/art/premium/star.binobj"_q,
 		1.f,
 		true);
-	auto result = StarModel();
+	auto result = DiamondModel();
 	result.vertices = std::move(mesh.vertices);
 	result.vertexCount = mesh.vertexCount;
 	return result;

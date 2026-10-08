@@ -84,7 +84,7 @@ Data::CreditsHistoryEntry CreditsHistoryEntryFromTL(
 	const auto incoming = (amount >= CreditsAmount());
 	const auto paidMessagesCount
 		= tl.data().vpaid_messages().value_or_empty();
-	const auto premiumMonthsForStars
+	const auto premiumMonthsForDiamonds
 		= tl.data().vpremium_gift_months().value_or_empty();
 	const auto saveActorId = (reaction
 		|| !extended.empty()
@@ -148,10 +148,10 @@ Data::CreditsHistoryEntry CreditsHistoryEntryFromTL(
 		.paidMessagesCommission = paidMessagesCount ? starrefCommission : 0,
 		.limitedCount = parsedGift ? parsedGift->limitedCount : 0,
 		.limitedLeft = parsedGift ? parsedGift->limitedLeft : 0,
-		.starsConverted = int(nonUniqueGift
+		.diamondsConverted = int(nonUniqueGift
 			? nonUniqueGift->vconvert_stars().v
 			: 0),
-		.premiumMonthsForStars = premiumMonthsForStars,
+		.premiumMonthsForDiamonds = premiumMonthsForDiamonds,
 		.floodSkip = int(tl.data().vfloodskip_number().value_or(0)),
 		.converted = stargift && incoming,
 		.stargift = stargift.has_value(),

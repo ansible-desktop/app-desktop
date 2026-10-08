@@ -3606,20 +3606,20 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 							|| (!user->isInaccessible()
 								&& !user->isNotificationsUser())) {
 							const auto controller = _controller;
-							const auto starGiftUpgrade = gift->upgrade
+							const auto diamondGiftUpgrade = gift->upgrade
 								&& (gift->type == Data::GiftType::StarGift);
 							const auto isGift = gift->slug.isEmpty()
 								|| !gift->channel;
 							const auto out = item->out();
 							const auto outgoingGift = isGift
-								&& (starGiftUpgrade ? !out : out);
+								&& (diamondGiftUpgrade ? !out : out);
 							if (outgoingGift
 								&& gift->type
 									!= Data::GiftType::BirthdaySuggest) {
 								_menu->addAction(
 									tr::lng_context_gift_send(tr::now),
 									[=] {
-										Ui::ShowStarGiftBox(controller, peer);
+										Ui::ShowDiamondGiftBox(controller, peer);
 									},
 									&st::menuIconGiftPremium);
 							}
@@ -5896,7 +5896,7 @@ void HistoryInner::refreshAboutView(bool force) {
 			&& !user->phoneCountryCode().isEmpty()) {
 			refresh();
 		} else if (!historyHeight()) {
-			if (user->starsPerMessage() > 0
+			if (user->diamondsPerMessage() > 0
 				|| (user->requiresPremiumToWrite()
 					&& !user->session().premium())
 				|| user->isFullLoaded()) {

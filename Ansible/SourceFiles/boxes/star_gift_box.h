@@ -26,7 +26,7 @@ namespace Data {
 struct UniqueGift;
 struct GiftCode;
 struct CreditsHistoryEntry;
-class SavedStarGiftId;
+class SavedDiamondGiftId;
 struct GiftAuctionState;
 } // namespace Data
 
@@ -69,10 +69,10 @@ class InputField;
 class Show;
 class VerticalLayout;
 
-[[nodiscard]] rpl::producer<bool> StarGiftMessageAllowedValue(
+[[nodiscard]] rpl::producer<bool> DiamondGiftMessageAllowedValue(
 	not_null<PeerData*> peer);
 
-[[nodiscard]] not_null<InputField*> AddStarGiftMessageField(
+[[nodiscard]] not_null<InputField*> AddDiamondGiftMessageField(
 	std::shared_ptr<ChatHelpers::Show> show,
 	not_null<VerticalLayout*> container,
 	not_null<QWidget*> outer,
@@ -86,14 +86,14 @@ class VerticalLayout;
 	TextWithEntities cost,
 	rpl::producer<UniqueGiftCoverMessage> message);
 
-void ChooseStarGiftRecipient(
+void ChooseDiamondGiftRecipient(
 	not_null<Window::SessionController*> controller);
 
 [[nodiscard]] std::vector<not_null<UserData*>> CollectGiftFrequentUsers(
 	not_null<Main::Session*> session,
 	const std::vector<UserId> &exclude = {});
 
-void ShowStarGiftBox(
+void ShowDiamondGiftBox(
 	not_null<Window::SessionController*> controller,
 	not_null<PeerData*> peer);
 
@@ -120,25 +120,25 @@ void PreloadUniqueGiftResellPrices(not_null<Main::Session*> session);
 void UpdateGiftSellPrice(
 	std::shared_ptr<ChatHelpers::Show> show,
 	std::shared_ptr<Data::UniqueGift> unique,
-	Data::SavedStarGiftId savedId,
+	Data::SavedDiamondGiftId savedId,
 	CreditsAmount price);
 void ShowUniqueGiftSellBox(
 	std::shared_ptr<ChatHelpers::Show> show,
 	std::shared_ptr<Data::UniqueGift> unique,
-	Data::SavedStarGiftId savedId,
+	Data::SavedDiamondGiftId savedId,
 	Settings::GiftWearBoxStyleOverride st);
 
 void ShowOfferBuyBox(
 	std::shared_ptr<ChatHelpers::Show> show,
 	std::shared_ptr<Data::UniqueGift> unique);
 
-struct StarGiftUpgradeArgs {
+struct DiamondGiftUpgradeArgs {
 	not_null<Window::SessionController*> controller;
 	Data::StarGift stargift;
 	Fn<void(bool)> ready;
 	Fn<void()> upgraded;
 	not_null<PeerData*> peer;
-	Data::SavedStarGiftId savedId;
+	Data::SavedDiamondGiftId savedId;
 	QString giftPrepayUpgradeHash;
 	int cost = 0;
 	bool canAddSender = false;
@@ -146,9 +146,9 @@ struct StarGiftUpgradeArgs {
 	bool canAddMyComment = false;
 	bool addDetailsDefault = false;
 };
-void ShowStarGiftUpgradeBox(StarGiftUpgradeArgs &&args);
+void ShowDiamondGiftUpgradeBox(DiamondGiftUpgradeArgs &&args);
 
-void SubmitStarsForm(
+void SubmitDiamondsForm(
 	std::shared_ptr<Main::SessionShow> show,
 	MTPInputInvoice invoice,
 	uint64 formId,
@@ -167,7 +167,7 @@ void RequestOurForm(
 		uint64 formId,
 		CreditsAmount price,
 		std::optional<Payments::CheckoutResult> failure)> done);
-void RequestStarsFormAndSubmit(
+void RequestDiamondsFormAndSubmit(
 	std::shared_ptr<Main::SessionShow> show,
 	MTPInputInvoice invoice,
 	Fn<void(Payments::CheckoutResult, const MTPUpdates *)> done);
@@ -184,10 +184,10 @@ void ShowGiftTransferredToast(
 	std::shared_ptr<Ui::Show> show,
 	const MTP::Error &error);
 
-[[nodiscard]] CreditsAmount StarsFromTon(
+[[nodiscard]] CreditsAmount DiamondsFromTon(
 	not_null<Main::Session*> session,
 	CreditsAmount ton);
-[[nodiscard]] CreditsAmount TonFromStars(
+[[nodiscard]] CreditsAmount TonFromDiamonds(
 	not_null<Main::Session*> session,
 	CreditsAmount stars);
 

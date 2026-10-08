@@ -174,10 +174,10 @@ public:
 	[[nodiscard]] bool isPeerTrustedPayment(PeerId peerId);
 	void markPeerTrustedOpenWebView(PeerId peerId);
 	[[nodiscard]] bool isPeerTrustedOpenWebView(PeerId peerId);
-	void markPeerTrustedPayForMessage(PeerId peerId, int starsPerMessage);
+	void markPeerTrustedPayForMessage(PeerId peerId, int diamondsPerMessage);
 	[[nodiscard]] bool isPeerTrustedPayForMessage(
 		PeerId peerId,
-		int starsPerMessage);
+		int diamondsPerMessage);
 	[[nodiscard]] bool peerTrustedPayForMessageRead() const;
 	[[nodiscard]] bool hasPeerTrustedPayForMessageEntry(PeerId peerId) const;
 	void clearPeerTrustedPayForMessage(PeerId peerId);

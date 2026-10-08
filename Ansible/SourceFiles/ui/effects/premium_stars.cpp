@@ -16,17 +16,17 @@ namespace Ui {
 namespace Premium {
 namespace {
 
-using Type = MiniStarsType;
+using Type = MiniDiamondsType;
 constexpr auto kDeformationMax = 0.1;
 constexpr auto kIdleLimit = 5;
 
 } // namespace
 
-MiniStars::MiniStars(
+MiniDiamonds::MiniDiamonds(
 	Fn<void(const QRect &r)> updateCallback,
 	bool opaque,
 	Type type)
-: _availableAngles((type != Type::SlowStars && type != Type::SlowDiamondStars)
+: _availableAngles((type != Type::SlowDiamonds && type != Type::SlowDiamondDiamonds)
 	? std::vector<Interval>{
 		Interval{ -10, 40 },
 		Interval{ 180 + 10 - 40, 40 },
@@ -34,25 +34,25 @@ MiniStars::MiniStars(
 		Interval{ -15 - 50, 50 },
 	}
 	: std::vector<Interval>{ Interval{ -90, 180 }, Interval{ 90, 180 } })
-, _lifeLength((type != Type::SlowStars && type != Type::SlowDiamondStars)
+, _lifeLength((type != Type::SlowDiamonds && type != Type::SlowDiamondDiamonds)
 	? Interval{ 150 / 5, 200 / 5 }
 	: Interval{ 150 * 2, 200 * 2 })
-, _deathTime((type != Type::SlowStars && type != Type::SlowDiamondStars)
+, _deathTime((type != Type::SlowDiamonds && type != Type::SlowDiamondDiamonds)
 	? Interval{ 1500, 2000 }
 	: Interval{ 1500 * 2, 2000 * 2 })
-, _size((type != Type::SlowStars)
+, _size((type != Type::SlowDiamonds)
 	? Interval{ 5, 10 }
 	: Interval{ 2, 4 })
 , _alpha({ opaque ? 100 : 40, opaque ? 100 : 60 })
 , _sinFactor({ 10, 190 })
-, _spritesCount({ 0, ((type == Type::MonoStars) ? 1 : 2) })
-, _appearProgressTill((type != Type::SlowStars
-		&& type != Type::SlowDiamondStars)
+, _spritesCount({ 0, ((type == Type::MonoDiamonds) ? 1 : 2) })
+, _appearProgressTill((type != Type::SlowDiamonds
+		&& type != Type::SlowDiamondDiamonds)
 	? 0.2
 	: 0.01)
 , _disappearProgressAfter(0.8)
 , _distanceProgressStart(0.5)
-, _sprite((type == Type::DiamondStars || type == Type::SlowDiamondStars)
+, _sprite((type == Type::DiamondDiamonds || type == Type::SlowDiamondDiamonds)
 	? u":/gui/icons/settings/starmini.svg"_q
 	: u":/gui/icons/settings/star.svg"_q)
 , _animation([=](crl::time now) {
@@ -61,13 +61,13 @@ MiniStars::MiniStars(
 		return;
 	}
 	if (now > _nextBirthTime && !_paused) {
-		createStar(now);
+		createDiamond(now);
 	}
 	if (_rectToUpdate.isValid()) {
 		updateCallback(base::take(_rectToUpdate));
 	}
 }) {
-	if (type == Type::BiStars) {
+	if (type == Type::BiDiamonds) {
 		_secondSprite = std::make_unique<QSvgRenderer>(
 			u":/gui/icons/settings/star.svg"_q);
 	}
@@ -77,23 +77,23 @@ MiniStars::MiniStars(
 		base::RandomFill(r.data(), r.size());
 
 		for (auto i = -from; i < 0; i += randomInterval(_lifeLength, r[-i])) {
-			createStar(i);
+			createDiamond(i);
 		}
 		updateCallback(_rectToUpdate);
 	}
 }
 
-int MiniStars::randomInterval(
+int MiniDiamonds::randomInterval(
 		const Interval &interval,
 		const bytes::type &random) const {
 	return interval.from + (uchar(random) % interval.length);
 }
 
-crl::time MiniStars::timeNow() const {
+crl::time MiniDiamonds::timeNow() const {
 	return anim::Disabled() ? 0 : crl::now();
 }
 
-void MiniStars::paint(QPainter &p, const QRectF &rect) {
+void MiniDiamonds::paint(QPainter &p, const QRectF &rect) {
 	_idleCounter = 0;
 	if (!_animation.animating()) {
 		_animation.start();
@@ -132,34 +132,34 @@ void MiniStars::paint(QPainter &p, const QRectF &rect) {
 		const auto deformW = 1. / deformH;
 
 		const auto distanceProgress = _distanceProgressStart + progress;
-		const auto starSide = ministar.size * appearProgress;
+		const auto diamondSide = ministar.size * appearProgress;
 		const auto widthFade = (std::abs(rcos) >= std::abs(rsin));
-		const auto starWidth = starSide
+		const auto diamondWidth = diamondSide
 			* (widthFade ? alphaProgress : 1.)
 			* deformW;
-		const auto starHeight = starSide
+		const auto diamondHeight = diamondSide
 			* (!widthFade ? alphaProgress : 1.)
 			* deformH;
 		const auto renderRect = QRectF(
 			center.x()
 				+ anim::interpolateF(0, end.x(), distanceProgress)
-				- starWidth / 2.,
+				- diamondWidth / 2.,
 			center.y()
 				+ anim::interpolateF(0, end.y(), distanceProgress)
-				- starHeight / 2.,
-			starWidth,
-			starHeight);
+				- diamondHeight / 2.,
+			diamondWidth,
+			diamondHeight);
 		ministar.sprite->render(&p, renderRect);
 		_rectToUpdate |= renderRect.toRect();
 	}
 	p.setOpacity(opacity);
 }
 
-void MiniStars::setPaused(bool paused) {
+void MiniDiamonds::setPaused(bool paused) {
 	_paused = paused;
 }
 
-void MiniStars::createStar(crl::time now) {
+void MiniDiamonds::createDiamond(crl::time now) {
 	constexpr auto kRandomSize = 9;
 	auto random = bytes::vector(kRandomSize);
 	base::RandomFill(random.data(), random.size());
@@ -172,7 +172,7 @@ void MiniStars::createStar(crl::time now) {
 	const auto &angleInterval = _availableAngles[
 		uchar(next()) % _availableAngles.size()];
 
-	auto ministar = MiniStar{
+	auto ministar = MiniDiamond{
 		.birthTime = now,
 		.deathTime = now + randomInterval(_deathTime, next()),
 		.angle = randomInterval(angleInterval, next()),

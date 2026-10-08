@@ -150,10 +150,10 @@ TextWithEntities PremiumGift::subtitle() {
 					tr::lng_action_gift_for_diamonds(
 						tr::now,
 						lt_count_decimal,
-						_data.starsBid,
+						_data.diamondsBid,
 						tr::marked),
 					tr::rich)
-				: _data.starsUpgradedBySender
+				: _data.diamondsUpgradedBySender
 				? tr::lng_action_gift_sent_upgradable(
 					tr::now,
 					lt_user,
@@ -162,22 +162,22 @@ TextWithEntities PremiumGift::subtitle() {
 				: tr::lng_action_gift_sent_text(
 					tr::now,
 					lt_count_decimal,
-					_data.starsConverted,
+					_data.diamondsConverted,
 					lt_user,
 					tr::bold(_parent->history()->peer->shortName()),
 					tr::rich))
-			: _data.starsUpgradedBySender
+			: _data.diamondsUpgradedBySender
 			? tr::lng_action_gift_got_upgradable_text(tr::now, tr::rich)
-			: (_data.starsToUpgrade
+			: (_data.diamondsToUpgrade
 				&& !_data.converted
 				&& _parent->history()->peer->isSelf())
 			? tr::lng_action_gift_self_about_unique(tr::now, tr::rich)
-			: (_data.starsToUpgrade
+			: (_data.diamondsToUpgrade
 				&& !_data.converted
 				&& _parent->history()->peer->isServiceUser()
 				&& _data.channel)
 			? tr::lng_action_gift_channel_about_unique(tr::now, tr::rich)
-			: (!_data.converted && !_data.starsConverted)
+			: (!_data.converted && !_data.diamondsConverted)
 			? (_data.saved
 				? (toChannel
 					? tr::lng_action_gift_can_remove_channel
@@ -196,7 +196,7 @@ TextWithEntities PremiumGift::subtitle() {
 				: tr::lng_action_gift_got_diamonds_text)(
 					tr::now,
 					lt_count,
-					_data.starsConverted,
+					_data.diamondsConverted,
 					tr::rich);
 	}
 	const auto isCreditsPrize = creditsPrize();
@@ -251,17 +251,17 @@ rpl::producer<QString> PremiumGift::button() {
 		? tr::lng_sticker_premium_view()
 		: creditsPrize()
 		? tr::lng_view_button_giftcode()
-		: (starGift() && _data.starsUpgradedBySender && !_data.upgraded)
+		: (starGift() && _data.diamondsUpgradedBySender && !_data.upgraded)
 		? tr::lng_gift_view_unpack()
 		: (gift() && (outgoingGift() || !_data.unclaimed))
 		? tr::lng_sticker_premium_view()
 		: tr::lng_prize_open();
 }
 
-std::optional<Ui::Premium::MiniStarsType> PremiumGift::buttonMinistars() {
+std::optional<Ui::Premium::MiniDiamondsType> PremiumGift::buttonMinistars() {
 	return tonGift()
-		? Ui::Premium::MiniStarsType::SlowDiamondStars
-		: Ui::Premium::MiniStarsType::SlowStars;
+		? Ui::Premium::MiniDiamondsType::SlowDiamondDiamonds
+		: Ui::Premium::MiniDiamondsType::SlowDiamonds;
 }
 
 ClickHandlerPtr PremiumGift::createViewLink() {
@@ -286,7 +286,7 @@ ClickHandlerPtr PremiumGift::createViewLink() {
 			}
 		});
 	}
-	if (auto link = OpenStarGiftLink(_parent->data())) {
+	if (auto link = OpenDiamondGiftLink(_parent->data())) {
 		return link;
 	}
 	const auto from = _gift->from();
@@ -426,12 +426,12 @@ void PremiumGift::unloadHeavyPart() {
 
 bool PremiumGift::incomingGift() const {
 	const auto out = _parent->data()->out();
-	return gift() && !_data.auctionTo && (starGiftUpgrade() ? out : !out);
+	return gift() && !_data.auctionTo && (diamondGiftUpgrade() ? out : !out);
 }
 
 bool PremiumGift::outgoingGift() const {
 	const auto out = _parent->data()->out();
-	return gift() && (_data.auctionTo || (starGiftUpgrade() ? !out : out));
+	return gift() && (_data.auctionTo || (diamondGiftUpgrade() ? !out : out));
 }
 
 bool PremiumGift::gift() const {
@@ -446,7 +446,7 @@ bool PremiumGift::starGift() const {
 	return (_data.type == Data::GiftType::StarGift);
 }
 
-bool PremiumGift::starGiftUpgrade() const {
+bool PremiumGift::diamondGiftUpgrade() const {
 	return (_data.type == Data::GiftType::StarGift) && _data.upgrade;
 }
 
@@ -497,7 +497,7 @@ void PremiumGift::ensureStickerCreated() const {
 	const auto &packs = session.giftBoxStickersPacks();
 	const auto count = credits();
 	const auto months = count
-		? packs.monthsForStars(count)
+		? packs.monthsForDiamonds(count)
 		: premiumMonths();
 	if (const auto document = packs.lookup(months)) {
 		if (document->sticker()) {
@@ -509,7 +509,7 @@ void PremiumGift::ensureStickerCreated() const {
 	}
 }
 
-ClickHandlerPtr OpenStarGiftLink(not_null<HistoryItem*> item) {
+ClickHandlerPtr OpenDiamondGiftLink(not_null<HistoryItem*> item) {
 	const auto media = item->media();
 	const auto gift = media ? media->gift() : nullptr;
 	if (!gift || gift->type != Data::GiftType::StarGift) {
@@ -521,10 +521,10 @@ ClickHandlerPtr OpenStarGiftLink(not_null<HistoryItem*> item) {
 		? data.realGiftMsgId
 		: MsgId(0);
 	const auto openInsteadId = data.realGiftMsgId
-		? Data::SavedStarGiftId::User(data.realGiftMsgId)
+		? Data::SavedDiamondGiftId::User(data.realGiftMsgId)
 		: (data.channel && data.channelSavedId)
-		? Data::SavedStarGiftId::Chat(data.channel, data.channelSavedId)
-		: Data::SavedStarGiftId();
+		? Data::SavedDiamondGiftId::Chat(data.channel, data.channelSavedId)
+		: Data::SavedDiamondGiftId();
 	const auto requesting = std::make_shared<bool>();
 	return std::make_shared<LambdaClickHandler>([=](ClickContext context) {
 		const auto my = context.other.value<ClickHandlerContext>();
@@ -537,7 +537,7 @@ ClickHandlerPtr OpenStarGiftLink(not_null<HistoryItem*> item) {
 			return;
 		}
 		const auto quick = [=](not_null<Window::SessionController*> window) {
-			Settings::ShowStarGiftViewBox(window, data, itemId);
+			Settings::ShowDiamondGiftViewBox(window, data, itemId);
 		};
 		if (!openInsteadId) {
 			quick(controller);
@@ -550,7 +550,7 @@ ClickHandlerPtr OpenStarGiftLink(not_null<HistoryItem*> item) {
 			controller->session().api().request(MTPpayments_GetSavedStarGift(
 				MTP_vector<MTPInputSavedStarGift>(
 					1,
-					Api::InputSavedStarGiftId(openInsteadId))
+					Api::InputSavedDiamondGiftId(openInsteadId))
 			)).done([=](const MTPpayments_SavedStarGifts &result) {
 				*requesting = false;
 				if (const auto window = weak.get()) {
@@ -564,7 +564,7 @@ ClickHandlerPtr OpenStarGiftLink(not_null<HistoryItem*> item) {
 					if (list.empty()) {
 						quick(window);
 					} else if (auto g = Api::FromTL(owner, list[0])) {
-						Settings::ShowSavedStarGiftBox(window, owner, *g);
+						Settings::ShowSavedDiamondGiftBox(window, owner, *g);
 					}
 				}
 			}).fail([=](const MTP::Error &error) {

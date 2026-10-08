@@ -83,7 +83,7 @@ void PostsSearch::setQuery(const QString &query) {
 	}
 }
 
-int PostsSearch::setAllowedStars(int stars) {
+int PostsSearch::setAllowedDiamonds(int stars) {
 	if (!_query) {
 		return 0;
 	} else if (_floodState) {
@@ -93,10 +93,10 @@ int PostsSearch::setAllowedStars(int stars) {
 			&& _floodState->nextFreeSearchTime <= base::unixtime::now()) {
 			stars = 0;
 		} else {
-			stars = std::min(int(_floodState->starsPerPaidSearch), stars);
+			stars = std::min(int(_floodState->diamondsPerPaidSearch), stars);
 		}
 	}
-	_entries[*_query].allowedStars = stars;
+	_entries[*_query].allowedDiamonds = stars;
 	requestSearch(*_query);
 	return stars;
 }
@@ -175,20 +175,20 @@ void PostsSearch::requestSearch(const QString &query) {
 		return;
 	}
 
-	const auto useStars = entry.allowedStars;
-	entry.allowedStars = 0;
+	const auto useDiamonds = entry.allowedDiamonds;
+	entry.allowedDiamonds = 0;
 
 	using Flag = MTPchannels_SearchPosts::Flag;
 	entry.searchId = _api.request(MTPchannels_SearchPosts(
 		MTP_flags(Flag::f_query
-			| (useStars ? Flag::f_allow_paid_stars : Flag())),
+			| (useDiamonds ? Flag::f_allow_paid_diamonds : Flag())),
 		MTP_string(), // hashtag
 		MTP_string(query),
 		MTP_int(entry.offsetRate),
 		(entry.offsetPeer ? entry.offsetPeer->input() : MTP_inputPeerEmpty()),
 		MTP_int(entry.offsetId),
 		MTP_int(kPerPage),
-		MTP_long(useStars)
+		MTP_long(useDiamonds)
 	)).done([=](const MTPmessages_Messages &result) {
 		auto &entry = _entries[query];
 		entry.searchId = 0;
@@ -304,7 +304,7 @@ void PostsSearch::setFloodStateFrom(const MTPDsearchPostsFlood &data) {
 		.freeSearchesPerDay = data.vtotal_daily().v,
 		.freeSearchesLeft = left,
 		.nextFreeSearchTime = next,
-		.starsPerPaidSearch = uint32(data.vstars_amount().v),
+		.diamondsPerPaidSearch = uint32(data.vstars_amount().v),
 	};
 }
 

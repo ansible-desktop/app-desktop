@@ -1771,22 +1771,22 @@ void Controller::setCommentsShownToggles(rpl::producer<> toggles) {
 		_commentsStateShowFromPinned.events());
 }
 
-auto Controller::starsReactionsValue() const
--> rpl::producer<Ui::SendStarButtonState> {
+auto Controller::diamondsReactionsValue() const
+-> rpl::producer<Ui::SendDiamondButtonState> {
 	return rpl::combine(
 		_starsReactions.value(),
 		_starsReactionHighlighted.value()
 	) | rpl::map([=](int stars, bool highlighted) {
-		return Ui::SendStarButtonState{ stars, highlighted };
+		return Ui::SendDiamondButtonState{ stars, highlighted };
 	});
 }
 
-auto Controller::starsReactionsEffects() const
--> rpl::producer<SendStarButtonEffect> {
+auto Controller::diamondsReactionsEffects() const
+-> rpl::producer<SendDiamondButtonEffect> {
 	return _starsReactionEffects.events();
 }
 
-void Controller::setStarsReactionIncrements(rpl::producer<int> increments) {
+void Controller::setDiamondsReactionIncrements(rpl::producer<int> increments) {
 	std::move(
 		increments
 	) | rpl::on_next([=](int count) {
@@ -1932,16 +1932,16 @@ void Controller::updateVideoStream(not_null<Calls::GroupCall*> videoStream) {
 		_commentsStateShowFromPinned,
 		_videoStreamLifetime);
 
-	_starsReactions = rpl::single(Calls::Group::StarsDonor()) | rpl::then(
-		videoStream->messages()->starsValueChanges()
-	) | rpl::map([=](const Calls::Group::StarsDonor &donor) {
+	_starsReactions = rpl::single(Calls::Group::DiamondsDonor()) | rpl::then(
+		videoStream->messages()->diamondsValueChanges()
+	) | rpl::map([=](const Calls::Group::DiamondsDonor &donor) {
 		if (const auto peer = donor.peer) {
 			_starsReactionEffects.fire({
 				.from = peer,
 				.stars = donor.stars,
 			});
 		}
-		return videoStream->messages()->starsLocalState().total;
+		return videoStream->messages()->diamondsLocalState().total;
 	});
 	_paidReactionToast->shownForCall(
 	) | rpl::on_next([=](Calls::GroupCall *call) {

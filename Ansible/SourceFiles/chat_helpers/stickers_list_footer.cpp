@@ -265,21 +265,21 @@ bool StickersListFooter::ScrollState::animationCallback(crl::time now) {
 	return true;
 }
 
-GradientPremiumStar::GradientPremiumStar() {
+GradientPremiumDiamond::GradientPremiumDiamond() {
 	style::PaletteChanged(
 	) | rpl::on_next([=] {
 		_image = QImage();
 	}, _lifetime);
 }
 
-QImage GradientPremiumStar::image() const {
+QImage GradientPremiumDiamond::image() const {
 	if (_image.isNull()) {
 		renderOnDemand();
 	}
 	return _image;
 }
 
-void GradientPremiumStar::renderOnDemand() const {
+void GradientPremiumDiamond::renderOnDemand() const {
 	const auto size = st::emojiStatusDefault.size();
 	const auto mask = st::emojiStatusDefault.instance(Qt::white);
 	const auto factor = style::DevicePixelRatio();

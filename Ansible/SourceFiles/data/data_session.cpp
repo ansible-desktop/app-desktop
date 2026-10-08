@@ -674,10 +674,10 @@ not_null<UserData*> Session::processUser(const MTPUser &data) {
 
 		const auto hasRequirePremiumToWrite
 			= data.is_contact_require_premium();
-		const auto hasStarsPerMessage
+		const auto hasDiamondsPerMessage
 			= data.vsend_paid_messages_stars().has_value();
-		if (!hasStarsPerMessage) {
-			result->setStarsPerMessage(0);
+		if (!hasDiamondsPerMessage) {
+			result->setDiamondsPerMessage(0);
 		}
 		result->setBotInfoVersion(data.vbot_info_version().value_or(-1));
 
@@ -719,7 +719,7 @@ not_null<UserData*> Session::processUser(const MTPUser &data) {
 			| Flag::Premium
 			| Flag::Support
 			| Flag::HasRequirePremiumToWrite
-			| Flag::HasStarsPerMessage
+			| Flag::HasDiamondsPerMessage
 			| Flag::MessageMoneyRestrictionsKnown
 			| (!hasRequirePremiumToWrite
 				? Flag::RequiresPremiumToWrite
@@ -753,15 +753,15 @@ not_null<UserData*> Session::processUser(const MTPUser &data) {
 							: Flag())
 						: Flag()))
 				: Flag())
-			| (hasStarsPerMessage
-				? (Flag::HasStarsPerMessage
-					| (result->hasStarsPerMessage()
+			| (hasDiamondsPerMessage
+				? (Flag::HasDiamondsPerMessage
+					| (result->hasDiamondsPerMessage()
 						? (result->messageMoneyRestrictionsKnown()
 							? Flag::MessageMoneyRestrictionsKnown
 							: Flag())
 						: Flag()))
 				: Flag())
-			| ((!hasRequirePremiumToWrite && !hasStarsPerMessage)
+			| ((!hasRequirePremiumToWrite && !hasDiamondsPerMessage)
 				? Flag::MessageMoneyRestrictionsKnown
 				: Flag())
 			| (!minimal
@@ -1129,17 +1129,17 @@ not_null<PeerData*> Session::processChat(const MTPChat &data) {
 				: Flag())
 			| Flag::AutoTranslation
 			| Flag::Monoforum
-			| Flag::HasStarsPerMessage
-			| Flag::StarsPerMessageKnown;
-		const auto hasStarsPerMessage
+			| Flag::HasDiamondsPerMessage
+			| Flag::DiamondsPerMessageKnown;
+		const auto hasDiamondsPerMessage
 			= data.vsend_paid_messages_stars().has_value();
-		if (!hasStarsPerMessage) {
-			channel->setStarsPerMessage(0);
-			_commonStarsPerMessage.remove(channel);
+		if (!hasDiamondsPerMessage) {
+			channel->setDiamondsPerMessage(0);
+			_commonDiamondsPerMessage.remove(channel);
 		} else if (const auto count = data.vsend_paid_messages_stars()->v) {
-			_commonStarsPerMessage[channel] = count;
+			_commonDiamondsPerMessage[channel] = count;
 		} else {
-			_commonStarsPerMessage.remove(channel);
+			_commonDiamondsPerMessage.remove(channel);
 		}
 		const auto storiesState = minimal
 			? std::optional<Data::Stories::PeerSourceState>()
@@ -1183,12 +1183,12 @@ not_null<PeerData*> Session::processChat(const MTPChat &data) {
 				: Flag())
 			| (data.is_autotranslation() ? Flag::AutoTranslation : Flag())
 			| (data.is_monoforum() ? Flag::Monoforum : Flag())
-			| (hasStarsPerMessage
-				? (Flag::HasStarsPerMessage
-					| (channel->starsPerMessageKnown()
-						? Flag::StarsPerMessageKnown
+			| (hasDiamondsPerMessage
+				? (Flag::HasDiamondsPerMessage
+					| (channel->diamondsPerMessageKnown()
+						? Flag::DiamondsPerMessageKnown
 						: Flag()))
-				: Flag::StarsPerMessageKnown);
+				: Flag::DiamondsPerMessageKnown);
 		channel->setFlags((channel->flags() & ~flagsMask) | flagsSet);
 		channel->setBotVerifyDetailsIcon(
 			data.vbot_verification_icon().value_or_empty());
@@ -6066,32 +6066,32 @@ rpl::producer<SentFromScheduled> Session::sentFromScheduled() const {
 	return _sentFromScheduled.events();
 }
 
-void Session::editStarsPerMessage(
+void Session::editDiamondsPerMessage(
 		not_null<ChannelData*> channel,
 		int count) {
 	// For admin it's zero, we're admin if we can edit it.
-	channel->setStarsPerMessage(0);
+	channel->setDiamondsPerMessage(0);
 	if (count) {
-		_commonStarsPerMessage[channel] = count;
+		_commonDiamondsPerMessage[channel] = count;
 	} else {
-		_commonStarsPerMessage.remove(channel);
+		_commonDiamondsPerMessage.remove(channel);
 	}
 }
 
-int Session::commonStarsPerMessage(
+int Session::commonDiamondsPerMessage(
 		not_null<const ChannelData*> channel) const {
-	const auto i = _commonStarsPerMessage.find(channel);
-	return (i != end(_commonStarsPerMessage)) ? i->second : 0;
+	const auto i = _commonDiamondsPerMessage.find(channel);
+	return (i != end(_commonDiamondsPerMessage)) ? i->second : 0;
 }
 
-void Session::setPendingStarsRating(StarsRatingPending value) {
-	_pendingStarsRating = value
-		? std::make_unique<StarsRatingPending>(value)
+void Session::setPendingDiamondsRating(DiamondsRatingPending value) {
+	_pendingDiamondsRating = value
+		? std::make_unique<DiamondsRatingPending>(value)
 		: nullptr;
 }
 
-StarsRatingPending Session::pendingStarsRating() const {
-	return _pendingStarsRating ? *_pendingStarsRating : StarsRatingPending();
+DiamondsRatingPending Session::pendingDiamondsRating() const {
+	return _pendingDiamondsRating ? *_pendingDiamondsRating : DiamondsRatingPending();
 }
 
 void Session::addRecentSelfForwards(const RecentSelfForwards &data) {

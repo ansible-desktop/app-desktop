@@ -760,7 +760,7 @@ void AddLottieIconWithCircle(
 	}, circle->lifetime());
 }
 
-void AddPremiumStar(
+void AddPremiumDiamond(
 		not_null<Button*> button,
 		bool credits,
 		Fn<bool()> isPaused) {
@@ -772,8 +772,8 @@ void AddPremiumStar(
 	const auto &buttonSt = button->st();
 	const auto fullHeight = buttonSt.height
 		+ rect::m::sum::v(buttonSt.padding);
-	using MiniStars = Ui::Premium::ColoredMiniStars;
-	const auto ministars = button->lifetime().make_state<MiniStars>(
+	using MiniDiamonds = Ui::Premium::ColoredMiniDiamonds;
+	const auto ministars = button->lifetime().make_state<MiniDiamonds>(
 		ministarsContainer,
 		false);
 	ministars->setColorOverride(stops);

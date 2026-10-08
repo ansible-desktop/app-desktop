@@ -16,26 +16,26 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 namespace Ui {
 
-StarParticles::StarParticles(Type type, int count, int size)
+DiamondParticles::DiamondParticles(Type type, int count, int size)
 : _type(type)
 , _count(count)
 , _starSize(size) {
 	generate();
 }
 
-void StarParticles::setSpeed(float speed) {
+void DiamondParticles::setSpeed(float speed) {
 	_speed = speed;
 }
 
-void StarParticles::setVisible(float visible) {
+void DiamondParticles::setVisible(float visible) {
 	_visible = visible;
 }
 
-void StarParticles::setColor(const QColor &color) {
+void DiamondParticles::setColor(const QColor &color) {
 	setColors({ color });
 }
 
-void StarParticles::setColors(std::vector<QColor> colors) {
+void DiamondParticles::setColors(std::vector<QColor> colors) {
 	Expects(!colors.empty());
 
 	const auto was = int(_colors.size());
@@ -59,7 +59,7 @@ void StarParticles::setColors(std::vector<QColor> colors) {
 	}
 }
 
-QImage StarParticles::generateStarCache(int size, QColor color) {
+QImage DiamondParticles::generateDiamondCache(int size, QColor color) {
 	const auto ratio = style::DevicePixelRatio();
 	auto image = QImage(
 		size * ratio,
@@ -96,7 +96,7 @@ QImage StarParticles::generateStarCache(int size, QColor color) {
 	return image;
 }
 
-void StarParticles::generate() {
+void DiamondParticles::generate() {
 	_particles.clear();
 	_particles.reserve(_count);
 
@@ -140,7 +140,7 @@ void StarParticles::generate() {
 	}
 }
 
-void StarParticles::paint(
+void DiamondParticles::paint(
 		QPainter &p,
 		const QRect &rect,
 		crl::time now,
@@ -179,7 +179,7 @@ void StarParticles::paint(
 			? i->second
 			: _starCache.emplace(
 				colorKey,
-				generateStarCache(_starSize, color)).first->second;
+				generateDiamondCache(_starSize, color)).first->second;
 		_paintedCaches[colorIndex] = cache;
 		return cache;
 	};

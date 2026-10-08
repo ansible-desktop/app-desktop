@@ -19,14 +19,14 @@ class CustomEmoji;
 
 namespace Ui::Premium {
 
-class ColoredMiniStars final {
+class ColoredMiniDiamonds final {
 public:
 	// optimizeUpdate may cause paint glitch.
-	ColoredMiniStars(
+	ColoredMiniDiamonds(
 		not_null<Ui::RpWidget*> parent,
 		bool optimizeUpdate,
-		MiniStarsType type = MiniStarsType::MonoStars);
-	ColoredMiniStars(Fn<void(const QRect &)> update, MiniStarsType type);
+		MiniDiamondsType type = MiniDiamondsType::MonoDiamonds);
+	ColoredMiniDiamonds(Fn<void(const QRect &)> update, MiniDiamondsType type);
 
 	void setSize(const QSize &size);
 	void setPosition(QPoint position);
@@ -37,7 +37,7 @@ public:
 	void setPaused(bool paused);
 
 private:
-	MiniStars _ministars;
+	MiniDiamonds _ministars;
 	QRectF _ministarsRect;
 	QImage _frame;
 	QImage _mask;

@@ -565,7 +565,7 @@ void BuildPremiumSection(SectionBuilder &builder) {
 			.id = u"main/send-gift"_q,
 			.title = tr::lng_settings_gift_premium(),
 			.icon = { .icon = &st::menuIconGiftPremium, .newBadge = true },
-			.onClick = [=] { Ui::ChooseStarGiftRecipient(controller); },
+			.onClick = [=] { Ui::ChooseDiamondGiftRecipient(controller); },
 			.keywords = { u"present"_q, u"send"_q },
 		});
 	}

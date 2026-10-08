@@ -22,7 +22,7 @@ class AbstractButton;
 class VerticalLayout;
 } // namespace Ui
 
-namespace Info::BotStarRef::Setup {
+namespace Info::BotDiamondRef::Setup {
 
 struct State;
 class InnerWidget;

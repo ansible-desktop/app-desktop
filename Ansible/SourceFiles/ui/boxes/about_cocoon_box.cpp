@@ -76,7 +76,7 @@ void AddCocoonBoxCover(not_null<Ui::GenericBox*> box) {
 		QImage roundedTop;
 		int roundedTopSkip = -1;
 		Ui::Animations::Basic animation;
-		std::optional<Ui::StarParticles> particles;
+		std::optional<Ui::DiamondParticles> particles;
 		style::owned_color subtitleFg = style::owned_color{ textColor };
 		style::owned_color subtitleBoldFg = style::owned_color{ boldColor };
 		style::FlatLabel subtitleSt = st::cocoonSubtitle;
@@ -93,7 +93,7 @@ void AddCocoonBoxCover(not_null<Ui::GenericBox*> box) {
 
 	constexpr auto kParticlesCount = 50;
 	state->particles.emplace(
-		Ui::StarParticles::Type::RadialInside,
+		Ui::DiamondParticles::Type::RadialInside,
 		kParticlesCount,
 		st::cocoonLogoSize / 12);
 	state->particles->setSpeed(0.05);

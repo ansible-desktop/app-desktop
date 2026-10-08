@@ -634,7 +634,7 @@ QSize WebPage::countOptimalSize() {
 					? Type::Twitter
 					: (_data->siteName == u"Instagram"_q)
 					? Type::Instagram
-					: Type::Telegram),
+					: Type::Ansible),
 			},
 			.repaint = [=] { _parent->customEmojiRepaint(); },
 		});

@@ -29,7 +29,7 @@ void EditCollectionBox(
 		not_null<Window::SessionNavigation*> navigation,
 		not_null<PeerData*> peer,
 		int id,
-		Data::SavedStarGiftId addId,
+		Data::SavedDiamondGiftId addId,
 		QString currentName,
 		Fn<void(MTPStarGiftCollection)> finished) {
 	box->setTitle(id
@@ -73,7 +73,7 @@ void EditCollectionBox(
 		*creating = true;
 		auto ids = QVector<MTPInputSavedStarGift>();
 		if (addId) {
-			ids.push_back(Api::InputSavedStarGiftId(addId));
+			ids.push_back(Api::InputSavedDiamondGiftId(addId));
 		}
 		const auto weak = base::make_weak(box);
 		const auto done = [=](const MTPStarGiftCollection &result) {
@@ -137,7 +137,7 @@ void NewCollectionBox(
 		not_null<Ui::GenericBox*> box,
 		not_null<Window::SessionNavigation*> navigation,
 		not_null<PeerData*> peer,
-		Data::SavedStarGiftId addId,
+		Data::SavedDiamondGiftId addId,
 		Fn<void(MTPStarGiftCollection)> added) {
 	EditCollectionBox(box, navigation, peer, 0, addId, QString(), added);
 }

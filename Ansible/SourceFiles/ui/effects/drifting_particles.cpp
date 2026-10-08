@@ -34,7 +34,7 @@ constexpr auto kOrbitPeriodStep = 10000.;
 	return t * t * ((kOvershootTension + 1.) * t + kOvershootTension) + 1.;
 }
 
-[[nodiscard]] QPainterPath FourPointStarPath(
+[[nodiscard]] QPainterPath FourPointDiamondPath(
 		int size,
 		float64 corner,
 		int ratio) {
@@ -121,7 +121,7 @@ void BlurCoverage(
 
 } // namespace
 
-QImage FourPointStarImage(FourPointStarArgs args) {
+QImage FourPointDiamondImage(FourPointDiamondArgs args) {
 	const auto ratio = style::DevicePixelRatio();
 	auto result = QImage(
 		Size(args.size) * ratio,
@@ -129,7 +129,7 @@ QImage FourPointStarImage(FourPointStarArgs args) {
 	result.setDevicePixelRatio(ratio);
 	result.fill(Qt::transparent);
 
-	auto path = FourPointStarPath(args.size, args.corner, ratio);
+	auto path = FourPointDiamondPath(args.size, args.corner, ratio);
 	if (args.cornerRadius > 0.) {
 		path = RoundCorners(path, args.cornerRadius);
 	}

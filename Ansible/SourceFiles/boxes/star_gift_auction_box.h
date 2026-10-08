@@ -31,7 +31,7 @@ class BoxContent;
 class RoundButton;
 class GenericBox;
 
-[[nodiscard]] rpl::lifetime ShowStarGiftAuction(
+[[nodiscard]] rpl::lifetime ShowDiamondGiftAuction(
 	not_null<Window::SessionController*> controller,
 	PeerData *peer,
 	uint64 giftId,

@@ -369,7 +369,7 @@ void SendSuggest(
 		std::shared_ptr<SendSuggestState> state,
 		Fn<void(SuggestOptions&)> modify,
 		Fn<void()> done = nullptr,
-		int starsApproved = 0) {
+		int diamondsApproved = 0) {
 	const auto suggestion = item->Get<HistoryMessageSuggestion>();
 	const auto id = item->fullId();
 	const auto withPaymentApproved = [=](int stars) {
@@ -387,7 +387,7 @@ void SendSuggest(
 		action.options.suggest.ton = suggestion->price.ton() ? 1 : 0;
 	}
 	modify(action.options.suggest);
-	action.options.starsApproved = starsApproved;
+	action.options.diamondsApproved = diamondsApproved;
 	action.replyTo.monoforumPeerId = item->history()->amMonoforumAdmin()
 		? item->sublistPeerId()
 		: PeerId();

@@ -45,10 +45,10 @@ void ChartRulersView::setChartData(
 		_currencyIcon = ChartCurrencyIcon(chartData, {});
 		if (chartData.currency == Data::StatisticalCurrency::Ton) {
 			_leftCustomCaption = [=](float64 value) {
-				return FormatF(value / float64(kOneStarInNano));
+				return FormatF(value / float64(kOneDiamondInNano));
 			};
 			_rightCustomCaption = [=, rate = chartData.currencyRate](float64 v) {
-				return Info::ChannelEarn::ToUsd(v / float64(kOneStarInNano), rate, 0);
+				return Info::ChannelEarn::ToUsd(v / float64(kOneDiamondInNano), rate, 0);
 			};
 		} else {
 			_leftCustomCaption = [=](float64 value) {

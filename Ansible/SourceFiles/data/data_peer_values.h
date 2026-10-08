@@ -169,7 +169,7 @@ inline auto PeerFullFlagValue(
 [[nodiscard]] bool ChannelHasActiveCall(not_null<ChannelData*> channel);
 [[nodiscard]] bool ChannelHasSubscriptionUntilDate(ChannelData *channel);
 
-[[nodiscard]] rpl::producer<Data::StarsRating> StarsRatingValue(
+[[nodiscard]] rpl::producer<Data::StarsRating> DiamondsRatingValue(
 	not_null<PeerData*> peer);
 
 [[nodiscard]] rpl::producer<QImage> PeerUserpicImageValue(

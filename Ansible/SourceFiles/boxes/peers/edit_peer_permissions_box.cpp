@@ -54,7 +54,7 @@ namespace {
 constexpr auto kSlowmodeValues = 8;
 constexpr auto kBoostsUnrestrictValues = 5;
 constexpr auto kForceDisableTooltipDuration = 3 * crl::time(1000);
-constexpr auto kDefaultChargeStars = 10;
+constexpr auto kDefaultChargeDiamonds = 10;
 
 [[nodiscard]] auto Dependencies(PowerSaving::Flags)
 -> std::vector<std::pair<PowerSaving::Flag, PowerSaving::Flag>> {
@@ -1214,7 +1214,7 @@ void ShowEditPeerPermissionsBox(
 		rpl::variable<int> slowmodeSeconds;
 		rpl::variable<int> boostsUnrestrict;
 		rpl::variable<bool> hasSendRestrictions;
-		rpl::variable<int> starsPerMessage;
+		rpl::variable<int> diamondsPerMessage;
 	};
 	const auto state = inner->lifetime().make_state<State>();
 	const auto channel = peer->asChannel();
@@ -1225,14 +1225,14 @@ void ShowEditPeerPermissionsBox(
 	auto charging = (Ui::SettingsButton*)nullptr;
 	if (available) {
 		Ui::AddSkip(inner);
-		const auto starsPerMessage = peer->isChannel()
-			? peer->asChannel()->commonStarsPerMessage()
+		const auto diamondsPerMessage = peer->isChannel()
+			? peer->asChannel()->commonDiamondsPerMessage()
 			: 0;
 		charging = inner->add(object_ptr<Ui::SettingsButton>(
 			inner,
 			tr::lng_rights_charge_diamonds(),
 			st::settingsButtonNoIcon));
-		charging->toggleOn(rpl::single(starsPerMessage > 0));
+		charging->toggleOn(rpl::single(diamondsPerMessage > 0));
 		Ui::AddSkip(inner);
 		Ui::AddDividerText(inner, tr::lng_rights_charge_diamonds_about());
 
@@ -1245,11 +1245,11 @@ void ShowEditPeerPermissionsBox(
 		const auto chargeInner = chargeWrap->entity();
 
 		Ui::AddSkip(chargeInner);
-		state->starsPerMessage = SetupChargeSlider(
+		state->diamondsPerMessage = SetupChargeSlider(
 			chargeInner,
 			peer,
-			(starsPerMessage > 0) ? starsPerMessage : std::optional<int>(),
-			kDefaultChargeStars);
+			(diamondsPerMessage > 0) ? diamondsPerMessage : std::optional<int>(),
+			kDefaultChargeDiamonds);
 	}
 
 	static constexpr auto kSendRestrictions = Flag::EmbedLinks
@@ -1306,14 +1306,14 @@ void ShowEditPeerPermissionsBox(
 		const auto boostsUnrestrict = hasRestrictions
 			? state->boostsUnrestrict.current()
 			: 0;
-		const auto starsPerMessage = (charging && charging->toggled())
-			? state->starsPerMessage.current()
+		const auto diamondsPerMessage = (charging && charging->toggled())
+			? state->diamondsPerMessage.current()
 			: 0;
 		done({
 			restrictions,
 			slowmodeSeconds,
 			boostsUnrestrict,
-			starsPerMessage,
+			diamondsPerMessage,
 		});
 	});
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });

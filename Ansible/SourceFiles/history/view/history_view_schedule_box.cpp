@@ -301,7 +301,7 @@ bool CanScheduleUntilOnline(not_null<PeerData*> peer) {
 		return !user->isSelf()
 			&& !user->isBot()
 			&& !user->lastseen().isHidden()
-			&& !user->starsPerMessageChecked()
+			&& !user->diamondsPerMessageChecked()
 			&& !user->isNotificationsUser();
 	}
 	return false;

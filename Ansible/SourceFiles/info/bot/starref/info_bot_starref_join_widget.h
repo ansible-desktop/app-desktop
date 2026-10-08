@@ -26,7 +26,7 @@ namespace Window {
 class SessionController;
 } // namespace Window
 
-namespace Info::BotStarRef::Join {
+namespace Info::BotDiamondRef::Join {
 
 class InnerWidget;
 

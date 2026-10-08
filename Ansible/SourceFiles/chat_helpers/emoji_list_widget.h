@@ -71,7 +71,7 @@ inline constexpr auto kEmojiSectionCount = 8;
 struct StickerIcon;
 class EmojiColorPicker;
 class StickersListFooter;
-class GradientPremiumStar;
+class GradientPremiumDiamond;
 class LocalStickersManager;
 
 enum class EmojiListMode {
@@ -506,7 +506,7 @@ private:
 	MTP::Sender _api;
 	const int _staticCount = 0;
 	StickersListFooter *_footer = nullptr;
-	std::unique_ptr<GradientPremiumStar> _premiumIcon;
+	std::unique_ptr<GradientPremiumDiamond> _premiumIcon;
 	std::unique_ptr<LocalStickersManager> _localSetsManager;
 	ChannelData *_megagroupSet = nullptr;
 	uint64 _megagroupSetIdRequested = 0;

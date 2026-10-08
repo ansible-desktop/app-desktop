@@ -32,7 +32,7 @@ constexpr auto kStar3dScale = 2.;
 constexpr auto kDiamond3dScale = 1.58;
 constexpr auto kCoin3dScale = 1.85;
 
-constexpr auto kStarParticlesFieldScale = 3.;
+constexpr auto kDiamondParticlesFieldScale = 3.;
 
 [[nodiscard]] QImage ScaleTo(QImage image) {
 	using namespace style;
@@ -87,15 +87,15 @@ void TopBarAbstract::paintEdges(QPainter &p) const {
 	}
 }
 
-QRectF TopBarAbstract::starRect(
+QRectF TopBarAbstract::diamondRect(
 		float64 topProgress,
 		float64 sizeProgress) const {
-	const auto starSize = _st.starSize * sizeProgress;
+	const auto diamondSize = _st.diamondSize * sizeProgress;
 	return QRectF(
 		QPointF(
-			(width() - starSize.width()) / 2,
-			_st.starTopSkip * topProgress),
-		starSize);
+			(width() - diamondSize.width()) / 2,
+			_st.diamondTopSkip * topProgress),
+		diamondSize);
 };
 
 bool TopBarAbstract::isDark() const {
@@ -124,15 +124,15 @@ TopBar::TopBar(
 		this,
 		descriptor.optimizeMinistars,
 		(_logo == u"diamond"_q)
-			? MiniStarsType::DiamondStars
-			: MiniStarsType::BiStars) {
+			? MiniDiamondsType::DiamondDiamonds
+			: MiniDiamondsType::BiDiamonds) {
 	if (descriptor.use3dStar && Star::Supported()) {
 		_star3d = CreateChild<Star>(this);
 		_star3dGolden = descriptor.star3dGolden;
 		if (_star3dGolden) {
 			_star3d->setGolden(true);
 		}
-		_particles3d = std::make_unique<StarParticles>([=](
+		_particles3d = std::make_unique<DiamondParticles>([=](
 				const QRect &area) {
 			update(area);
 		});
@@ -150,7 +150,7 @@ TopBar::TopBar(
 		}
 	} else if (descriptor.use3dDiamond && Diamond::Supported()) {
 		_diamond3d = CreateChild<Diamond>(this);
-		_particles3d = std::make_unique<StarParticles>([=](
+		_particles3d = std::make_unique<DiamondParticles>([=](
 				const QRect &area) {
 			update(area);
 		});
@@ -159,7 +159,7 @@ TopBar::TopBar(
 		}, lifetime());
 	} else if (descriptor.use3dCoin && Coin::Supported()) {
 		_coin3d = CreateChild<Coin>(this);
-		_particles3d = std::make_unique<StarParticles>([=](
+		_particles3d = std::make_unique<DiamondParticles>([=](
 				const QRect &area) {
 			update(area);
 		});
@@ -190,7 +190,7 @@ TopBar::TopBar(
 
 	rpl::single() | rpl::then(
 		style::PaletteChanged()
-	) | rpl::on_next([=, starSize = st.starSize] {
+	) | rpl::on_next([=, diamondSize = st.diamondSize] {
 		TopBarAbstract::computeIsDark();
 
 		if (_logo == u"dollar"_q) {
@@ -204,7 +204,7 @@ TopBar::TopBar(
 			if (!_diamond3d) {
 				_lottie = Lottie::MakeIcon({
 					.name = u"diamond"_q,
-					.sizeOverride = starSize,
+					.sizeOverride = diamondSize,
 				});
 				_lottie->animate(
 					[=] {
@@ -216,11 +216,11 @@ TopBar::TopBar(
 			_ministars.setColorOverride(
 				QGradientStops{{ 0, st::windowActiveTextFg->c }});
 		} else if (!_light && !TopBarAbstract::isDark()) {
-			_star.load(Svg());
+			_diamond.load(Svg());
 			_ministars.setColorOverride(
 				QGradientStops{{ 0, st::premiumButtonFg->c }});
 		} else {
-			_star.load(ColorizedSvg(descriptor.gradientStops
+			_diamond.load(ColorizedSvg(descriptor.gradientStops
 				? (*descriptor.gradientStops)
 				: Ui::Premium::ButtonGradientStops()));
 			_ministars.setColorOverride(descriptor.gradientStops);
@@ -233,7 +233,7 @@ TopBar::TopBar(
 				_particles3d->setColors(
 					QColor(0xFA, 0x54, 0x16),
 					QColor(0xFF, 0xC8, 0x37));
-				_particles3d->setGlyph(StarParticles::Glyph::Star);
+				_particles3d->setGlyph(DiamondParticles::Glyph::Star);
 			} else if (!_light && !TopBarAbstract::isDark()) {
 				_star3d->setColors(
 					QColor(255, 255, 255),
@@ -266,7 +266,7 @@ TopBar::TopBar(
 					QColor(255, 255, 255),
 					QColor(0xC8, 0xC8, 0xD0));
 			}
-			_particles3d->setGlyph(StarParticles::Glyph::Dollar);
+			_particles3d->setGlyph(DiamondParticles::Glyph::Dollar);
 		}
 		auto event = QResizeEvent(size(), size());
 		resizeEvent(&event);
@@ -328,9 +328,9 @@ void TopBar::resizeEvent(QResizeEvent *e) {
 	_progress.title = 1. - progress;
 	_progress.scaleTitle = 1. + kTitleAdditionalScale * progress;
 
-	_ministars.setCenter(starRect(_progress.top, 1.).toRect());
+	_ministars.setCenter(diamondRect(_progress.top, 1.).toRect());
 
-	_starRect = starRect(_progress.top, _progress.body);
+	_starRect = diamondRect(_progress.top, _progress.body);
 
 	if (_star3d) {
 		auto enlarged = Rect(_starRect.size() * kStar3dScale);
@@ -388,7 +388,7 @@ void TopBar::paintEvent(QPaintEvent *e) {
 
 	if (_particles3d) {
 		if (_progress.top) {
-			auto field = Rect(_starRect.size() * kStarParticlesFieldScale);
+			auto field = Rect(_starRect.size() * kDiamondParticlesFieldScale);
 			field.moveCenter(rect::center(_starRect));
 			p.setOpacity(_progress.body);
 			_particles3d->paint(p, field);
@@ -426,7 +426,7 @@ void TopBar::paintEvent(QPaintEvent *e) {
 		auto hq = PainterHighQualityEnabler(p);
 		p.drawImage(_starRect, _dollar);
 	} else if (!_star3d && !_diamond3d && !_coin3d) {
-		_star.render(&p, _starRect);
+		_diamond.render(&p, _starRect);
 	}
 
 	const auto color = _light ? st().titleFg : st::premiumButtonFg;
@@ -438,9 +438,9 @@ void TopBar::paintEvent(QPaintEvent *e) {
 	PainterHighQualityEnabler hq(p);
 	p.setOpacity(1.);
 	p.setFont(_titleFont);
-	const auto fullStarRect = starRect(1., 1.);
-	const auto fullTitleTop = fullStarRect.top()
-		+ fullStarRect.height()
+	const auto fullDiamondRect = diamondRect(1., 1.);
+	const auto fullTitleTop = fullDiamondRect.top()
+		+ fullDiamondRect.height()
 		+ _titlePadding.top();
 	p.translate(
 		anim::interpolate(

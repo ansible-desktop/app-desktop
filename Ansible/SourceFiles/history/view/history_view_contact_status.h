@@ -96,7 +96,7 @@ private:
 			SetBotPhoto,
 		};
 		Type type = Type::None;
-		int starsPerMessage = 0;
+		int diamondsPerMessage = 0;
 		QString requestChatName;
 		TimeId requestDate = 0;
 		bool requestChatIsBroadcast = false;

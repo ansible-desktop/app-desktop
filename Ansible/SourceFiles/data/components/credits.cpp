@@ -35,7 +35,7 @@ void Credits::apply(const MTPDupdateStarsBalance &data) {
 
 rpl::producer<float64> Credits::rateValue(
 		not_null<PeerData*> ownedBotOrChannel) {
-	return rpl::single(_session->appConfig().starsWithdrawRate());
+	return rpl::single(_session->appConfig().diamondsWithdrawRate());
 }
 
 float64 Credits::usdRate() const {
@@ -253,7 +253,7 @@ CreditsAmount CreditsAmountFromTL(const MTPStarsAmount *amount) {
 	return amount ? CreditsAmountFromTL(*amount) : CreditsAmount();
 }
 
-MTPStarsAmount StarsAmountToTL(CreditsAmount amount) {
+MTPStarsAmount DiamondsAmountToTL(CreditsAmount amount) {
 	return amount.ton() ? MTP_starsTonAmount(
 		MTP_long(amount.whole() * uint64(1'000'000'000) + amount.nano())
 	) : MTP_starsAmount(MTP_long(amount.whole()), MTP_int(amount.nano()));

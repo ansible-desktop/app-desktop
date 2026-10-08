@@ -1021,18 +1021,18 @@ void ChannelData::growSlowmodeLastMessage(TimeId when) {
 	session().changes().peerUpdated(this, UpdateFlag::Slowmode);
 }
 
-int ChannelData::starsPerMessage() const {
+int ChannelData::diamondsPerMessage() const {
 	return _starsPerMessage;
 }
 
-int ChannelData::commonStarsPerMessage() const {
-	return owner().commonStarsPerMessage(this);
+int ChannelData::commonDiamondsPerMessage() const {
+	return owner().commonDiamondsPerMessage(this);
 }
 
-void ChannelData::setStarsPerMessage(int stars) {
+void ChannelData::setDiamondsPerMessage(int stars) {
 	if (_starsPerMessage != stars) {
 		_starsPerMessage = stars;
-		session().changes().peerUpdated(this, UpdateFlag::StarsPerMessage);
+		session().changes().peerUpdated(this, UpdateFlag::DiamondsPerMessage);
 	}
 	checkTrustedPayForMessage();
 }
@@ -1349,7 +1349,7 @@ void ApplyChannelUpdate(
 	}
 
 	channel->setMessagesTTL(update.vttl_period().value_or_empty());
-	channel->setStarsPerMessage(
+	channel->setDiamondsPerMessage(
 		update.vsend_paid_messages_stars().value_or_empty());
 	channel->setGuardBotId(UserId(update.vguard_bot_id().value_or_empty()));
 	using Flag = ChannelDataFlag;
@@ -1367,8 +1367,8 @@ void ApplyChannelUpdate(
 		| Flag::CanViewCreditsRevenue
 		| Flag::StargiftsAvailable
 		| Flag::PaidMessagesAvailable
-		| (channel->starsPerMessage() ? Flag::HasStarsPerMessage : Flag())
-		| Flag::StarsPerMessageKnown
+		| (channel->diamondsPerMessage() ? Flag::HasDiamondsPerMessage : Flag())
+		| Flag::DiamondsPerMessageKnown
 		| Flag::HasWelcomeMessages;
 	channel->setFlags((channel->flags() & ~mask)
 		| (update.is_can_set_username() ? Flag::CanSetUsername : Flag())
@@ -1397,8 +1397,8 @@ void ApplyChannelUpdate(
 		| (update.is_paid_messages_available()
 			? Flag::PaidMessagesAvailable
 			: Flag())
-		| (channel->starsPerMessage() ? Flag::HasStarsPerMessage : Flag())
-		| Flag::StarsPerMessageKnown
+		| (channel->diamondsPerMessage() ? Flag::HasDiamondsPerMessage : Flag())
+		| Flag::DiamondsPerMessageKnown
 		| (update.is_has_welcome_messages()
 			? Flag::HasWelcomeMessages
 			: Flag()));

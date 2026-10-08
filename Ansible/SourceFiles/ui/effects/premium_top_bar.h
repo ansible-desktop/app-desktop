@@ -32,7 +32,7 @@ namespace Ui::Premium {
 class Star;
 class Diamond;
 class Coin;
-class StarParticles;
+class DiamondParticles;
 
 class TopBarAbstract : public RpWidget {
 public:
@@ -55,7 +55,7 @@ protected:
 	void paintEdges(QPainter &p, const QBrush &brush) const;
 	void paintEdges(QPainter &p) const;
 
-	[[nodiscard]] QRectF starRect(
+	[[nodiscard]] QRectF diamondRect(
 		float64 topProgress,
 		float64 sizeProgress) const;
 
@@ -108,15 +108,15 @@ private:
 	const style::margins &_titlePadding;
 	const int _aboutMaxWidth = 0;
 	object_ptr<FlatLabel> _about;
-	ColoredMiniStars _ministars;
-	QSvgRenderer _star;
+	ColoredMiniDiamonds _ministars;
+	QSvgRenderer _diamond;
 	QImage _dollar;
 	std::unique_ptr<Lottie::Icon> _lottie;
 	Star *_star3d = nullptr;
 	bool _star3dGolden = false;
 	Diamond *_diamond3d = nullptr;
 	Coin *_coin3d = nullptr;
-	std::unique_ptr<StarParticles> _particles3d;
+	std::unique_ptr<DiamondParticles> _particles3d;
 
 	struct {
 		float64 top = 0.;

@@ -37,9 +37,9 @@ using PaintRoundImageCallback = Fn<void(
 	int outerWidth,
 	int size)>;
 
-[[nodiscard]] QImage GenerateStars(int height, int count, int ratio = 0);
+[[nodiscard]] QImage GenerateDiamonds(int height, int count, int ratio = 0);
 
-[[nodiscard]] not_null<Ui::RpWidget*> CreateSingleStarWidget(
+[[nodiscard]] not_null<Ui::RpWidget*> CreateSingleDiamondWidget(
 	not_null<Ui::RpWidget*> parent,
 	int height);
 

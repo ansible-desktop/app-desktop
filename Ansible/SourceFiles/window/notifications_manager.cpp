@@ -460,7 +460,7 @@ void System::schedule(Data::ItemNotification notification) {
 		_whenAlerts[thread].emplace(timing.when, notifyBy);
 	}
 	if (const auto user = item->history()->peer->asUser()) {
-		if (user->hasStarsPerMessage()
+		if (user->hasDiamondsPerMessage()
 			&& !user->messageMoneyRestrictionsKnown()) {
 			user->updateFull();
 		}
@@ -1103,7 +1103,7 @@ Manager::DisplayOptions Manager::getNotificationOptions(
 			&& (!topic || !Data::CanSendTexts(topic)))
 		|| peer->isBroadcast()
 		|| (peer->slowmodeSecondsLeft() > 0)
-		|| (peer->starsPerMessageChecked() > 0)
+		|| (peer->diamondsPerMessageChecked() > 0)
 		|| HideReplyButtonOption.value();
 	result.spoilerLoginCode = item
 		&& !item->out()

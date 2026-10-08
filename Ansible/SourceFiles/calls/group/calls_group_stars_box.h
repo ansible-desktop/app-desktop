@@ -26,14 +26,14 @@ class GenericBox;
 
 namespace Calls::Group::Ui {
 using namespace ::Ui;
-struct StarsColoring;
+struct DiamondsColoring;
 } // namespace Calls::Group::Ui
 
 namespace Calls::Group {
 
-[[nodiscard]] int MaxVideoStreamStarsCount(not_null<Main::Session*> session);
+[[nodiscard]] int MaxVideoStreamDiamondsCount(not_null<Main::Session*> session);
 
-struct VideoStreamStarsBoxArgs {
+struct VideoStreamDiamondsBoxArgs {
 	std::shared_ptr<ChatHelpers::Show> show;
 	std::vector<Data::MessageReactionsTopPaid> top;
 	int min = 0;
@@ -44,11 +44,11 @@ struct VideoStreamStarsBoxArgs {
 	QString name;
 };
 
-void VideoStreamStarsBox(
+void VideoStreamDiamondsBox(
 	not_null<Ui::GenericBox*> box,
-	VideoStreamStarsBoxArgs &&args);
+	VideoStreamDiamondsBoxArgs &&args);
 
-[[nodiscard]] object_ptr<Ui::BoxContent> MakeVideoStreamStarsBox(
-	VideoStreamStarsBoxArgs &&args);
+[[nodiscard]] object_ptr<Ui::BoxContent> MakeVideoStreamDiamondsBox(
+	VideoStreamDiamondsBoxArgs &&args);
 
 } // namespace Calls::Group

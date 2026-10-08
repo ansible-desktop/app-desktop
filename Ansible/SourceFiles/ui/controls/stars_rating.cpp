@@ -46,12 +46,12 @@ using Counters = Data::StarsRating;
 		--data.level;
 		data.stars = data.nextLevelStars = std::max({
 			data.stars,
-			data.thisLevelStars,
+			data.thisLevelDiamonds,
 			1
 		});
-		data.thisLevelStars = 0;
+		data.thisLevelDiamonds = 0;
 	} else {
-		data.stars = std::max(data.thisLevelStars, data.stars);
+		data.stars = std::max(data.thisLevelDiamonds, data.stars);
 		data.nextLevelStars = std::max(
 			data.nextLevelStars,
 			data.stars + 1);
@@ -85,7 +85,7 @@ void FillRatingLimit(
 		rpl::producer<Counters> data,
 		Premium::BubbleType type,
 		style::margins limitLinePadding,
-		int starsForScale,
+		int diamondsForScale,
 		int nextLevelStars,
 		bool hideCount) {
 	const auto addSkip = [&](int skip) {
@@ -97,7 +97,7 @@ void FillRatingLimit(
 		if (negative) {
 			return 0.5;
 		}
-		const auto min = rating.thisLevelStars;
+		const auto min = rating.thisLevelDiamonds;
 		const auto max = rating.nextLevelStars;
 
 		Assert(rating.stars >= min && rating.stars <= max);
@@ -152,7 +152,7 @@ void FillRatingLimit(
 		type,
 		(hideCount
 			? [](int) { return Premium::BubbleText(); }
-			: BubbleTextFactory(starsForScale, nextLevelStars)),
+			: BubbleTextFactory(diamondsForScale, nextLevelStars)),
 		negative ? &st::levelNegativeBubble : &st::infoStarsCrown,
 		limitLinePadding);
 	addSkip(st::premiumLineTextSkip);
@@ -200,7 +200,7 @@ void AboutRatingBox(
 		not_null<GenericBox*> box,
 		const QString &name,
 		Counters data,
-		Data::StarsRatingPending pending) {
+		Data::DiamondsRatingPending pending) {
 	box->setWidth(st::boxWideWidth);
 	box->setStyle(st::boostBox);
 
@@ -218,7 +218,7 @@ void AboutRatingBox(
 		state->data.value(),
 		(data.level < 0
 			? Premium::BubbleType::NegativeRating
-			: Premium::BubbleType::StarRating),
+			: Premium::BubbleType::DiamondRating),
 		st::boxRowPadding,
 		data.stars,
 		data.nextLevelStars,
@@ -413,7 +413,7 @@ StarsRating::StarsRating(
 	std::shared_ptr<Show> show,
 	const QString &name,
 	rpl::producer<Counters> value,
-	Fn<Data::StarsRatingPending()> pending)
+	Fn<Data::DiamondsRatingPending()> pending)
 : _widget(std::make_unique<AbstractButton>(parent))
 , _show(std::move(show))
 , _name(name)
@@ -438,7 +438,7 @@ void StarsRating::init() {
 		}
 		_show->show(Box(AboutRatingBox, _name, _value.current(), _pending
 			? _pending()
-			: Data::StarsRatingPending()));
+			: Data::DiamondsRatingPending()));
 	});
 
 	_widget->resize(_widget->width(), st::level1.icon.height());

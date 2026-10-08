@@ -1790,15 +1790,15 @@ UserpicsSlice ParseUserpicsSlice(
 	return result;
 }
 
-[[nodiscard]] ActionStarGift ParseStarGift(const MTPStarGift &gift) {
+[[nodiscard]] ActionDiamondGift ParseDiamondGift(const MTPStarGift &gift) {
 	return gift.match([&](const MTPDstarGift &gift) {
-		return ActionStarGift{
+		return ActionDiamondGift{
 			.giftId = uint64(gift.vid().v),
 			.stars = int64(gift.vstars().v),
 			.limited = gift.is_limited(),
 		};
 	}, [&](const MTPDstarGiftUnique &gift) {
-		return ActionStarGift{
+		return ActionDiamondGift{
 			.giftId = uint64(gift.vid().v),
 		};
 	});
@@ -2615,7 +2615,7 @@ ServiceAction ParseServiceAction(
 		auto content = ActionGiveawayResults();
 		content.winners = data.vwinners_count().v;
 		content.unclaimed = data.vunclaimed_count().v;
-		content.credits = data.is_stars();
+		content.credits = data.is_diamonds();
 		result.content = content;
 	}, [&](const MTPDmessageActionBoostApply &data) {
 		auto content = ActionBoostApply();
@@ -2648,7 +2648,7 @@ ServiceAction ParseServiceAction(
 			CreditsType::Ton);
 		result.content = content;
 	}, [&](const MTPDmessageActionPrizeStars &data) {
-		result.content = ActionPrizeStars{
+		result.content = ActionPrizeDiamonds{
 			.peerId = ParsePeerId(data.vboost_peer()),
 			.amount = data.vstars().v,
 			.transactionId = data.vtransaction_id().v,
@@ -2656,7 +2656,7 @@ ServiceAction ParseServiceAction(
 			.isUnclaimed = data.is_unclaimed(),
 		};
 	}, [&](const MTPDmessageActionStarGift &data) {
-		auto content = ParseStarGift(data.vgift());
+		auto content = ParseDiamondGift(data.vgift());
 		content.text = (data.vmessage()
 			? ParseText(
 				data.vmessage()->data().vtext(),
@@ -2665,7 +2665,7 @@ ServiceAction ParseServiceAction(
 		content.anonymous = data.is_name_hidden();
 		result.content = content;
 	}, [&](const MTPDmessageActionStarGiftUnique &data) {
-		result.content = ParseStarGift(data.vgift());
+		result.content = ParseDiamondGift(data.vgift());
 	}, [&](const MTPDmessageActionPaidMessagesRefunded &data) {
 		result.content = ActionPaidMessagesRefunded{
 			.messages = data.vcount().v,
@@ -2734,7 +2734,7 @@ ServiceAction ParseServiceAction(
 			fields.vyear().value_or_empty());
 		result.content = content;
 	}, [&](const MTPDmessageActionStarGiftPurchaseOffer &data) {
-		auto content = ParseStarGift(data.vgift());
+		auto content = ParseDiamondGift(data.vgift());
 		content.offer = true;
 		content.offerPrice = CreditsAmountFromTL(data.vprice());
 		content.offerExpireAt = data.vexpires_at().v;
@@ -2742,7 +2742,7 @@ ServiceAction ParseServiceAction(
 		content.offerDeclined = data.is_declined();
 		result.content = content;
 	}, [&](const MTPDmessageActionStarGiftPurchaseOfferDeclined &data) {
-		auto content = ParseStarGift(data.vgift());
+		auto content = ParseDiamondGift(data.vgift());
 		content.offer = true;
 		content.offerDeclined = true;
 		content.offerExpired = data.is_expired();

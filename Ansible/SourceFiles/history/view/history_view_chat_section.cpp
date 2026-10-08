@@ -913,7 +913,7 @@ ChatWidget::ChatWidget(
 			| PeerUpdateFlag::FullInfo
 			| PeerUpdateFlag::Members
 			| PeerUpdateFlag::ManagedBot
-			| PeerUpdateFlag::StarsPerMessage
+			| PeerUpdateFlag::DiamondsPerMessage
 			| PeerUpdateFlag::Migration
 			| PeerUpdateFlag::UnavailableReason
 	) | rpl::on_next([=](const Data::PeerUpdate &update) {
@@ -940,7 +940,7 @@ ChatWidget::ChatWidget(
 		if (update.flags & (PeerUpdateFlag::FullInfo
 			| PeerUpdateFlag::Rights
 			| PeerUpdateFlag::ChannelAmIn
-			| PeerUpdateFlag::StarsPerMessage)) {
+			| PeerUpdateFlag::DiamondsPerMessage)) {
 			refreshSuggestPostToggle();
 		}
 		if (update.flags & PeerUpdateFlag::IsBlocked) {
@@ -949,7 +949,7 @@ ChatWidget::ChatWidget(
 			| PeerUpdateFlag::Rights
 			| PeerUpdateFlag::Members
 			| PeerUpdateFlag::ManagedBot
-			| PeerUpdateFlag::StarsPerMessage)) {
+			| PeerUpdateFlag::DiamondsPerMessage)) {
 			refreshAboutView();
 		}
 		if (update.flags & PeerUpdateFlag::FullInfo) {
@@ -2128,7 +2128,7 @@ void ChatWidget::sendingFilesConfirmed(
 	if (!ephemeralReply) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			sendingFilesConfirmed(bundle, copy);
 		};
 		const auto checked = checkSendPayment(
@@ -2336,7 +2336,7 @@ void ChatWidget::send() {
 void ChatWidget::sendVoice(const ComposeControls::VoiceToSend &data) {
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = data;
-		copy.options.starsApproved = approved;
+		copy.options.diamondsApproved = approved;
 		sendVoice(copy);
 	};
 	auto action = prepareSendAction(data.options);
@@ -2499,7 +2499,7 @@ void ChatWidget::sendRichDraft(
 	if (!options.scheduled && !ephemeral) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			sendRichDraft(page, copy);
 		};
 		const auto checked = checkSendPayment(
@@ -2582,7 +2582,7 @@ void ChatWidget::sendTextWithTags(
 		if (!ephemeral) {
 			const auto withPaymentApproved = [=](int approved) {
 				auto copy = options;
-				copy.starsApproved = approved;
+				copy.diamondsApproved = approved;
 				sendTextWithTags(
 					textWithTags,
 					useCurrentWebPageDraft,
@@ -2739,7 +2739,7 @@ void ChatWidget::edit(
 		const auto withPaymentApproved = [=](int approved) {
 			if (const auto item = session().data().message(fullId)) {
 				auto copy = options;
-				copy.starsApproved = approved;
+				copy.diamondsApproved = approved;
 				edit(item, copy, saveEditMsgRequestId, spoilered, videoCover);
 			}
 		};
@@ -3136,7 +3136,7 @@ bool ChatWidget::sendExistingDocument(
 	if (!ephemeralReply) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = messageToSend;
-			copy.action.options.starsApproved = approved;
+			copy.action.options.diamondsApproved = approved;
 			sendExistingDocument(document, std::move(copy), localId);
 		};
 		const auto checked = checkSendPayment(
@@ -3182,7 +3182,7 @@ bool ChatWidget::sendExistingPhoto(
 	if (!ephemeralReply) {
 		const auto withPaymentApproved = [=](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			sendExistingPhoto(photo, copy);
 		};
 		const auto checked = checkSendPayment(
@@ -3238,7 +3238,7 @@ void ChatWidget::sendInlineResult(
 	action.generateLocal = true;
 	const auto withPaymentApproved = [=](int approved) {
 		auto copy = options;
-		copy.starsApproved = approved;
+		copy.diamondsApproved = approved;
 		sendInlineResult(result, bot, copy, localMessageId);
 	};
 	const auto checked = checkSendPayment(
@@ -3271,10 +3271,10 @@ SendMenu::Details ChatWidget::sendMenuDetails() const {
 	const auto type = ephemeralReply
 		? Type::Disabled
 		: (mode() != Mode::History)
-		? ((_topic && !_peer->starsPerMessageChecked())
+		? ((_topic && !_peer->diamondsPerMessageChecked())
 			? Type::Scheduled
 			: Type::SilentOnly)
-		: _peer->starsPerMessageChecked()
+		: _peer->diamondsPerMessageChecked()
 		? Type::SilentOnly
 		: _peer->isSelf()
 		? Type::Reminder
@@ -5404,7 +5404,7 @@ void ChatWidget::sendBotCommand(
 	if (!ephemeral) {
 		const auto withPaymentApproved = [=, request = request](int approved) {
 			auto copy = options;
-			copy.starsApproved = approved;
+			copy.diamondsApproved = approved;
 			sendBotCommand(request, copy);
 		};
 		const auto checked = checkSendPayment(
@@ -5976,7 +5976,7 @@ void ChatWidget::refreshAboutView(bool force) {
 			&& !user->phoneCountryCode().isEmpty()) {
 			refresh();
 		} else if (_inner->isEmpty()) {
-			if (user->starsPerMessage() > 0
+			if (user->diamondsPerMessage() > 0
 				|| (user->requiresPremiumToWrite()
 					&& !user->session().premium())
 				|| user->isFullLoaded()) {

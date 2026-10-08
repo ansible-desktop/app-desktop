@@ -1031,7 +1031,7 @@ void SendFilesBox::refreshButtons() {
 		.isEphemeralBotReply(_replyTo.messageId);
 	const auto perMessage = ephemeralReply
 		? 0
-		: _toPeer->starsPerMessageChecked();
+		: _toPeer->diamondsPerMessageChecked();
 	if (perMessage > 0) {
 		_send->setText(PaidSendButtonText(_messagesCount.value(
 		) | rpl::map(rpl::mappers::_1 * perMessage)));

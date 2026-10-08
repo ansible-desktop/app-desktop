@@ -24,7 +24,7 @@ class Show;
 namespace Data {
 struct UniqueGift;
 struct CreditsHistoryEntry;
-class SavedStarGiftId;
+class SavedDiamondGiftId;
 } // namespace Data
 
 namespace HistoryView {
@@ -75,8 +75,8 @@ struct GiftTypePremium {
 		const GiftTypePremium &) = default;
 };
 
-struct GiftTypeStars {
-	Data::SavedStarGiftId transferId;
+struct GiftTypeDiamonds {
+	Data::SavedDiamondGiftId transferId;
 	Data::StarGift info;
 	PeerData *from = nullptr;
 	TimeId date = 0;
@@ -89,15 +89,15 @@ struct GiftTypeStars {
 	bool mine : 1 = false;
 
 	[[nodiscard]] friend inline bool operator==(
-		const GiftTypeStars&,
-		const GiftTypeStars&) = default;
+		const GiftTypeDiamonds&,
+		const GiftTypeDiamonds&) = default;
 };
 
-[[nodiscard]] rpl::producer<std::vector<GiftTypeStars>> GiftsStars(
+[[nodiscard]] rpl::producer<std::vector<GiftTypeDiamonds>> GiftsDiamonds(
 	not_null<Main::Session*> session,
 	not_null<PeerData*> peer);
 
-struct GiftDescriptor : std::variant<GiftTypePremium, GiftTypeStars> {
+struct GiftDescriptor : std::variant<GiftTypePremium, GiftTypeDiamonds> {
 	using variant::variant;
 
 	[[nodiscard]] friend inline bool operator==(
@@ -111,7 +111,7 @@ struct GiftSendDetails {
 	uint64 randomId = 0;
 	bool anonymous = false;
 	bool upgraded = false;
-	bool byStars = false;
+	bool byDiamonds = false;
 };
 
 struct GiftBadge {
@@ -240,13 +240,13 @@ private:
 	GiftDescriptor _descriptor;
 	Ui::Text::String _text;
 	Ui::Text::String _price;
-	Ui::Text::String _byStars;
+	Ui::Text::String _byDiamonds;
 	std::shared_ptr<Ui::DynamicImage> _userpic;
 	QImage _uniqueBackgroundCache;
 	QImage _tonIcon;
 	std::unique_ptr<Ui::Text::CustomEmoji> _uniquePatternEmoji;
 	base::flat_map<float64, QImage> _uniquePatternCache;
-	std::optional<Ui::Premium::ColoredMiniStars> _stars;
+	std::optional<Ui::Premium::ColoredMiniDiamonds> _diamonds;
 	Ui::Animations::Simple _selectedAnimation;
 	std::unique_ptr<Overview::Layout::Checkbox> _check;
 	int _resalePrice = 0;
@@ -339,7 +339,7 @@ private:
 void SelectGiftToUnpin(
 	std::shared_ptr<ChatHelpers::Show> show,
 	const std::vector<Data::CreditsHistoryEntry> &pinned,
-	Fn<void(Data::SavedStarGiftId)> chosen);
+	Fn<void(Data::SavedDiamondGiftId)> chosen);
 
 [[nodiscard]] QColor BurnedBadgeBg();
 

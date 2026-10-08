@@ -117,7 +117,7 @@ void BottomControls::applyPeerUpdate(Data::PeerUpdate::Flags flags) {
 	if (flags & (Flag::FullInfo
 		| Flag::Rights
 		| Flag::ChannelAmIn
-		| Flag::StarsPerMessage)) {
+		| Flag::DiamondsPerMessage)) {
 		refreshGiftToChannelShown();
 		refreshDirectMessageShown();
 	}
@@ -293,7 +293,7 @@ void BottomControls::setupGiftToChannelButton() {
 		st::historyGiftToChannel);
 	_giftToChannel->setAccessibleName(tr::lng_gift_channel_title(tr::now));
 	_giftToChannel->setClickedCallback([=] {
-		Ui::ShowStarGiftBox(_controller, _peer);
+		Ui::ShowDiamondGiftBox(_controller, _peer);
 	});
 	setupOverlayIconButton(_giftToChannel, true, [=] {
 		refreshGiftToChannelShown();

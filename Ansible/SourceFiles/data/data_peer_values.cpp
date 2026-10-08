@@ -547,7 +547,7 @@ bool ChannelHasSubscriptionUntilDate(ChannelData *channel) {
 	return channel && channel->subscriptionUntilDate() > 0;
 }
 
-rpl::producer<Data::StarsRating> StarsRatingValue(
+rpl::producer<Data::StarsRating> DiamondsRatingValue(
 		not_null<PeerData*> peer) {
 	if (const auto user = peer->asUser()) {
 		return user->session().changes().peerFlagsValue(

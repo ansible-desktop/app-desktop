@@ -1014,7 +1014,7 @@ struct ActionGiftCredits {
 	CreditsAmount amount;
 };
 
-struct ActionPrizeStars {
+struct ActionPrizeDiamonds {
 	PeerId peerId = 0;
 	uint64 amount = 0;
 	Utf8String transactionId;
@@ -1022,7 +1022,7 @@ struct ActionPrizeStars {
 	bool isUnclaimed = false;
 };
 
-struct ActionStarGift {
+struct ActionDiamondGift {
 	uint64 giftId = 0;
 	int64 stars = 0;
 	std::vector<TextPart> text;
@@ -1150,8 +1150,8 @@ struct ServiceAction {
 		ActionBoostApply,
 		ActionPaymentRefunded,
 		ActionGiftCredits,
-		ActionPrizeStars,
-		ActionStarGift,
+		ActionPrizeDiamonds,
+		ActionDiamondGift,
 		ActionPaidMessagesRefunded,
 		ActionPaidMessagesPrice,
 		ActionTodoCompletions,

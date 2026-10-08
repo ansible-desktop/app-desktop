@@ -34,7 +34,7 @@ class RpWidget;
 
 namespace Calls::Group::Ui {
 using namespace ::Ui;
-struct StarsColoring;
+struct DiamondsColoring;
 } // namespace Calls::Group::Ui
 
 namespace Calls::Group {
@@ -74,7 +74,7 @@ private:
 	struct MessageView;
 	struct PinnedView;
 	struct PayedBg {
-		explicit PayedBg(const Ui::StarsColoring &coloring);
+		explicit PayedBg(const Ui::DiamondsColoring &coloring);
 
 		style::owned_color light;
 		style::owned_color dark;

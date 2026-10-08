@@ -11,7 +11,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 namespace Ui::Premium {
 
-struct StarModel {
+struct DiamondModel {
 	std::vector<float> vertices;
 	int vertexCount = 0;
 
@@ -20,6 +20,6 @@ struct StarModel {
 	}
 };
 
-[[nodiscard]] StarModel LoadStarModel();
+[[nodiscard]] DiamondModel LoadDiamondModel();
 
 } // namespace Ui::Premium

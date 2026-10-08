@@ -56,13 +56,13 @@ ComposeAiButton::ComposeAiButton(
 	}, lifetime());
 }
 
-void ComposeAiButton::setPremiumStar(
+void ComposeAiButton::setPremiumDiamond(
 		QImage image,
 		QPoint position,
 		int outline) {
-	_premiumStar = std::move(image);
-	_premiumStarPosition = position;
-	_premiumStarOutline = outline;
+	_premiumDiamond = std::move(image);
+	_premiumDiamondPosition = position;
+	_premiumDiamondOutline = outline;
 	_frame = QImage();
 	update();
 }
@@ -89,7 +89,7 @@ void ComposeAiButton::paintEvent(QPaintEvent *e) {
 		star2Opacity = (progress - 0.75) / 0.25;
 	}
 
-	if (_premiumStar.isNull()) {
+	if (_premiumDiamond.isNull()) {
 		paintIcons(p, over, star1Opacity, star2Opacity);
 		return;
 	}
@@ -146,14 +146,14 @@ void ComposeAiButton::validateFrame(
 	auto hq = PainterHighQualityEnabler(q);
 	paintIcons(q, over, star1Opacity, star2Opacity);
 	q.setOpacity(1.);
-	const auto outline = _premiumStarOutline;
+	const auto outline = _premiumDiamondOutline;
 	q.setCompositionMode(QPainter::CompositionMode_DestinationOut);
-	q.drawImage(_premiumStarPosition - QPoint(outline, 0), _premiumStar);
-	q.drawImage(_premiumStarPosition + QPoint(outline, 0), _premiumStar);
-	q.drawImage(_premiumStarPosition - QPoint(0, outline), _premiumStar);
-	q.drawImage(_premiumStarPosition + QPoint(0, outline), _premiumStar);
+	q.drawImage(_premiumDiamondPosition - QPoint(outline, 0), _premiumDiamond);
+	q.drawImage(_premiumDiamondPosition + QPoint(outline, 0), _premiumDiamond);
+	q.drawImage(_premiumDiamondPosition - QPoint(0, outline), _premiumDiamond);
+	q.drawImage(_premiumDiamondPosition + QPoint(0, outline), _premiumDiamond);
 	q.setCompositionMode(QPainter::CompositionMode_SourceOver);
-	q.drawImage(_premiumStarPosition, _premiumStar);
+	q.drawImage(_premiumDiamondPosition, _premiumDiamond);
 }
 
 void ComposeAiButton::onStateChanged(State was, StateChangeSource source) {

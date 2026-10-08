@@ -154,12 +154,12 @@ constexpr auto kMouseEvents = {
 	QEvent::MouseButtonRelease
 };
 constexpr auto kRefreshSlowmodeLabelTimeout = crl::time(200);
-constexpr auto kMaxStarSendEffects = 4;
-constexpr auto kMaxStarEffects = 4;
-constexpr auto kStarEffectDuration = 2 * crl::time(1000);
-constexpr auto kStarEffectRotationMax = 12;
-constexpr auto kStarEffectScaleMin = 0.3;
-constexpr auto kStarEffectScaleMax = 0.7;
+constexpr auto kMaxDiamondSendEffects = 4;
+constexpr auto kMaxDiamondEffects = 4;
+constexpr auto kDiamondEffectDuration = 2 * crl::time(1000);
+constexpr auto kDiamondEffectRotationMax = 12;
+constexpr auto kDiamondEffectScaleMin = 0.3;
+constexpr auto kDiamondEffectScaleMax = 0.7;
 
 constexpr auto kCommonModifiers = 0
 	| Qt::ShiftModifier
@@ -1117,10 +1117,10 @@ SendMenu::Details FieldHeader::saveMenuDetails(bool hasSendText) const {
 		: SendMenu::Details();
 }
 
-struct ComposeControls::StarEffect {
-	StarEffect(
+struct ComposeControls::DiamondEffect {
+	DiamondEffect(
 		not_null<Ui::RpWidget*> canvas,
-		SendStarButtonEffect effect);
+		SendDiamondButtonEffect effect);
 
 	Ui::ReactionFlyAnimation around;
 	Ui::PeerUserpicView userpic;
@@ -1132,9 +1132,9 @@ struct ComposeControls::StarEffect {
 	int stars = 0;
 };
 
-ComposeControls::StarEffect::StarEffect(
+ComposeControls::DiamondEffect::DiamondEffect(
 	not_null<Ui::RpWidget*> canvas,
-	SendStarButtonEffect effect)
+	SendDiamondButtonEffect effect)
 : around(
 	&effect.from->owner().reactions(),
 	Ui::ReactionFlyAnimationArgs{
@@ -1179,7 +1179,7 @@ ComposeControls::StarEffect::StarEffect(
 
 	auto p = QPainter(&badge);
 	auto hq = PainterHighQualityEnabler(p);
-	const auto bg = Ui::ColorFromSerialized(StarsColoringForCount(
+	const auto bg = Ui::ColorFromSerialized(DiamondsColoringForCount(
 		from->session().appConfig().groupCallColorings(),
 		stars).bgLight);
 	p.setPen(Qt::NoPen);
@@ -1248,7 +1248,7 @@ ComposeControls::ComposeControls(
 , _like(_features.likes
 	? Ui::CreateChild<Ui::IconButton>(_wrap.get(), _st.like)
 	: nullptr)
-, _chosenStarsCount(_features.editMessageStars ? 0 : std::optional<int>())
+, _chosenDiamondsCount(_features.editMessageDiamonds ? 0 : std::optional<int>())
 , _attachToggle(_features.attachments
 	? Ui::CreateChild<Ui::IconButton>(_wrap.get(), _st.attach)
 	: nullptr)
@@ -1505,8 +1505,8 @@ void ComposeControls::setHistory(SetHistoryArgs &&args) {
 	_canSendTexts = args.canSendTexts
 		? std::move(args.canSendTexts)
 		: rpl::single(true);
-	_minStarsCount = args.minStarsCount
-		? std::move(args.minStarsCount)
+	_minDiamondsCount = args.minDiamondsCount
+		? std::move(args.minDiamondsCount)
 		: rpl::single(0);
 	const auto history = *args.history;
 	if (_history == history) {
@@ -1574,42 +1574,42 @@ void ComposeControls::initLikeButton() {
 	}
 }
 
-void ComposeControls::initEditStarsButton() {
-	if (!editStarsButtonShown()) {
-		delete base::take(_editStars);
-		if (_chosenStarsCount) {
-			_chosenStarsCount = std::nullopt;
+void ComposeControls::initEditDiamondsButton() {
+	if (!editDiamondsButtonShown()) {
+		delete base::take(_editDiamonds);
+		if (_chosenDiamondsCount) {
+			_chosenDiamondsCount = std::nullopt;
 			updateSendButtonType();
 		}
 		return;
 	}
-	if (_chosenStarsCount.value_or(0) < _minStarsCount.current()) {
-		_chosenStarsCount = _minStarsCount.current();
+	if (_chosenDiamondsCount.value_or(0) < _minDiamondsCount.current()) {
+		_chosenDiamondsCount = _minDiamondsCount.current();
 		updateSendButtonType();
 	}
-	if (_editStars) {
+	if (_editDiamonds) {
 		return;
 	}
-	_editStars = Ui::CreateChild<Ui::IconButton>(
+	_editDiamonds = Ui::CreateChild<Ui::IconButton>(
 		_wrap.get(),
-		_st.editStars);
-	_editStars->show();
-	_editStars->setClickedCallback([=] {
-		editStarsFrom();
+		_st.editDiamonds);
+	_editDiamonds->show();
+	_editDiamonds->setClickedCallback([=] {
+		editDiamondsFrom();
 	});
 }
 
-void ComposeControls::editStarsFrom(int selected) {
-	const auto min = _minStarsCount.current();
+void ComposeControls::editDiamondsFrom(int selected) {
+	const auto min = _minDiamondsCount.current();
 	if (!selected) {
-		selected = _chosenStarsCount.value_or(0);
+		selected = _chosenDiamondsCount.value_or(0);
 	}
-	_show->show(Calls::Group::MakeVideoStreamStarsBox({
+	_show->show(Calls::Group::MakeVideoStreamDiamondsBox({
 		.show = _show,
 		.min = min,
 		.current = std::max(selected, min),
-		.save = crl::guard(_editStars, [=](int count) {
-			_chosenStarsCount = count;
+		.save = crl::guard(_editDiamonds, [=](int count) {
+			_chosenDiamondsCount = count;
 			updateSendButtonType();
 		}),
 		.name = _history ? _history->peer->shortName() : QString(),
@@ -1656,12 +1656,12 @@ void ComposeControls::updateFeatures(ChatHelpers::ComposeFeatures features) {
 		}
 		changed = true;
 	}
-	if (was.editMessageStars != features.editMessageStars) {
-		initEditStarsButton();
+	if (was.editMessageDiamonds != features.editMessageDiamonds) {
+		initEditDiamondsButton();
 		changed = true;
 	}
 	if (was.recordMediaMessage != features.recordMediaMessage) {
-		clearChosenStarsForMessage();
+		clearChosenDiamondsForMessage();
 	}
 	if (was.attachments != features.attachments) {
 		if (!features.attachments) {
@@ -1844,17 +1844,17 @@ rpl::producer<> ComposeControls::commentsShownToggles() const {
 	return _commentsShownToggles.events();
 }
 
-void ComposeControls::setStarsReactionCounter(
-		rpl::producer<Ui::SendStarButtonState> count,
-		rpl::producer<SendStarButtonEffect> effects) {
+void ComposeControls::setDiamondsReactionCounter(
+		rpl::producer<Ui::SendDiamondButtonState> count,
+		rpl::producer<SendDiamondButtonEffect> effects) {
 	if (!count) {
 		delete base::take(_starsReaction);
 		updateControlsGeometry(_wrap->size());
 	} else {
-		_starsReaction = Ui::CreateChild<Ui::SendStarButton>(
+		_starsReaction = Ui::CreateChild<Ui::SendDiamondButton>(
 			_wrap.get(),
 			_st.attach,
-			_st.starsReactionCounter,
+			_st.diamondsReactionCounter,
 			std::move(count));
 		updateControlsParents();
 		updateControlsVisibility();
@@ -1867,16 +1867,16 @@ void ComposeControls::setStarsReactionCounter(
 		_starsReaction->setAcceptBoth();
 		_starsReaction->clicks(
 		) | rpl::on_next([=](Qt::MouseButton button) {
-			if (_chosenStarsCount && button == Qt::LeftButton) {
+			if (_chosenDiamondsCount && button == Qt::LeftButton) {
 				_starsReactionIncrements.fire({ .count = 1 });
-				startStarsSendEffect();
+				startDiamondsSendEffect();
 			} else {
-				_show->show(Calls::Group::MakeVideoStreamStarsBox({
+				_show->show(Calls::Group::MakeVideoStreamDiamondsBox({
 					.show = _show,
 					.top = _starsReactionTop.current(),
 					.current = 0,
 					.sending = true,
-					.admin = !_chosenStarsCount,
+					.admin = !_chosenDiamondsCount,
 					.save = crl::guard(_starsReaction, [=](int count) {
 						_starsReactionIncrements.fire({
 							.count = count,
@@ -1890,17 +1890,17 @@ void ComposeControls::setStarsReactionCounter(
 
 		std::move(
 			effects
-		) | rpl::on_next([=](const SendStarButtonEffect &event) {
-			startStarsEffect(event);
+		) | rpl::on_next([=](const SendDiamondButtonEffect &event) {
+			startDiamondsEffect(event);
 		}, _starsReaction->lifetime());
 	}
 }
 
-void ComposeControls::startStarsSendEffect() {
+void ComposeControls::startDiamondsSendEffect() {
 	if (!_starSendEffectsCanvas) {
-		setupStarsSendEffectsCanvas();
+		setupDiamondsSendEffectsCanvas();
 	}
-	while (_starSendEffects.size() >= kMaxStarSendEffects) {
+	while (_starSendEffects.size() >= kMaxDiamondSendEffects) {
 		_starSendEffects.erase(begin(_starSendEffects));
 	}
 	_starSendEffects.push_back(std::make_unique<Ui::ReactionFlyAnimation>(
@@ -1913,7 +1913,7 @@ void ComposeControls::startStarsSendEffect() {
 		st::reactionInlineImage));
 }
 
-void ComposeControls::setupStarsSendEffectsCanvas() {
+void ComposeControls::setupDiamondsSendEffectsCanvas() {
 	_starSendEffectsCanvas = std::make_unique<Ui::RpWidget>(_parent);
 
 	const auto raw = _starSendEffectsCanvas.get();
@@ -1970,19 +1970,19 @@ void ComposeControls::setupStarsSendEffectsCanvas() {
 	}, raw->lifetime());
 }
 
-void ComposeControls::startStarsEffect(SendStarButtonEffect event) {
+void ComposeControls::startDiamondsEffect(SendDiamondButtonEffect event) {
 	if (!_starEffectsCanvas) {
-		setupStarsEffectsCanvas();
+		setupDiamondsEffectsCanvas();
 	}
-	while (_starEffects.size() >= kMaxStarEffects) {
+	while (_starEffects.size() >= kMaxDiamondEffects) {
 		_starEffects.erase(begin(_starEffects));
 	}
-	_starEffects.push_back(std::make_unique<StarEffect>(
+	_starEffects.push_back(std::make_unique<DiamondEffect>(
 		_starEffectsCanvas.get(),
 		event));
 }
 
-void ComposeControls::setupStarsEffectsCanvas() {
+void ComposeControls::setupDiamondsEffectsCanvas() {
 	_starEffectsCanvas = std::make_unique<Ui::RpWidget>(_parent);
 
 	const auto raw = _starEffectsCanvas.get();
@@ -2018,7 +2018,7 @@ void ComposeControls::setupStarsEffectsCanvas() {
 		const auto now = crl::now();
 		for (auto i = begin(_starEffects); i != end(_starEffects);) {
 			const auto progress = float64(now - (*i)->start)
-				/ kStarEffectDuration;
+				/ kDiamondEffectDuration;
 			if (progress >= 1.) {
 				i = _starEffects.erase(i);
 			} else {
@@ -2054,12 +2054,12 @@ void ComposeControls::setupStarsEffectsCanvas() {
 				(progress > 0.875) ?
 				(1. - progress) / 0.125
 				: 1.;
-			const auto scale = kStarEffectScaleMin
-				+ (kStarEffectScaleMax - kStarEffectScaleMin) * opacity;
+			const auto scale = kDiamondEffectScaleMin
+				+ (kDiamondEffectScaleMax - kDiamondEffectScaleMin) * opacity;
 
 			const auto rotation = qSin(-M_PI_2
 				+ M_PI * (animation->shift + animation->progress)
-			) * kStarEffectRotationMax;
+			) * kDiamondEffectRotationMax;
 			const auto target = QRect(
 				QPoint(left + skip, top + skip),
 				QSize(st::reactionInlineImage, st::reactionInlineImage));
@@ -2082,13 +2082,13 @@ void ComposeControls::setupStarsEffectsCanvas() {
 	}, raw->lifetime());
 }
 
-void ComposeControls::setStarsReactionTop(
-		rpl::producer<std::vector<StarReactionTop>> top) {
+void ComposeControls::setDiamondsReactionTop(
+		rpl::producer<std::vector<DiamondReactionTop>> top) {
 	_starsReactionTop = std::move(top);
 }
 
-auto ComposeControls::starsReactionIncrements() const
--> rpl::producer<StarReactionIncrement> {
+auto ComposeControls::diamondsReactionIncrements() const
+-> rpl::producer<DiamondReactionIncrement> {
 	return _starsReactionIncrements.events();
 }
 
@@ -2197,20 +2197,20 @@ rpl::producer<Api::SendOptions> ComposeControls::sendRequests() const {
 	return sendContentRequests(
 		SendRequestType::Text
 	) | rpl::filter([=] {
-		if (!_chosenStarsCount) {
+		if (!_chosenDiamondsCount) {
 			return true;
 		}
 		using namespace Calls::Group::Ui;
-		const auto count = *_chosenStarsCount;
+		const auto count = *_chosenDiamondsCount;
 		const auto &appConfig = _show->session().appConfig();
 		const auto &colorings = appConfig.groupCallColorings();
-		const auto required = StarsRequiredForMessage(
+		const auto required = DiamondsRequiredForMessage(
 			colorings,
 			getTextWithAppliedMarkdown());
 		if (required <= count) {
 			return true;
 		}
-		const_cast<ComposeControls*>(this)->editStarsFrom(required);
+		const_cast<ComposeControls*>(this)->editDiamondsFrom(required);
 		return false;
 	});
 }
@@ -2468,7 +2468,7 @@ void ComposeControls::clear(bool keepReply) {
 	if (!keepReply) {
 		cancelReplyMessage();
 	}
-	clearChosenStarsForMessage();
+	clearChosenDiamondsForMessage();
 	if (_preview) {
 		_preview->apply({ .removed = true });
 	}
@@ -2731,9 +2731,9 @@ void ComposeControls::init() {
 	initWriteRestriction();
 	initVoiceRecordBar();
 	initKeyHandler();
-	initEditStarsButton();
-	_minStarsCount.changes() | rpl::on_next([=] {
-		initEditStarsButton();
+	initEditDiamondsButton();
+	_minDiamondsCount.changes() | rpl::on_next([=] {
+		initEditDiamondsButton();
 		updateControlsGeometry(_wrap->size());
 	}, _wrap->lifetime());
 
@@ -2945,39 +2945,39 @@ bool ComposeControls::showRecordButton() const {
 		&& !isEditingMessage();
 }
 
-bool ComposeControls::showEditStarsButton() const {
-	return editStarsButtonShown()
+bool ComposeControls::showEditDiamondsButton() const {
+	return editDiamondsButtonShown()
 		&& !hasSendableContent()
 		&& !readyToForward()
 		&& !isEditingMessage()
-		&& !shownStarsPerMessage();
+		&& !shownDiamondsPerMessage();
 }
 
-int ComposeControls::shownStarsPerMessage() const {
-	return _chosenStarsCount.value_or(
-		_history ? _history->peer->starsPerMessageChecked() : 0);
+int ComposeControls::shownDiamondsPerMessage() const {
+	return _chosenDiamondsCount.value_or(
+		_history ? _history->peer->diamondsPerMessageChecked() : 0);
 }
 
 void ComposeControls::clearListenState() {
 	_voiceRecordBar->clearListenState();
 }
 
-void ComposeControls::clearChosenStarsForMessage() {
-	const auto empty = editStarsButtonShown()
-		? _minStarsCount.current()
+void ComposeControls::clearChosenDiamondsForMessage() {
+	const auto empty = editDiamondsButtonShown()
+		? _minDiamondsCount.current()
 		: std::optional<int>();
-	if (_chosenStarsCount != empty) {
-		_chosenStarsCount = empty;
+	if (_chosenDiamondsCount != empty) {
+		_chosenDiamondsCount = empty;
 		updateSendButtonType();
 	}
 }
 
-bool ComposeControls::editStarsButtonShown() const {
-	return _features.editMessageStars && !_videoStreamAdmin.current();
+bool ComposeControls::editDiamondsButtonShown() const {
+	return _features.editMessageDiamonds && !_videoStreamAdmin.current();
 }
 
-int ComposeControls::chosenStarsForMessage() const {
-	return _chosenStarsCount.value_or(0);
+int ComposeControls::chosenDiamondsForMessage() const {
+	return _chosenDiamondsCount.value_or(0);
 }
 
 void ComposeControls::initKeyHandler() {
@@ -3236,7 +3236,7 @@ void ComposeControls::initFieldAutocomplete() {
 
 void ComposeControls::updateFieldPlaceholder() {
 	_voiceRecordBar->setPauseInsteadSend(_history
-		&& _history->peer->starsPerMessageChecked() > 0);
+		&& _history->peer->diamondsPerMessageChecked() > 0);
 
 	if (!isEditingMessage() && _isInlineBot) {
 		_field->setPlaceholder(
@@ -3255,7 +3255,7 @@ void ComposeControls::updateFieldPlaceholder() {
 			return tr::lng_message_ph();
 		} else if (const auto stars = ephemeralReply
 			? 0
-			: peer->starsPerMessageChecked()) {
+			: peer->diamondsPerMessageChecked()) {
 			return tr::lng_message_diamonds_ph(
 				lt_count,
 				rpl::single(stars * 1.));
@@ -4011,7 +4011,7 @@ void ComposeControls::setupSendMenu(
 	using namespace SendMenu;
 	const auto sendAction = [=](Action action, Details details) {
 		if (action.type == ActionType::ChangePrice) {
-			_chosenStarsCount = details.price.value_or(0);
+			_chosenDiamondsCount = details.price.value_or(0);
 			updateSendButtonType();
 		} else if (action.type == ActionType::CaptionUp
 			|| action.type == ActionType::CaptionDown
@@ -4758,7 +4758,7 @@ auto ComposeControls::computeSendButtonType() const {
 		return (video && _recordAvailability == both)
 			? Type::Round
 			: Type::Record;
-	} else if (showEditStarsButton()) {
+	} else if (showEditDiamondsButton()) {
 		return Type::EditPrice;
 	}
 	return baseSendButtonType();
@@ -4841,12 +4841,12 @@ void ComposeControls::updateSendButtonType() {
 		.isEphemeralBotReply(replyingToMessage().messageId);
 	using namespace Calls::Group::Ui;
 	const auto &appConfig = _show->session().appConfig();
-	const auto starsToSend = [&] {
-		if (_chosenStarsCount) {
-			return *_chosenStarsCount;
+	const auto diamondsToSend = [&] {
+		if (_chosenDiamondsCount) {
+			return *_chosenDiamondsCount;
 		}
 		const auto perMessage = _history
-			? _history->peer->starsPerMessageChecked()
+			? _history->peer->diamondsPerMessageChecked()
 			: 0;
 		if (!perMessage) {
 			return 0;
@@ -4864,13 +4864,13 @@ void ComposeControls::updateSendButtonType() {
 	}();
 	_send->setState({
 		.type = type,
-		.fillBgOverride = (_chosenStarsCount.value_or(0)
-			? Ui::ColorFromSerialized(StarsColoringForCount(
+		.fillBgOverride = (_chosenDiamondsCount.value_or(0)
+			? Ui::ColorFromSerialized(DiamondsColoringForCount(
 				appConfig.groupCallColorings(),
-				*_chosenStarsCount).bgLight)
+				*_chosenDiamondsCount).bgLight)
 			: QColor()),
 		.slowmodeDelay = delay,
-		.starsToSend = ephemeralReply ? 0 : starsToSend,
+		.diamondsToSend = ephemeralReply ? 0 : diamondsToSend,
 		.forbidden = forbidden,
 	});
 	_send->setDisabled(_sendDisabledBySlowmode.current()
@@ -4913,7 +4913,7 @@ void ComposeControls::updateControlsGeometry(QSize size) {
 		- (_sendAs ? _sendAs->width() : 0)
 		- _st.padding.right()
 		- _send->width()
-		- (_editStars ? _editStars->width() : 0)
+		- (_editDiamonds ? _editDiamonds->width() : 0)
 		- (_tabbedSelectorToggle->isHidden()
 			? 0
 			: _tabbedSelectorToggle->width())
@@ -4931,7 +4931,7 @@ void ComposeControls::updateControlsGeometry(QSize size) {
 		- (_botKeyboardHide ? _botKeyboardHide->width() : 0)
 		- ((_ttlInfo && _ttlInfo->isVisible()) ? _ttlInfo->width() : 0)
 		- (_starsReaction
-			? (_st.starsSkip + _starsReaction->width())
+			? (_st.diamondsSkip + _starsReaction->width())
 			: 0);
 	{
 		_field->resizeToWidth(fieldWidth);
@@ -4992,14 +4992,14 @@ void ComposeControls::updateControlsGeometry(QSize size) {
 	auto right = 0;
 	if (_starsReaction) {
 		_starsReaction->moveToRight(right, buttonsTop);
-		right += _starsReaction->width() + _st.starsSkip;
+		right += _starsReaction->width() + _st.diamondsSkip;
 	}
 	right += _st.padding.right();
 	_send->moveToRight(right, buttonsTop);
 	right += _send->width();
-	if (_editStars) {
-		_editStars->moveToRight(right, buttonsTop);
-		right += _editStars->width();
+	if (_editDiamonds) {
+		_editDiamonds->moveToRight(right, buttonsTop);
+		right += _editDiamonds->width();
 	}
 	_tabbedSelectorToggle->moveToRight(right, buttonsTop);
 	if (!_tabbedSelectorToggle->isHidden()) {
@@ -5080,8 +5080,8 @@ void ComposeControls::updateControlsVisibility() {
 	if (_like) {
 		_like->setVisible(_likeShown);
 	}
-	if (_editStars) {
-		_editStars->show();
+	if (_editDiamonds) {
+		_editDiamonds->show();
 	}
 	if (_ttlInfo) {
 		_ttlInfo->setVisible(!hide);
@@ -5325,7 +5325,7 @@ bool ComposeControls::canSendAiComposeDirect() const {
 		&& (computeSendButtonType() == Type::Send)
 		&& (_slowmodeSecondsLeft.current() == 0)
 		&& !_sendDisabledBySlowmode.current()
-		&& !shownStarsPerMessage();
+		&& !shownDiamondsPerMessage();
 }
 
 bool ComposeControls::hasEnoughLinesForAi() const {
@@ -5524,7 +5524,7 @@ void ComposeControls::refreshSendGiftToggle() {
 			st::historyGiftToUser);
 		_giftToUser->setAccessibleName(tr::lng_gift_send_title(tr::now));
 		_giftToUser->setClickedCallback([=] {
-			Ui::ShowStarGiftBox(_regularWindow, user);
+			Ui::ShowDiamondGiftBox(_regularWindow, user);
 		});
 		orderControls();
 		updateControlsVisibility();
@@ -5560,7 +5560,7 @@ bool ComposeControls::updateSendAsButton(
 	if (videoStream) {
 		Ui::SetupSendAsButton(_sendAs.get(), st, videoStream, _show);
 		_videoStreamAdmin = videoStream->creator();
-		initEditStarsButton();
+		initEditDiamondsButton();
 		updateControlsGeometry(_wrap->size());
 	} else {
 		Ui::SetupSendAsButton(_sendAs.get(), st, rpl::single(peer), _show);
@@ -5621,7 +5621,7 @@ void ComposeControls::paintBackground(QPainter &p, QRect full, QRect clip) {
 		if (_starsReaction) {
 			full.setWidth(full.width()
 				- _starsReaction->width()
-				- _st.starsSkip);
+				- _st.diamondsSkip);
 		}
 		p.drawRoundedRect(full, _st.radius, _st.radius);
 	} else {
@@ -6033,7 +6033,7 @@ void ComposeControls::initWebpageProcess() {
 		| Data::PeerUpdate::Flag::Notifications
 		| Data::PeerUpdate::Flag::MessagesTTL
 		| Data::PeerUpdate::Flag::FullInfo
-		| Data::PeerUpdate::Flag::StarsPerMessage
+		| Data::PeerUpdate::Flag::DiamondsPerMessage
 		| Data::PeerUpdate::Flag::GiftSettings
 	) | rpl::filter([peer = _history->peer](const Data::PeerUpdate &update) {
 		return (update.peer.get() == peer);
@@ -6051,11 +6051,11 @@ void ComposeControls::initWebpageProcess() {
 		if (flags & Data::PeerUpdate::Flag::MessagesTTL) {
 			updateMessagesTTLShown();
 		}
-		if (flags & Data::PeerUpdate::Flag::StarsPerMessage) {
+		if (flags & Data::PeerUpdate::Flag::DiamondsPerMessage) {
 			updateFieldPlaceholder();
 		}
 		if (flags & (Data::PeerUpdate::Flag::Rights
-			| Data::PeerUpdate::Flag::StarsPerMessage)) {
+			| Data::PeerUpdate::Flag::DiamondsPerMessage)) {
 			updateAttachBotsMenu();
 		}
 		if (flags & (Data::PeerUpdate::Flag::Rights

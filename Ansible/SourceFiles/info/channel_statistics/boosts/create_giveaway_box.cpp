@@ -611,7 +611,7 @@ void CreateGiveawayBox(
 				Ui::FillAmountAndCurrency(option.amount, option.currency),
 				st::creditsTopupPrice);
 			const auto inner = Ui::CreateChild<Ui::RpWidget>(button);
-			const auto stars = Ui::GenerateStars(
+			const auto stars = Ui::GenerateDiamonds(
 				st.nameStyle.font->height,
 				(i + 1));
 			const auto textLeft = st.photoPosition.x()

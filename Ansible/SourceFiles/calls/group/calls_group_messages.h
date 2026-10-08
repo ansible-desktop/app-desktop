@@ -54,23 +54,23 @@ struct MessageDeleteRequest {
 	bool reportSpam = false;
 };
 
-struct StarsDonor {
+struct DiamondsDonor {
 	PeerData *peer = nullptr;
 	int stars = 0;
 	bool my = false;
 
 	friend inline bool operator==(
-		const StarsDonor &,
-		const StarsDonor &) = default;
+		const DiamondsDonor &,
+		const DiamondsDonor &) = default;
 };
 
-struct StarsTop {
-	std::vector<StarsDonor> topDonors;
+struct DiamondsTop {
+	std::vector<DiamondsDonor> topDonors;
 	int total = 0;
 
 	friend inline bool operator==(
-		const StarsTop &,
-		const StarsTop &) = default;
+		const DiamondsTop &,
+		const DiamondsTop &) = default;
 };
 
 class Messages final : public base::has_weak_ptr {
@@ -100,11 +100,11 @@ public:
 		int total = 0;
 		int my = 0;
 	};
-	[[nodiscard]] PaidLocalState starsLocalState() const;
-	[[nodiscard]] rpl::producer<StarsDonor> starsValueChanges() const {
+	[[nodiscard]] PaidLocalState diamondsLocalState() const;
+	[[nodiscard]] rpl::producer<DiamondsDonor> diamondsValueChanges() const {
 		return _paidChanges.events();
 	}
-	[[nodiscard]] const StarsTop &starsTop() const {
+	[[nodiscard]] const DiamondsTop &diamondsTop() const {
 		return _paid.top;
 	}
 
@@ -123,7 +123,7 @@ private:
 		int stars = 0;
 	};
 	struct Paid {
-		StarsTop top;
+		DiamondsTop top;
 		PeerId scheduledShownPeer = 0;
 		PeerId sendingShownPeer = 0;
 		uint32 scheduled : 30 = 0;
@@ -158,8 +158,8 @@ private:
 	void finishPaidSending(
 		Data::PaidReactionSend send,
 		bool success);
-	void addStars(not_null<PeerData*> from, int stars, bool mine);
-	void requestStarsStats();
+	void addDiamonds(not_null<PeerData*> from, int stars, bool mine);
+	void requestDiamondsStats();
 
 	const not_null<GroupCall*> _call;
 	const not_null<Main::Session*> _session;
@@ -183,7 +183,7 @@ private:
 
 	mtpRequestId _starsTopRequestId = 0;
 	Paid _paid;
-	rpl::event_stream<StarsDonor> _paidChanges;
+	rpl::event_stream<DiamondsDonor> _paidChanges;
 	bool _paidSendingPending = false;
 
 	TimeId _ttl = 0;

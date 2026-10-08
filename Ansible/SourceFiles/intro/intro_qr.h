@@ -68,7 +68,7 @@ private:
 
 };
 
-[[nodiscard]] QImage TelegramLogoImage();
+[[nodiscard]] QImage AnsibleLogoImage();
 
 } // namespace details
 } // namespace Intro

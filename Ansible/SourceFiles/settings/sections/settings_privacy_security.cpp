@@ -207,7 +207,7 @@ rpl::producer<QString> PrivacyButtonLabel(
 	return PrivacyString(session, key);
 }
 
-void AddPrivacyPremiumStar(
+void AddPrivacyPremiumDiamond(
 		not_null<Ui::SettingsButton*> button,
 		not_null<::Main::Session*> session,
 		rpl::producer<QString> label,
@@ -219,21 +219,21 @@ void AddPrivacyPremiumStar(
 
 	const auto factor = style::DevicePixelRatio();
 	const auto size = Size(st::settingsButtonNoIcon.style.font->ascent);
-	auto starImage = QImage(
+	auto diamondImage = QImage(
 		size * factor,
 		QImage::Format_ARGB32_Premultiplied);
-	starImage.setDevicePixelRatio(factor);
-	starImage.fill(Qt::transparent);
+	diamondImage.setDevicePixelRatio(factor);
+	diamondImage.fill(Qt::transparent);
 	{
-		auto p = QPainter(&starImage);
+		auto p = QPainter(&diamondImage);
 		auto star = QSvgRenderer(
 			Ui::Premium::ColorizedSvg(Ui::Premium::ButtonGradientStops()));
 		star.render(&p, Rect(size));
 	}
 
-	badge->resize(starImage.size() / style::DevicePixelRatio());
+	badge->resize(diamondImage.size() / style::DevicePixelRatio());
 	badge->paintRequest(
-	) | rpl::on_next([=, star = std::move(starImage)] {
+	) | rpl::on_next([=, star = std::move(diamondImage)] {
 		auto p = QPainter(badge);
 		p.drawImage(0, 0, star);
 	}, badge->lifetime());
@@ -897,9 +897,9 @@ void BuildPrivacySection(SectionBuilder &builder) {
 	const auto privacy = &session->api().globalPrivacy();
 	auto messagesLabel = rpl::combine(
 		privacy->newRequirePremium(),
-		privacy->newChargeStars()
-	) | rpl::map([=](bool requirePremium, int chargeStars) {
-		return chargeStars
+		privacy->newChargeDiamonds()
+	) | rpl::map([=](bool requirePremium, int chargeDiamonds) {
+		return chargeDiamonds
 			? tr::lng_edit_privacy_paid()
 			: requirePremium
 			? tr::lng_edit_privacy_contacts_and_premium()
@@ -918,7 +918,7 @@ void BuildPrivacySection(SectionBuilder &builder) {
 		.keywords = { u"messages"_q, u"new"_q, u"unknown"_q },
 	});
 	if (messagesPremium && messagesButton) {
-		AddPrivacyPremiumStar(
+		AddPrivacyPremiumDiamond(
 			messagesButton,
 			session,
 			std::move(messagesLabel),
