@@ -60,17 +60,17 @@ static_assert(sizeof(DiamondUniforms) % 16 == 0);
 
 } // namespace
 
-DiamondRenderer::DiamondRenderer() = default;
+StarRenderer::StarRenderer() = default;
 
-DiamondRenderer::~DiamondRenderer() {
+StarRenderer::~StarRenderer() {
 	releaseResources();
 }
 
-void DiamondRenderer::setState(State state) {
+void StarRenderer::setState(State state) {
 	_state = state;
 }
 
-void DiamondRenderer::setColors(QColor gradient1, QColor gradient2) {
+void StarRenderer::setColors(QColor gradient1, QColor gradient2) {
 	_gradient1 = { {
 		float(gradient1.redF()),
 		float(gradient1.greenF()),
@@ -83,11 +83,11 @@ void DiamondRenderer::setColors(QColor gradient1, QColor gradient2) {
 	} };
 }
 
-void DiamondRenderer::setGolden(bool golden) {
+void StarRenderer::setGolden(bool golden) {
 	_golden = golden;
 }
 
-void DiamondRenderer::initialize(
+void StarRenderer::initialize(
 		QRhi *rhi,
 		QRhiRenderTarget *rt,
 		QRhiCommandBuffer *cb) {
@@ -166,7 +166,7 @@ void DiamondRenderer::initialize(
 		.arg(rhi->driverInfo().deviceName));
 }
 
-bool DiamondRenderer::createPipeline(QRhiRenderTarget *rt) {
+bool StarRenderer::createPipeline(QRhiRenderTarget *rt) {
 	const auto vertShader = LoadObject3dShader(u"premium_star.vert"_q);
 	const auto fragShader = LoadObject3dShader(u"premium_star.frag"_q);
 	if (!vertShader.isValid() || !fragShader.isValid()) {
@@ -230,7 +230,7 @@ bool DiamondRenderer::createPipeline(QRhiRenderTarget *rt) {
 	return _pipeline->create();
 }
 
-void DiamondRenderer::render(
+void StarRenderer::render(
 		QRhi *rhi,
 		QRhiRenderTarget *rt,
 		QRhiCommandBuffer *cb) {
@@ -304,7 +304,7 @@ void DiamondRenderer::render(
 	cb->endPass();
 }
 
-void DiamondRenderer::releaseResources() {
+void StarRenderer::releaseResources() {
 	if (!_rhi) {
 		return;
 	}

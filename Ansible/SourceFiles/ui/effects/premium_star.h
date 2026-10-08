@@ -12,7 +12,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 namespace Ui::Premium {
 
-class DiamondRenderer;
+class StarRenderer;
 
 class Star final : public RpWidget {
 public:
@@ -86,7 +86,7 @@ private:
 	void flipGesture();
 	void sleepGesture();
 
-	DiamondRenderer *_renderer = nullptr;
+	StarRenderer *_renderer = nullptr;
 	std::unique_ptr<RpWidgetWrap> _surface;
 	QImage _frozen;
 	Ui::Animations::Basic _animation;
