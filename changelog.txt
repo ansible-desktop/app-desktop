@@ -1,3 +1,14 @@
+0.3.5 (08.10.26)
+
+- The diamond is back. Since 0.3.3 the currency symbol was missing
+  everywhere - balances, operation history, gift buttons, Premium prices -
+  because the icon was added to the repository but never to the list of
+  resources the application compiles in, so there was nothing to draw.
+
+- The round logo is redrawn: it stands in for the service account's photo
+  and for hidden notifications, and the square tile looked wrong once the
+  app cut a circle out of it.
+
 0.3.4 (07.10.26)
 
 - New artwork throughout: the application icon in every size it is shown at,
