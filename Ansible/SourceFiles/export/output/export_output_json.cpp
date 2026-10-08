@@ -2014,7 +2014,7 @@ QByteArray SerializeMessage(
 		} else {
 			push("price_amount_whole", NumberToString(data.price.whole()));
 			push("price_amount_nano", NumberToString(data.price.nano()));
-			push("price_currency", data.price.ton() ? "TON" : "Stars");
+			push("price_currency", data.price.ton() ? "TON" : "Diamonds");
 			push("scheduled_date", data.scheduleDate);
 		}
 	}, [&](const ActionSuggestedPostSuccess &data) {
@@ -2022,7 +2022,7 @@ QByteArray SerializeMessage(
 		pushAction("suggested_post_success");
 		push("price_amount_whole", NumberToString(data.price.whole()));
 		push("price_amount_nano", NumberToString(data.price.nano()));
-		push("price_currency", data.price.ton() ? "TON" : "Stars");
+		push("price_currency", data.price.ton() ? "TON" : "Diamonds");
 	}, [&](const ActionSuggestedPostRefund &data) {
 		pushActor();
 		pushAction("suggested_post_refund");

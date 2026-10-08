@@ -488,7 +488,7 @@ void Form::requestForm() {
 				= data.vinvoice().data().vsubscription_period().value_or(0);
 			if (currency != ::Ui::kCreditsCurrency || !amount) {
 				using Type = Error::Type;
-				_updates.fire(Error{ Type::Form, u"Bad Stars Form."_q });
+				_updates.fire(Error{ Type::Form, u"Bad Diamonds Form."_q });
 				return;
 			}
 			const auto invoice = InvoiceCredits{
@@ -522,7 +522,7 @@ void Form::requestForm() {
 				: tlPrices.front().data().vamount().v;
 			if (currency != ::Ui::kCreditsCurrency || !amount) {
 				using Type = Error::Type;
-				_updates.fire(Error{ Type::Form, u"Bad Stars Form."_q });
+				_updates.fire(Error{ Type::Form, u"Bad Diamonds Form."_q });
 				return;
 			}
 			const auto invoice = InvoiceCredits{

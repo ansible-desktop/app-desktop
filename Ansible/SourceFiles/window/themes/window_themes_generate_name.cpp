@@ -293,7 +293,7 @@ const auto kSubjectives = std::vector<const char*>{
 	"Shimmer",
 	"Sky",
 	"Spice",
-	"Star",
+	"Diamond",
 	"Sugar",
 	"Sunrise",
 	"Sunset",

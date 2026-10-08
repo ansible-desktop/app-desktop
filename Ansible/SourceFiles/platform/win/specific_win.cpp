@@ -489,7 +489,7 @@ void AutostartToggle(bool enabled, Fn<void(bool)> done) {
 		FOLDERID_Startup,
 		L"-autostart",
 		L"Ansible autorun link.\n"
-		"You can disable autorun in Telegram settings.");
+		"You can disable autorun in Ansible settings.");
 	if (done) {
 		done(enabled && success);
 	}
@@ -757,7 +757,7 @@ void psSendToMenu(bool send, bool silent) {
 		FOLDERID_SendTo,
 		L"--",
 		L"Ansible send to link.\n"
-		"You can disable send to menu item in Telegram settings.");
+		"You can disable send to menu item in Ansible settings.");
 }
 
 // Stub while we still support Windows 7.

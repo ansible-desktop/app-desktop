@@ -536,7 +536,7 @@ int main(int argc, char *argv[]) {
 			return 1;
 		}
 
-		writeLog("Executed Telegram, closing log and quitting..");
+		writeLog("Executed Ansible, closing log and quitting..");
 	}
 
 	closeLog();

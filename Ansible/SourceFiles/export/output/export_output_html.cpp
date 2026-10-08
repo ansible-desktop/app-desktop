@@ -3922,7 +3922,7 @@ auto HtmlWriter::Wrap::pushMessage(
 			dialog,
 			basePath,
 			"This message is not supported by this version "
-			"of Telegram Desktop. Please update the application.") };
+			"of Ansible Desktop. Please update the application.") };
 	}
 
 	const auto wrapReplyToLink = [&](const QByteArray &text) {
@@ -4192,10 +4192,10 @@ auto HtmlWriter::Wrap::pushMessage(
 			? "No winners of the giveaway could be selected."
 			: (data.credits && data.unclaimed)
 			? "Some winners of the giveaway were randomly selected by "
-				"Telegram and received their prize."
+				"Ansible and received their prize."
 			: (!data.credits && data.unclaimed)
 			? "Some winners of the giveaway were randomly selected by "
-				"Telegram and received private messages with giftcodes."
+				"Ansible and received private messages with giftcodes."
 			: (data.credits && !data.unclaimed)
 			? NumberToString(data.winners) + " of the giveaway was randomly "
 				"selected by Ansible and received their prize."
@@ -4222,30 +4222,30 @@ auto HtmlWriter::Wrap::pushMessage(
 			+ data.cost
 			+ ": "
 			+ QString::number(data.amount.value()).toUtf8()
-			+ (data.amount.ton() ? " TON." : " Telegram Stars.");
+			+ (data.amount.ton() ? " TON." : " Ansible Diamonds.");
 	}, [&](const ActionPrizeDiamonds &data) {
 		return "You won a prize in a giveaway organized by "
 			+ peers.wrapPeerName(data.peerId)
 			+ ".\n Your prize is "
 			+ QString::number(data.amount).toUtf8()
-			+ " Telegram Stars.";
+			+ " Ansible Diamonds.";
 	}, [&](const ActionDiamondGift &data) {
 		return serviceFrom
 			+ " sent you a gift of "
 			+ QByteArray::number(data.stars)
-			+ " Telegram Stars.";
+			+ " Ansible Diamonds.";
 	}, [&](const ActionPaidMessagesRefunded &data) {
 		auto result = message.out
 			? ("You refunded "
 				+ QString::number(data.stars).toUtf8()
-				+ " Stars for "
+				+ " Diamonds for "
 				+ QString::number(data.messages).toUtf8()
 				+ " messages to "
 				+ peers.wrapPeerName(dialog.peerId))
 			: (peers.wrapPeerName(dialog.peerId)
 				+ " refunded "
 				+ QString::number(data.stars).toUtf8()
-				+ " Stars for "
+				+ " Diamonds for "
 				+ QString::number(data.messages).toUtf8()
 				+ " messages to you");
 		return result;
@@ -4255,12 +4255,12 @@ auto HtmlWriter::Wrap::pushMessage(
 				? "Direct messages were disabled."
 				: ("Price per direct message changed to "
 					+ QString::number(data.stars).toUtf8()
-					+ " Telegram Stars.");
+					+ " Ansible Diamonds.");
 			return result;
 		}
 		auto result = "Price per message changed to "
 			+ QString::number(data.stars).toUtf8()
-			+ " Telegram Stars.";
+			+ " Ansible Diamonds.";
 		return result;
 	}, [&](const ActionTodoCompletions &data) {
 		auto completed = QByteArrayList();
@@ -5196,7 +5196,7 @@ QByteArray HtmlWriter::Wrap::pushGiveaway(
 	if (data.credits > 0) {
 		result.append("<b>"
 			+ Data::NumberToString(data.credits)
-			+ (SerializeString(data.credits == 1 ? (" Star") : (" Stars")))
+			+ (SerializeString(data.credits == 1 ? (" Diamond") : (" Diamonds")))
 			+ "</b> " + SerializeString("will be distributed ")
 			+ ((data.quantity == 1)
 				? SerializeString("to ")
@@ -5366,15 +5366,15 @@ QByteArray HtmlWriter::Wrap::pushGiveaway(
 				+ "<b>"
 				+ Data::NumberToString(data.credits)
 				+ "</b>"
-				+ SerializeString(singleDiamond ? " Star." : " Stars.");
+				+ SerializeString(singleDiamond ? " Diamond." : " Diamonds.");
 		} else if (data.credits && data.winnersCount > 1) {
 			return SerializeString("All winners received ")
 				+ "<b>"
 				+ Data::NumberToString(data.credits)
 				+ "</b>"
 				+ SerializeString(singleDiamond
-					? " Star in total."
-					: " Stars in total.");
+					? " Diamond in total."
+					: " Diamonds in total.");
 		} else if (data.unclaimedCount) {
 			return SerializeString("Some winners couldn't be selected.");
 		} else if (data.winnersCount == 1) {
