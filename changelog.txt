@@ -1,3 +1,14 @@
+0.3.6 (09.10.26)
+
+- The last texts built into the application say Ansible and diamonds: the
+  crash and start-up error windows, the Passport reset prompts, the
+  autorun and Send To shortcuts on Windows, and exported chat history,
+  where prices, gifts and prizes are counted in diamonds - the JSON export
+  now names the currency "Diamonds".
+
+- Inside the code the currency is called diamonds as well. Nothing changes
+  on screen, but the old name is gone from the source.
+
 0.3.5 (08.10.26)
 
 - The diamond is back. Since 0.3.3 the currency symbol was missing
