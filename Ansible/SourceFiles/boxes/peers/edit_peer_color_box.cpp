@@ -596,7 +596,13 @@ void Set(
 				values.statusUntil);
 		}
 	} else if (const auto channel = peer->asChannel()) {
-		if (peer->isBroadcast()) {
+		// Upstream sends the colour only for broadcast channels, so a
+		// supergroup never saved its profile colour or background emoji
+		// from the desktop, while the Android and iOS apps send it for
+		// any channel. Groups have no name colour (the server answers
+		// CHANNEL_REQUIRED for that one), so only the profile part goes.
+		if (peer->isBroadcast()
+			|| (values.forProfile && peer->isMegagroup())) {
 			using Flag = MTPchannels_UpdateColor::Flag;
 			send(MTPchannels_UpdateColor(
 				MTP_flags((values.colorIndex != kUnsetColorIndex

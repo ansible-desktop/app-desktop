@@ -1,3 +1,10 @@
+0.3.7 (10.10.26)
+
+- Groups can now set a profile colour and a background emoji from the
+  desktop app. The appearance screen sends the change for supergroups
+  as the mobile apps do; before, the screen closed and the chosen
+  emoji disappeared on the next refresh.
+
 0.3.6 (09.10.26)
 
 - The last texts built into the application say Ansible and diamonds: the
