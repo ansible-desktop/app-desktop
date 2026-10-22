@@ -46,7 +46,7 @@ constexpr auto AppFile = "Ansible"_cs;
 constexpr auto ApiPlatformName = "adesktop";
 constexpr auto MiniAppPlatformName = "tdesktop";
 
-constexpr auto AppVersion = 3003007;
-constexpr auto AppVersionStr = "0.3.7";
+constexpr auto AppVersion = 3004000;
+constexpr auto AppVersionStr = "0.4.0";
 constexpr auto AppBetaVersion = false;
 constexpr auto AppAlphaVersion = TDESKTOP_ALPHA_VERSION;

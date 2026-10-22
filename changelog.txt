@@ -1,3 +1,8 @@
+0.4.0 (22.10.26)
+
+- Opening a user's QR code no longer crashes the app when there are no
+  chat themes available to build the code's colour palette.
+
 0.3.7 (10.10.26)
 
 - Groups can now set a profile colour and a background emoji from the
