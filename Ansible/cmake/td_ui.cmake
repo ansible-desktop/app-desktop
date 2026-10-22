@@ -80,7 +80,6 @@ set(style_files
     ui/controls/filter_link_header.style
     media/view/media_view.style
     overview/overview.style
-    wallet/wallet.style
     window/window.style
     window/window_main_menu.style
     editor/editor.style
@@ -549,8 +548,6 @@ PRIVATE
     ui/controls/text_copied_toast.h
     ui/controls/title_sub_widget.cpp
     ui/controls/title_sub_widget.h
-    ui/controls/ton_common.cpp
-    ui/controls/ton_common.h
     ui/controls/ttl_media.cpp
     ui/controls/ttl_media.h
     ui/controls/who_reacted_context_action.cpp
@@ -723,14 +720,6 @@ PRIVATE
     ui/window_palette.cpp
     ui/window_palette.h
 
-    wallet/wallet_card_angle.cpp
-    wallet/wallet_card_angle.h
-    wallet/wallet_card_gradient.cpp
-    wallet/wallet_card_gradient.h
-    wallet/wallet_card_tint.cpp
-    wallet/wallet_card_tint.h
-    wallet/wallet_sending_effects.cpp
-    wallet/wallet_sending_effects.h
 
     window/window_slide_animation.cpp
     window/window_slide_animation.h
