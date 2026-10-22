@@ -642,7 +642,7 @@ void AddAccountsRow(
 
 	container->sizeValue(
 	) | rpl::on_next([=](const QSize &size) {
-		const auto count = state->accounts.size();
+		const auto count = int(state->accounts.size());
 		const auto columnWidth = size.width() / count;
 		for (auto i = 0; i < count; i++) {
 			auto &account = state->accounts[i];

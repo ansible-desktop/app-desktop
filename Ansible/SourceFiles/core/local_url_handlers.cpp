@@ -74,6 +74,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/history.h"
 #include "history/history_item.h"
 #include "iv/iv_instance.h"
+#include "wallet/wallet_panel.h"
+#include "wallet/wallet_ton_connect_link.h"
 #include "apiwrap.h"
 
 #include "styles/style_chat_helpers.h"
@@ -84,6 +86,9 @@ namespace Core {
 namespace {
 
 using Match = qthelp::RegularExpressionMatch;
+
+constexpr auto kGetPremiumLocal = "internal:tme_getpremium"_cs;
+constexpr auto kGetPremiumRefMaxLength = 32;
 
 class PersonalChannelController final : public PeerListController {
 public:
@@ -563,6 +568,42 @@ bool ShowWallPaper(
 	return result;
 }
 
+bool OpenTonConnectQuery(
+		not_null<Window::SessionController*> controller,
+		const QString &query) {
+	if (const auto link = Wallet::ParseTonConnectLink(query)) {
+		Wallet::OpenTonConnectLink(controller, *link);
+	} else {
+		controller->showToast(tr::lng_wallet_send_link_invalid(tr::now));
+	}
+	return true;
+}
+
+bool ResolveContactToken(
+		Window::SessionController *controller,
+		const Match &match,
+		const QVariant &context) {
+	if (!controller) {
+		return false;
+	}
+	const auto params = url_parse_params(
+		match->captured(1),
+		qthelp::UrlParamNameTransform::ToLower);
+	const auto token = params.value(u"token"_q);
+	if (token.isEmpty()) {
+		controller->showToast(tr::lng_contact_link_invalid(tr::now));
+		return true;
+	}
+	const auto myContext = context.value<ClickHandlerContext>();
+	controller->window().activate();
+	controller->showPeerByLink(Window::PeerByLinkInfo{
+		.contactToken = token,
+		.noPaidToken = params.value(u"free"_q),
+		.clickFromMessageId = myContext.itemId,
+	});
+	return true;
+}
+
 bool ResolveUsernameOrPhone(
 		Window::SessionController *controller,
 		const Match &match,
@@ -573,6 +614,17 @@ bool ResolveUsernameOrPhone(
 	const auto params = url_parse_params(
 		match->captured(1),
 		qthelp::UrlParamNameTransform::ToLower);
+
+	// A dApp link must not choose the account, so this precedes "acc".
+	if (!params.value(u"domain"_q).compare(
+			u"sendgrams"_q,
+			Qt::CaseInsensitive)) {
+		const auto query = Wallet::TonConnectStartParamQuery(
+			params.value(u"startapp"_q));
+		if (query) {
+			return OpenTonConnectQuery(controller, *query);
+		}
+	}
 
 	if (params.contains(u"acc"_q)) {
 		const auto switched = ApplyAccountIndex(
@@ -727,6 +779,7 @@ bool ResolveUsernameOrPhone(
 			: Window::RepliesByLinkInfo{ v::null },
 		.resolveType = resolveType,
 		.referral = referral,
+		.noPaidToken = params.value(u"free"_q),
 		.startToken = startToken,
 		.startAdminRights = adminRights,
 		.startAutoSubmit = myContext.botStartAutoSubmit,
@@ -1504,6 +1557,50 @@ bool ResolvePremiumOffer(
 	return true;
 }
 
+[[nodiscard]] QString GetPremiumSource(const QString &ref) {
+	const auto lower = ref.toLower();
+	const auto allowed = [](QChar ch) {
+		return (ch >= 'a' && ch <= 'z')
+			|| (ch >= '0' && ch <= '9')
+			|| (ch == '_');
+	};
+	const auto valid = !lower.isEmpty()
+		&& (lower.size() <= kGetPremiumRefMaxLength)
+		&& ranges::all_of(lower, allowed);
+	return valid ? (u"tme_getpremium_"_q + lower) : u"tme_getpremium"_q;
+}
+
+bool ResolveGetPremium(
+		Window::SessionController *controller,
+		const Match &match,
+		const QVariant &context) {
+	if (!controller) {
+		return false;
+	}
+	const auto params = url_parse_params(
+		match->captured(1).mid(1),
+		qthelp::UrlParamNameTransform::ToLower);
+	::Settings::ShowPremium(
+		controller,
+		GetPremiumSource(params.value(u"ref"_q)));
+	controller->window().activate();
+	return true;
+}
+
+[[nodiscard]] QString GetPremiumLocalUrl(QStringView query) {
+	const auto hash = query.indexOf('#');
+	const auto path = (hash >= 0) ? query.left(hash) : query;
+	const auto question = path.indexOf('?');
+	const auto ref = (question >= 0)
+		? url_parse_params(
+			path.mid(question + 1).toString(),
+			qthelp::UrlParamNameTransform::ToLower).value(u"ref"_q)
+		: QString();
+	// internal:, so no external tg:// link can report this source.
+	return kGetPremiumLocal.utf16()
+		+ (ref.isEmpty() ? QString() : (u"?ref="_q + qthelp::url_encode(ref)));
+}
+
 bool ResolvePremiumMultigift(
 		Window::SessionController *controller,
 		const Match &match,
@@ -1698,6 +1795,28 @@ bool ResolveTonSettings(
 	return true;
 }
 
+bool ResolveSendGrams(
+		Window::SessionController *controller,
+		const Match &match,
+		const QVariant &context) {
+	if (!controller) {
+		return false;
+	}
+	const auto params = url_parse_params(
+		match->captured(1).mid(1),
+		qthelp::UrlParamNameTransform::ToLower);
+	const auto query = Wallet::TonConnectStartParamQuery(
+		params.value(u"startapp"_q));
+	if (query) {
+		return OpenTonConnectQuery(controller, *query);
+	}
+	Wallet::OpenSendGramsLink(
+		controller,
+		params.value(u"to"_q),
+		params.value(u"amount"_q));
+	return true;
+}
+
 bool ResolveOAuth(
 		Window::SessionController *controller,
 		const Match &match,
@@ -1787,6 +1906,10 @@ const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 			ResolveUsernameOrPhone
 		},
 		{
+			u"^contact/?(?:\\?([^#]*))?(?:#.*)?$"_q,
+			ResolveContactToken
+		},
+		{
 			u"^privatepost/?\\?(.+)(#|$)"_q,
 			ResolvePrivatePost
 		},
@@ -1841,6 +1964,10 @@ const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 		{
 			u"^(ton|grams)/?(^\\?.*)?(#|$)"_q,
 			ResolveTonSettings
+		},
+		{
+			u"^sendgrams/?(\\?.+)?(#|$)"_q,
+			ResolveSendGrams
 		},
 		{
 			u"^oauth/?\\?(.+)(#|$)"_q,
@@ -1924,6 +2051,10 @@ const std::vector<LocalUrlHandler> &InternalUrlHandlers() {
 			u"^about_popular_apps$"_q,
 			ShowPopularAppsAbout,
 		},
+		{
+			u"^tme_getpremium(\\?.*)?$"_q,
+			ResolveGetPremium,
+		},
 	};
 	return Result;
 }
@@ -1931,6 +2062,12 @@ const std::vector<LocalUrlHandler> &InternalUrlHandlers() {
 QString TryConvertUrlToLocal(QString url) {
 	if (url.size() > 8192) {
 		url = url.mid(0, 8192);
+	}
+	if (url.startsWith(u"tc://"_q, Qt::CaseInsensitive)) {
+		const auto query = url.indexOf('?');
+		return u"tg://sendgrams?startapp="_q
+			+ Wallet::TonConnectStartParam(
+				(query < 0) ? QString() : url.mid(query + 1));
 	}
 
 	using namespace qthelp;
@@ -2050,6 +2187,8 @@ QString TryConvertUrlToLocal(QString url) {
 				added = u"&post="_q + postMatch->captured(1);
 			}
 			return base + added + (params.isEmpty() ? QString() : '&' + params);
+		} else if (regex_match(u"^getpremium(/|\\?|#|$)"_q, query, matchOptions)) {
+			return GetPremiumLocalUrl(query);
 		} else if (const auto usernameMatch = regex_match(u"^"
 			"([a-zA-Z0-9\\.\\_]+)"
 			"("
@@ -2093,6 +2232,12 @@ QString TryConvertUrlToLocal(QString url) {
 		}
 	}
 	return url;
+}
+
+bool IsGetPremiumLocalUrl(const QString &url) {
+	const auto prefix = kGetPremiumLocal.utf16();
+	return url.startsWith(prefix, Qt::CaseInsensitive)
+		&& ((url.size() == prefix.size()) || (url[prefix.size()] == '?'));
 }
 
 bool IsMiniAppUrl(const QString &url) {

@@ -213,7 +213,9 @@ struct StarGift {
 		const StarGift &) = default;
 };
 
-class SavedDiamondGiftId {
+[[nodiscard]] bool SameServedStarGift(const StarGift &a, const StarGift &b);
+
+class SavedStarGiftId {
 public:
 	[[nodiscard]] static SavedDiamondGiftId User(MsgId messageId) {
 		auto result = SavedDiamondGiftId();
@@ -281,6 +283,7 @@ struct SavedStarGift {
 	bool pinned = false;
 	bool hidden = false;
 	bool mine = false;
+	bool refunded = false;
 };
 
 struct GiftUpgradeSpinner {
@@ -374,6 +377,10 @@ enum class MyUniqueType {
 	OnlyOwned,
 };
 
+[[nodiscard]] rpl::producer<MyGiftsDescriptor> PeerUniqueGiftsSlice(
+	not_null<PeerData*> peer,
+	MyUniqueType type,
+	QString offset = QString());
 [[nodiscard]] rpl::producer<MyGiftsDescriptor> MyUniqueGiftsSlice(
 	not_null<Main::Session*> session,
 	MyUniqueType type,

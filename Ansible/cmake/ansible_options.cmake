@@ -9,6 +9,7 @@
 #
 # 🚨 CACHE STRING обязателен. Обычная переменная в CMake ПЕРЕКРЫВАЕТ
 # кэш-переменную, а -D пишет именно в кэш. Форк когда-то заменил эти строки
+option(TDESKTOP_BUILD_UPDATE_TESTS "Build the focused update verification test." OFF)
 # обычным set(TDESKTOP_API_ID 1) — и любой -D TDESKTOP_API_ID=... из
 # воркфлоу молча игнорировался: в бинарь месяцами уезжал api_id=1.
 # Механизм апстрима здесь цел, задача — не сломать его снова.
@@ -22,6 +23,7 @@
 # подставляет ТЕЛЕГРАМОВСКУЮ тестовую пару 17349 — восстановить её значило
 # бы собирать наш клиент под чужой личностью. Часть воркфлоу до сих пор
 # передаёт -D TDESKTOP_API_TEST=ON; флаг теперь просто ни на что не влияет.
+option(TDESKTOP_BUILD_UPDATE_TESTS "Build the focused update verification test." OFF)
 set(TDESKTOP_API_ID "21000002" CACHE STRING "Provide 'api_id' for the Ansible API access.")
 set(TDESKTOP_API_HASH "316a4ba0755f7ca055e5f55e5f15ebbc" CACHE STRING "Provide 'api_hash' for the Ansible API access.")
 

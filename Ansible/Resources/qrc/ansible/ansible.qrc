@@ -18,6 +18,15 @@
     <file alias="night-green.adesktop-theme">../../night-green.adesktop-theme</file>
     <file alias="day-custom-base.adesktop-theme">../../day-custom-base.adesktop-theme</file>
     <file alias="night-custom-base.adesktop-theme">../../night-custom-base.adesktop-theme</file>
+    <file alias="art/premium/diamond/anchors.bin">../../art/premium/diamond/anchors.bin</file>
+    <file alias="art/premium/diamond/camera.bin">../../art/premium/diamond/camera.bin</file>
+    <file alias="art/premium/diamond/facetProjection.bin">../../art/premium/diamond/facetProjection.bin</file>
+    <file alias="art/premium/diamond/frames.bin">../../art/premium/diamond/frames.bin</file>
+    <file alias="art/premium/diamond/main.bin">../../art/premium/diamond/main.bin</file>
+    <file alias="art/premium/diamond/planes.bin">../../art/premium/diamond/planes.bin</file>
+    <file alias="art/premium/diamond/small.bin">../../art/premium/diamond/small.bin</file>
+    <file alias="art/premium/diamond/vertices.bin">../../art/premium/diamond/vertices.bin</file>
+    <file alias="art/premium/diamond/widths.bin">../../art/premium/diamond/widths.bin</file>
     <file alias="icons/calls/hands.lottie">../../icons/calls/hands.lottie</file>
     <file alias="icons/calls/voice.lottie">../../icons/calls/voice.lottie</file>
     <file alias="recording/info_audio.svg">../../art/recording/recording_info_audio.svg</file>

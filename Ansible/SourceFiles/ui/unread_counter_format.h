@@ -11,3 +11,5 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 	int unreadCounter,
 	bool hasMentionOrReaction,
 	bool narrow = false);
+
+[[nodiscard]] QString FormatUnreadCounterShort(int unreadCounter);

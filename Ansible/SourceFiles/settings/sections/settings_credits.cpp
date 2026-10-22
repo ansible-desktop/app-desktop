@@ -156,9 +156,9 @@ Credits::Credits(
 	CreditsType type)
 : Section(parent, controller)
 , _creditsType(type)
-, _diamond(Ui::GenerateDiamonds(st::creditsTopupButton.height, 1))
-, _balanceDiamond((_creditsType == CreditsType::Ton)
-		? Ui::Earn::IconCurrencyColored(
+, _star(Ui::GenerateStars(st::creditsTopupButton.height, 1))
+, _balanceStar((_creditsType == CreditsType::Ton)
+		? Ui::Earn::IconCurrencyTwoTone(
 			st::tonFieldIconSize,
 			st::currencyFg->c)
 		: Ui::GenerateDiamonds(st::creditsBalanceStarHeight, 1)) {
@@ -573,7 +573,7 @@ void Credits::setupContent() {
 				isCurrency
 					? std::make_unique<Ui::CustomEmoji::Internal>(
 						u"currency_icon:%1"_q.arg(height),
-						Ui::Earn::IconCurrencyColored(
+						Ui::Earn::IconCurrencyTwoTone(
 							st::tonFieldIconSize,
 							st::currencyFg->c))
 					: Ui::MakeCreditsIconEmoji(height, 1),
@@ -700,6 +700,11 @@ base::weak_qptr<Ui::RpWidget> Credits::createPinnedToTop(
 				.use3dDiamond = isCurrency,
 				.gradientStops = Ui::Premium::CreditsIconGradientStops(),
 				.showFinished = _showFinished.events(),
+				.lottie = isCurrency ? u"gram"_q : QString(),
+				.lottieSize = (isCurrency
+					? st::creditsCurrencyCoverLottieSize
+					: QSize()),
+				.lottieTop = isCurrency ? st::creditsCurrencyCoverLottieTop : 0,
 			});
 	}();
 	controller()->boxShownValue(

@@ -1,7 +1,8 @@
 0.4.0 (22.10.26)
 
-- Opening a user's QR code no longer crashes the app when there are no
-  chat themes available to build the code's colour palette.
+- Rebase onto upstream Telegram Desktop 7.3.3 (API layer 232).
+- The user QR code box no longer crashes when no chat themes are available
+  (resolved by the upstream rewrite of that screen).
 
 0.3.7 (10.10.26)
 

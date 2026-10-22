@@ -31,6 +31,11 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
   BuildTarget="$line"
 done < "$FullScriptPath/target"
 
+if [ "$BuildTarget" == "mac" ] || [ "$BuildTarget" == "macstore" ]; then
+  python3 "$FullScriptPath/build_mac.py" --check \
+    || Error "macOS releases require preserved Command Line Tools 26.6 and macOS SDK 26.5."
+fi
+
 UpdateKeysLoc="$FullScriptPath/../Resources/update"
 
 # Update signing settings. Edit these directly when rotating keys, they are

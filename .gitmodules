@@ -103,3 +103,6 @@
 [submodule "Ansible/ThirdParty/libfido2"]
 	path = Ansible/ThirdParty/libfido2
 	url = https://github.com/ansible-desktop/libfido2.git
+[submodule "Ansible/ThirdParty/zxcvbn"]
+	path = Ansible/ThirdParty/zxcvbn
+	url = https://github.com/ansible-desktop/zxcvbn-c.git
