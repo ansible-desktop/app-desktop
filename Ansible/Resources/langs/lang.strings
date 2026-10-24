@@ -9336,3 +9336,4 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 "lng_passcode_strength_advice_fine" = "This passcode is hard to guess.";
 
 // Keys finished
+"lng_credits_box_history_entry_miniapp" = "Mini App";

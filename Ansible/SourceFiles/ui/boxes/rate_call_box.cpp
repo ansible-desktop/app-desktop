@@ -44,10 +44,10 @@ void RateCallBox::prepare() {
 void RateCallBox::resizeEvent(QResizeEvent *e) {
 	BoxContent::resizeEvent(e);
 
-	const auto starsWidth = int(_stars.size()) * st::callRatingStar.width;
+	const auto starsWidth = int(_diamonds.size()) * st::callRatingStar.width;
 	auto starLeft = (width() - starsWidth) / 2;
 	const auto starTop = st::callRatingStarTop;
-	for (auto &star : _stars) {
+	for (auto &star : _diamonds) {
 		star->moveToLeft(starLeft, starTop);
 		starLeft += star->width();
 	}

@@ -215,7 +215,7 @@ struct StarGift {
 
 [[nodiscard]] bool SameServedStarGift(const StarGift &a, const StarGift &b);
 
-class SavedStarGiftId {
+class SavedDiamondGiftId {
 public:
 	[[nodiscard]] static SavedDiamondGiftId User(MsgId messageId) {
 		auto result = SavedDiamondGiftId();
