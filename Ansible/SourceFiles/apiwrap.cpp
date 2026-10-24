@@ -89,7 +89,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "main/main_account.h"
 #include "ui/boxes/confirm_box.h"
 #include "ui/boxes/emoji_stake_box.h"
-#include "ui/controls/ton_common.h"
 #include "boxes/sticker_set_box.h"
 #include "boxes/premium_limits_box.h"
 #include "window/notifications_manager.h"

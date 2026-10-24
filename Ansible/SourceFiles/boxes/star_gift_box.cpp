@@ -2516,7 +2516,7 @@ bool CanSendStarGiftTo(not_null<PeerData*> peer) {
 	return false;
 }
 
-void ShowStarGiftBox(
+void ShowDiamondGiftBox(
 		not_null<Window::SessionController*> controller,
 		not_null<PeerData*> peer) {
 	if (controller->showFrozenError()) {

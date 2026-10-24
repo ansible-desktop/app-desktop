@@ -489,6 +489,8 @@ PRIVATE
     ui/chat/unsupported_notice.cpp
     ui/chat/unsupported_notice.h
     ui/controls/button_busy.cpp
+    ui/controls/ton_common.cpp
+    ui/controls/ton_common.h
     ui/controls/button_busy.h
     ui/controls/button_context_menu.cpp
     ui/controls/button_context_menu.h

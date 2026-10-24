@@ -94,7 +94,7 @@ void ChooseDiamondGiftRecipient(
 	const std::vector<UserId> &exclude = {});
 
 [[nodiscard]] bool CanSendStarGiftTo(not_null<PeerData*> peer);
-void ShowStarGiftBox(
+void ShowDiamondGiftBox(
 	not_null<Window::SessionController*> controller,
 	not_null<PeerData*> peer);
 

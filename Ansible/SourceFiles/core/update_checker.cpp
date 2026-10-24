@@ -66,6 +66,9 @@ namespace {
 constexpr auto kUpdaterTimeout = 10 * crl::time(1000);
 constexpr auto kMaxResponseSize = 1024 * 1024;
 
+constexpr auto kFrequentUpdateDelayConstPart = 600;
+constexpr auto kFrequentUpdateDelayRandPart = 300;
+
 // adata/version marker for installed v2 canary packages, holding the full
 // 64-bit (base << 32 | counter) version. 0x7FFFFFFF is the alpha marker.
 constexpr auto kVersionFileCanaryMarker = quint32(0x7FFFFFFE);
@@ -593,6 +596,12 @@ bool UnpackUpdate(const QString &filepath) {
 		LOG(("Update Error: unsupported update format (missing v2 magic)."));
 		return false;
 	}
+
+#if defined Q_OS_WIN && !defined TDESKTOP_USE_PACKAGED // use Lzma SDK for win
+	const int32 hSigLen = 128, hShaLen = 20, hPropsLen = LZMA_PROPS_SIZE, hOriginalSizeLen = sizeof(int32), hSize = hSigLen + hShaLen + hPropsLen + hOriginalSizeLen; // header
+#else // Q_OS_WIN && !TDESKTOP_USE_PACKAGED
+	const int32 hSigLen = 128, hShaLen = 20, hPropsLen = 0, hOriginalSizeLen = sizeof(int32), hSize = hSigLen + hShaLen + hOriginalSizeLen; // header
+#endif // Q_OS_WIN && !TDESKTOP_USE_PACKAGED
 
 	int32 compressedLen = compressed.size() - hSize;
 	if (compressedLen <= 0) {
