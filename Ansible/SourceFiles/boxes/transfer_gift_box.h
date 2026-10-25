@@ -38,7 +38,7 @@ void ShowTransferToBox(
 void ShowTransferGiftBox(
 	not_null<Window::SessionController*> window,
 	std::shared_ptr<Data::UniqueGift> gift,
-	Data::SavedStarGiftId savedId,
+	Data::SavedDiamondGiftId savedId,
 	bool shownOnProfile);
 
 void ShowGiftSaleAcceptBox(

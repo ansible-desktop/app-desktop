@@ -79,7 +79,7 @@ constexpr auto kRefreshEach = 3600 * crl::time(1000);
 		Expects(data.savedId || data.gift.unique);
 
 		return MTP_inputShareThemeGift(
-			InputSavedStarGiftId(data.savedId, data.gift.unique));
+			InputSavedDiamondGiftId(data.savedId, data.gift.unique));
 	});
 }
 

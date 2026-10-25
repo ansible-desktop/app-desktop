@@ -4227,7 +4227,7 @@ void UpgradeBox(
 			//const auto backdropIndex = base::RandomIndex(args.backdrops.size());
 			//const auto result = std::make_shared<Data::GiftUpgradeResult>(Data::GiftUpgradeResult{
 			//	.info = args.stargift,
-			//	.manageId = Data::SavedStarGiftId::User(123),
+			//	.manageId = Data::SavedDiamondGiftId::User(123),
 			//	.date = base::unixtime::now(),
 			//	.starsForDetailsRemove = 119,
 			//	.saved = true,

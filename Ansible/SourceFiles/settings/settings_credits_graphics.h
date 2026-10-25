@@ -209,7 +209,7 @@ void GlobalDiamondGiftBox(
 	not_null<Ui::GenericBox*> box,
 	std::shared_ptr<ChatHelpers::Show> show,
 	const Data::StarGift &data,
-	StarGiftResaleInfo resale,
+	DiamondGiftResaleInfo resale,
 	CreditsEntryBoxStyleOverrides st = {},
 	std::shared_ptr<const UniqueGiftCoverActions> actions = nullptr);
 

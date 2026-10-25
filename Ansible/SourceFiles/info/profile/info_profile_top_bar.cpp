@@ -1215,7 +1215,7 @@ void TopBar::setupActions(not_null<Window::SessionController*> controller) {
 			tr::lng_profile_action_short_gift(tr::now),
 			st::infoProfileTopBarActionGift);
 		giftButton->setClickedCallback([=] {
-			Ui::ShowStarGiftBox(controller, peer);
+			Ui::ShowDiamondGiftBox(controller, peer);
 		});
 		giftButton->setAccessibleName(tr::lng_profile_action_short_gift(tr::now));
 		_actions->add(giftButton);

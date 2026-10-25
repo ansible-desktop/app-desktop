@@ -253,9 +253,9 @@ void BrowseGifts(
 	if (!controller) {
 		return;
 	} else if (peer->isSelf()) {
-		Ui::ShowStarGiftBox(controller, controller->session().user());
+		Ui::ShowDiamondGiftBox(controller, controller->session().user());
 	} else if (Ui::CanSendStarGiftTo(peer)) {
-		Ui::ShowStarGiftBox(controller, peer);
+		Ui::ShowDiamondGiftBox(controller, peer);
 	}
 }
 

@@ -7,7 +7,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 */
 #include "data/components/recent_shared_media_gifts.h"
 
-#include "api/api_credits.h" // InputSavedStarGiftId
+#include "api/api_credits.h" // InputSavedDiamondGiftId
 #include "api/api_premium.h"
 #include "apiwrap.h"
 #include "boxes/star_gift_box.h"

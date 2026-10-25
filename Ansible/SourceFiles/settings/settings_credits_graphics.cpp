@@ -304,11 +304,11 @@ void ConvertStarGift(
 
 void DeleteStarGift(
 		std::shared_ptr<ChatHelpers::Show> show,
-		Data::SavedStarGiftId savedId,
+		Data::SavedDiamondGiftId savedId,
 		Fn<void(bool)> done) {
 	const auto session = &show->session();
 	session->api().request(MTPpayments_DeleteStarGift(
-		Api::InputSavedStarGiftId(savedId)
+		Api::InputSavedDiamondGiftId(savedId)
 	)).done([=](const MTPBool &result) {
 		if (!mtpIsTrue(result)) {
 			done(false);
@@ -336,7 +336,7 @@ void DeleteStarGift(
 void AddDeleteGiftMenuButton(
 		not_null<Ui::GenericBox*> box,
 		std::shared_ptr<ChatHelpers::Show> show,
-		Data::SavedStarGiftId savedId) {
+		Data::SavedDiamondGiftId savedId) {
 	const auto weak = base::make_weak(box);
 	const auto busy = box->lifetime().make_state<bool>(false);
 	const auto confirmed = [=](Fn<void()> close) {
@@ -2900,7 +2900,7 @@ void GlobalDiamondGiftBox(
 		not_null<Ui::GenericBox*> box,
 		std::shared_ptr<ChatHelpers::Show> show,
 		const Data::StarGift &data,
-		StarGiftResaleInfo resale,
+		DiamondGiftResaleInfo resale,
 		CreditsEntryBoxStyleOverrides st,
 		std::shared_ptr<const UniqueGiftCoverActions> actions) {
 	const auto selfId = show->session().userPeerId();

@@ -2348,7 +2348,7 @@ void AddGiftMessageAction(
 			? tr::lng_context_gift_send(tr::now)
 			: tr::lng_gift_send_title(tr::now)),
 		crl::guard(controller, [=] {
-			Ui::ShowStarGiftBox(controller, peer);
+			Ui::ShowDiamondGiftBox(controller, peer);
 		}),
 		&st::menuIconGiftPremium);
 }

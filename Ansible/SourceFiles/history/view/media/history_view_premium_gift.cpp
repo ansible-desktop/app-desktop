@@ -8,7 +8,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/view/media/history_view_premium_gift.h"
 
 #include "apiwrap.h"
-#include "api/api_credits.h" // InputSavedStarGiftId
+#include "api/api_credits.h" // InputSavedDiamondGiftId
 #include "api/api_premium.h"
 #include "base/unixtime.h"
 #include "boxes/gift_premium_box.h" // ResolveGiftCode

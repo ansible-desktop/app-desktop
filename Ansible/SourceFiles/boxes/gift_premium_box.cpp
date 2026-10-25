@@ -18,7 +18,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "boxes/peers/prepare_short_info_box.h"
 #include "boxes/peers/replace_boost_box.h" // BoostsForGift.
 #include "boxes/premium_preview_box.h" // ShowPremiumPreviewBox.
-#include "boxes/star_gift_box.h" // ShowStarGiftBox.
+#include "boxes/star_gift_box.h" // ShowDiamondGiftBox.
 #include "boxes/star_gift_preview_box.h" // StarGiftPreviewBox.
 #include "core/ui_integration.h"
 #include "data/components/gift_auctions.h"

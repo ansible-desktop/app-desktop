@@ -29,7 +29,7 @@ struct ShareThemeEmojiBackdrop {
 
 struct ShareThemeGift {
 	StarGift gift;
-	SavedStarGiftId savedId;
+	SavedDiamondGiftId savedId;
 
 	friend inline bool operator==(
 			const ShareThemeGift &a,

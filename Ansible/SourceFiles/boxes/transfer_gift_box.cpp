@@ -92,7 +92,7 @@ public:
 	Controller(
 		not_null<Window::SessionController*> window,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId savedId,
+		Data::SavedDiamondGiftId savedId,
 		bool shownOnProfile,
 		Fn<void(not_null<PeerData*>, Fn<void()>)> choose);
 
@@ -114,7 +114,7 @@ private:
 
 	const not_null<Window::SessionController*> _window;
 	const std::shared_ptr<Data::UniqueGift> _gift;
-	const Data::SavedStarGiftId _giftId;
+	const Data::SavedDiamondGiftId _giftId;
 	const bool _shownOnProfile = false;
 	const Fn<void(not_null<PeerData*>, Fn<void()>)> _choose;
 	ExportOption _exportOption;
@@ -490,7 +490,7 @@ void ExportOnBlockchain(
 		session->api().request(
 			MTPpayments_GetStarGiftWithdrawalUrl(
 				MTP_flags(0),
-				Api::InputSavedStarGiftId(giftId),
+				Api::InputSavedDiamondGiftId(giftId),
 				MTP_bytes(tmpPassword))
 		).done([=](const ExportUrl &result) {
 			UrlClickHandler::Open(qs(result.data().vurl()));
@@ -544,7 +544,7 @@ void MoveToWalletBox(
 		not_null<Window::SessionController*> window,
 		base::weak_qptr<PeerListBox> chooser,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId savedId,
+		Data::SavedDiamondGiftId savedId,
 		bool shownOnProfile) {
 	struct MoveState {
 		rpl::variable<bool> busy;
@@ -701,7 +701,7 @@ void MoveToWalletBox(
 		arm(keepOnProfile);
 		session->api().request(MTPpayments_WithdrawStarGift(
 			MTP_flags(keepOnProfile ? Flag::f_keep_on_profile : Flag()),
-			Api::InputSavedStarGiftId(savedId, gift),
+			Api::InputSavedDiamondGiftId(savedId, gift),
 			MTP_bytes(tmpPassword)
 		)).done([=](const MTPBool &result) {
 			if (mtpIsTrue(result)) {
@@ -798,7 +798,7 @@ void MoveToWalletBox(
 		not_null<Window::SessionController*> window,
 		not_null<PeerListBox*> box,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId giftId,
+		Data::SavedDiamondGiftId giftId,
 		TimeId when,
 		bool toWallet,
 		bool shownOnProfile) {
@@ -1024,7 +1024,7 @@ void MoveToWalletBox(
 Controller::Controller(
 	not_null<Window::SessionController*> window,
 	std::shared_ptr<Data::UniqueGift> gift,
-	Data::SavedStarGiftId giftId,
+	Data::SavedDiamondGiftId giftId,
 	bool shownOnProfile,
 	Fn<void(not_null<PeerData*>, Fn<void()>)> choose)
 : ContactsBoxController(&window->session())
@@ -1592,7 +1592,7 @@ void ShowTransferToBox(
 void ShowTransferGiftBox(
 		not_null<Window::SessionController*> window,
 		std::shared_ptr<Data::UniqueGift> gift,
-		Data::SavedStarGiftId savedId,
+		Data::SavedDiamondGiftId savedId,
 		bool shownOnProfile) {
 	if (ShowTransferGiftLater(window->uiShow(), gift)) {
 		return;
