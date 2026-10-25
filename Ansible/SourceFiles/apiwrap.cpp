@@ -598,31 +598,9 @@ void ApiWrap::sendMessageFail(
 		}
 		peer->updateFull();
 	} else if (error == u"BALANCE_TOO_LOW"_q) {
-		const auto item = _session->data().message(itemId);
-		const auto stake = (item && item->media())
-			? item->media()->diceGameOutcome().stakeNanoTon
-			: int64(0);
-		if (stake > 0) {
-			const auto required = CreditsAmount(
-				stake / Ui::kNanosInOne,
-				stake % Ui::kNanosInOne,
-				CreditsType::Ton);
-			if (randomId) {
-				_session->data().unregisterMessageRandomId(randomId);
-			}
-			item->destroy();
-			if (show) {
-				show->show(Box(
-					Ui::InsufficientTonBox,
-					_session,
-					required));
-			}
-			return;
-		} else if (show) {
+		if (show) {
 			show->showToast(error);
 		}
-	} else if (show) {
-		show->showToast(error);
 	}
 	if (const auto item = _session->data().message(itemId)) {
 		Assert(randomId != 0);

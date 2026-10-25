@@ -1023,7 +1023,7 @@ void ChannelData::growSlowmodeLastMessage(TimeId when) {
 }
 
 int ChannelData::diamondsPerMessage() const {
-	return _starsPerMessage;
+	return _diamondsPerMessage;
 }
 
 int ChannelData::commonDiamondsPerMessage() const {
@@ -1031,8 +1031,8 @@ int ChannelData::commonDiamondsPerMessage() const {
 }
 
 void ChannelData::setDiamondsPerMessage(int stars) {
-	if (_starsPerMessage != stars) {
-		_starsPerMessage = stars;
+	if (_diamondsPerMessage != stars) {
+		_diamondsPerMessage = stars;
 		session().changes().peerUpdated(this, UpdateFlag::DiamondsPerMessage);
 	}
 	checkTrustedPayForMessage();

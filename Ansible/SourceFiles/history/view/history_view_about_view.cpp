@@ -525,7 +525,7 @@ EmptyChatLockedBox::~EmptyChatLockedBox() = default;
 int EmptyChatLockedBox::width() {
 	return (_type == Type::PremiumRequired)
 		? st::premiumRequiredWidth
-		: st::starsPerMessageWidth;
+		: st::diamondsPerMessageWidth;
 }
 
 int EmptyChatLockedBox::top() {

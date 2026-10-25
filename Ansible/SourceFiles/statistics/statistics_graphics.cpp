@@ -8,7 +8,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "statistics/statistics_graphics.h"
 
 #include "data/data_statistics_chart.h"
-#include "ui/effects/credits_graphics.h" // GenerateStars.
+#include "ui/effects/credits_graphics.h" // GenerateDiamonds.
 #include "ui/painter.h"
 #include "styles/style_statistics.h"
 

@@ -713,7 +713,7 @@ void UserData::setNoForwardsFlags(bool myEnabled, bool peerEnabled) {
 }
 
 int UserData::diamondsPerMessage() const {
-	return _starsPerMessage;
+	return _diamondsPerMessage;
 }
 
 void UserData::setStoriesCorrespondent(bool is) {
@@ -729,8 +729,8 @@ bool UserData::storiesCorrespondent() const {
 }
 
 void UserData::setDiamondsPerMessage(int stars) {
-	if (_starsPerMessage != stars) {
-		_starsPerMessage = stars;
+	if (_diamondsPerMessage != stars) {
+		_diamondsPerMessage = stars;
 		session().changes().peerUpdated(this, UpdateFlag::DiamondsPerMessage);
 	}
 	checkTrustedPayForMessage();

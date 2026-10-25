@@ -1043,7 +1043,7 @@ void GiftButton::paintEvent(QPaintEvent *e) {
 void GiftButton::paint(QPainter &p, float64 craftProgress) {
 	const auto stargift = std::get_if<GiftTypeDiamonds>(&_descriptor);
 	const auto unique = stargift ? stargift->info.unique.get() : nullptr;
-	const auto onsale = unique && unique->starsForResale && small();
+	const auto onsale = unique && unique->diamondsForResale && small();
 	const auto onCard = unique && stargift->onCard;
 	const auto silhouette = onCard || (unique && stargift->silhouette);
 	const auto requirePremium = stargift

@@ -31,7 +31,7 @@ rpl::producer<int> FreeMessagesPriceValue(
 		not_null<Main::Session*> session) {
 	auto &privacy = session->api().globalPrivacy();
 	privacy.reload();
-	return privacy.newChargeStars();
+	return privacy.newChargeDiamonds();
 }
 
 void RequestFreeMessagesCode(

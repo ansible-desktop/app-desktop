@@ -505,7 +505,7 @@ void Premium::importNoPaidMessagesToken(
 		return;
 	}
 	const auto priced = [=] {
-		return user->hasStarsPerMessage() || (user->starsPerMessage() > 0);
+		return user->hasDiamondsPerMessage() || (user->diamondsPerMessage() > 0);
 	};
 	_api.request(MTPcontacts_ImportNoPaidMessagesToken(
 		user->inputUser(),
