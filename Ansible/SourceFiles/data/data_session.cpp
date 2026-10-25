@@ -26,7 +26,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "export/export_manager.h"
 #include "export/view/export_view_panel_controller.h"
 #include "mtproto/mtproto_config.h"
-#include "wallet/wallet_session.h"
 #include "wallet/wallet_transfer_messages.h"
 #include "window/notifications_manager.h"
 #include "history/history.h"

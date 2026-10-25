@@ -26,7 +26,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "core/application.h"
 #include "core/click_handler_types.h"
 #include "core/click_handler_types.h" // UrlClickHandler
-#include "core/ton_explorer_url.h"
 #include "core/ui_integration.h"
 #include "data/components/credits.h"
 #include "data/components/recent_shared_media_gifts.h"
@@ -1297,11 +1296,7 @@ void FillUniqueGiftMenu(
 	if (transfer) {
 		const auto shownOnProfile = e.savedToProfile;
 		menu->addAction(tr::lng_gift_transfer_button(tr::now), [=] {
-			if (!owner) {
-				Wallet::ShowAddressHeldGiftTransfer(show, unique, [=] {
-					ShowActionLocked(show, unique->slug);
-				});
-			} else if (const auto window = show->resolveWindow()) {
+			if (const auto window = show->resolveWindow()) {
 				ShowTransferGiftBox(window, unique, savedId, shownOnProfile);
 			}
 		}, st.transfer ? st.transfer : &st::menuIconReplace);
