@@ -88,7 +88,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "storage/localstorage.h"
 #include "payments/payments_checkout_process.h"
 #include "export/export_manager.h"
-#include "wallet/wallet_panel.h"
 #include "webrtc/webrtc_environment.h"
 #include "webview/webview_interface.h"
 #include "window/window_saved_windows.h"
@@ -253,7 +252,6 @@ void Application::closeAdditionalWindows() {
 	for (const auto &[index, account] : _domain->accounts()) {
 		if (account->sessionExists()) {
 			account->session().attachWebView().closeAll();
-			Wallet::CloseWallet(&account->session());
 		}
 	}
 	_iv->closeAll();
@@ -1252,9 +1250,6 @@ void Application::checkStartUrls() {
 				if (!controller) {
 					return true;
 				}
-				Wallet::OpenTransferLink(
-					controller,
-					url.toString(QUrl::FullyEncoded));
 				return false;
 			} else if (_lastActivePrimaryWindow) {
 				const auto local = TryConvertUrlToLocal(url.toString());
@@ -1847,7 +1842,7 @@ bool Application::closeActiveWindow() {
 		|| Iv::Editor::CloseActiveWindow()
 		|| calls().closeCurrentActiveCall()
 		|| (_savedWindows && _savedWindows->closeActiveShell())
-		|| Wallet::CloseActiveWindow()) {
+		) {
 		return true;
 	} else if (const auto window = activeWindow()) {
 		if (window->widget()->isActive()) {
@@ -1865,7 +1860,7 @@ bool Application::minimizeActiveWindow() {
 	} else if (_iv->minimizeActive()
 		|| Iv::Editor::MinimizeActiveWindow()
 		|| calls().minimizeCurrentActiveCall()
-		|| Wallet::MinimizeActiveWindow()) {
+		) {
 		return true;
 	} else if (const auto window = activeWindow()) {
 		if (window->widget()->isActive()) {

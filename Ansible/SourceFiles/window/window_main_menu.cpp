@@ -65,7 +65,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/scroll_area.h"
 #include "ui/widgets/shadow.h"
 #include "ui/wrap/slide_wrap.h"
-#include "wallet/wallet_panel.h"
 #include "window/themes/window_theme.h"
 #include "window/window_controller.h"
 #include "window/window_main_menu_helpers.h"
@@ -741,7 +740,6 @@ void MainMenu::setupMenu() {
 		wallet->finishAnimating();
 		wallet->entity()->setClickedCallback([=] {
 			controller->window().hideSettingsAndLayer();
-			Wallet::ShowWallet(session);
 		});
 	} else {
 		addAction(

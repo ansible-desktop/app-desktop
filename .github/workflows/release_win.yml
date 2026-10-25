@@ -185,7 +185,7 @@ jobs:
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF
 
-          cmake --build ..\out --config Release --target Ansible Packer
+          cmake --build ..\out --config Release --target Ansible Packer -- -k 0
 
       - name: Read version.
         shell: bash
