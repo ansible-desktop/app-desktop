@@ -18,7 +18,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/view/controls/history_view_forward_panel.h"
 #include "history/view/controls/history_view_draft_options.h"
 #include "history/view/controls/history_view_suggest_options.h"
-#include "history/view/media/history_view_gram_transfer.h"
 #include "history/view/media/history_view_save_document_action.h"
 #include "history/view/media/history_view_sticker.h"
 #include "history/view/media/history_view_web_page.h"
@@ -3652,15 +3651,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 							&& Menu::HasRateTranscribeItem(item)) {
 							rateTranscriptionItem = item;
 						}
-					}
-				}
-				if (item->isRegular()
-					&& item->Has<HistoryServiceGramTransfer>()) {
-					if (const auto user = item->history()->peer->asUser()) {
-						Window::AddSendMoneyAction(
-							controller,
-							user,
-							Ui::Menu::CreateAddActionCallback(_menu));
 					}
 				}
 				if (!item->isService() && view && actionText.isEmpty()) {

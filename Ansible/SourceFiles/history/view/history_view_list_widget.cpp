@@ -17,7 +17,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/history_item_helpers.h"
 #include "history/history_item_text.h"
 #include "history/history_streamed_drafts.h"
-#include "history/view/media/history_view_gram_transfer.h"
 #include "history/view/media/history_view_media.h"
 #include "history/view/media/history_view_sticker.h"
 #include "history/view/reactions/history_view_reactions.h"
