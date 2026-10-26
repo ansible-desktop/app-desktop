@@ -39,11 +39,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "apiwrap.h"
 #include "media/audio/media_audio.h"
 #include "core/application.h"
-#include "wallet/wallet_address.h"
-#include "wallet/wallet_fiat.h"
-#include "wallet/wallet_panel.h"
-#include "wallet/wallet_session.h"
-#include "wallet/wallet_ton_connect.h"
 #include "window/window_controller.h"
 #include "window/window_session_controller.h"
 #include "core/click_handler_types.h"
@@ -137,30 +132,8 @@ template <typename T>
 		&& (request->expires > base::unixtime::now());
 }
 
-[[nodiscard]] QString TonConnectAppName(
-		not_null<Main::Session*> session,
-		not_null<const HistoryServiceTonConnectRequest*> request) {
-	const auto info = session->wallet().tonConnect().session(
-		request->sessionId);
-	return (info && info->manifest)
-		? Wallet::TonConnectManifestName(*info->manifest)
-		: Wallet::TonConnectDappName(request->dappName);
-}
 
-[[nodiscard]] bool TonConnectTopicReviewable(const QString &topic) {
-	return (topic != u"signData"_q)
-		&& (topic != u"signMessage"_q)
-		&& (topic != u"disconnect"_q);
-}
 
-[[nodiscard]] ClickHandlerPtr TonConnectRequestLink(FullMsgId itemId) {
-	return std::make_shared<LambdaClickHandler>([=](ClickContext context) {
-		const auto my = context.other.value<ClickHandlerContext>();
-		if (const auto window = my.sessionWindow.get()) {
-			Wallet::OpenTonConnectRequest(window, itemId);
-		}
-	});
-}
 
 [[nodiscard]] TextWithEntities SpoilerLoginCode(
 		TextWithEntities text,
@@ -8756,137 +8729,12 @@ PreparedServiceText HistoryItem::preparePaymentSentText() {
 	return result;
 }
 
-PreparedServiceText HistoryItem::prepareGramTransferText(
-		bool includeComment) {
-	auto result = PreparedServiceText();
-	const auto transfer = Get<HistoryServiceGramTransfer>();
-	if (!transfer) {
-		return result;
-	}
-	auto amount = tr::lng_action_gram_transfer_amount(
-		tr::now,
-		lt_count,
-		transfer->amount / float64(Ui::kNanosInOne),
-		lt_amount,
-		tr::marked(Ui::FormatTonAmount(transfer->amount).full),
-		tr::marked);
-	const auto usdPerGram = history()->session().appConfig().get<float64>(
-		u"ton_usd_rate"_q,
-		0.);
-	if (usdPerGram > 0.) {
-		amount = tr::lng_action_gram_transfer_amount_fiat(
-			tr::now,
-			lt_amount,
-			amount,
-			lt_fiat,
-			tr::marked(Wallet::FormatFiat(
-				transfer->amount,
-				Wallet::FiatRate{ u"USD"_q, usdPerGram })),
-			tr::marked);
-	}
-	const auto hidden = history()->peer->isNotificationsUser();
-	auto name = tr::marked();
-	if (!hidden) {
-		const auto counterparty = out() ? history()->peer : from();
-		const auto user = history()->owner().userLoaded(
-			peerToUser(counterparty->id));
-		if (user && !user->shortName().isEmpty()) {
-			name = tr::link(user->shortName(), 1);
-			result.links.push_back(user->createOpenLink());
-		} else if (const auto address = Wallet::ParseAddress(
-				transfer->peerAddress)) {
-			name = tr::marked(Wallet::FormatFriendly(
-				address->raw,
-				address->bounceable,
-				address->testnet));
-		}
-	}
-	if (hidden && !out()) {
-		result.text = tr::lng_action_gram_transfer_received_unknown(
-			tr::now,
-			lt_amount,
-			amount,
-			tr::marked);
-	} else if (name.empty()) {
-		result.text = (out()
-			? tr::lng_action_gram_transfer_sent_unknown
-			: tr::lng_action_gram_transfer_received_unknown)(
-				tr::now,
-				lt_amount,
-				amount,
-				tr::marked);
-	} else if (out()) {
-		result.text = tr::lng_action_gram_transfer_sent(
-			tr::now,
-			lt_amount,
-			amount,
-			lt_user,
-			name,
-			tr::marked);
-	} else {
-		result.text = tr::lng_action_gram_transfer_received(
-			tr::now,
-			lt_user,
-			name,
-			lt_amount,
-			amount,
-			tr::marked);
-	}
-	const auto comment = includeComment ? transfer->commentText() : QString();
-	if (!comment.isEmpty()) {
-		result.text = tr::lng_action_gram_transfer_comment(
-			tr::now,
-			lt_text,
-			result.text,
-			lt_comment,
-			tr::marked(comment),
-			tr::marked);
-	}
-	return result;
+PreparedServiceText HistoryItem::prepareGramTransferText(bool) {
+	return PreparedServiceText();
 }
 
 PreparedServiceText HistoryItem::prepareTonConnectRequestText() {
-	auto result = PreparedServiceText();
-	const auto request = Get<HistoryServiceTonConnectRequest>();
-	if (!request) {
-		return result;
-	}
-	request->notificationText = {};
-	const auto name = TonConnectAppName(&_history->session(), request);
-	const auto app = tr::bold(name);
-	const auto pick = [&](auto &&named, auto &&unknown) {
-		return name.isEmpty()
-			? unknown(tr::now, tr::marked)
-			: named(tr::now, lt_app, app, tr::marked);
-	};
-	if (request->accepted) {
-		result.text = pick(
-			tr::lng_action_ton_connect_accepted,
-			tr::lng_action_ton_connect_accepted_unknown);
-	} else if (request->declined) {
-		result.text = pick(
-			tr::lng_action_ton_connect_declined,
-			tr::lng_action_ton_connect_declined_unknown);
-	} else if (!TonConnectRequestPending(request)) {
-		result.text = pick(
-			tr::lng_action_ton_connect_expired,
-			tr::lng_action_ton_connect_expired_unknown);
-	} else {
-		const auto text = Wallet::TonConnectRequestText(request->topic, name);
-		if (TonConnectTopicReviewable(request->topic)) {
-			request->notificationText = text;
-			result.text = tr::lng_action_ton_connect_review(
-				tr::now,
-				lt_text,
-				text,
-				lt_arrow,
-				Ui::Text::IconEmoji(&st::textMoreIconEmoji),
-				tr::marked);
-		} else {
-			result.text = text;
-		}
-	}
-	return result;
+	return PreparedServiceText();
 }
 
 PreparedServiceText HistoryItem::prepareStoryMentionText() {
@@ -9177,25 +9025,6 @@ void HistoryItem::setupTTLChange() {
 }
 
 void HistoryItem::setupTonConnectRequest() {
-	const auto request = Get<HistoryServiceTonConnectRequest>();
-	Assert(request != nullptr);
-
-	const auto sessionId = request->sessionId;
-	auto &wallet = _history->session().wallet();
-	if (TonConnectRequestPending(request)) {
-		setCustomServiceLink(TonConnectRequestLink(fullId()));
-		// WHY: nothing else loads the wallet for an incoming request, and
-		// the store that names the dApp fills only once the wallet is
-		// Ready, so the first pending request asks for that one load.
-		wallet.ensureLoaded();
-		armTonConnectRequestExpiry();
-	}
-	wallet.tonConnect().updates(
-	) | rpl::filter([=](uint64 id) {
-		return !id || (id == sessionId);
-	}) | rpl::on_next([=] {
-		updateTonConnectRequestText();
-	}, Get<HistoryServiceTonConnectRequest>()->lifetime);
 }
 
 void HistoryItem::armTonConnectRequestExpiry() {
