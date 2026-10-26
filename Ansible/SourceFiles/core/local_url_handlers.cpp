@@ -74,8 +74,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/history.h"
 #include "history/history_item.h"
 #include "iv/iv_instance.h"
-#include "wallet/wallet_panel.h"
-#include "wallet/wallet_ton_connect_link.h"
 #include "apiwrap.h"
 
 #include "styles/style_chat_helpers.h"
@@ -568,16 +566,6 @@ bool ShowWallPaper(
 	return result;
 }
 
-bool OpenTonConnectQuery(
-		not_null<Window::SessionController*> controller,
-		const QString &query) {
-	if (const auto link = Wallet::ParseTonConnectLink(query)) {
-		Wallet::OpenTonConnectLink(controller, *link);
-	} else {
-		controller->showToast(tr::lng_wallet_send_link_invalid(tr::now));
-	}
-	return true;
-}
 
 bool ResolveContactToken(
 		Window::SessionController *controller,
@@ -615,16 +603,6 @@ bool ResolveUsernameOrPhone(
 		match->captured(1),
 		qthelp::UrlParamNameTransform::ToLower);
 
-	// A dApp link must not choose the account, so this precedes "acc".
-	if (!params.value(u"domain"_q).compare(
-			u"sendgrams"_q,
-			Qt::CaseInsensitive)) {
-		const auto query = Wallet::TonConnectStartParamQuery(
-			params.value(u"startapp"_q));
-		if (query) {
-			return OpenTonConnectQuery(controller, *query);
-		}
-	}
 
 	if (params.contains(u"acc"_q)) {
 		const auto switched = ApplyAccountIndex(
@@ -1783,39 +1761,7 @@ bool ResolveDiamondsSettings(
 	return true;
 }
 
-bool ResolveTonSettings(
-		Window::SessionController *controller,
-		const Match &match,
-		const QVariant &context) {
-	if (!controller) {
-		return false;
-	}
-	controller->showSettings(::Settings::CurrencyId());
-	controller->window().activate();
-	return true;
-}
 
-bool ResolveSendGrams(
-		Window::SessionController *controller,
-		const Match &match,
-		const QVariant &context) {
-	if (!controller) {
-		return false;
-	}
-	const auto params = url_parse_params(
-		match->captured(1).mid(1),
-		qthelp::UrlParamNameTransform::ToLower);
-	const auto query = Wallet::TonConnectStartParamQuery(
-		params.value(u"startapp"_q));
-	if (query) {
-		return OpenTonConnectQuery(controller, *query);
-	}
-	Wallet::OpenSendGramsLink(
-		controller,
-		params.value(u"to"_q),
-		params.value(u"amount"_q));
-	return true;
-}
 
 bool ResolveOAuth(
 		Window::SessionController *controller,
@@ -1962,14 +1908,6 @@ const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 			ResolveDiamondsSettings
 		},
 		{
-			u"^(ton|grams)/?(^\\?.*)?(#|$)"_q,
-			ResolveTonSettings
-		},
-		{
-			u"^sendgrams/?(\\?.+)?(#|$)"_q,
-			ResolveSendGrams
-		},
-		{
 			u"^oauth/?\\?(.+)(#|$)"_q,
 			ResolveOAuth
 		},
@@ -2062,12 +2000,6 @@ const std::vector<LocalUrlHandler> &InternalUrlHandlers() {
 QString TryConvertUrlToLocal(QString url) {
 	if (url.size() > 8192) {
 		url = url.mid(0, 8192);
-	}
-	if (url.startsWith(u"tc://"_q, Qt::CaseInsensitive)) {
-		const auto query = url.indexOf('?');
-		return u"tg://sendgrams?startapp="_q
-			+ Wallet::TonConnectStartParam(
-				(query < 0) ? QString() : url.mid(query + 1));
 	}
 
 	using namespace qthelp;

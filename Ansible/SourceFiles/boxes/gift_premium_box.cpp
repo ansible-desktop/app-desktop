@@ -71,8 +71,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/wrap/padding_wrap.h"
 #include "ui/wrap/slide_wrap.h"
 #include "ui/wrap/table_layout.h"
-#include "wallet/wallet_address.h"
-#include "wallet/wallet_content.h"
 #include "window/window_peer_menu.h" // ShowChooseRecipientBox.
 #include "window/window_session_controller.h"
 #include "styles/style_boxes.h"
@@ -211,10 +209,10 @@ using SpinnerState = Data::GiftUpgradeSpinner::State;
 		table,
 		rpl::single(tr::link(domain)),
 		table->st().defaultValue);
-	const auto copy = Wallet::CopyTextCallback(
-		std::move(show),
-		domain,
-		tr::lng_gift_unique_address_copied(tr::now));
+	const auto copy = [=] {
+		TextUtilities::SetClipboardText(TextForMimeData::Simple(domain));
+		show->showToast(tr::lng_gift_unique_address_copied(tr::now));
+	};
 	result->setClickHandlerFilter([=](const auto &...) {
 		copy();
 		return false;
@@ -1568,18 +1566,10 @@ void AddDiamondGiftTable(
 				tr::lng_gift_unique_owner(),
 				rpl::single(TextWithEntities{ unique->ownerName }));
 		} else if (auto address = unique->ownerAddress; !address.isEmpty()) {
-			// WHY: the owner may come as a TON DNS name like "name.t.me",
-			// which must not be split into address groups.
 			AddTableRow(
 				table,
 				tr::lng_gift_unique_owner(),
-				(Wallet::ParseAddress(address)
-					? Wallet::AddressValueLabel(
-						table,
-						show,
-						address,
-						st.tableValueAddress)
-					: MakeOwnerDomainValue(table, show, address)));
+				MakeOwnerDomainValue(table, show, address));
 		}
 
 		if (const auto hostId = PeerId(entry.bareGiftHostId)) {
