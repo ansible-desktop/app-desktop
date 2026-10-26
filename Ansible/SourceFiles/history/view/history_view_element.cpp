@@ -651,9 +651,6 @@ bool DefaultElementDelegate::elementHideTopicButton(
 	return true;
 }
 
-GramReadLine *DefaultElementDelegate::elementGramReadLine() {
-	return nullptr;
-}
 
 SimpleElementDelegate::SimpleElementDelegate(
 	not_null<Window::SessionController*> controller,

@@ -15,7 +15,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "platform/win/windows_app_user_model_id.h"
 #include "platform/win/windows_taskbar_buttons.h"
 #include "platform/win/tray_win.h"
-#include "platform/win/wallet_protection_win.h"
 #include "platform/platform_integration.h"
 #include "platform/platform_specific.h"
 #include "mainwindow.h"
@@ -37,7 +36,6 @@ constexpr auto kPowerBroadcastDebounce = crl::time(1000);
 } // namespace
 
 void WindowsIntegration::init() {
-	RegisterWalletProtectionProvider();
 	_powerBroadcastTimer.setCallback([=] {
 		if (_powerState == PowerState::SuspendNotified) {
 			_powerState = PowerState::SuspendSettled;

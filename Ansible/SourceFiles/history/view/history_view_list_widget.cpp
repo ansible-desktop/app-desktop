@@ -2638,14 +2638,6 @@ bool ListWidget::elementHideTopicButton(not_null<const Element*> view) {
 	return _delegate->listElementHideTopicButton(view);
 }
 
-GramReadLine *ListWidget::elementGramReadLine() {
-	if (!_gramReadLine) {
-		_gramReadLine = std::make_unique<GramReadLine>([=] {
-			update();
-		});
-	}
-	return _gramReadLine.get();
-}
 
 void ListWidget::saveState(not_null<ListMemento*> memento) {
 	memento->setAroundPosition(_aroundPosition);

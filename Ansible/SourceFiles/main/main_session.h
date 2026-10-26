@@ -85,9 +85,6 @@ namespace Ui {
 struct ColorIndicesCompressed;
 } // namespace Ui
 
-namespace Wallet {
-class Session;
-} // namespace Wallet
 
 namespace Main {
 
@@ -193,9 +190,6 @@ public:
 	}
 	[[nodiscard]] Data::Credits &credits() const {
 		return *_credits;
-	}
-	[[nodiscard]] Wallet::Session &wallet() const {
-		return *_wallet;
 	}
 	[[nodiscard]] Api::Updates &updates() const {
 		return *_updates;
@@ -354,7 +348,6 @@ private:
 	const std::unique_ptr<Data::Factchecks> _factchecks;
 	const std::unique_ptr<Data::LocationPickers> _locationPickers;
 	const std::unique_ptr<Data::Credits> _credits;
-	const std::unique_ptr<Wallet::Session> _wallet;
 	const std::unique_ptr<Data::PromoSuggestions> _promoSuggestions;
 	const std::unique_ptr<Data::Passkeys> _passkeys;
 	const std::unique_ptr<Settings::FaqSuggestions> _faqSuggestions;

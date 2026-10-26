@@ -69,8 +69,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "base/unixtime.h"
 #include "window/window_session_controller.h"
 #include "window/window_controller.h"
-#include "wallet/wallet_session.h"
-#include "wallet/wallet_transfer_messages.h"
 #include "iv/editor/iv_editor_session.h"
 #include "ui/boxes/confirm_box.h"
 #include "apiwrap.h"
@@ -2910,30 +2908,10 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 		_session->credits().apply(data);
 	} break;
 
-	case mtpc_updateWalletState: {
-		const auto &data = update.c_updateWalletState();
-		_session->wallet().applyUpdate(data);
-	} break;
 
-	case mtpc_updateSentWalletTransaction: {
-		const auto &data = update.c_updateSentWalletTransaction();
-		_session->wallet().applyUpdate(data);
-	} break;
 
-	case mtpc_updateWalletGaslessInfo: {
-		const auto &data = update.c_updateWalletGaslessInfo();
-		_session->wallet().applyUpdate(data);
-	} break;
 
-	case mtpc_updateWalletTonConnectSession: {
-		const auto &data = update.c_updateWalletTonConnectSession();
-		_session->wallet().applyUpdate(data);
-	} break;
 
-	case mtpc_updateWalletTonConnectPendingDisconnect: {
-		const auto &data = update.c_updateWalletTonConnectPendingDisconnect();
-		_session->wallet().applyUpdate(data);
-	} break;
 
 	case mtpc_updatePaidReactionPrivacy: {
 		const auto &data = update.c_updatePaidReactionPrivacy();

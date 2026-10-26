@@ -21,7 +21,6 @@ namespace Data {
 class Forum;
 struct BotCommand;
 struct BusinessDetails;
-struct WalletCard;
 } // namespace Data
 
 namespace Api {
@@ -290,11 +289,7 @@ public:
 	// and empty means a source answered and this user has no wallet; engaged
 	// and non-empty is the canonical raw address. Every write is an answer,
 	// never a nullopt: answers come from wallet.getUserAddresses.
-	[[nodiscard]] const std::optional<QString> &gramAddress() const;
-	void setGramAddress(QString address);
 
-	[[nodiscard]] const Data::WalletCard *walletCard() const;
-	void setWalletCard(std::optional<Data::WalletCard> card);
 
 	[[nodiscard]] bool hasActiveStories() const;
 	[[nodiscard]] bool hasUnreadStories() const;
@@ -357,9 +352,7 @@ private:
 	std::unique_ptr<Data::BusinessDetails> _businessDetails;
 	std::vector<Data::UnavailableReason> _unavailableReasons;
 	QString _phone;
-	std::optional<QString> _gramAddress;
 	std::unique_ptr<Ui::BotVerifyDetails> _botVerifyDetails;
-	std::unique_ptr<Data::WalletCard> _walletCard;
 	Data::StarsRating _starsRating;
 
 	ChannelId _personalChannelId = 0;

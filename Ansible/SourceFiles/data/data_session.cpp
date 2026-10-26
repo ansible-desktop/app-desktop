@@ -26,7 +26,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "export/export_manager.h"
 #include "export/view/export_view_panel_controller.h"
 #include "mtproto/mtproto_config.h"
-#include "wallet/wallet_transfer_messages.h"
 #include "window/notifications_manager.h"
 #include "history/history.h"
 #include "history/history_item.h"
@@ -3599,18 +3598,6 @@ HistoryItem *Session::addNewMessage(
 		}
 	}
 
-	if (type == NewMessageType::Unread
-		&& data.type() == mtpc_messageService) {
-		if (const auto h = historyLoaded(peerId)) {
-			auto &drafts = _session->wallet().transferMessages();
-			if (const auto adopted = drafts.adopt(
-					h,
-					id,
-					data.c_messageService())) {
-				return adopted;
-			}
-		}
-	}
 
 	const auto result = history(peerId)->addNewMessage(
 		id,

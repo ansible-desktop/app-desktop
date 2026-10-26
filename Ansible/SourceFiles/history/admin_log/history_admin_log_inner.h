@@ -181,7 +181,6 @@ public:
 		not_null<const HistoryView::Element*> view) override;
 	bool elementHideTopicButton(
 		not_null<const HistoryView::Element*> view) override;
-	HistoryView::GramReadLine *elementGramReadLine() override;
 
 	~InnerWidget();
 

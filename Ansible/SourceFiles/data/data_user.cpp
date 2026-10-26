@@ -32,7 +32,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "data/data_peer_bot_command.h"
 #include "data/data_photo.h"
 #include "data/data_stories.h"
-#include "data/data_user_wallet_card.h"
 #include "data/data_wall_paper.h"
 #include "data/notify/data_notify_settings.h"
 #include "history/history.h"
@@ -40,8 +39,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "api/api_peer_photo.h"
 #include "apiwrap.h"
 #include "lang/lang_keys.h"
-#include "wallet/wallet_own_card.h"
-#include "wallet/wallet_session.h"
 #include "window/notifications_manager.h"
 
 namespace {
@@ -233,32 +230,9 @@ void UserData::setPeerGiftsCount(int count) {
 	}
 }
 
-const std::optional<QString> &UserData::gramAddress() const {
-	return _gramAddress;
-}
 
-void UserData::setGramAddress(QString address) {
-	_gramAddress = std::move(address);
-}
 
-const Data::WalletCard *UserData::walletCard() const {
-	return _walletCard.get();
-}
 
-void UserData::setWalletCard(std::optional<Data::WalletCard> card) {
-	if ((!card && !_walletCard)
-		|| (card && _walletCard && *card == *_walletCard)) {
-		return;
-	}
-	if (!card) {
-		_walletCard = nullptr;
-	} else if (_walletCard) {
-		*_walletCard = std::move(*card);
-	} else {
-		_walletCard = std::make_unique<Data::WalletCard>(std::move(*card));
-	}
-	session().changes().peerUpdated(this, UpdateFlag::WalletCard);
-}
 
 bool UserData::hasActiveStories() const {
 	return flags() & Flag::HasActiveStories;
@@ -1121,15 +1095,6 @@ void ApplyUserUpdate(
 		update.is_noforwards_my_enabled(),
 		update.is_noforwards_peer_enabled());
 
-	const auto card = update.vwallet_card();
-	auto parsed = card
-		? std::optional(ParseWalletCard(&user->session(), *card))
-		: std::nullopt;
-	if (user->isSelf()) {
-		user->session().wallet().ownCard().applyFullUserCard(std::move(parsed));
-	} else {
-		user->setWalletCard(std::move(parsed));
-	}
 
 	user->session().api().shareThemes().apply(user, update.vshare_theme());
 

@@ -352,9 +352,6 @@ public:
 		return false;
 	}
 
-	HistoryView::GramReadLine *elementGramReadLine() override {
-		return _widget ? _widget->elementGramReadLine() : nullptr;
-	}
 
 	not_null<HistoryView::ElementDelegate*> delegate() override {
 		return this;
@@ -5249,14 +5246,6 @@ void HistoryInner::elementStartEffect(
 	_emojiInteractions->playEffect(view);
 }
 
-HistoryView::GramReadLine *HistoryInner::elementGramReadLine() {
-	if (!_gramReadLine) {
-		_gramReadLine = std::make_unique<HistoryView::GramReadLine>([=] {
-			update();
-		});
-	}
-	return _gramReadLine.get();
-}
 
 auto HistoryInner::getSelectionState() const
 -> HistoryView::TopBarWidget::SelectedState {

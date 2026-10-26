@@ -50,7 +50,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/history.h"
 #include "info/info_memento.h"
 #include "info/profile/info_profile_badge.h"
-#include "info/profile/info_profile_balance_pill.h"
 #include "info/profile/info_profile_birthday_effect.h"
 #include "info/profile/info_profile_cover.h" // LargeCustomEmojiMargins
 #include "info/profile/info_profile_status_label.h"
@@ -97,7 +96,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/shadow.h"
 #include "ui/widgets/tooltip.h"
 #include "ui/wrap/fade_wrap.h"
-#include "wallet/wallet_card_view.h"
 #include "window/themes/window_theme.h"
 #include "window/window_peer_menu.h"
 #include "window/window_session_controller.h"
@@ -494,19 +492,6 @@ TopBar::TopBar(
 	}
 
 	bindStatus();
-	if (_hasBalance) {
-		const auto user = _peer->asUser();
-		_balancePill = std::make_unique<BalancePill>(
-			this,
-			user,
-			_edgeColor.value());
-		const auto pill = _balancePill.get();
-		pill->setClickedCallback([=] {
-			if (pill->actionable()) {
-				Wallet::ShowCardView(controller, user, pill);
-			}
-		});
-	}
 
 	_title->setContextCopyText(tr::lng_profile_copy_fullname(tr::now));
 	_title->setSelectable(true);
@@ -2119,9 +2104,6 @@ void TopBar::updateStatusPosition(float64 progressCurrent) {
 		* std::clamp((progressCurrent) / 0.15, 0., 1.);
 
 	_status->moveToLeft(statusLeft + statusShift, statusTop);
-	if (_balancePill) {
-		_balancePill->place(width(), statusTop - swapShift, progressCurrent);
-	}
 
 	if (_showLastSeen->toggled()) {
 		_showLastSeen->moveToLeft(
