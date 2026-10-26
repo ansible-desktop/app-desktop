@@ -1866,15 +1866,6 @@ void FillContextMenuItems(
 		} else if (itemMedia && itemMedia->gift()) {
 			AddGiftMessageAction(result, view->data(), list->controller());
 		}
-		if (view->data()->isRegular()
-			&& view->data()->Has<HistoryServiceGramTransfer>()) {
-			if (const auto user = view->data()->history()->peer->asUser()) {
-				Window::AddSendMoneyAction(
-					list->controller(),
-					user,
-					Ui::Menu::CreateAddActionCallback(result));
-			}
-		}
 		if (const auto document = media ? media->getDocument() : nullptr) {
 			AddDocumentActions(result, document, view->data(), list);
 		}

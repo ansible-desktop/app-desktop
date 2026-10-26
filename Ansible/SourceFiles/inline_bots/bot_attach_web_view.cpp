@@ -86,9 +86,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/menu/menu_action.h"
 #include "ui/widgets/menu/menu_item_base.h"
 #include "ui/widgets/popup_menu.h"
-#include "wallet/wallet_panel.h"
-#include "wallet/wallet_session.h"
-#include "wallet/wallet_user_addresses.h"
 #include "webview/webview_dialog.h"
 #include "webview/webview_interface.h"
 #include "window/themes/window_theme.h"
@@ -100,7 +97,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "styles/style_info.h" // infoVerifiedStar.
 #include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
-#include "styles/style_wallet.h"
 
 #include <QSvgRenderer>
 
@@ -3141,89 +3137,6 @@ std::unique_ptr<Ui::DropdownMenu> MakeAttachBotsMenu(
 		return nullptr;
 	} else if (actions <= minimal && !onclick) {
 		return nullptr;
-	}
-	if (const auto user = peer->asUser()) {
-		const auto wallet = &session->wallet();
-		const auto userId = peerToUser(user->id);
-		const auto weakSession = base::make_weak(session);
-		const auto weakController = base::make_weak(controller.get());
-		const auto canOffer = [=] {
-			if (!weakSession
-				|| !weakController
-				|| &controller->session() != session
-				|| &user->session() != session
-				|| session->data().userLoaded(userId) != user) {
-				return false;
-			}
-			return Wallet::CanOfferSendMoney(user);
-		};
-		struct MoneyState {
-			QAction *action = nullptr;
-			bool queued = false;
-		};
-		const auto state = raw->lifetime().make_state<MoneyState>();
-		const auto menu = raw->menu();
-		const auto update = [=] {
-			const auto wanted = canOffer();
-			if (wanted == (state->action != nullptr)) {
-				return;
-			}
-			raw->finishAnimating();
-			menu->finishAnimating();
-			menu->clearSelection();
-			if (wanted) {
-				const auto action = Ui::Menu::CreateAction(
-					menu,
-					tr::lng_wallet_menu(tr::now),
-					crl::guard(controller, crl::guard(session, [=] {
-						if (canOffer()) {
-							Wallet::OpenSendMoney(controller, user);
-						}
-					})));
-				state->action = menu->insertAction(
-					moneyIndex,
-					base::make_unique_q<Ui::Menu::Action>(
-						menu,
-						menu->st(),
-						action,
-						&st::walletMenuIcon,
-						&st::walletMenuIcon));
-			} else {
-				state->action = nullptr;
-				menu->removeAction(moneyIndex);
-				const auto &remaining = menu->actions();
-				for (auto i = 0; i != int(remaining.size()); ++i) {
-					menu->itemForAction(remaining[i])->setIndex(i);
-				}
-			}
-		};
-		const auto schedule = [=] {
-			if (state->queued) {
-				return;
-			}
-			state->queued = true;
-			Ui::PostponeCall(raw, [=] {
-				state->queued = false;
-				update();
-			});
-		};
-		wallet->stateKnownValue() | rpl::on_next(schedule, raw->lifetime());
-		session->appConfig().refreshed(
-		) | rpl::on_next(schedule, raw->lifetime());
-		wallet->userAddresses().unavailableValue(
-		) | rpl::on_next(schedule, raw->lifetime());
-		user->flagsValue() | rpl::on_next(schedule, raw->lifetime());
-		session->changes().peerUpdates(
-			user,
-			Data::PeerUpdate::Flag::FullInfo
-				| Data::PeerUpdate::Flag::Name
-				| Data::PeerUpdate::Flag::SupportInfo
-		) | rpl::on_next(schedule, raw->lifetime());
-		raw->setShowStartCallback(update);
-		raw->shownValue() | rpl::filter(rpl::mappers::_1) | rpl::on_next(
-			schedule,
-			raw->lifetime());
-		update();
 	}
 	return result;
 }

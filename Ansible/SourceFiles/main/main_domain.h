@@ -20,9 +20,6 @@ namespace MTP {
 enum class Environment : uchar;
 } // namespace MTP
 
-namespace Wallet {
-class VaultRuntime;
-} // namespace Wallet
 
 namespace Main {
 
@@ -72,7 +69,6 @@ public:
 		return *_local;
 	}
 
-	[[nodiscard]] Wallet::VaultRuntime &walletKeyring();
 
 	[[nodiscard]] auto accounts() const
 		-> const std::vector<AccountWithIndex> &;
@@ -144,7 +140,6 @@ private:
 	const QString _dataName;
 	const std::unique_ptr<Storage::Domain> _local;
 
-	std::shared_ptr<Wallet::VaultRuntime> _walletKeyring;
 	std::vector<AccountWithIndex> _accounts;
 	rpl::event_stream<> _accountsChanges;
 	rpl::variable<Account*> _active = nullptr;

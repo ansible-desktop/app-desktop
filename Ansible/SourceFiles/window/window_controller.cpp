@@ -33,8 +33,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "data/components/promo_suggestions.h"
 #include "data/data_thread.h"
 #include "settings/settings_common.h"
-#include "wallet/wallet_panel.h"
-#include "wallet/wallet_session.h"
 #include "apiwrap.h" // ApiWrap::acceptTerms.
 #include "styles/style_layers.h"
 
@@ -268,7 +266,6 @@ void Controller::checkLockByTerms() {
 		return;
 	}
 	hideSettingsAndLayer(anim::type::instant);
-	Wallet::CloseWallet(&account().session());
 	const auto box = show(Box<TermsBox>(
 		*data,
 		tr::lng_terms_agree(),
@@ -569,23 +566,11 @@ QPoint Controller::getPointForCallPanelCenter() const {
 
 QString LogoutConfirmationText(Main::Account *account) {
 	auto result = tr::lng_sure_logout(tr::now);
-	const auto append = [&](const QString &line) {
-		if (!line.isEmpty()) {
-			result += u"\n\n"_q + line;
-		}
-	};
 	const auto &domain = Core::App().domain();
-	if (account) {
-		append(Wallet::WalletLossWarning(
-			Wallet::WalletLossOnLogout(account)));
-	} else if (!domain.started()) {
-		append(tr::lng_sure_logout_wallet_unknown(tr::now));
-	} else {
-		auto loss = Wallet::WalletLoss();
-		for (const auto &[index, one] : domain.accounts()) {
-			loss.add(Wallet::WalletLossOnLogout(one.get()));
-		}
-		append(Wallet::WalletLossWarning(loss));
+	if (!account && !domain.started()) {
+		result += u"
+
+"_q + tr::lng_sure_logout_wallet_unknown(tr::now);
 	}
 	return result;
 }
