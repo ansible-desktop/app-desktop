@@ -909,7 +909,7 @@ ChatWidget::ChatWidget(
 			refreshSuggestPostToggle();
 		}
 		if ((update.flags & PeerUpdateFlag::IsBlocked)
-			|| ((update.flags & PeerUpdateFlag::StarsPerMessage)
+			|| ((update.flags & PeerUpdateFlag::DiamondsPerMessage)
 				&& _peer->isUser())) {
 			refreshAboutView(true);
 		} else if (update.flags & (PeerUpdateFlag::FullInfo

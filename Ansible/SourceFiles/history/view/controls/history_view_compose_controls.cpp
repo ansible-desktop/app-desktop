@@ -4993,8 +4993,8 @@ void ComposeControls::updateSendButtonType() {
 	}();
 	_send->setState({
 		.type = (delay > 0) ? Type::Slowmode : type,
-		.fillBgOverride = (_chosenStarsCount.value_or(0)
-			? Ui::ColorFromSerialized(StarsColoringForCount(
+		.fillBgOverride = (_chosenDiamondsCount.value_or(0)
+			? Ui::ColorFromSerialized(DiamondsColoringForCount(
 				appConfig.groupCallColorings(),
 				*_chosenDiamondsCount).bgLight)
 			: QColor()),

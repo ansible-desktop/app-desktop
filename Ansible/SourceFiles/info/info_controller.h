@@ -75,7 +75,7 @@ struct Tag {
 	Type type = {};
 };
 
-} // namespace Info::BotStarRef
+} // namespace Info::BotDiamondRef
 
 namespace Info {
 

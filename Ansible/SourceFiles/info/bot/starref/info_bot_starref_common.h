@@ -109,4 +109,4 @@ void FinishProgram(
 	not_null<Main::Session*> session,
 	int usersCount = 0);
 
-} // namespace Info::BotStarRef
+} // namespace Info::BotDiamondRef

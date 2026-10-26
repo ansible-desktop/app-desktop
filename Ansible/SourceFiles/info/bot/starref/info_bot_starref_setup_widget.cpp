@@ -1082,5 +1082,5 @@ std::shared_ptr<Info::Memento> Make(not_null<PeerData*> peer) {
 			std::make_shared<Memento>(peer)));
 }
 
-} // namespace Info::BotStarRef::Setup
+} // namespace Info::BotDiamondRef::Setup
 

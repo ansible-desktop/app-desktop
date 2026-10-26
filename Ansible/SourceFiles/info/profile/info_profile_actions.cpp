@@ -2855,7 +2855,7 @@ void ActionsFiller::addAffiliateProgram(not_null<UserData*> user) {
 		bool requested = false;
 		Fn<void()> open;
 	};
-	const auto recipients = inner->lifetime().make_state<StarRefRecipients>();
+	const auto recipients = inner->lifetime().make_state<DiamondRefRecipients>();
 	recipients->open = [=] {
 		if (!recipients->list.empty()) {
 			const auto program = user->botInfo->starRefProgram;
@@ -2870,7 +2870,7 @@ void ActionsFiller::addAffiliateProgram(not_null<UserData*> user) {
 				recipients->list = std::move(list);
 				recipients->open();
 			});
-			Info::BotStarRef::ResolveRecipients(&user->session(), done);
+			Info::BotDiamondRef::ResolveRecipients(&user->session(), done);
 		}
 	};
 

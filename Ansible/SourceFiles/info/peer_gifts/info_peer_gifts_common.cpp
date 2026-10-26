@@ -1206,7 +1206,7 @@ void GiftButton::paint(QPainter &p, float64 craftProgress) {
 				? (unique
 					? st::giftBoxStickerUniqueTop
 					: st::giftBoxStickerStarTop)
-				: _byStars.isEmpty()
+				: _byDiamonds.isEmpty()
 				? st::giftBoxStickerTop
 				: st::giftBoxStickerTopByStars),
 			size.width(),

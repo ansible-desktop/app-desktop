@@ -419,7 +419,7 @@ void Messages::checkDestroying(bool afterChanges) {
 	} else for (auto i = begin(_messages); i != end(_messages);) {
 		const auto date = i->date;
 		//const auto ttl = i->stars
-		//	? (Ui::StarsColoringForCount(i->stars).minutesPin * 60)
+		//	? (Ui::DiamondsColoringForCount(i->stars).minutesPin * 60)
 		//	: _ttl;
 		const auto ttl = _ttl;
 		if (!date) {

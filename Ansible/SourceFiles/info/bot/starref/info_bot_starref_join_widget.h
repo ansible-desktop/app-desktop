@@ -86,4 +86,4 @@ private:
 	not_null<Window::SessionController*> window,
 	not_null<PeerData*> peer);
 
-} // namespace Info::BotStarRef::Join
+} // namespace Info::BotDiamondRef::Join

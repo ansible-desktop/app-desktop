@@ -1040,4 +1040,4 @@ object_ptr<Ui::RpWidget> CreateLinkHeaderIcon(
 	return CreateLinkIcon(parent, session, usersCount);
 }
 
-} // namespace Info::BotStarRef
+} // namespace Info::BotDiamondRef

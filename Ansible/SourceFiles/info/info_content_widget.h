@@ -68,7 +68,7 @@ struct Tag;
 namespace Info::BotDiamondRef {
 enum class Type : uchar;
 struct Tag;
-} // namespace Info::BotStarRef
+} // namespace Info::BotDiamondRef
 
 namespace Info::GlobalMedia {
 struct Tag;

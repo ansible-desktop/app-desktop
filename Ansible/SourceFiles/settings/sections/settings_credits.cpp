@@ -156,8 +156,8 @@ Credits::Credits(
 	CreditsType type)
 : Section(parent, controller)
 , _creditsType(type)
-, _star(Ui::GenerateDiamonds(st::creditsTopupButton.height, 1))
-, _balanceStar((_creditsType == CreditsType::Ton)
+, _diamond(Ui::GenerateDiamonds(st::creditsTopupButton.height, 1))
+, _balanceDiamond((_creditsType == CreditsType::Ton)
 		? Ui::Earn::IconCurrencyTwoTone(
 			st::tonFieldIconSize,
 			st::currencyFg->c)

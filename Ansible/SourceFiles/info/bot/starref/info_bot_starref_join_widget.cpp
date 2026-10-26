@@ -1143,5 +1143,5 @@ object_ptr<Ui::BoxContent> ProgramsListBox(
 	return Box<PeerListBox>(std::move(controller), initBox);
 }
 
-} // namespace Info::BotStarRef::Join
+} // namespace Info::BotDiamondRef::Join
 
