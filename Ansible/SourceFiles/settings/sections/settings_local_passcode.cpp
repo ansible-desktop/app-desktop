@@ -46,7 +46,7 @@ void SetPasscode(
 	cSetPasscodeBadTries(0);
 	auto &local = controller->session().domain().local();
 	if (const auto verification = local.verifyPasscode(QByteArray())) {
-		local.setPasscode(pass.toUtf8(), *verification);
+		(void)local.setPasscode(pass.toUtf8(), *verification);
 	}
 	Core::App().localPasscodeChanged();
 }

@@ -2285,7 +2285,8 @@ void ResolveAndShowUniqueGift(
 				show,
 				*gift,
 				DiamondGiftResaleInfo(),
-				st));
+				st,
+				nullptr));
 			show->activate();
 		}
 	}).fail([=](const MTP::Error &error) {

@@ -2170,7 +2170,7 @@ void GenericCreditsEntryBody(
 		if (address.isEmpty()) {
 			return;
 		}
-		const auto label = box->addRow(
+		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
 				tr::lng_gift_in_blockchain(
@@ -2385,7 +2385,7 @@ void GenericCreditsEntryBody(
 				return a.append("\n\n").append(b);
 			});
 		}
-		const auto label = box->addRow(
+		box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
 				std::move(text),
