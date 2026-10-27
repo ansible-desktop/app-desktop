@@ -44,7 +44,10 @@ void SetPasscode(
 		not_null<Window::SessionController*> controller,
 		const QString &pass) {
 	cSetPasscodeBadTries(0);
-	controller->session().domain().local().setPasscode(pass.toUtf8());
+	auto &local = controller->session().domain().local();
+	if (const auto verification = local.verifyPasscode(QByteArray())) {
+		local.setPasscode(pass.toUtf8(), *verification);
+	}
 	Core::App().localPasscodeChanged();
 }
 
@@ -209,7 +212,7 @@ void LocalPasscodeEnter::setupContent() {
 			} else {
 				if (isChange) {
 					const auto &domain = controller()->session().domain();
-					if (domain.local().checkPasscode(newText.toUtf8())) {
+					if (domain.local().checkPasscode(domain.local().prepareOpen(newText.toUtf8()))) {
 						newPasscode->setFocus();
 						newPasscode->showError();
 						newPasscode->selectAll();
@@ -238,7 +241,7 @@ void LocalPasscodeEnter::setupContent() {
 				return;
 			}
 			const auto &domain = controller()->session().domain();
-			if (domain.local().checkPasscode(newText.toUtf8())) {
+			if (domain.local().checkPasscode(domain.local().prepareOpen(newText.toUtf8()))) {
 				cSetPasscodeBadTries(0);
 				_showOther.fire(LocalPasscodeManageId());
 			} else {
