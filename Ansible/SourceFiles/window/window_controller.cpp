@@ -568,9 +568,7 @@ QString LogoutConfirmationText(Main::Account *account) {
 	auto result = tr::lng_sure_logout(tr::now);
 	const auto &domain = Core::App().domain();
 	if (!account && !domain.started()) {
-		result += u"
-
-"_q + tr::lng_sure_logout_wallet_unknown(tr::now);
+		result += u"\n\n"_q + tr::lng_sure_logout_wallet_unknown(tr::now);
 	}
 	return result;
 }

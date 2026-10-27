@@ -2999,7 +2999,7 @@ object_ptr<Ui::BoxContent> PrepareChooseRecipientBox(
 		};
 		box->lifetime().add([=] {
 			state->submit = nullptr;
-			state->refreshStarsToSend = nullptr;
+			state->refreshDiamondsToSend = nullptr;
 		});
 		raw->selectionChanges(
 		) | rpl::on_next([=] {

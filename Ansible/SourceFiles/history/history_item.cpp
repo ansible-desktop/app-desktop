@@ -2671,7 +2671,7 @@ void HistoryItem::applyStreamedDraftFinish(const MTPDmessage &data) {
 		| Flag::HasViews
 		| Flag::EstimatedDate
 		| Flag::TonPaidSuggested
-		| Flag::StarsPaidSuggested
+		| Flag::DiamondsPaidSuggested
 		| Flag::CanBeSummarized
 		| Flag::GuestChatViaFrom;
 	_flags = (_flags & ~synced)

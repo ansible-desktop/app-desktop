@@ -2182,10 +2182,6 @@ void GenericCreditsEntryBody(
 					tr::marked),
 				st::creditsBoxAboutDivider),
 			style::al_top);
-		label->setClickHandlerFilter([=](const auto &...) {
-			UrlClickHandler::Open(Core::TonExplorerUrl(session, address));
-			return false;
-		});
 	};
 
 	if (diamondGiftCanManage) {
@@ -2803,7 +2799,7 @@ void UniqueGiftValueBox(
 			style::al_top);
 	};
 
-	if (const auto count = value->forSaleOnTelegram
+	if (const auto count = value->forSaleOnAnsible
 		; count > 0 && show->canResolveWindow()) {
 		addAvailability(
 			count,

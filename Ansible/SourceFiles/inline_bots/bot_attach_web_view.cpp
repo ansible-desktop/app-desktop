@@ -3023,7 +3023,6 @@ std::unique_ptr<Ui::DropdownMenu> MakeAttachBotsMenu(
 			attach(false);
 		}, &st::menuIconFile);
 	}
-	const auto moneyIndex = int(raw->actions().size());
 	if (peer->canCreatePolls(false)) {
 		++minimal;
 		raw->addAction(tr::lng_polls_menu_item(tr::now), [=] {

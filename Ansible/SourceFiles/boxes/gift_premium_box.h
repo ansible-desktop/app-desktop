@@ -65,7 +65,7 @@ void ResolveGiveawayInfo(
 	std::optional<Data::GiveawayStart> start,
 	std::optional<Data::GiveawayResults> results);
 
-void AddStarGiftTable(
+void AddDiamondGiftTable(
 	std::shared_ptr<ChatHelpers::Show> show,
 	not_null<Ui::VerticalLayout*> container,
 	Settings::CreditsEntryBoxStyleOverrides st,
