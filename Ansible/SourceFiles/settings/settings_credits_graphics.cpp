@@ -2385,7 +2385,7 @@ void GenericCreditsEntryBody(
 				return a.append("\n\n").append(b);
 			});
 		}
-		box->addRow(
+		const auto label = box->addRow(
 			object_ptr<Ui::FlatLabel>(
 				box,
 				std::move(text),
