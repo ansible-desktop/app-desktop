@@ -11,7 +11,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 #include "test/test_log.h"
 #include "ui/style/style_core_scale.h"
-#include "wallet/wallet_address.h"
 #include "settings.h"
 
 #include <QtCore/QFile>
@@ -102,7 +101,7 @@ const auto kGramAccountFile = u"test_gram_account.txt"_q;
 	const auto raw = ReadTrimmed(path);
 	const auto current = raw ? ParseGramAccount(*raw) : std::nullopt;
 	if (!current
-		|| Wallet::CanonicalAddress(current->address) != addressRaw) {
+		|| current->address != addressRaw) {
 		return false;
 	}
 	const auto content = (lines.join(u'\n')
@@ -287,7 +286,7 @@ std::optional<GramAccountFixture> GramAccount() {
 	}
 	auto result = ParseGramAccount(*raw);
 	if (result) {
-		result->addressRaw = Wallet::CanonicalAddress(result->address);
+		result->addressRaw = result->address;
 	}
 	return result;
 }
@@ -324,7 +323,7 @@ bool StageGramAccountLiveWords(
 	const auto raw = ReadTrimmed(path);
 	const auto current = raw ? ParseGramAccount(*raw) : std::nullopt;
 	if (!current
-		|| Wallet::CanonicalAddress(current->address) != addressRaw
+		|| current->address != addressRaw
 		|| prefix.size() >= current->words.size()
 		|| !std::equal(
 			prefix.begin(),
@@ -349,7 +348,7 @@ bool RestoreGramAccountLiveWords(
 	const auto raw = ReadTrimmed(path);
 	const auto current = raw ? ParseGramAccount(*raw) : std::nullopt;
 	if (!current
-		|| Wallet::CanonicalAddress(current->address) != addressRaw
+		|| current->address != addressRaw
 		|| current->words.size() >= words.size()
 		|| !std::equal(
 			current->words.begin(),
