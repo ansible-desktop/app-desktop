@@ -266,25 +266,7 @@ std::optional<Ui::Premium::MiniDiamondsType> PremiumGift::buttonMinistars() {
 
 ClickHandlerPtr PremiumGift::createViewLink() {
 	if (tonGift()) {
-		const auto lifetime = std::make_shared<rpl::lifetime>();
-		return std::make_shared<LambdaClickHandler>([=](ClickContext context) {
-			const auto my = context.other.value<ClickHandlerContext>();
-			const auto weak = my.sessionWindow;
-			if (const auto window = weak.get()) {
-				window->session().credits().tonLoad();
-				*lifetime = window->session().credits().tonLoadedValue(
-				) | rpl::filter([=] {
-					if (const auto window = weak.get()) {
-						return window->session().credits().tonLoaded();
-					}
-					return false;
-				}) | rpl::take(1) | rpl::on_next([=] {
-					if (const auto window = weak.get()) {
-						window->showSettings(Settings::CurrencyId());
-					}
-				});
-			}
-		});
+		return nullptr;
 	}
 	if (auto link = OpenDiamondGiftLink(_parent->data())) {
 		return link;

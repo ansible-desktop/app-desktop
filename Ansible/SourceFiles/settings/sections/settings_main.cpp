@@ -537,24 +537,6 @@ void BuildPremiumSection(SectionBuilder &builder) {
 		.keywords = { u"stars"_q, u"balance"_q },
 	});
 
-	session->credits().tonLoad();
-	builder.addButton({
-		.id = u"main/currency"_q,
-		.title = tr::lng_settings_currency(),
-		.icon = { &st::menuIconTon },
-		.label = session->credits().tonBalanceValue(
-		) | rpl::map([](CreditsAmount c) {
-			return c ? Lang::FormatCreditsAmountToShort(c).string : u""_q;
-		}),
-		.onClick = [=] {
-			controller->setPremiumRef("settings");
-			showOther(CurrencyId());
-		},
-		.keywords = { u"ton"_q, u"crypto"_q, u"wallet"_q },
-		.shown = session->credits().tonBalanceValue(
-		) | rpl::map([](CreditsAmount c) { return !c.empty(); }),
-	});
-
 	builder.addButton({
 		.id = u"main/business"_q,
 		.title = tr::lng_business_title(),

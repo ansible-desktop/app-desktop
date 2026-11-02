@@ -1647,11 +1647,6 @@ void RegisterSettingsHandlers(Router &router) {
 	});
 
 	router.add(u"settings"_q, {
-		.path = u"ton"_q,
-		.action = SettingsSection{ ::Settings::CurrencyId() },
-	});
-
-	router.add(u"settings"_q, {
 		.path = u"business"_q,
 		.action = SettingsSection{ ::Settings::BusinessId() },
 	});

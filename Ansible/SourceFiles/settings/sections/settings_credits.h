@@ -21,7 +21,6 @@ class SessionShow;
 namespace Settings {
 
 [[nodiscard]] Type CreditsId();
-[[nodiscard]] Type CurrencyId();
 
 class BuyDiamondsHandler final : public base::has_weak_ptr {
 public:

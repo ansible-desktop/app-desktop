@@ -13,7 +13,7 @@
   <Identity Name="Ansible.Desktop"
     ProcessorArchitecture="ARCHITECTURE"
     Publisher="CN=D91460C6-1A45-4BA7-9C3B-77CAC5B9DFBB"
-    Version="0.4.0.0" />
+    Version="0.4.1.0" />
   <Properties>
     <DisplayName>Ansible Desktop</DisplayName>
     <PublisherDisplayName>Ansible</PublisherDisplayName>
@@ -40,12 +40,6 @@
       <Extensions>
         <uap3:Extension Category="windows.protocol">
           <uap3:Protocol Name="as" Parameters="-- &quot;%1&quot;" />
-        </uap3:Extension>
-        <uap3:Extension Category="windows.protocol">
-          <uap3:Protocol Name="tonsite" Parameters="-- &quot;%1&quot;" />
-        </uap3:Extension>
-        <uap3:Extension Category="windows.protocol">
-          <uap3:Protocol Name="ton" Parameters="-- &quot;%1&quot;" />
         </uap3:Extension>
         <desktop:Extension
           Category="windows.startupTask"

@@ -121,9 +121,6 @@
     <file alias="cleaning_cache.ass">../../animations/cleaning_cache.ass</file>
     <file alias="bot_menu.tgs">../../animations/bot_menu.tgs</file>
     <file alias="dog_empty.tgs">../../animations/dog_empty.tgs</file>
-    <file alias="gram.tgs">../../animations/gram.tgs</file>
-    <file alias="gram_white.tgs">../../animations/gram_white.tgs</file>
-    <file alias="gram_white_fast.tgs">../../animations/gram_white_fast.tgs</file>
     <file alias="sun_outline.tgs">../../animations/sun_outline.tgs</file>
     <file alias="photo_editor_trim_shortest.tgs">../../animations/photo_editor/trim_shortest.tgs</file>
   </qresource>
