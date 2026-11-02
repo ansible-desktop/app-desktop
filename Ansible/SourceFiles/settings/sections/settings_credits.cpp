@@ -673,7 +673,6 @@ void Credits::setupContent() {
 base::weak_qptr<Ui::RpWidget> Credits::createPinnedToTop(
 		not_null<QWidget*> parent) {
 	_parent = parent;
-	const auto isCurrency = _creditsType == CreditsType::Ton;
 
 	const auto content = [&]() -> Ui::Premium::TopBarAbstract* {
 		const auto weak = base::make_weak(controller());
@@ -688,23 +687,13 @@ base::weak_qptr<Ui::RpWidget> Credits::createPinnedToTop(
 			st::creditsPremiumCover,
 			Ui::Premium::TopBarDescriptor{
 				.clickContextOther = clickContextOther,
-				.logo = isCurrency ? u"diamond"_q : QString(),
 				.title = title(),
-				.about = (isCurrency
-					? tr::lng_credits_currency_summary_about
-					: tr::lng_diamonds_summary_about)(
-						TextWithEntities::Simple),
+				.about = tr::lng_diamonds_summary_about(
+					TextWithEntities::Simple),
 				.light = true,
-				.use3dStar = !isCurrency,
-				.star3dGolden = !isCurrency,
-				.use3dDiamond = isCurrency,
+				.use3dStar = true,
 				.gradientStops = Ui::Premium::CreditsIconGradientStops(),
 				.showFinished = _showFinished.events(),
-				.lottie = isCurrency ? u"gram"_q : QString(),
-				.lottieSize = (isCurrency
-					? st::creditsCurrencyCoverLottieSize
-					: QSize()),
-				.lottieTop = isCurrency ? st::creditsCurrencyCoverLottieTop : 0,
 			});
 	}();
 	controller()->boxShownValue(
@@ -812,9 +801,6 @@ void Credits::showFinished() {
 void Credits::visibleTopBottomUpdated(int visibleTop, int visibleBottom) {
 	setChildVisibleTopBottom(_content, visibleTop, visibleBottom);
 }
-
-class Currency {
-};
 
 void BuildCurrencyWithdrawalSection(
 		not_null<Ui::VerticalLayout*> content,
@@ -1081,32 +1067,8 @@ struct SectionFactory<Credits> : AbstractSectionFactory {
 	}
 };
 
-template <>
-struct SectionFactory<Currency> : AbstractSectionFactory {
-	object_ptr<AbstractSection> create(
-		not_null<QWidget*> parent,
-		not_null<Window::SessionController*> controller,
-		not_null<Ui::ScrollArea*> scroll,
-		rpl::producer<Container> containerValue
-	) const final override {
-		return object_ptr<Credits>(parent, controller, CreditsType::Ton);
-	}
-	bool hasCustomTopBar() const final override {
-		return true;
-	}
-
-	[[nodiscard]] static const std::shared_ptr<SectionFactory> &Instance() {
-		static const auto result = std::make_shared<SectionFactory>();
-		return result;
-	}
-};
-
 Type CreditsId() {
 	return Credits::Id();
-}
-
-Type CurrencyId() {
-	return SectionFactory<Currency>::Instance();
 }
 
 BuyDiamondsHandler::BuyDiamondsHandler() = default;

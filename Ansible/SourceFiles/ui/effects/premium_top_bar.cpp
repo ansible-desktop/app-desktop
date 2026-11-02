@@ -129,14 +129,11 @@ TopBar::TopBar(
 			: MiniDiamondsType::BiDiamonds) {
 	if (descriptor.use3dStar && Star::Supported()) {
 		_star3d = CreateChild<Star>(this);
-		_star3dGolden = descriptor.star3dGolden;
-		if (_star3dGolden) {
-			_star3d->setGolden(true);
-		}
 		_particles3d = std::make_unique<DiamondParticles>([=](
 				const QRect &area) {
 			update(area);
 		});
+		_particles3d->setGlyph(DiamondParticles::Glyph::Star);
 		_star3d->flungStrength() | rpl::on_next([=](float64 strength) {
 			_particles3d->fling(strength);
 		}, lifetime());
@@ -234,15 +231,7 @@ TopBar::TopBar(
 			_ministars.setColorOverride(descriptor.gradientStops);
 		}
 		if (_star3d) {
-			if (_star3dGolden) {
-				_star3d->setColors(
-					QColor(0xFE, 0xC8, 0x46),
-					QColor(0xEC, 0x92, 0x0A));
-				_particles3d->setColors(
-					QColor(0xFA, 0x54, 0x16),
-					QColor(0xFF, 0xC8, 0x37));
-				_particles3d->setGlyph(DiamondParticles::Glyph::Star);
-			} else if (!_light && !TopBarAbstract::isDark()) {
+			if (!_light && !TopBarAbstract::isDark()) {
 				_star3d->setColors(
 					QColor(255, 255, 255),
 					QColor(0xE3, 0xEC, 0xFA));

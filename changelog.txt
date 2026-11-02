@@ -1,3 +1,10 @@
+0.4.1 (02.11.26)
+
+- Restore the Ansible media pack and blue diamond colours after the update.
+- Use the faceted diamond model for balance and Premium headers.
+- Restore branded paid-reaction animations and remove remaining TON settings
+  entry points and operating-system protocol registration.
+
 0.4.0 (22.10.26)
 
 - Rebase onto upstream Telegram Desktop 7.3.3 (API layer 232).

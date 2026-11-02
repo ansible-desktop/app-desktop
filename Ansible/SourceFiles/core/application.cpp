@@ -1239,17 +1239,8 @@ void Application::checkStartUrls() {
 		auto left = ranges::views::all(
 			urls
 		) | ranges::views::filter([&](const QUrl &url) {
-			if (url.scheme() == u"tonsite"_q) {
-				iv().showTonSite(url.toString(), {});
-				return false;
-			} else if (url.scheme() == u"ton"_q) {
-				const auto window = _lastActivePrimaryWindow;
-				const auto controller = (window && !window->locked())
-					? window->sessionController()
-					: nullptr;
-				if (!controller) {
-					return true;
-				}
+			if (url.scheme() == u"tonsite"_q
+				|| url.scheme() == u"ton"_q) {
 				return false;
 			} else if (_lastActivePrimaryWindow) {
 				const auto local = TryConvertUrlToLocal(url.toString());
@@ -2104,28 +2095,6 @@ void Application::RegisterUrlScheme() {
 		.protocol = u"as"_q,
 		.protocolName = u"Ansible Link"_q,
 		.shortAppName = QString::fromLatin1(ApiPlatformName),
-		.longAppName = QCoreApplication::applicationName(),
-		.displayAppName = AppName.utf16(),
-		.displayAppDescription = AppName.utf16(),
-	});
-
-	base::Platform::RegisterUrlScheme(base::Platform::UrlSchemeDescriptor{
-		.executable = Platform::ExecutablePathForShortcuts(),
-		.arguments = arguments,
-		.protocol = u"tonsite"_q,
-		.protocolName = u"TonSite Link"_q,
-		.shortAppName = QString::fromLatin1(ApiPlatformName),
-		.longAppName = QCoreApplication::applicationName(),
-		.displayAppName = AppName.utf16(),
-		.displayAppDescription = AppName.utf16(),
-	});
-
-	base::Platform::RegisterUrlScheme(base::Platform::UrlSchemeDescriptor{
-		.executable = Platform::ExecutablePathForShortcuts(),
-		.arguments = arguments,
-		.protocol = u"ton"_q,
-		.protocolName = u"Ton Link"_q,
-		.shortAppName = u"tdesktop"_q,
 		.longAppName = QCoreApplication::applicationName(),
 		.displayAppName = AppName.utf16(),
 		.displayAppDescription = AppName.utf16(),

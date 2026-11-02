@@ -203,7 +203,6 @@ menuIconStarsRefund: icon {{ "menu/auction_refund", menuIconColor }};
 menuIconStarsCarryover: icon {{ "menu/auction_carry", menuIconColor }};
 menuIconTon: icon {
 	{ "chat/mini_ton_bold", windowActiveTextFg, point(3px, 2px) },
-	{ "chat/mini_ton_bold", windowFgActive, point(3px, 2px) },
 };
 menuIconReorder: icon{{ "menu/reorder-24x24", menuIconColor }};
 menuIconCraftTraits: icon{{ "menu/craft_random-24x24", menuIconColor }};
