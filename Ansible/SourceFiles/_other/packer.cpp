@@ -379,7 +379,8 @@ void ReportExpiry(const Core::Updates::Manifest &manifest, Channel channel) {
 	QFile file(path);
 	if (!file.open(QIODevice::WriteOnly)
 		|| file.write(content) != content.size()) {
-		cout << "Can't write '" << path.toUtf8().constData() << "'..\n";
+		cout << "Can't write '" << path.toUtf8().constData()
+			<< "': " << file.errorString().toUtf8().constData() << "\n";
 		return false;
 	}
 	return true;
