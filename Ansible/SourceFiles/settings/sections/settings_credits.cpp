@@ -724,9 +724,7 @@ base::weak_qptr<Ui::RpWidget> Credits::createPinnedToTop(
 		const auto balance = AddBalanceWidget(
 			content,
 			&controller()->session(),
-			isCurrency
-				? controller()->session().credits().tonBalanceValue()
-				: controller()->session().credits().balanceValue(),
+			controller()->session().credits().balanceValue(),
 			true,
 			content->heightValue() | rpl::map([=](int height) {
 				const auto ratio = float64(height - content->minimumHeight())
