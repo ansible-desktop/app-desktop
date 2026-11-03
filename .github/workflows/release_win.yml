@@ -187,6 +187,21 @@ jobs:
 
           cmake --build ..\out --config Release --target Ansible Packer -- -k 0
 
+      - name: Release intermediate disk space.
+        shell: pwsh
+        run: |
+          if ($env:REPO_NAME -ne 'app-desktop') { throw 'Unexpected repository' }
+          $buildRoot = [IO.Path]::GetFullPath("$env:USERPROFILE/TBuild/app-desktop/out")
+          $expectedRoot = [IO.Path]::GetFullPath("$env:USERPROFILE/TBuild/$env:REPO_NAME/out")
+          $resolvedRoot = (Resolve-Path -LiteralPath $buildRoot).Path
+          if ($resolvedRoot -ne $expectedRoot) { throw "Unexpected build directory: $resolvedRoot" }
+          Get-PSDrive -PSProvider FileSystem | Select-Object Name, Free, Used
+          # Compilation has finished; keep the executables and libraries.
+          Get-ChildItem -LiteralPath $resolvedRoot -Recurse -File |
+            Where-Object { $_.Extension -in '.obj', '.pch' } |
+            ForEach-Object { Remove-Item -LiteralPath $_.FullName }
+          Get-PSDrive -PSProvider FileSystem | Select-Object Name, Free, Used
+
       - name: Read version.
         shell: bash
         run: |
