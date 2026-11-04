@@ -181,14 +181,12 @@ jobs:
             --config "profile.release.panic='unwind'" \
             --config "profile.release.package.tlottie.opt-level=3" \
             -- --print native-static-libs
-          install -d "$LibrariesPath/local/tdesktop_rust/lib" "$LibrariesPath/local/tdesktop_rust/include/tlottie" "$LibrariesPath/local/tdesktop_rust/include/wallet_engine" "$LibrariesPath/local/tdesktop_rust/src/wallet_engine"
+          install -d "$LibrariesPath/local/tdesktop_rust/lib" "$LibrariesPath/local/tdesktop_rust/include/tlottie" "$LibrariesPath/local/tdesktop_rust/include/wallet_engine"
           install -m 644 target/release/libtdesktop_rust.a "$LibrariesPath/local/tdesktop_rust/lib/libtdesktop_rust.a"
           install -m 644 ../tlottie/include/tlottie.h "$LibrariesPath/local/tdesktop_rust/include/tlottie/tlottie.h"
           cargo run --manifest-path ../wallet-engine/bindgen/cpp/bindgen/Cargo.toml --locked -- \
             --library --out-dir "$LibrariesPath/local/tdesktop_rust/include/wallet_engine" \
             target/release/libtdesktop_rust.dylib
-          mv "$LibrariesPath/local/tdesktop_rust/include/wallet_engine/wallet_engine.cpp" \
-            "$LibrariesPath/local/tdesktop_rust/src/wallet_engine/wallet_engine.cpp"
 
       - name: RNNoise cache.
         id: cache-rnnoise
