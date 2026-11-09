@@ -18,6 +18,13 @@ on:
         description: 'Branch / tag / SHA to build (default: ref this is launched from).'
         required: false
         type: string
+      runner:
+        description: 'Hosted macOS image for this manual build.'
+        type: choice
+        default: macos-latest
+        options:
+          - macos-latest
+          - macos-15
   push:
     # Тяжёлая матрица живёт только на master — как у остальных четырёх.
     branches:
@@ -60,7 +67,7 @@ jobs:
 
   macos:
     name: MacOS
-    runs-on: ${{ (github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/nightly') && 'depot-macos-latest' || 'macos-latest' }}
+    runs-on: ${{ (github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/nightly') && 'depot-macos-latest' || inputs.runner || 'macos-latest' }}
 
     strategy:
       matrix:
@@ -76,7 +83,9 @@ jobs:
       TDE2E: "51743dfd01dff6179e2d8f7095729caa4e2222e9"
       # Держать в синхроне с Ansible/build/prepare/prepare.py:
       # стадия tlottie (ревизия) и rustToolchain (версия cargo).
-      TLOTTIE: "4b940c7942"
+      TLOTTIE: "92df98dc209bc39b1e567ec74a8c86a0af5239de"
+      WALLET_ENGINE: "e59e0d89d7ee90c388bf36e3334c5b276f396697"
+      RUST_PATCHES: "a895fef40eaa7d66481cff542c623b039b7ce494"
       RUST_TOOLCHAIN: "1.96.1"
       UPLOAD_ARTIFACT: "true"
       ONLY_CACHE: "false"
@@ -90,6 +99,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
           path: ${{ env.REPO_NAME }}
 
@@ -130,10 +140,10 @@ jobs:
           cd "$LibrariesPath"
           export RUSTUP_HOME="$LibrariesPath/rustup"
           export CARGO_HOME="$LibrariesPath/cargo"
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rustup-init.sh
-          sh rustup-init.sh -y --no-modify-path --profile minimal --default-toolchain "$RUST_TOOLCHAIN"
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal
           export RUSTUP_TOOLCHAIN="$RUST_TOOLCHAIN"
-          export PATH="$CARGO_HOME/bin:$PATH"
+          TOOLCHAIN_BIN="$(dirname "$(rustup which --toolchain "$RUST_TOOLCHAIN" rustc)")"
+          export PATH="$TOOLCHAIN_BIN:$PATH"
 
           git init rust-patches
           cd rust-patches
@@ -234,59 +244,6 @@ jobs:
           cmake -Bbuild . -DCMAKE_INSTALL_PREFIX=$LibrariesPath/local/tde2e -DTD_E2E_ONLY=ON
           cmake --build build
           cmake --install build
-
-      - name: tlottie cache.
-        id: cache-tlottie
-        uses: actions/cache@v6
-        with:
-          path: ${{ env.LibrariesPath }}/local/tlottie
-          key: ${{ runner.OS }}-tlottie-${{ env.TLOTTIE }}-${{ env.RUST_TOOLCHAIN }}-${{ env.CACHE_KEY }}
-      - name: tlottie.
-        if: steps.cache-tlottie.outputs.cache-hit != 'true'
-        run: |
-          cd $LibrariesPath
-
-          # 🚨 Архитектуру берём у uname, а НЕ у `rustc -vV`: на раннере
-          # rustup стоит без активного тулчейна, rustc в PATH нет, и
-          # подстановка молча давала пустую строку — `rustup target add`
-          # падал на «required arguments were not provided». Хостовая цель у
-          # только что поставленного тулчейна и так есть, добавлять не нужно.
-          rustup toolchain install $RUST_TOOLCHAIN --profile minimal
-          case "$(uname -m)" in
-            arm64|aarch64) HOST=aarch64-apple-darwin ;;
-            *)             HOST=x86_64-apple-darwin ;;
-          esac
-          echo "tlottie target: $HOST"
-
-          # 🚨 Каталог с rustc и cargo СПРАШИВАЕМ У RUSTUP, а не угадываем.
-          # На раннере стоит rustup из Homebrew («self-update is disabled for
-          # this build»), он не создаёт шимы в ~/.cargo/bin, поэтому и
-          # `rustup run`, и добавление CARGO_HOME/bin в PATH дали
-          # «rustc: command not found» — каждый раз на шаг позже.
-          # `rustup which --toolchain` работает без активного тулчейна и
-          # отвечает абсолютным путём, какой бы ни была раскладка.
-          TOOLCHAIN_BIN="$(dirname "$(rustup which --toolchain $RUST_TOOLCHAIN rustc)")"
-          export PATH="$TOOLCHAIN_BIN:$PATH"
-          echo "toolchain bin: $TOOLCHAIN_BIN"
-          rustc -vV
-          cargo -V
-
-          git clone $GIT/dkaraush/tlottie.git
-          cd tlottie
-          git checkout $TLOTTIE
-
-          # Только дуга раннера: этот вариант всё равно линкуется с
-          # однодуговыми библиотеками Homebrew. prepare.py делает lipo из
-          # двух дуг для релиза, здесь это лишняя половина времени.
-          cargo rustc --lib --release --locked \
-            --features c-api --crate-type staticlib \
-            --target $HOST \
-            -- --print native-static-libs
-
-          PREFIX=$LibrariesPath/local/tlottie
-          mkdir -p $PREFIX/lib $PREFIX/include/tlottie
-          cp target/$HOST/release/libtlottie.a $PREFIX/lib/libtlottie.a
-          cp include/tlottie.h $PREFIX/include/tlottie/tlottie.h
 
       - name: Ansible build.
         if: env.ONLY_CACHE == 'false'

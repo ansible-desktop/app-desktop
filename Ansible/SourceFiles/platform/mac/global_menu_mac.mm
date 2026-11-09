@@ -208,9 +208,9 @@ void Manager::retranslate() {
 		_window->setTitle(tr::lng_mac_menu_window(tr::now));
 	}
 	if (_about) {
-		_about->setText(tr::lng_mac_menu_about_telegram(
+		_about->setText(tr::lng_mac_menu_about_ansible(
 			tr::now,
-			lt_telegram,
+			lt_ansible,
 			BundleApplicationName()));
 	}
 	if (_preferences) {
@@ -694,7 +694,7 @@ void Manager::destroy() {
 	_languageBound = false;
 	_about = _preferences = _logout = _undo = _redo = _cut = _copy
 		= _paste = _delete = _selectAll = _contacts = _addContact
-		= _newGroup = _newChannel = _showTelegram = _fullScreen
+		= _newGroup = _newChannel = _showAnsible = _fullScreen
 		= _emoji = _bold = _italic = _underline
 		= _strikeOut = _blockquote = _monospace = _clearFormat
 		= nullptr;

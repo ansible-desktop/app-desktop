@@ -938,13 +938,7 @@ TonAddressClickHandler::TonAddressClickHandler(QString address)
 : _address(std::move(address)) {
 }
 
-void TonAddressClickHandler::onClick(ClickContext context) const {
-	if (context.button != Qt::LeftButton) {
-		return;
-	}
-	const auto my = context.other.value<ClickHandlerContext>();
-	if (const auto controller = my.sessionWindow.get()) {
-	}
+void TonAddressClickHandler::onClick(ClickContext) const {
 }
 
 auto TonAddressClickHandler::getTextEntity() const -> TextEntity {
