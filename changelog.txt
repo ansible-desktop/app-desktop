@@ -1,6 +1,8 @@
 0.4.2 (10.11.26)
 
 - Show interactive widgets sent by bots in private chats.
+- Add smooth text flights and bubble reveal animations when sending messages.
+- Update dissolving message removal and keep the scroll position stable.
 - Support shared widget data, live updates and interactive bot responses.
 
 0.4.1 (02.11.26)

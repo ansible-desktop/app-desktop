@@ -1843,6 +1843,7 @@ PRIVATE
     platform/win/notifications_manager_win.h
     platform/win/overlay_widget_win.h
     platform/win/specific_win.cpp
+    platform/win/system_intl_win.cpp
     platform/win/specific_win.h
     platform/win/translate_provider_win.h
     platform/win/tray_win.cpp
@@ -1868,6 +1869,7 @@ PRIVATE
     platform/platform_overlay_widget.cpp
     platform/platform_overlay_widget.h
     platform/platform_specific.h
+    platform/platform_system_intl.h
     platform/platform_translate_provider.h
     platform/platform_tray.h
     platform/platform_webauthn.h
@@ -2222,6 +2224,10 @@ PRIVATE
     ui/effects/message_sending_animation_common.h
     ui/effects/message_sending_animation_controller.cpp
     ui/effects/message_sending_animation_controller.h
+    ui/effects/message_sending_history.cpp
+    ui/effects/message_sending_history.h
+    ui/effects/message_sending_text_flight.cpp
+    ui/effects/message_sending_text_flight.h
     ui/effects/peer_qr_colors_panel.cpp
     ui/effects/peer_qr_colors_panel.h
     ui/effects/peer_qr_emoji_field.cpp
@@ -2256,6 +2262,8 @@ PRIVATE
     ui/image/image.h
     ui/image/image_location.cpp
     ui/image/image_location.h
+    ui/image/image_opaque_bounds.cpp
+    ui/image/image_opaque_bounds.h
     ui/image/image_location_factory.cpp
     ui/image/image_location_factory.h
     ui/text/format_song_document_name.cpp
@@ -2714,6 +2722,7 @@ if (MSVC)
         /DELAYLOAD:wtsapi32.dll
         /DELAYLOAD:propsys.dll
         /DELAYLOAD:uiautomationcore.dll
+        /DELAYLOAD:icu.dll
     )
     if (QT_VERSION GREATER 6)
         if (NOT build_winarm)

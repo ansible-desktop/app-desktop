@@ -10,6 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_peer.h"
 #include "dialogs/ui/dialogs_message_view.h"
 #include "history/view/media/history_view_html_widget.h"
+#include "ui/effects/ripple_animation.h"
 #include "history/view/media/history_view_unsupported_notice.h"
 #include "history/view/history_view_item_preview.h"
 #include "history/history.h"

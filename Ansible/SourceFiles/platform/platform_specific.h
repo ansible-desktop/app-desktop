@@ -52,6 +52,8 @@ void RequestPermission(PermissionType type, Fn<void(PermissionStatus)> resultCal
 void OpenSystemSettingsForPermission(PermissionType type);
 bool OpenSystemSettings(SystemSettingsType type);
 void IgnoreApplicationActivationRightNow();
+// macOS Hide leaves Qt windows shown and unminimized.
+[[nodiscard]] rpl::producer<bool> ApplicationHiddenValue();
 [[nodiscard]] int64 ClipboardChangeCount();
 [[nodiscard]] bool AutostartSupported();
 void AutostartRequestStateFromSystem(Fn<void(bool)> callback);

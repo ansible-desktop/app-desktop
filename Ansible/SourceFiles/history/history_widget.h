@@ -92,6 +92,7 @@ class ChooseThemeController;
 class ElasticScroll;
 struct ChatPaintHighlight;
 class ChatStyle;
+struct MessageSendingReveal;
 template <typename Widget>
 class SlideWrap;
 } // namespace Ui
@@ -386,10 +387,6 @@ private:
 		Data::ReportInput reportInput;
 		Fn<void(std::vector<MsgId>)> callback;
 		bool active = false;
-	};
-	struct ItemRevealAnimation {
-		Ui::Animations::Simple animation;
-		int startHeight = 0;
 	};
 	enum class TextUpdateEvent {
 		SaveDraft = (1 << 0),
@@ -895,9 +892,10 @@ private:
 	object_ptr<HistoryView::TopBarWidget> _topBar;
 	object_ptr<Ui::ElasticScroll> _scroll;
 	QPointer<HistoryInner> _list;
+	base::weak_ptr<ListRevealHold> _listRevealHold;
 	History *_migrated = nullptr;
 	History *_history = nullptr;
-	mutable Data::ForumTopic *_creatingBotTopic = nullptr;
+	mutable base::weak_ptr<Data::ForumTopic> _creatingBotTopic;
 	rpl::lifetime _historySponsoredPreloading;
 
 	// Initial updateHistoryGeometry() was called.
@@ -1034,8 +1032,9 @@ private:
 	base::flat_set<not_null<HistoryItem*>> _itemRevealPending;
 	base::flat_map<
 		not_null<HistoryItem*>,
-		ItemRevealAnimation> _itemRevealAnimations;
+		Ui::ItemRevealAnimation> _itemRevealAnimations;
 	int _itemsRevealHeight = 0;
+	rpl::event_stream<> _itemsRevealHeightChanges;
 
 
 	bool _sponsoredMessagesStateKnown = false;

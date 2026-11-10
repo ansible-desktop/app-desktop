@@ -2119,9 +2119,11 @@ HistoryItem *Session::changeMessageId(PeerId peerId, MsgId wasId, MsgId nowId) {
 	return item;
 }
 
-bool Session::queryItemVisibility(not_null<HistoryItem*> item) const {
+bool Session::queryItemVisibility(
+		not_null<HistoryItem*> item,
+		const ViewElement *view) const {
 	auto result = false;
-	_itemVisibilityQueries.fire({ item, &result });
+	_itemVisibilityQueries.fire({ item, &result, view });
 	return result;
 }
 
@@ -2149,6 +2151,11 @@ void Session::itemVisibilitiesUpdated() {
 	// rpl::producer<> itemVisibilitiesUpdates()
 	// if someone else requires those methods, using fast for now.
 	Core::App().downloadManager().itemVisibilitiesUpdated(_session);
+	_itemVisibilitiesUpdates.fire({});
+}
+
+rpl::producer<> Session::itemVisibilitiesUpdates() const {
+	return _itemVisibilitiesUpdates.events();
 }
 
 void Session::notifyItemIdChange(IdChange event) {

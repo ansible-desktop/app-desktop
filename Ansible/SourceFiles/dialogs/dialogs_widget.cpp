@@ -2111,13 +2111,13 @@ bool Widget::searchActive() const {
 
 void Widget::updateSuggestions(anim::type animated) {
 	const auto suggest = (searchActive() || _searchSuggestionsLocked)
-		&& !_searchState.inChat;
+		&& !_searchState.inChat
+		&& (_inner->state() == WidgetState::Default);
 	if (anim::Disabled() || !session().data().chatsListLoaded()) {
 		animated = anim::type::instant;
 	}
 	if (!suggest && _suggestions) {
-		const auto wasTabsOnly = _suggestions->tabsOnly();
-		if (animated == anim::type::normal && !wasTabsOnly) {
+		if (animated == anim::type::normal) {
 			auto taken = base::take(_suggestions);
 			taken->setVisible(false);
 			storiesExplicitCollapse();
@@ -2154,8 +2154,7 @@ void Widget::updateSuggestions(anim::type animated) {
 		_scroll->show();
 	} else if (suggest && !_suggestions) {
 		_hidingSuggestions.clear();
-		const auto tabsOnly = (_inner->state() != WidgetState::Default);
-		if (animated == anim::type::normal && !tabsOnly) {
+		if (animated == anim::type::normal) {
 			startWidthAnimation();
 		}
 		// Hides stories and passcode lock.
@@ -2223,36 +2222,16 @@ void Widget::updateSuggestions(anim::type animated) {
 
 		updateControlsGeometry();
 
-		_suggestions->show(
-			tabsOnly ? anim::type::instant : animated,
-			[=] { stopWidthAnimation(); });
-		if (!tabsOnly) {
-			_scroll->hide();
-		}
+		_suggestions->show(animated, [=] {
+			stopWidthAnimation();
+		});
+		_scroll->hide();
 	} else {
-		if (suggest && _suggestions) {
-			const auto tabsOnly = (_inner->state() != WidgetState::Default);
-			if (_suggestions->tabsOnly() != tabsOnly) {
-				_suggestions->setTabsOnly(tabsOnly);
-				stopWidthAnimation();
-				updateControlsGeometry();
-				updateControlsVisibility();
-			}
-		}
 		updateStoriesVisibility();
 	}
-	_inner->setDeselectOnTopUp(_suggestions && _suggestions->tabsOnly());
-}
-
-bool Widget::suggestionsCoverList() const {
-	return _suggestions && !_suggestions->tabsOnly();
 }
 
 void Widget::closeSuggestions() {
-	if (_suggestions && _suggestions->ownsSearchQuery(currentSearchQuery())) {
-		_suggestions->consumeSearchQuery(QString());
-		setSearchQuery(QString());
-	}
 	_searchSuggestionsLocked = false;
 	_searchHasFocus = false;
 	setFocus();

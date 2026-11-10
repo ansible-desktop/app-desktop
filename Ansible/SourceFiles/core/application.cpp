@@ -91,7 +91,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "export/export_manager.h"
 #include "webrtc/webrtc_environment.h"
 #include "webview/webview_interface.h"
-#include "window/window_columns.h"
 #include "window/window_saved_windows.h"
 #include "window/window_separate_id.h"
 #include "window/window_session_controller.h"

@@ -364,7 +364,7 @@ void BottomInfo::paint(
 			p,
 			right,
 			firstLineBottom + st::historyViewsTop,
-			outerWidth);
+			outer(right, icon));
 	}
 	if ((_data.flags & Data::Flag::Sending)
 		&& !(_data.flags & Data::Flag::OutLayout)) {

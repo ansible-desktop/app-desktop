@@ -98,10 +98,7 @@ public:
 	// Set the correct scroll position after being resized.
 	void restoreScrollPosition();
 
-	void resizeToWidth(int newWidth, int minHeight) {
-		_minHeight = minHeight;
-		return RpWidget::resizeToWidth(newWidth);
-	}
+	void resizeToWidth(int newWidth, int minHeight);
 
 	void saveState(not_null<SectionMemento*> memento);
 	void restoreState(not_null<SectionMemento*> memento);
@@ -324,6 +321,10 @@ private:
 		DisplayPointerScope pointerScope) const;
 	void toggleDeleteGroup(uint64 groupEventId);
 	void expandGroupContaining(not_null<HistoryItem*> item);
+	[[nodiscard]] int jumpTarget(
+		not_null<Element*> view,
+		const MessageHighlightId &highlight) const;
+
 	void jumpToMessageInLog(
 		not_null<HistoryItem*> item,
 		MessageHighlightId highlight);

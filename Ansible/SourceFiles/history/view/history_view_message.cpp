@@ -93,6 +93,18 @@ constexpr auto kLineHeightAppearDuration = crl::time(100);
 constexpr auto kLineHeightAppearFinalDuration = crl::time(60);
 constexpr auto kMinWidthAppearDuration = crl::time(160);
 
+[[nodiscard]] DocumentId FromNameVerificationId(PeerData *from) {
+	const auto details = from ? from->botVerifyDetails() : nullptr;
+	return details ? details->iconId : 0;
+}
+
+[[nodiscard]] int FromNameVerificationSkip(
+		DocumentId iconId,
+		int availableWidth = kMaxWidth) {
+	const auto skip = st::emojiSize + st::dialogsChatTypeSkip;
+	return (iconId && availableWidth > skip) ? skip : 0;
+}
+
 [[nodiscard]] int RevealLineRight(const Ui::Text::LineLayoutInfo &line) {
 	return line.left + line.width;
 }
@@ -7031,6 +7043,11 @@ bool Message::textAppearCheckLine() {
 				&& ((appearing->revealedLineWidth < line->width)
 					|| (appearing->shownHeight < finalLineHeight))));
 	if (!use) {
+		if (!line) {
+			// The width tick reads lines[shownLine], which is now past the end.
+			appearing->widthAnimation.stop();
+			appearing->heightAnimation.stop();
+		}
 		if (data()->isRegular()) {
 			// We are inside these animations' tick, can't destroy them now.
 			crl::on_main(this, [=] {

@@ -156,6 +156,7 @@ public:
 
 	bool confirmSendingFiles(const QStringList &files) override;
 	bool confirmSendingFiles(not_null<const QMimeData*> data) override;
+	void insertTextAtCursor(const QString &text) override;
 	bool notify_switchInlineBotButtonReceived(
 		const QString &query,
 		UserData *samePeerBot,
@@ -345,6 +346,8 @@ private:
 		FullMsgId originItemId,
 		const Window::SectionShow &params);
 	void finishSending(const Api::SendOptions &options);
+	void setupSendingLanding();
+	[[nodiscard]] bool showsSendingItem(not_null<HistoryItem*> item) const;
 
 	void setupComposeControls();
 	void setupSwipeReplyAndBack();

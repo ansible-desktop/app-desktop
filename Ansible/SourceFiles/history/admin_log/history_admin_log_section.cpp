@@ -419,7 +419,12 @@ void Widget::scrollDownClicked() {
 void Widget::scrollToAnimationCallback() {
 	const auto scrollTo = _scroll->scrollTopMax();
 	const auto value = _scrollToAnimation.value(scrollTo);
-	_scroll->scrollToY(int(base::SafeRound(value)));
+	_scrollToFlight.frame(
+		0,
+		value,
+		_scroll->scrollTop(),
+		!_scrollToAnimation.animating(),
+		[=](int top) { _scroll->scrollToY(top); });
 }
 
 void Widget::updateScrollDownVisibility() {

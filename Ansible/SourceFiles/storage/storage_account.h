@@ -87,6 +87,10 @@ public:
 		return _oldMapVersion;
 	}
 
+	[[nodiscard]] QString basePath() const {
+		return _basePath;
+	}
+
 	[[nodiscard]] QString tempDirectory() const;
 	[[nodiscard]] QString supportModePath() const;
 

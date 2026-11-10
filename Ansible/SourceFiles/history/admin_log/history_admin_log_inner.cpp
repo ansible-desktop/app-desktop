@@ -19,7 +19,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/admin_log/history_admin_log_filter.h"
 #include "history/view/history_view_context_menu.h"
 #include "history/view/history_view_message.h"
-#include "history/view/history_view_touch_speed.h"
 #include "history/view/history_view_reply.h"
 #include "history/view/history_view_service_message.h"
 #include "history/view/history_view_cursor_state.h"
@@ -379,7 +378,8 @@ InnerWidget::InnerWidget(
 			const Data::Session::ItemVisibilityQuery &query) {
 		if (const auto view = viewForItem(query.item)) {
 			auto top = itemTop(view);
-			if (top >= 0
+			if ((!query.view || (query.view == view))
+				&& top >= 0
 				&& top + view->height() > _visibleTop
 				&& top < _visibleBottom) {
 				*query.isVisible = true;
@@ -1018,6 +1018,25 @@ void InnerWidget::expandGroupContaining(not_null<HistoryItem*> item) {
 		}
 		return;
 	}
+}
+
+int InnerWidget::jumpTarget(
+		not_null<Element*> view,
+		const MessageHighlightId &highlight) const {
+	const auto top = itemTop(view);
+	const auto height = view->height();
+	const auto viewport = _visibleBottom - _visibleTop;
+	const auto range = (highlight.richQuote && (height > viewport))
+		? HistoryView::FindHighlightYRange(
+			view,
+			_highlighter.state(view->data()))
+		: HistoryView::HighlightYRange();
+	return std::clamp(
+		(range
+			? HistoryView::AdjustScrollForRange(top, viewport, range)
+			: (top - std::max(0, (viewport - height) / 2))),
+		0,
+		std::max(0, this->height() - viewport));
 }
 
 void InnerWidget::elementStartInteraction(not_null<const Element*> view) {
@@ -1942,7 +1961,7 @@ auto InnerWidget::captureScrollAnchor() const -> ScrollAnchor {
 	return {};
 }
 
-int InnerWidget::computeScrollFromAnchor(ScrollAnchor anchor) const {
+int InnerWidget::computeScrollFromAnchor(const ScrollAnchor &anchor) const {
 	if (!anchor.view) {
 		return ScrollMax;
 	}

@@ -55,6 +55,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/text/format_values.h"
 #include "ui/text/text_utilities.h"
 #include "ui/effects/message_sending_animation_controller.h"
+#include "ui/effects/message_sending_text_flight.h"
 #include "ui/painter.h"
 #include "ui/rect.h"
 #include "ui/screen_reader_mode.h"
@@ -588,6 +589,7 @@ ChatWidget::ChatWidget(
 	) | rpl::on_next([=] {
 		onScroll();
 	}, lifetime());
+	setupSendingLanding();
 	if (session().supportMode() && mode() == Mode::History && !_topic) {
 		_supportAutocomplete = std::make_unique<Support::Autocomplete>(
 			this,
@@ -1670,6 +1672,9 @@ void ChatWidget::setupComposeControls() {
 
 	_composeControls->fileChosen(
 	) | rpl::on_next([=](ChatHelpers::FileChosen data) {
+		if (monoforumReplyMissing()) {
+			return;
+		}
 		controller()->hideLayer(anim::type::normal);
 		controller()->sendingAnimation().appendSending(
 			data.messageSendingFrom);
@@ -1689,6 +1694,9 @@ void ChatWidget::setupComposeControls() {
 
 	_composeControls->inlineResultChosen(
 	) | rpl::on_next([=](ChatHelpers::InlineChosen chosen) {
+		if (monoforumReplyMissing()) {
+			return;
+		}
 		controller()->sendingAnimation().appendSending(
 			chosen.messageSendingFrom);
 		const auto localId = chosen.messageSendingFrom.localId;
@@ -2061,7 +2069,7 @@ bool ChatWidget::confirmSendingFiles(
 		const QString &insertTextOnCancel) {
 	if (_composeControls->confirmMediaEdit(list)) {
 		return true;
-	} else if (showSendingFilesError(list)) {
+	} else if (monoforumReplyMissing() || showSendingFilesError(list)) {
 		return false;
 	}
 
@@ -2117,7 +2125,7 @@ bool ChatWidget::checkSendPayment(
 void ChatWidget::sendingFilesConfirmed(
 		std::shared_ptr<Ui::PreparedBundle> bundle,
 		Api::SendOptions options) {
-	if (showSendingFilesError(*bundle)) {
+	if (monoforumReplyMissing() || showSendingFilesError(*bundle)) {
 		return;
 	}
 	const auto ephemeralReply = session().ephemeralMessages()
@@ -2613,16 +2621,23 @@ void ChatWidget::sendTextWithTags(
 	const auto nextLocalMessageId = session().data().nextLocalMessageId();
 	const auto hasText = !message.textWithTags.text.trimmed().isEmpty();
 
-	if (const auto field = _composeControls->fieldForMention(); field
-		&& hasText
-		&& message.webPage.url.isEmpty()
-		&& (field->document()->size().height() <= field->height())) {
-		controller()->sendingAnimation().appendSending({
-			.type = Ui::MessageSendingAnimationFrom::Type::Text,
-			.localId = nextLocalMessageId,
-			.globalStartGeometry = field->mapToGlobal(
-				Rect(field->size())),
-		});
+	const auto field = _composeControls->fieldForMention();
+	auto wasScrollBottom = std::optional<int>();
+	if (field && hasText && message.webPage.url.isEmpty()) {
+		auto from = Ui::PrepareTextSending(
+			field,
+			textWithTags,
+			nextLocalMessageId,
+			(options.scheduled != 0));
+		if (from) {
+			if (from->fieldText
+				&& !_scroll->isHidden()
+				&& _inner->loadedAtBottom()
+				&& _scroll->scrollTop() >= _scroll->scrollTopMax()) {
+				wasScrollBottom = _scroll->y() + _scroll->height();
+			}
+			controller()->sendingAnimation().appendSending(std::move(*from));
+		}
 	}
 
 	const auto justMarkingAsRead = !hasText
@@ -2643,6 +2658,13 @@ void ChatWidget::sendTextWithTags(
 	//onDraftSave();
 
 	finishSending(options);
+	if (wasScrollBottom) {
+		const auto lift = _scroll->y() + _scroll->height() - *wasScrollBottom;
+		const auto item = session().data().message(_peer, nextLocalMessageId);
+		if (item && lift > 0) {
+			_inner->liftItemReveal(item, lift);
+		}
+	}
 	if (done) {
 		done();
 	}
@@ -3769,9 +3791,12 @@ void ChatWidget::showAtEnd() {
 
 void ChatWidget::finishSending(const Api::SendOptions &options) {
 	_composeControls->hidePanelsAnimated();
+	if (_supportAutocomplete) {
+		_supportAutocomplete->hide();
+	}
 	//if (_previewData && _previewData->pendingTill) previewCancel();
 	doSetInnerFocus();
-	if (!options.scheduled) {
+	if (!options.scheduled && !_inner->sendingLandingAtBottom()) {
 		showAtEnd();
 	}
 	refreshTopBarActiveChat();
@@ -3781,6 +3806,41 @@ void ChatWidget::finishSending(const Api::SendOptions &options) {
 			&& !_kbReplyTo) {
 		toggleBotKeyboard(true);
 	}
+}
+
+void ChatWidget::setupSendingLanding() {
+	for (const auto child : _scroll->children()) {
+		if (const auto bar = dynamic_cast<Ui::ElasticScrollBar*>(child)) {
+			base::install_event_filter(bar, [=](not_null<QEvent*> e) {
+				if (e->type() == QEvent::MouseButtonPress) {
+					_inner->sendingLandingUserScroll();
+				}
+				return base::EventFilterResult::Continue;
+			});
+		}
+	}
+	session().data().newItemAdded(
+	) | rpl::filter([=](not_null<HistoryItem*> item) {
+		return showsSendingItem(item);
+	}) | rpl::on_next([=](not_null<HistoryItem*> item) {
+		_inner->armSendingLanding(item);
+		if (!_inner->sendingLandingAtBottom()) {
+			showAtEnd();
+		}
+	}, lifetime());
+}
+
+bool ChatWidget::showsSendingItem(not_null<HistoryItem*> item) const {
+	if (!item->isSending()
+		|| item->isScheduled()
+		|| item->history() != _history) {
+		return false;
+	} else if (_sublist) {
+		return item->savedSublist() == _sublist;
+	} else if (_repliesRootId) {
+		return item->inThread(_repliesRootId);
+	}
+	return true;
 }
 
 void ChatWidget::showAtPosition(
@@ -4072,6 +4132,12 @@ bool ChatWidget::confirmSendingFiles(const QStringList &files) {
 
 bool ChatWidget::confirmSendingFiles(not_null<const QMimeData*> data) {
 	return confirmSendingFiles(data, std::nullopt);
+}
+
+void ChatWidget::insertTextAtCursor(const QString &text) {
+	if (const auto field = _composeControls->fieldForMention()) {
+		Menu::InsertTextAtCursor(field, text);
+	}
 }
 
 bool ChatWidget::confirmSendingFiles(
@@ -4636,11 +4702,12 @@ void ChatWidget::showFinishedHook() {
 			_inner->setFocus();
 		}
 		_composeControls->hide();
-		if (_supportAutocomplete) {
-			_supportAutocomplete->hide();
-		}
 	} else {
 		_composeControls->showFinished();
+	}
+	if (_supportAutocomplete) {
+		// showChildren() reveals it, but only the Tab request may open it.
+		_supportAutocomplete->hide();
 	}
 	_inner->showFinished();
 	updateSubsectionTabsGeometry();
