@@ -24,6 +24,25 @@ if (NOT EXISTS ${widget_sandbox_loc}/src/sandbox_engine.cpp)
     message(FATAL_ERROR "widget-sandbox sources are missing, run 'git submodule update --init --recursive'.")
 endif()
 
+# Keep the upstream dependency pinned; adapt its native link allowlist to this
+# messenger in a generated header used by both the sandbox and its consumers.
+set(widget_sandbox_policy_dir ${CMAKE_CURRENT_BINARY_DIR}/widget_sandbox_policy)
+set(widget_sandbox_policy_header ${widget_sandbox_loc}/include/twidget/sdk_policy.h)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${widget_sandbox_policy_header})
+file(READ ${widget_sandbox_policy_header} widget_sandbox_policy)
+set(widget_sandbox_upstream_hosts "std::array<std::string_view, 3> TELEGRAM_HOSTS = {\"t.me\", \"telegram.me\", \"telegram.dog\"}")
+string(FIND "${widget_sandbox_policy}" "${widget_sandbox_upstream_hosts}" widget_sandbox_hosts_offset)
+if (widget_sandbox_hosts_offset EQUAL -1)
+    message(FATAL_ERROR "Widget SDK link policy changed; review the Ansible host adapter.")
+endif()
+string(REPLACE "${widget_sandbox_upstream_hosts}"
+    "std::array<std::string_view, 1> TELEGRAM_HOSTS = {\"asme.su\"}"
+    widget_sandbox_policy "${widget_sandbox_policy}")
+file(MAKE_DIRECTORY ${widget_sandbox_policy_dir}/twidget)
+file(WRITE ${widget_sandbox_policy_dir}/twidget/sdk_policy.h.tmp "${widget_sandbox_policy}")
+configure_file(${widget_sandbox_policy_dir}/twidget/sdk_policy.h.tmp
+    ${widget_sandbox_policy_dir}/twidget/sdk_policy.h COPYONLY)
+
 # Silence third-party warnings. On MSVC the flags must ride an INTERFACE lib
 # linked after common_options to land last and beat its /W4 /WX.
 if (MSVC)
@@ -66,6 +85,7 @@ PRIVATE
 
 target_include_directories(lib_widget_sandbox
 PUBLIC
+    ${widget_sandbox_policy_dir}
     ${widget_sandbox_loc}/include
 )
 

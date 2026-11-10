@@ -13,3 +13,7 @@ Telegram/Resources/zxcvbn/*.txt text eol=lf
 
 # Raw float tables, such as the 3D diamond model data
 *.bin binary
+
+# Widget source and its checked TWQB bytecode must stay byte-identical.
+Ansible/Resources/tgw/*.js text eol=lf
+Ansible/Resources/tgw/*.qbc binary

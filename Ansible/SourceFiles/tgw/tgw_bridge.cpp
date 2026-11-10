@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "tgw/tgw_bridge.h"
 
+#include <QtCore/QUrl>
+
 #include "core/application.h"
 #include "core/click_handler_types.h"
 #include "core/file_utilities.h"
@@ -209,12 +211,14 @@ QString Bridge::openLink(const QString &url, bool telegram) {
 		return method + u": dropped, a dialog is already shown"_q;
 	} else if (Core::InternalPassportOrOAuthLink(local)) {
 		return method + u": refused, a passport or login link"_q;
-	} else if (!telegram) {
+	} else if (!telegram
+		|| (QUrl(url).host().compare(u"asme.su"_q, Qt::CaseInsensitive) != 0
+			&& QUrl(url).host().compare(u"www.asme.su"_q, Qt::CaseInsensitive) != 0)) {
 		// WHY: the app's handler may open a converted or authorized link instead.
 		ConfirmExternalUrl(controller, url);
 		return u"openLink: asked to confirm the link"_q;
 	}
-	// As a visible t.me link tapped in this message: only its own dialogs show.
+	// As a visible asme.su link tapped in this message: only its own dialogs show.
 	const auto context = ClickHandlerContext{
 		.itemId = _item->fullId(),
 		.sessionWindow = base::make_weak(controller),
@@ -222,7 +226,7 @@ QString Bridge::openLink(const QString &url, bool telegram) {
 	UrlClickHandler::Open(
 		UrlClickHandler::EncodeForOpening(url),
 		QVariant::fromValue(context));
-	return u"openTelegramLink: passed to the app's t.me handling"_q;
+	return u"openTelegramLink: passed to the app's asme.su handling"_q;
 }
 
 QString Bridge::copyText(const QString &text, not_null<QWidget*> window) {
