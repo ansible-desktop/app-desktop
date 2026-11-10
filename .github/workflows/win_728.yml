@@ -108,7 +108,7 @@ jobs:
       # per run so the post-job save always writes; restore-keys pulls the newest
       # previous snapshot → warm cache across dev pushes.
       - name: Restore sccache disk cache.
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: C:\sccache
           key: sccache-dev-x64-${{ github.run_id }}
@@ -212,8 +212,18 @@ jobs:
           cmake --build ..\out --config Debug --parallel -- -k 0
 
       - name: sccache stats.
+        if: always() && !cancelled()
         shell: bash
         run: sccache --show-stats || true
+
+      # A failed translation unit must not discard the successful compiler work.
+      # The build outcome and artifact gates above/below are unchanged.
+      - name: Save sccache disk cache.
+        if: always() && !cancelled()
+        uses: actions/cache/save@v5
+        with:
+          path: C:\sccache
+          key: sccache-dev-x64-${{ github.run_id }}
 
       - name: Move artifact.
         run: |
