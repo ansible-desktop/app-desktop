@@ -52,7 +52,7 @@ jobs:
           version = (pathlib.Path('app-desktop/Ansible/build/version')).read_text(encoding='utf-8')
           code = (pathlib.Path('app-desktop/Ansible/SourceFiles/core/version.h')).read_text(encoding='utf-8')
           assert re.search(r'^AppVersion\s+3004002$', version, re.M)
-          assert re.search(r'^AppVersionStr\s+0\.4\.1$', version, re.M)
+          assert re.search(r'^AppVersionStr\s+0\.4\.2$', version, re.M)
           assert 'AppVersion = 3004002' in code
           assert 'AppVersionStr = "0.4.2"' in code
           PY
