@@ -79,6 +79,21 @@ jobs:
           for BINARY in MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler; do
             lipo "Ansible.app/Contents/$BINARY" -verify_arch x86_64 arm64
           done
+      - name: Strip release symbols before code signing.
+        run: |
+          cd incoming
+          # Match the macOS canary packaging; symbols are build artifacts,
+          # not installed files. The updater keeps its 1 GiB payload limit.
+          for BINARY in MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler; do
+            strip "Ansible.app/Contents/$BINARY"
+            lipo "Ansible.app/Contents/$BINARY" -verify_arch x86_64 arm64
+          done
+          python3 - <<'PY'
+          import pathlib
+          size = sum(file.stat().st_size for file in pathlib.Path('Ansible.app').rglob('*') if file.is_file())
+          print('Stripped application bytes:', size)
+          assert size < 1024 ** 3 - 1024 ** 2, 'Application exceeds the updater payload limit'
+          PY
       - name: Sign and notarize the app.
         if: inputs.apple_sign
         env:
