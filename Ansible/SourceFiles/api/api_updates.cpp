@@ -67,6 +67,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "storage/storage_shared_media.h"
 #include "calls/calls_instance.h"
 #include "base/unixtime.h"
+#include "tgw/tgw_state.h"
+#include "tgw/tgw_storage.h"
 #include "window/window_session_controller.h"
 #include "window/window_controller.h"
 #include "iv/editor/iv_editor_session.h"
@@ -1461,6 +1463,11 @@ void Updates::applyUpdateNoPtsCheck(const MTPUpdate &update) {
 		_session->data().updateEditedMessage(d.vmessage());
 	} break;
 
+	case mtpc_updateMessageWidgetData: {
+		const auto &d = update.c_updateMessageWidgetData();
+		Tgw::ApplyStateUpdate(_session, d);
+	} break;
+
 	case mtpc_updateChannelWebPage: {
 		const auto &d = update.c_updateChannelWebPage();
 		Q_UNUSED(d); // Web page was updated anyway.
@@ -1682,6 +1689,7 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 						newId);
 					if (existing && !local->mainView()) {
 						const auto history = local->history();
+						Tgw::MoveStorage(local, existing);
 						local->destroy();
 						history->requestChatListMessage();
 					} else {
@@ -1749,6 +1757,11 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 	// Edited messages.
 	case mtpc_updateEditMessage: {
 		const auto &d = update.c_updateEditMessage();
+		updateAndApply(d.vpts().v, d.vpts_count().v, update);
+	} break;
+
+	case mtpc_updateMessageWidgetData: {
+		const auto &d = update.c_updateMessageWidgetData();
 		updateAndApply(d.vpts().v, d.vpts_count().v, update);
 	} break;
 
@@ -2598,6 +2611,10 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 
 	case mtpc_updateChannelAvailableMessages: {
 		const auto &d = update.c_updateChannelAvailableMessages();
+		Tgw::ClearHistoryStorage(
+			&session(),
+			peerFromChannel(d.vchannel_id()),
+			d.vavailable_min_id().v);
 		if (const auto channel = session().data().channelLoaded(d.vchannel_id())) {
 			channel->setAvailableMinId(d.vavailable_min_id().v);
 			if (const auto history = session().data().historyLoaded(channel)) {

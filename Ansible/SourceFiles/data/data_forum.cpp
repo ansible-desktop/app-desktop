@@ -31,6 +31,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/widgets/fields/input_field.h"
 #include "storage/storage_facade.h"
 #include "storage/storage_shared_media.h"
+#include "tgw/tgw_storage.h"
 #include "window/window_session_controller.h"
 #include "window/notifications_manager.h"
 
@@ -207,11 +208,14 @@ void Forum::requestTopics() {
 		if (error.type() == u"CHANNEL_FORUM_MISSING"_q && channel()) {
 			const auto flags = channel()->flags() & ~ChannelDataFlag::Forum;
 			channel()->setFlags(flags);
+		} else {
+			requestSomeStale();
 		}
 	}).send();
 }
 
 void Forum::applyTopicDeleted(MsgId rootId) {
+	Tgw::ClearTopicStorage(_history, rootId);
 	_topicsDeleted.emplace(rootId);
 
 	const auto i = _topics.find(rootId);

@@ -1,3 +1,8 @@
+0.4.2 (10.11.26)
+
+- Show interactive widgets sent by bots in private chats.
+- Support shared widget data, live updates and interactive bot responses.
+
 0.4.1 (02.11.26)
 
 - Restore the Ansible media pack and blue diamond colours after the update.

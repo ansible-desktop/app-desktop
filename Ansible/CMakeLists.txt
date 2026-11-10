@@ -31,6 +31,10 @@ include(cmake/lib_tgcalls.cmake)
 include(cmake/lib_prisma.cmake)
 include(cmake/lib_fido2.cmake)
 include(cmake/lib_zxcvbn.cmake)
+include(cmake/lib_litehtml.cmake)
+include(cmake/lib_quickjs.cmake)
+include(cmake/lib_widget_renderer.cmake)
+include(cmake/lib_widget_sandbox.cmake)
 include(cmake/td_export.cmake)
 include(cmake/td_gram.cmake)
 include(cmake/td_iv.cmake)
@@ -67,12 +71,20 @@ if (DESKTOP_APP_TEST_APPS OR TDESKTOP_BUILD_UPDATE_TESTS)
         endif()
     endif()
 endif()
+include(cmake/test_iv_editor_state.cmake)
+include(cmake/test_iv_editor_table_grid.cmake)
+include(cmake/test_wallet_card_tint.cmake)
+include(cmake/test_wallet_phrase_shares.cmake)
 
 set_target_properties(Ansible PROPERTIES AUTOMOC ON)
 
 target_link_libraries(Ansible
 PRIVATE
     tdesktop::lib_fido2
+    tdesktop::lib_litehtml
+    tdesktop::lib_quickjs
+    tdesktop::lib_widget_renderer
+    tdesktop::lib_widget_sandbox
     tdesktop::lib_tgcalls
     tdesktop::td_export
     tdesktop::td_gram
@@ -1191,6 +1203,9 @@ PRIVATE
     history/view/history_view_summary_header.h
     history/view/history_view_text_helper.cpp
     history/view/history_view_text_helper.h
+    history/view/history_view_touch_scroll.cpp
+    history/view/history_view_touch_scroll.h
+    history/view/history_view_touch_speed.h
     history/view/history_view_transcribe_button.cpp
     history/view/history_view_transcribe_button.h
     history/view/history_view_translate_bar.cpp
@@ -2119,10 +2134,90 @@ PRIVATE
     test/test_web_cache.h
     test/test_wheel.cpp
     test/test_wheel.h
+    test/test_widget_attacks.cpp
+    test/test_widget_attacks.h
+    test/test_widget_bot.cpp
+    test/test_widget_bot.h
+    test/test_widget_conformance.cpp
+    test/test_widget_conformance.h
+    test/test_widget_conformance_actions.cpp
+    test/test_widget_conformance_actions.h
+    test/test_widget_conformance_bridge.cpp
+    test/test_widget_conformance_bridge.h
+    test/test_widget_conformance_context.cpp
+    test/test_widget_conformance_context.h
+    test/test_widget_conformance_hosts.cpp
+    test/test_widget_conformance_hosts.h
+    test/test_widget_conformance_input.cpp
+    test/test_widget_conformance_input.h
+    test/test_widget_conformance_paint_policy.cpp
+    test/test_widget_conformance_paint_policy.h
+    test/test_widget_conformance_pictures.cpp
+    test/test_widget_conformance_pictures.h
+    test/test_widget_conformance_state.h
+    test/test_widget_conformance_stop.cpp
+    test/test_widget_conformance_stop.h
+    test/test_widget_fixture.cpp
+    test/test_widget_fixture.h
+    test/test_widget_host.cpp
+    test/test_widget_host.h
+    test/test_widget_ops.cpp
+    test/test_widget_ops.h
+    test/test_widget_paint_policy.cpp
+    test/test_widget_paint_policy.h
+    test/test_widget_stress.cpp
+    test/test_widget_stress.h
+    test/test_widget_stress_internal.h
+    test/test_widget_stress_live.cpp
     test/test_widgets.cpp
     test/test_widgets.h
     test/test_window_exposure.cpp
     test/test_window_exposure.h
+    tgw/tgw_backend.cpp
+    tgw/tgw_backend.h
+    tgw/tgw_bridge.cpp
+    tgw/tgw_bridge.h
+    tgw/tgw_canvas.cpp
+    tgw/tgw_canvas.h
+    tgw/tgw_cursor.cpp
+    tgw/tgw_cursor.h
+    tgw/tgw_emoji.cpp
+    tgw/tgw_emoji.h
+    tgw/tgw_emoji_images.cpp
+    tgw/tgw_emoji_images.h
+    tgw/tgw_intl.cpp
+    tgw/tgw_intl.h
+    tgw/tgw_log_box.cpp
+    tgw/tgw_log_box.h
+    tgw/tgw_media.cpp
+    tgw/tgw_media.h
+    tgw/tgw_painter.cpp
+    tgw/tgw_painter.h
+    tgw/tgw_painter_filters.cpp
+    tgw/tgw_painter_filters.h
+    tgw/tgw_renderer.cpp
+    tgw/tgw_renderer.h
+    tgw/tgw_resources.cpp
+    tgw/tgw_resources.h
+    tgw/tgw_runtime.cpp
+    tgw/tgw_runtime.h
+    tgw/tgw_scroll.cpp
+    tgw/tgw_scroll.h
+    tgw/tgw_scroll_lists.cpp
+    tgw/tgw_selection.cpp
+    tgw/tgw_selection.h
+    tgw/tgw_selection_lists.cpp
+    tgw/tgw_state.cpp
+    tgw/tgw_state.h
+    tgw/tgw_storage.cpp
+    tgw/tgw_storage.h
+    tgw/tgw_storage_disk.cpp
+    tgw/tgw_storage_disk.h
+    tgw/tgw_theme.cpp
+    tgw/tgw_theme.h
+    tgw/tgw_touch.cpp
+    tgw/tgw_touch.h
+    tgw/tgw_touch_lists.cpp
     ui/boxes/edit_invite_link_session.cpp
     ui/boxes/edit_invite_link_session.h
     ui/boxes/emoji_stake_box.cpp
@@ -2375,6 +2470,7 @@ PRIVATE
     qrc/ansible/sounds.qrc
     winrc/Ansible.rc
     winrc/Ansible.manifest
+    qrc/ansible/tgw.qrc
     langs/lang.strings
     langs/cloud_lang.strings
     numbers.txt

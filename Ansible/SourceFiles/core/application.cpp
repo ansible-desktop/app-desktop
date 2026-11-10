@@ -87,9 +87,11 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "storage/storage_folder_archive.h"
 #include "storage/localstorage.h"
 #include "payments/payments_checkout_process.h"
+#include "tgw/tgw_runtime.h"
 #include "export/export_manager.h"
 #include "webrtc/webrtc_environment.h"
 #include "webview/webview_interface.h"
+#include "window/window_columns.h"
 #include "window/window_saved_windows.h"
 #include "window/window_separate_id.h"
 #include "window/window_session_controller.h"
@@ -1988,6 +1990,9 @@ void QuitAttempt() {
 bool Application::readyToQuit() {
 	auto prevented = false;
 	if (_calls->isQuitPrevent()) {
+		prevented = true;
+	}
+	if (Tgw::Runtime::IsQuitPrevent()) {
 		prevented = true;
 	}
 	if (_domain->started()) {

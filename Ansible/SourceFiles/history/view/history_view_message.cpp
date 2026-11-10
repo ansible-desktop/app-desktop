@@ -5757,9 +5757,10 @@ bool Message::toggleSelectionByHandlerClick(
 }
 
 bool Message::allowTextSelectionByHandler(
-		const ClickHandlerPtr &handler) const {
+		const ClickHandlerPtr &handler,
+		bool fromTouch) const {
 	if (const auto media = this->media()) {
-		if (media->allowTextSelectionByHandler(handler)) {
+		if (media->allowTextSelectionByHandler(handler, fromTouch)) {
 			return true;
 		}
 	}

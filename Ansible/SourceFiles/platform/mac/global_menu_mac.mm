@@ -346,6 +346,12 @@ void Manager::recomputeState() {
 	} else if (const auto list = dynamic_cast<HistoryInner*>(focused)) {
 		canCopy = list->canCopySelected();
 		canDelete = list->canDeleteSelected();
+	} else if (const auto list = dynamic_cast<HistoryView::ListWidget*>(
+			focused)) {
+		canCopy = list->canCopySelected();
+	} else if (const auto list = dynamic_cast<AdminLog::InnerWidget*>(
+			focused)) {
+		canCopy = list->canCopySelected();
 	}
 
 	widget->updateIsActive();

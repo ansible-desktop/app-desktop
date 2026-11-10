@@ -106,3 +106,9 @@
 [submodule "Ansible/ThirdParty/zxcvbn"]
 	path = Ansible/ThirdParty/zxcvbn
 	url = https://github.com/ansible-desktop/zxcvbn-c.git
+[submodule "Ansible/ThirdParty/twidget"]
+	path = Ansible/ThirdParty/twidget
+	url = https://github.com/TelegramMessenger/twidget.git
+[submodule "Ansible/ThirdParty/widget-sandbox"]
+	path = Ansible/ThirdParty/widget-sandbox
+	url = https://github.com/TelegramMessenger/widget-sandbox.git

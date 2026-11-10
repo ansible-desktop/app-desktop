@@ -80,6 +80,7 @@ set(style_files
     ui/controls/filter_link_header.style
     media/view/media_view.style
     overview/overview.style
+    tgw/tgw.style
     window/window.style
     window/window_main_menu.style
     editor/editor.style

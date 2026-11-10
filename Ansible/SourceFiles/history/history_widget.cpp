@@ -208,6 +208,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "support/support_autocomplete.h"
 #include "support/support_helper.h"
 #include "support/support_preload.h"
+#include "tgw/tgw_scroll.h"
 #include "dialogs/dialogs_key.h"
 #include "calls/calls_instance.h"
 #include "styles/style_boxes.h"
@@ -384,9 +385,14 @@ HistoryWidget::HistoryWidget(
 
 	_scroll->setHandleTouch(false);
 	_scroll->lockWheelDirection();
-	_scroll->setCrossAxisWheelProcess([=](QPoint delta, Qt::ScrollPhase phase) {
+	const auto crossAxis = [=](QPoint delta, Qt::ScrollPhase phase) {
 		return _list && _list->consumeScrollAction(delta, phase);
-	});
+	};
+	_scroll->setCrossAxisWheelProcess(crossAxis);
+	Tgw::ListScroll::WatchInput(
+		_scroll.data(),
+		[=] { Tgw::ListScroll::Input(this); },
+		crossAxis);
 	_scroll->scrolls() | rpl::on_next([=] {
 		handleScroll();
 	}, lifetime());
@@ -1839,14 +1845,24 @@ void HistoryWidget::animatedScrollToItem(MsgId msgId) {
 		itemTopForHighlight(to->mainView()),
 		0,
 		_scroll->scrollTopMax());
-	animatedScrollToY(scrollTo, to);
+	animatedScrollToY(
+		scrollTo,
+		to,
+		Tgw::ListScroll::Placement(this, to->fullId()));
 }
 
-void HistoryWidget::animatedScrollToY(int scrollTo, HistoryItem *attachTo) {
+void HistoryWidget::animatedScrollToY(
+		int scrollTo,
+		HistoryItem *attachTo,
+		Fn<std::optional<int>()> placement) {
 	Expects(_history != nullptr);
 
 	if (hasPendingResizedItems()) {
+		const auto was = Tgw::ListScroll::Consumed(this);
 		updateListSize();
+		if (placement && (Tgw::ListScroll::Consumed(this) != was)) {
+			scrollTo = placement().value_or(scrollTo);
+		}
 	}
 
 	// Attach our scroll animation to some item.
@@ -1862,6 +1878,8 @@ void HistoryWidget::animatedScrollToY(int scrollTo, HistoryItem *attachTo) {
 	}
 
 	_scrollToAnimation.stop();
+	const auto itemId = attachTo->fullId();
+	const auto consumed = Tgw::ListScroll::Consumed(this);
 	auto maxAnimatedDelta = _scroll->height();
 	auto transition = anim::sineInOut;
 	if (scrollTo > scrollTop + maxAnimatedDelta) {
@@ -1878,10 +1896,17 @@ void HistoryWidget::animatedScrollToY(int scrollTo, HistoryItem *attachTo) {
 		// jump to the bottom of history in some updateHistoryGeometry() call.
 		synteticScrollToY(scrollTop);
 	}
-	const auto itemId = attachTo->fullId();
 	const auto relativeFrom = scrollTop - itemTop;
 	const auto relativeTo = scrollTo - itemTop;
-	_scrollToAnimation.start(
+	_scrollToFlight.start(
+		relativeFrom,
+		relativeTo,
+		[=] { return Tgw::ListScroll::Consumed(this); },
+		consumed,
+		[=] { return Tgw::ListScroll::Inputs(this); },
+		std::move(placement));
+	_scrollToFlight.animate(
+		&_scrollToAnimation,
 		[=] { scrollToAnimationCallback(itemId, relativeTo); },
 		relativeFrom,
 		relativeTo,
@@ -3303,7 +3328,12 @@ void HistoryWidget::showHistory(
 						_showAtMsgId);
 					animatedScrollToY(
 						std::clamp(to, 0, _scroll->scrollTopMax()),
-						item);
+						item,
+						(item || (to == ScrollMax))
+							? Tgw::ListScroll::Placement(
+								this,
+								item ? item->fullId() : FullMsgId())
+							: nullptr);
 				} else {
 					historyLoaded();
 				}
@@ -8661,8 +8691,14 @@ void HistoryWidget::updateHistoryGeometry(
 		_updateHistoryGeometryRequired = true;
 		return;
 	}
+	// A pending same-chat target replaces _showAtMsgId once it loads.
+	if (_list->isHidden() && (_delayedShowAtRequest || holdListReveal())) {
+		_updateHistoryGeometryRequired = true;
+		return;
+	}
 
-	updateListSize();
+	const auto snapshot = Tgw::ListScroll::Capture(this, wasAtBottom);
+	const auto leaveEnd = updateListSize(&snapshot);
 	_updateHistoryGeometryRequired = false;
 
 	auto newScrollTop = 0;
@@ -8765,47 +8801,51 @@ void HistoryWidget::startItemRevealAnimations() {
 	}
 }
 
-void HistoryWidget::startMessageSendingAnimation(
-		not_null<HistoryItem*> item) {
-	if (_list->elementChatMode() == HistoryView::ElementChatMode::Default
-		&& width() > st::columnMaximalWidthLeft
-		&& !item->media()) {
-		return;
+auto HistoryWidget::startMessageSendingAnimation(
+		not_null<HistoryItem*> item)
+-> std::optional<Ui::MessageSendingReveal> {
+	if (Ui::TooWideForTextSending(_list->elementChatMode(), width(), item)) {
+		controller()->sendingAnimation().dropPendingSnapshot(item);
+		return std::nullopt;
 	}
 	auto &sendingAnimation = controller()->sendingAnimation();
 	if (!sendingAnimation.checkExpectedType(item)) {
-		return;
+		return std::nullopt;
 	}
 	Assert(item->mainView() != nullptr);
 
-	auto globalEndTopLeft = rpl::merge(
+	auto changes = rpl::merge(
 		_scroll->innerResizes() | rpl::to_empty,
 		session().data().newItemAdded() | rpl::to_empty,
 		geometryValue() | rpl::to_empty,
 		_scroll->geometryValue() | rpl::to_empty,
-		_list->geometryValue() | rpl::to_empty
-	) | rpl::map([=]() -> std::optional<QPoint> {
+		_list->geometryValue() | rpl::to_empty);
+	const auto globalTopLeft = [=](bool live) -> std::optional<QPoint> {
 		const auto view = item->mainView();
 		const auto top = view ? _list->itemTop(view) : -1;
 		if (top < 0) {
 			return std::nullopt;
 		}
-		const auto additional = (_list->height() == _scroll->height())
-			? view->height()
-			: 0;
+		const auto shortList = (_list->height() == _scroll->height());
+		const auto additional = (!live && shortList) ? view->height() : 0;
 		return _list->mapToGlobal(QPoint(0, top - additional));
-	});
+	};
 
-	sendingAnimation.startAnimation({
-		.globalEndTopLeft = std::move(globalEndTopLeft),
+	return sendingAnimation.startAnimation({
+		.globalTopLeft = globalTopLeft,
+		.changes = std::move(changes),
+		.revealChanges = _itemsRevealHeightChanges.events(),
 		.view = [=] { return item->mainView(); },
 		.paintContext = [=] { return _list->preparePaintContext({}); },
 	});
 }
 
-void HistoryWidget::updateListSize() {
+bool HistoryWidget::updateListSize(const Tgw::ScrollSnapshot *restore) {
 	Expects(_list != nullptr);
 
+	const auto direct = restore
+		? Tgw::ScrollSnapshot()
+		: Tgw::ListScroll::CaptureDirect(this);
 	_list->recountHistoryGeometry(!_historyInited);
 	auto washidden = _scroll->isHidden();
 	if (washidden) {
@@ -8818,6 +8858,7 @@ void HistoryWidget::updateListSize() {
 		_scroll->hide();
 	}
 	_updateHistoryGeometryRequired = true;
+	return Tgw::ListScroll::Keep(this, restore ? *restore : direct);
 }
 
 bool HistoryWidget::hasPendingResizedItems() const {
@@ -9213,6 +9254,10 @@ void HistoryWidget::keyPressEvent(QKeyEvent *e) {
 	if (!_history) return;
 
 	const auto commonModifiers = e->modifiers() & kCommonModifiers;
+	const auto scrollByKey = [&] {
+		Tgw::ListScroll::Input(this);
+		_scroll->keyPressEvent(e);
+	};
 	if (e->key() == Qt::Key_Escape) {
 		if (hasFocus()) {
 			escape();

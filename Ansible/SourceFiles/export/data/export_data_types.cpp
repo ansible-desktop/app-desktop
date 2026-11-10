@@ -2354,6 +2354,8 @@ Media ParseMedia(
 		result.content = ParsePaidMedia(context, data, folder, date);
 	}, [](const MTPDmessageMediaVideoStream &data) {
 		// Live stories.
+	}, [](const MTPDmessageMediaWidget &data) {
+		// #TODO widgets
 	}, [](const MTPDmessageMediaEmpty &data) {});
 	return result;
 }

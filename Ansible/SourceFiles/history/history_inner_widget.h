@@ -23,6 +23,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/view/history_view_cursor_state.h"
 #include "history/view/history_view_keyboard_text_selection.h"
 #include "history/view/history_view_top_bar_widget.h"
+#include "history/view/history_view_touch_scroll.h"
 
 #include <QtGui/QPainterPath>
 
@@ -63,6 +64,13 @@ namespace HistoryView::ReplyButton {
 class Manager;
 struct ButtonParameters;
 } // namespace HistoryView::ReplyButton
+
+namespace Tgw {
+class ListSelection;
+class ListTouch;
+class WidgetSelection;
+class WidgetTouch;
+} // namespace Tgw
 
 namespace Window {
 class SessionController;
@@ -312,12 +320,11 @@ protected:
 	void contextMenuEvent(QContextMenuEvent *e) override;
 
 private:
+	friend class Tgw::ListSelection;
+	friend class Tgw::ListTouch;
+
 	[[nodiscard]] std::vector<Element*> accessibleElements() const;
 	[[nodiscard]] int accessibilityUnreadBarIndex() const;
-	[[nodiscard]] HistoryItem *accessibilityItemAtIndex(
-		int index,
-		const std::vector<Element*> &elements,
-		int barIndex) const;
 	void toggleMessageSelection();
 	void playPauseFocusedMedia();
 	void setAccessibilityFocusedItem(int index, HistoryItem *item);
@@ -682,6 +689,8 @@ private:
 	QPoint _touchStart, _touchPrevPos, _touchPos;
 	rpl::variable<bool> _touchMaybeSelecting;
 	base::Timer _touchSelectTimer;
+	std::unique_ptr<Tgw::WidgetTouch> _widgetTouch;
+	std::unique_ptr<Tgw::WidgetSelection> _widgetSelection;
 
 	Ui::DraggingScrollManager _selectScroll;
 
@@ -695,6 +704,7 @@ private:
 	crl::time _touchAccelerationTime = 0;
 	crl::time _touchTime = 0;
 	base::Timer _touchScrollTimer;
+	HistoryView::TouchScroll _touchElastic;
 	Ui::MiddleClickAutoscroll _middleClickAutoscroll;
 
 	Ui::Controls::SwipeContextData _gestureHorizontal;
