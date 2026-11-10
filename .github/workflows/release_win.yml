@@ -303,8 +303,9 @@ jobs:
             --endpoint-url "$S3_ENDPOINT" \
             --cache-control "public, max-age=31536000, immutable"
 
+          curl --fail --silent --show-error https://ansible.su/ad/current6 -o previous-current.json
           python deploy/updates/make_current.py \
-            --version "$APP_VERSION_STR" --platform win64 > current.json
+            --version "$APP_VERSION_STR" --platform win64 --base previous-current.json > current.json
 
           # 🚨 Оба имени, содержимое одинаковое: винда ходит за current6,
           # mac и linux — за current2 (см. шапку файла). Клиент выбирает свою

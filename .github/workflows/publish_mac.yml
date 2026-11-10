@@ -1,0 +1,277 @@
+name: Publish macOS release.
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_run:
+        description: 'Successful Release macOS run containing version 0.4.1.'
+        required: true
+        type: string
+      apple_sign:
+        description: 'Use Apple Developer ID and notarization (requires Apple credentials).'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ansible-release-publication
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BUILD_RUN: ${{ inputs.build_run }}
+      APPLE_SIGN: ${{ inputs.apple_sign }}
+      S3_ENDPOINT: https://s3.twcstorage.ru
+      S3_BUCKET: ansible-desktop-updates
+    steps:
+      - name: Check signing credentials and build provenance.
+        env:
+          CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE_P12_B64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+          NOTARY_APPLE_ID: ${{ secrets.NOTARY_APPLE_ID }}
+          NOTARY_TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
+          NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
+          UPDATE_KEY: ${{ secrets.UPDATES_SIGNING_KEY }}
+          S3_KEY: ${{ secrets.TIMEWEB_S3_KEY_ID }}
+          S3_SECRET: ${{ secrets.TIMEWEB_S3_SECRET }}
+        run: |
+          REQUIRED='UPDATE_KEY S3_KEY S3_SECRET'
+          if [ "$APPLE_SIGN" = true ]; then
+            REQUIRED="$REQUIRED CERTIFICATE CERTIFICATE_PASSWORD SIGN_IDENTITY NOTARY_APPLE_ID NOTARY_TEAM_ID NOTARY_PASSWORD"
+          fi
+          for NAME in $REQUIRED; do
+            if [ -z "${!NAME}" ]; then
+              echo "::error::Required release credential is missing: $NAME"
+              exit 1
+            fi
+          done
+          [[ "$BUILD_RUN" =~ ^[0-9]+$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$BUILD_RUN" > run.json
+          python3 - <<'PY'
+          import json, os
+          run = json.load(open('run.json'))
+          assert run['status'] == 'completed' and run['conclusion'] == 'success'
+          assert run['path'] == '.github/workflows/release_mac.yml'
+          assert run['head_repository']['full_name'] == os.environ['GITHUB_REPOSITORY']
+          assert run['head_branch'] in ('master', 'fix/desktop-macos-release')
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('SOURCE_SHA=' + run['head_sha'] + '\n')
+          PY
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: source
+      - name: Download the verified build.
+        run: |
+          gh run download "$BUILD_RUN" --repo "$GITHUB_REPOSITORY" --name ansible-mac-release-0.4.1 --dir incoming
+          cd incoming
+          shasum -a 256 -c SHA256SUMS
+          tar -xf ansible-mac-release-0.4.1.tar
+          test "$(cat source-sha.txt)" = "$SOURCE_SHA"
+          for BINARY in MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler; do
+            lipo "Ansible.app/Contents/$BINARY" -verify_arch x86_64 arm64
+          done
+      - name: Strip release symbols before code signing.
+        run: |
+          cd incoming
+          # Match the macOS canary packaging; symbols are build artifacts,
+          # not installed files. The updater keeps its 1 GiB payload limit.
+          for BINARY in MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler; do
+            strip "Ansible.app/Contents/$BINARY"
+            lipo "Ansible.app/Contents/$BINARY" -verify_arch x86_64 arm64
+          done
+          python3 - <<'PY'
+          import pathlib
+          size = sum(file.stat().st_size for file in pathlib.Path('Ansible.app').rglob('*') if file.is_file())
+          print('Stripped application bytes:', size)
+          assert size < 1024 ** 3 - 1024 ** 2, 'Application exceeds the updater payload limit'
+          PY
+      - name: Sign and notarize the app.
+        if: inputs.apple_sign
+        env:
+          CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE_P12_B64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+          NOTARY_APPLE_ID: ${{ secrets.NOTARY_APPLE_ID }}
+          NOTARY_TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
+          NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
+        run: |
+          umask 077
+          KEYCHAIN="$RUNNER_TEMP/release.keychain-db"
+          KEYCHAIN_PASSWORD=$(openssl rand -hex 24)
+          trap 'rm -f "$RUNNER_TEMP/certificate.p12"; security delete-keychain "$KEYCHAIN"' EXIT
+          printf '%s' "$CERTIFICATE" | base64 -d > "$RUNNER_TEMP/certificate.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+          security import "$RUNNER_TEMP/certificate.p12" -k "$KEYCHAIN" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          cd incoming
+          codesign --force --deep --timestamp --options runtime --sign "$SIGN_IDENTITY" \
+            --entitlements ../source/Ansible/Ansible/Ansible.entitlements Ansible.app
+          codesign --verify --deep --strict --verbose=2 Ansible.app
+          ditto -c -k --keepParent Ansible.app notarize.zip
+          xcrun notarytool submit notarize.zip --wait --apple-id "$NOTARY_APPLE_ID" \
+            --team-id "$NOTARY_TEAM_ID" --password "$NOTARY_PASSWORD" --output-format json > notary.json
+          python3 -c "import json; assert json.load(open('notary.json'))['status'] == 'Accepted'"
+          xcrun stapler staple Ansible.app
+          xcrun stapler validate Ansible.app
+          spctl --assess --type execute --verbose=2 Ansible.app
+      - name: Prepare the disclosed build without Apple Developer ID.
+        if: ${{ !inputs.apple_sign }}
+        run: |
+          cd incoming
+          codesign --force --deep --sign - --entitlements ../source/Ansible/Ansible/Ansible.entitlements Ansible.app
+          codesign --verify --deep --strict --verbose=2 Ansible.app
+          printf '%s\n' \
+            'This macOS build has no Apple Developer ID signature and is not notarized.' \
+            'macOS Gatekeeper may prevent opening a fresh download.' \
+            'Ansible auto-update packages are authenticated with the Ansible Ed25519 release key.' \
+            > macOS-SIGNING-NOTICE.txt
+      - name: Launch the app in a fresh profile.
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, subprocess, time
+          work = pathlib.Path(os.environ['RUNNER_TEMP']) / 'mac-release-smoke'
+          work.mkdir()
+          with open(work / 'launcher.log', 'wb') as log:
+              app = subprocess.Popen([
+                  'incoming/Ansible.app/Contents/MacOS/Ansible',
+                  '-workdir', str(work), '-noupdate'], stdout=log, stderr=log)
+              try:
+                  time.sleep(15)
+                  assert app.poll() is None, 'The signed app exited during launch'
+              finally:
+                  if app.poll() is None:
+                      app.terminate()
+                      try:
+                          app.wait(timeout=15)
+                      except subprocess.TimeoutExpired:
+                          app.kill()
+                          app.wait()
+          PY
+      - name: Package the download and signed updates.
+        env:
+          UPDATE_KEY: ${{ secrets.UPDATES_SIGNING_KEY }}
+        run: |
+          cd incoming
+          mkdir public
+          ditto -c -k --keepParent Ansible.app public/ansible-mac-0.4.1.zip
+          mkdir installer
+          ditto Ansible.app installer/Ansible.app
+          ln -s /Applications installer/Applications
+          if [ -f macOS-SIGNING-NOTICE.txt ]; then
+            cp macOS-SIGNING-NOTICE.txt installer/
+            cp macOS-SIGNING-NOTICE.txt public/
+          fi
+          hdiutil create -volname Ansible -srcfolder installer -ov -format UDZO public/ansible-setup-mac-0.4.1.dmg
+          umask 077
+          printf '%s\n' "$UPDATE_KEY" > "$RUNNER_TEMP/channel-key.pem"
+          trap 'rm -f "$RUNNER_TEMP/channel-key.pem"' EXIT
+          for ARCH in x86_64 arm64; do
+            ./Packer -path Ansible.app -arch "$ARCH" -version 3004001 -channel stable \
+              -keys-loc ../source/Ansible/Resources/update \
+              -local-key "$RUNNER_TEMP/channel-key.pem" -local-key-id as-stable-2026a
+          done
+          mv ansible-update-mac-x64-3004001 ansible-update-mac-arm-3004001 public/
+          cp source-sha.txt toolchain.txt public/
+          if [ -f notary.json ]; then cp notary.json public/; fi
+          cd public
+          shasum -a 256 *.zip *.dmg ansible-update-* > mac-SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ansible-mac-published-0.4.1
+          path: incoming/public
+          if-no-files-found: error
+      - name: Publish packages before the update feed.
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.TIMEWEB_S3_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TIMEWEB_S3_SECRET }}
+        run: |
+          brew install awscli
+          cd incoming/public
+          gh release view v0.4.1 --repo "$GITHUB_REPOSITORY" --json assets > release.json
+          python3 - <<'PY'
+          import json, pathlib
+          names = {asset['name'] for asset in json.load(open('release.json'))['assets']}
+          assert not names.intersection(p.name for p in pathlib.Path('.').iterdir()), 'macOS release assets already exist; review before replacing'
+          PY
+          curl --fail --silent --show-error https://ansible.su/ad/current2 -o previous2.json
+          curl --fail --silent --show-error https://ansible.su/ad/current6 -o previous6.json
+          python3 - <<'PY'
+          import json
+          previous = json.load(open('previous2.json'))
+          assert previous == json.load(open('previous6.json'))
+          for platform, arch in (('mac', 'x64'), ('armac', 'arm')):
+              assert previous.get(platform, {}).get('stable', {}).get('released', 0) < 3004001
+              previous.setdefault(platform, {})['stable'] = {
+                  'released': 3004001, 'link': f'/{platform}/ansible-update-mac-{arch}-3004001'}
+          with open('current.json', 'w') as output:
+              json.dump(previous, output, indent=1, sort_keys=True)
+          PY
+          for PLATFORM in mac armac; do
+            ARCH=x64
+            if [ "$PLATFORM" = armac ]; then ARCH=arm; fi
+            FILE="ansible-update-mac-$ARCH-3004001"
+            aws s3 cp "$FILE" "s3://$S3_BUCKET/$PLATFORM/$FILE" --endpoint-url "$S3_ENDPOINT" \
+              --cache-control 'public, max-age=31536000, immutable'
+            curl --fail --silent --show-error "https://ansible.su/ad/$PLATFORM/$FILE" -o "$RUNNER_TEMP/$FILE"
+            cmp "$FILE" "$RUNNER_TEMP/$FILE"
+            curl --fail --silent --show-error -H 'Range: bytes=0-31' -D "$RUNNER_TEMP/range.headers" \
+              "https://ansible.su/ad/$PLATFORM/$FILE" -o "$RUNNER_TEMP/range.bin"
+            grep -qi '^content-range: bytes 0-31/' "$RUNNER_TEMP/range.headers"
+            test "$(wc -c < "$RUNNER_TEMP/range.bin" | tr -d ' ')" = 32
+          done
+          gh release upload v0.4.1 --repo "$GITHUB_REPOSITORY" \
+            ansible-mac-0.4.1.zip ansible-setup-mac-0.4.1.dmg \
+            ansible-update-mac-x64-3004001 ansible-update-mac-arm-3004001 mac-SHA256SUMS
+          if [ -f macOS-SIGNING-NOTICE.txt ]; then
+            gh release upload v0.4.1 --repo "$GITHUB_REPOSITORY" macOS-SIGNING-NOTICE.txt
+          fi
+          gh release view v0.4.1 --repo "$GITHUB_REPOSITORY" --json body > notes.json
+          python3 - <<'PY'
+          import json, os, pathlib
+          body = json.load(open('notes.json'))['body']
+          body += '\n\nmacOS 0.4.1 for Intel and Apple Silicon. Source: `' + os.environ['SOURCE_SHA'] + '`.'
+          body += '\n\nRelease build: https://github.com/' + os.environ['GITHUB_REPOSITORY'] + '/actions/runs/' + os.environ['BUILD_RUN']
+          notice = pathlib.Path('macOS-SIGNING-NOTICE.txt')
+          if notice.exists():
+              body += '\n\n**macOS signing limitation:** ' + notice.read_text()
+          pathlib.Path('notes.md').write_text(body)
+          PY
+          gh release edit v0.4.1 --repo "$GITHUB_REPOSITORY" --notes-file notes.md
+          # Check nobody changed the feed while the large packages uploaded.
+          curl --fail --silent --show-error https://ansible.su/ad/current2 -o latest.json
+          python3 -c "import json; assert json.load(open('latest.json')) == json.load(open('previous2.json'))"
+          for NAME in current2 current6; do
+            aws s3 cp current.json "s3://$S3_BUCKET/$NAME" --endpoint-url "$S3_ENDPOINT" \
+              --content-type application/json --cache-control 'public, max-age=60'
+          done
+      - name: Verify public download and update discovery.
+        run: |
+          cd incoming/public
+          for NAME in current2 current6; do
+            curl --fail --silent --show-error "https://ansible.su/ad/$NAME" -o "$RUNNER_TEMP/$NAME.json"
+          done
+          python3 - <<'PY'
+          import json, os
+          expected = json.load(open('current.json'))
+          for name in ('current2', 'current6'):
+              assert json.load(open(os.environ['RUNNER_TEMP'] + '/' + name + '.json')) == expected
+          for platform in ('mac', 'armac'):
+              assert expected[platform]['stable']['released'] > 3004000
+          assert expected['win64'] == json.load(open('previous2.json'))['win64']
+          PY
+          for FILE in ansible-mac-0.4.1.zip ansible-setup-mac-0.4.1.dmg; do
+            curl --fail --location --silent --show-error \
+              "https://github.com/$GITHUB_REPOSITORY/releases/download/v0.4.1/$FILE" -o "$RUNNER_TEMP/$FILE"
+            cmp "$FILE" "$RUNNER_TEMP/$FILE"
+          done
