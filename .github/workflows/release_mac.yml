@@ -1,0 +1,118 @@
+name: Release macOS.
+
+# Build artifacts remain private until platform signing and publication.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Immutable source revision to build.'
+        required: true
+        type: string
+  push:
+    branches: [fix/desktop-macos-release]
+    paths: [.github/workflows/release_mac.yml]
+
+concurrency:
+  group: ansible-release-mac
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Release macOS universal
+    runs-on: macos-latest
+    timeout-minutes: 360
+    env:
+      TDESKTOP_MAC_TOOLCHAIN: system
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          submodules: recursive
+          path: app-desktop
+      - name: Record source and toolchain.
+        run: |
+          git -C app-desktop rev-parse HEAD > source-sha.txt
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+          MINIMUM=$(/usr/libexec/PlistBuddy -c 'Print :SupportedTargets:macosx:MinimumDeploymentTarget' "$SDKROOT/SDKSettings.plist")
+          echo "SDKROOT=$SDKROOT" >> "$GITHUB_ENV"
+          echo "MACOSX_DEPLOYMENT_TARGET=$MINIMUM" >> "$GITHUB_ENV"
+          {
+            xcodebuild -version
+            xcrun clang --version
+            echo "MACOSX_DEPLOYMENT_TARGET=$MINIMUM"
+            plutil -convert xml1 -o - "$SDKROOT/SDKSettings.plist"
+          } > toolchain.txt
+          echo "TOOLCHAIN_KEY=$(shasum -a 256 toolchain.txt | awk '{print $1}')" >> "$GITHUB_ENV"
+          python3 - <<'PY'
+          import pathlib, re
+          version = (pathlib.Path('app-desktop/Ansible/build/version')).read_text(encoding='utf-8')
+          code = (pathlib.Path('app-desktop/Ansible/SourceFiles/core/version.h')).read_text(encoding='utf-8')
+          assert re.search(r'^AppVersion\s+3004001$', version, re.M)
+          assert re.search(r'^AppVersionStr\s+0\.4\.1$', version, re.M)
+          assert 'AppVersion = 3004001' in code
+          assert 'AppVersionStr = "0.4.1"' in code
+          PY
+      - name: Build tools.
+        run: |
+          sudo chown -R "$(whoami)":admin /usr/local/share
+          brew install automake libtool meson nasm ninja pkg-config
+          sudo mdutil -a -i off
+      - uses: actions/cache/restore@v6
+        id: libraries
+        with:
+          path: |
+            Libraries
+            ThirdParty
+          key: mac-release-v1-${{ env.TOOLCHAIN_KEY }}-${{ hashFiles('app-desktop/Ansible/build/prepare/**', 'app-desktop/Ansible/build/qt_version.py') }}
+      - name: Release dependencies.
+        run: ./app-desktop/Ansible/build/prepare/mac.sh silent
+      - name: Remove dependency build intermediates.
+        run: find Libraries '(' '(' ! '(' -name '*.a' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -name 'macos_toolchain.json' -o -path '*/tdesktop_rust/out/src/*' -o -path '*/local/src/wallet_engine/*' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -perm +111 ')' -type f ')' -o -empty ')' -delete
+      - uses: actions/cache/save@v6
+        if: steps.libraries.outputs.cache-hit != 'true'
+        with:
+          path: |
+            Libraries
+            ThirdParty
+          key: ${{ steps.libraries.outputs.cache-primary-key }}
+      - name: Build Release app and update packer.
+        run: |
+          cd app-desktop/Ansible
+          ./configure.sh \
+            -D CMAKE_CONFIGURATION_TYPES=Release \
+            -D CMAKE_COMPILE_WARNING_AS_ERROR=ON \
+            -D CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO \
+            -D CMAKE_OSX_SYSROOT="$SDKROOT" \
+            -D CMAKE_OSX_DEPLOYMENT_TARGET="$MACOSX_DEPLOYMENT_TARGET" \
+            -D 'CMAKE_OSX_ARCHITECTURES=x86_64;arm64' \
+            -D DESKTOP_APP_SPECIAL_TARGET=mac \
+            -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF \
+            -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF
+          cmake --build ../out --config Release --target Ansible Packer --parallel
+      - name: Verify and preserve the app bundle.
+        run: |
+          cd app-desktop/out/Release
+          for BINARY in MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler; do
+            lipo -verify_arch x86_64 arm64 "Ansible.app/Contents/$BINARY"
+          done
+          test -x Ansible.app/Contents/MacOS/Ansible
+          test -x Ansible.app/Contents/Frameworks/Updater
+          test -x Packer
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Ansible.app/Contents/Info.plist
+          cp ../../../source-sha.txt ../../../toolchain.txt .
+          # tar preserves bundle symlinks and executable permissions.
+          tar -cf ../../../ansible-mac-release-0.4.1.tar Ansible.app Packer source-sha.txt toolchain.txt
+          cd ../../..
+          shasum -a 256 ansible-mac-release-0.4.1.tar > SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ansible-mac-release-0.4.1
+          path: |
+            ansible-mac-release-0.4.1.tar
+            SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
