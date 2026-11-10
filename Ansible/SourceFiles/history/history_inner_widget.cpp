@@ -2559,7 +2559,8 @@ void HistoryInner::viewRemoved(not_null<const Element*> view) {
 
 void HistoryInner::mouseActionFinish(
 		const QPoint &screenPos,
-		Qt::MouseButton button) {
+		Qt::MouseButton button,
+		bool fromTouch) {
 	mouseActionUpdate(screenPos);
 
 	const auto toggleByHandler = [&](const ClickHandlerPtr &handler) {
