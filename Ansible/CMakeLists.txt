@@ -1034,6 +1034,8 @@ PRIVATE
     history/view/media/history_view_game.h
     history/view/media/history_view_gif.cpp
     history/view/media/history_view_gif.h
+    history/view/media/history_view_html_widget.cpp
+    history/view/media/history_view_html_widget.h
     history/view/media/history_view_giveaway.cpp
     history/view/media/history_view_giveaway.h
     history/view/media/history_view_invoice.cpp

@@ -1290,6 +1290,10 @@ bool ListWidget::animatedScrolling() const {
 	return _scrollToAnimation.animating();
 }
 
+bool ListWidget::scrollingToBottom() const {
+	return _scrollToBottomAnimation && _scrollToAnimation.animating();
+}
+
 void ListWidget::scrollToCurrentVoiceMessage(
 		FullMsgId fromId,
 		FullMsgId toId) {
