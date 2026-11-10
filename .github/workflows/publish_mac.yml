@@ -77,7 +77,7 @@ jobs:
           tar -xf ansible-mac-release-0.4.1.tar
           test "$(cat source-sha.txt)" = "$SOURCE_SHA"
           for BINARY in MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler; do
-            lipo -verify_arch x86_64 arm64 "Ansible.app/Contents/$BINARY"
+            lipo "Ansible.app/Contents/$BINARY" -verify_arch x86_64 arm64
           done
       - name: Sign and notarize the app.
         if: inputs.apple_sign

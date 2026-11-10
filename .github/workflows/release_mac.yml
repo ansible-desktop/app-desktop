@@ -97,7 +97,7 @@ jobs:
         run: |
           cd app-desktop/out/Release
           for BINARY in MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler; do
-            lipo -verify_arch x86_64 arm64 "Ansible.app/Contents/$BINARY"
+            lipo "Ansible.app/Contents/$BINARY" -verify_arch x86_64 arm64
           done
           test -x Ansible.app/Contents/MacOS/Ansible
           test -x Ansible.app/Contents/Frameworks/Updater
