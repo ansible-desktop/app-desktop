@@ -684,10 +684,6 @@ QGradientStops ButtonGradientStops() {
 	};
 }
 
-QGradientStops LockGradientStops() {
-	return ButtonGradientStops();
-}
-
 QGradientStops FullHeightGradientStops() {
 	return {
 		{ 0.0, st::premiumIconBg1->c },

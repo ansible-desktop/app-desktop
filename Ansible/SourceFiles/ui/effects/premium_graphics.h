@@ -103,7 +103,6 @@ void AddAccountsRow(
 
 [[nodiscard]] QGradientStops LimitGradientStops();
 [[nodiscard]] QGradientStops ButtonGradientStops();
-[[nodiscard]] QGradientStops LockGradientStops();
 [[nodiscard]] QGradientStops FullHeightGradientStops();
 [[nodiscard]] QGradientStops GiftGradientStops();
 [[nodiscard]] QGradientStops CreditsIconGradientStops();

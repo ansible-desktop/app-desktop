@@ -514,6 +514,27 @@ void AddViewMediaHandler(
 	});
 }
 
+void PaintLottieIcon(
+		not_null<Ui::RpWidget*> icon,
+		const std::unique_ptr<Lottie::SinglePlayer> &lottie) {
+	auto p = Painter(icon);
+	const auto factor = style::DevicePixelRatio();
+	const auto request = Lottie::FrameRequest{
+		.box = icon->size() * factor,
+	};
+	const auto frame = (lottie && lottie->ready())
+		? lottie->frameInfo(request)
+		: Lottie::Animation::FrameInfo();
+	if (!frame.image.isNull()) {
+		p.drawImage(
+			QRect(QPoint(), frame.image.size() / factor),
+			frame.image);
+		if (lottie->frameIndex() < lottie->framesCount() - 1) {
+			lottie->markFrameShown();
+		}
+	}
+}
+
 } // namespace
 
 void AddMiniDiamonds(
@@ -1280,9 +1301,6 @@ void FillUniqueGiftMenu(
 			if (Ui::ShowCraftLaterError(show, unique)) {
 				return;
 			}
-			if (Ui::ShowCraftAddressError(show, unique)) {
-				return;
-			}
 			const auto savedId = EntryToSavedDiamondGiftId(&show->session(), e);
 			if (const auto window = show->resolveWindow()) {
 				Ui::ShowGiftCraftInfoBox(window, unique, savedId);
@@ -1637,23 +1655,7 @@ void GenericCreditsEntryCover(
 		}
 		icon->paintRequest(
 		) | rpl::on_next([=] {
-			auto p = Painter(icon);
-			const auto &lottie = state->lottie;
-			const auto factor = style::DevicePixelRatio();
-			const auto request = Lottie::FrameRequest{
-				.box = icon->size() * factor,
-			};
-			const auto frame = (lottie && lottie->ready())
-				? lottie->frameInfo(request)
-				: Lottie::Animation::FrameInfo();
-			if (!frame.image.isNull()) {
-				p.drawImage(
-					QRect(QPoint(), frame.image.size() / factor),
-					frame.image);
-				if (lottie->frameIndex() < lottie->framesCount() - 1) {
-					lottie->markFrameShown();
-				}
-			}
+			PaintLottieIcon(icon, state->lottie);
 		}, icon->lifetime());
 		content->sizeValue(
 		) | rpl::on_next([=](const QSize &size) {
@@ -1789,9 +1791,6 @@ void GenericCreditsEntryBody(
 		const auto craft = canCraft ? [=] {
 			const auto unique = e.uniqueGift;
 			if (Ui::ShowCraftLaterError(show, unique)) {
-				return;
-			}
-			if (Ui::ShowCraftAddressError(show, unique)) {
 				return;
 			}
 			const auto savedId = EntryToSavedDiamondGiftId(&show->session(), e);
@@ -2096,9 +2095,12 @@ void GenericCreditsEntryBody(
 				st::creditsBoxAbout),
 			style::al_top);
 		about->setClickHandlerFilter([=](const auto &...) {
-			Core::App().iv().openWithIvPreferred(
+			HiddenUrlClickHandler::OpenTranslatedWithIv(
 				session,
-				tr::lng_paid_about_link_url(tr::now));
+				tr::lng_paid_about_link_url,
+				QVariant::fromValue(ClickHandlerContext{
+					.show = show,
+				}));
 			return false;
 		});
 		if (e.giftRefunded) {
@@ -2701,23 +2703,7 @@ void UniqueGiftValueBox(
 	}
 	icon->paintRequest(
 	) | rpl::on_next([=] {
-		auto p = Painter(icon);
-		const auto &lottie = state->lottie;
-		const auto factor = style::DevicePixelRatio();
-		const auto request = Lottie::FrameRequest{
-			.box = icon->size() * factor,
-		};
-		const auto frame = (lottie && lottie->ready())
-			? lottie->frameInfo(request)
-			: Lottie::Animation::FrameInfo();
-		if (!frame.image.isNull()) {
-			p.drawImage(
-				QRect(QPoint(), frame.image.size() / factor),
-				frame.image);
-			if (lottie->frameIndex() < lottie->framesCount() - 1) {
-				lottie->markFrameShown();
-			}
-		}
+		PaintLottieIcon(icon, state->lottie);
 	}, icon->lifetime());
 	content->sizeValue(
 	) | rpl::on_next([=](const QSize &size) {

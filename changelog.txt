@@ -1,9 +1,11 @@
 0.4.2 (10.11.26)
 
+- Update the client base to upstream Telegram Desktop 7.4.1.
 - Show interactive widgets sent by bots in private chats.
 - Add smooth text flights and bubble reveal animations when sending messages.
 - Update dissolving message removal and keep the scroll position stable.
 - Support shared widget data, live updates and interactive bot responses.
+- Improve search, mini app permissions, notifications and media handling.
 
 0.4.1 (02.11.26)
 

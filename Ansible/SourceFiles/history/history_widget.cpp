@@ -120,6 +120,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/view/controls/history_view_characters_limit.h"
 #include "history/view/controls/history_view_compose_ai_button.h"
 #include "history/view/controls/history_view_compose_ai_tooltip.h"
+#include "history/view/controls/history_view_bot_menu_hold.h"
 #include "history/view/controls/history_view_compose_search.h"
 #include "history/view/controls/history_view_forward_panel.h"
 #include "history/view/controls/history_view_draft_options.h"
@@ -143,6 +144,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/view/history_view_group_call_bar.h"
 #include "history/view/history_view_group_members_widget.h"
 #include "history/view/history_view_item_preview.h"
+#include "history/view/history_view_list_widget.h"
 #include "history/view/history_view_reply.h"
 #include "history/view/history_view_requests_bar.h"
 #include "history/view/history_view_self_forwards_tagger.h"
@@ -195,6 +197,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "webrtc/webrtc_environment.h"
 #include "window/notifications_manager.h"
 #include "window/window_adaptive.h"
+#include "window/window_columns.h"
 #include "window/window_controller.h"
 #include "window/window_session_controller.h"
 #include "window/window_slide_animation.h"
@@ -988,6 +991,7 @@ HistoryWidget::HistoryWidget(
 		| PeerUpdateFlag::ManagedBot
 		| PeerUpdateFlag::DiamondsPerMessage
 		| PeerUpdateFlag::GiftSettings
+		| PeerUpdateFlag::BarSettings
 	) | rpl::filter([=](const Data::PeerUpdate &update) {
 		if (update.peer.get() == _peer) {
 			return true;
@@ -1094,6 +1098,9 @@ HistoryWidget::HistoryWidget(
 				}
 			}
 		}
+		if ((flags & PeerUpdateFlag::BarSettings) && _list) {
+			_list->update();
+		}
 	}, lifetime());
 
 	using Type = Data::DefaultNotify;
@@ -1161,16 +1168,17 @@ HistoryWidget::HistoryWidget(
 
 	session().api().sendActions(
 	) | rpl::filter([=](const Api::SendAction &action) {
-		if (_creatingBotTopic
-			&& action.history == _creatingBotTopic->owningHistory()
-			&& action.replyTo.topicRootId == _creatingBotTopic->rootId()) {
+		const auto creating = _creatingBotTopic.get();
+		if (creating
+			&& action.history == creating->owningHistory()
+			&& action.replyTo.topicRootId == creating->rootId()) {
 			// Guard 'this' (the call reads _creatingBotTopic) and re-check
 			// the topic: it may be gone or already handled by another call.
 			const auto weak = _creatingBotTopic;
 			Ui::PostponeCall(this, [=] {
 				using namespace HistoryView;
-				const auto topic = base::take(_creatingBotTopic);
-				if (!topic || topic.get() != weak.get()) {
+				const auto topic = base::take(_creatingBotTopic).get();
+				if (!topic || topic != weak.get()) {
 					return;
 				}
 				controller->showSection(
@@ -1458,7 +1466,7 @@ void HistoryWidget::initVoiceRecordBar() {
 		if (_stash) {
 			_stash->updateButton();
 		}
-	}, lifetime());
+	}, _recordingStateLifetime);
 
 	_voiceRecordBar->hideFast();
 }
@@ -2696,7 +2704,7 @@ void HistoryWidget::setInnerFocus() {
 			|| isBlocked()
 			|| !_richDraftPreview->isHidden()
 			|| (!_canSendTexts && !_editMsgId)) {
-			if (_scroll->isHidden()) {
+			if (_scroll->isHidden() || _list->isHidden()) {
 				setFocus();
 			} else {
 				_list->setFocus();
@@ -2722,12 +2730,12 @@ bool HistoryWidget::notify_switchInlineBotButtonReceived(
 		return true;
 	} else if (const auto bot = _peer ? _peer->asUser() : nullptr) {
 		const auto to = bot->isBot()
-			? bot->botInfo->inlineReturnTo
+			? bot->botInfo->inlineReturnTo()
 			: Dialogs::EntryState();
 		if (!to.key.owningHistory()) {
 			return false;
 		}
-		bot->botInfo->inlineReturnTo = Dialogs::EntryState();
+		bot->botInfo->setInlineReturnTo(Dialogs::EntryState());
 		controller()->switchInlineQuery(to, bot, query);
 		return true;
 	}
@@ -2787,11 +2795,15 @@ void HistoryWidget::setupShortcuts() {
 				return true;
 			});
 		_preview
-			&& (_previewDrawPreview || _preview->draft().removed)
+			&& (_previewDrawPreview
+				|| _preview->draft().removed
+				|| _preview->disabled())
 			&& request->check(Command::ToggleWebPagePreview, 1)
 			&& request->handle([=] {
 				if (_previewDrawPreview) {
 					_preview->apply({ .removed = true });
+				} else if (_preview->disabled()) {
+					_preview->setDisabled(false);
 				} else {
 					_preview->apply({}, true);
 				}
@@ -3368,7 +3380,7 @@ void HistoryWidget::showHistory(
 				if (const auto &info = user->botInfo) {
 					if (startBot || clearMaybeSendStart()) {
 						if (startBot && wasState.key) {
-							info->inlineReturnTo = wasState;
+							info->setInlineReturnTo(wasState);
 						}
 						sendBotStartCommand();
 						_history->clearLocalDraft(MsgId(), PeerId());
@@ -3477,6 +3489,10 @@ void HistoryWidget::showHistory(
 		) | rpl::on_next([=] {
 			updateControlsGeometry();
 		}, _contactStatus->bar().lifetime());
+		const auto settingsPeer = _peer->migrateToOrMe();
+		if (!settingsPeer->barSettings()) {
+			session().api().requestPeerSettings(settingsPeer);
+		}
 
 		refreshGiftToChannelShown();
 		refreshDirectMessageShown();
@@ -3574,7 +3590,6 @@ void HistoryWidget::showHistory(
 				sticker,
 				Api::MessageToSend(prepareSendAction({})));
 		}, _list->lifetime());
-		_list->show();
 
 		if (const auto channel = _peer->asChannel()) {
 			channel->updateFull();
@@ -3641,7 +3656,7 @@ void HistoryWidget::showHistory(
 				if (startBot
 					|| (!_history->isEmpty() && clearMaybeSendStart())) {
 					if (startBot && wasState.key) {
-						info->inlineReturnTo = wasState;
+						info->setInlineReturnTo(wasState);
 					}
 					sendBotStartCommand();
 				}
@@ -3758,9 +3773,11 @@ void HistoryWidget::setHistory(History *history) {
 		const auto wasMigrated = base::take(_migrated);
 		unloadHeavyViewParts(wasHistory);
 		unloadHeavyViewParts(wasMigrated);
-		if (const auto wasCreatingBotTopic = base::take(_creatingBotTopic)) {
-			wasCreatingBotTopic->forum()->discardCreatingId(
-				wasCreatingBotTopic->rootId());
+		if (const auto wasCreatingBotTopic = base::take(_creatingBotTopic).get()) {
+			if (wasCreatingBotTopic->creating()) {
+				wasCreatingBotTopic->forum()->discardCreatingId(
+					wasCreatingBotTopic->rootId());
+			}
 		}
 	}
 	if (history) {
@@ -5391,7 +5408,10 @@ bool HistoryWidget::isItemCompletelyHidden(HistoryItem *item) const {
 }
 
 void HistoryWidget::visibleAreaUpdated() {
-	if (_list && !_firstLoadRequest && !_scroll->isHidden()) {
+	if (_list
+		&& !_list->isHidden()
+		&& !_firstLoadRequest
+		&& !_scroll->isHidden()) {
 		const auto scrollTop = _scroll->scrollTop();
 		const auto scrollBottom = scrollTop + _scroll->height();
 		_list->visibleAreaUpdated(scrollTop, scrollBottom);
@@ -5822,18 +5842,22 @@ Api::SendAction HistoryWidget::prepareSendAction(
 			if (readyRootId) {
 				result.replyTo.topicRootId = readyRootId;
 			} else {
-				if (!_creatingBotTopic) {
-					_creatingBotTopic = forum->reserveNewBotTopic();
+				const auto existing = _creatingBotTopic.get();
+				const auto topic = existing
+					? existing
+					: forum->reserveNewBotTopic();
+				const auto rootId = topic->rootId();
+				if (!existing) {
+					_creatingBotTopic = topic;
 					auto draft = _history->forwardDraft(MsgId(0), PeerId());
 					if (!draft.ids.empty()) {
 						_history->setForwardDraft(MsgId(0), PeerId(), {});
 						_history->setForwardDraft(
-							_creatingBotTopic->rootId(),
+							rootId,
 							PeerId(),
 							std::move(draft));
 					}
 				}
-				const auto rootId = _creatingBotTopic->rootId();
 				if (!result.replyTo.messageId) {
 					result.replyTo.messageId = FullMsgId(
 						_history->peer->id,
@@ -7105,6 +7129,20 @@ bool HistoryWidget::updateCmdStartShown() {
 			},
 			[=] { updateFieldSize(); },
 			session().data().customEmojiManager().factory());
+		{
+			using namespace HistoryView::Controls;
+			_botMenu->lifetime().make_state<BotMenuHoldTracker>(
+				_botMenu.get(),
+				kBotMenuHoldDuration,
+				[=] {
+					if (!_autocomplete) {
+						return;
+					} else if (_autocomplete->isHidden()) {
+						_autocomplete->showFiltered(_peer, u"/"_q, true);
+					}
+					_autocomplete->startPressDragSelect();
+				});
+		}
 		_botMenuPeer = bot->id;
 		orderWidgets();
 	}
@@ -7362,11 +7400,11 @@ bool HistoryWidget::pushTabbedSelectorToThirdSection(
 	} else if (!Data::CanSendAnyOf(
 			thread,
 			Data::TabbedPanelSendRestrictions())) {
-		Core::App().settings().setTabbedReplacedWithInfo(true);
+		controller()->columns().setTabbedReplacedWithInfo(true);
 		controller()->showPeerInfo(thread, params.withThirdColumn());
 		return false;
 	}
-	Core::App().settings().setTabbedReplacedWithInfo(false);
+	controller()->columns().setTabbedReplacedWithInfo(false);
 	controller()->resizeForThirdSection();
 	controller()->showSection(
 		std::make_shared<ChatHelpers::TabbedMemento>(),
@@ -7415,7 +7453,7 @@ void HistoryWidget::toggleTabbedSelectorMode() {
 	if (_tabbedPanel) {
 		if (controller()->canShowThirdSection()
 			&& !controller()->adaptive().isOneColumn()) {
-			Core::App().settings().setTabbedSelectorSectionEnabled(true);
+			controller()->columns().setTabbedSelectorSectionEnabled(true);
 			Core::App().saveSettingsDelayed();
 			pushTabbedSelectorToThirdSection(
 				_history,
@@ -8762,7 +8800,10 @@ void HistoryWidget::updateHistoryGeometry(
 		newScrollTop = countInitialScrollTop();
 		_historyInited = true;
 		_scrollToAnimation.stop();
-	} else if (wasAtBottom && !leaveEnd && !loadedDown && !_history->unreadBar()) {
+	} else if (wasAtBottom
+		&& !leaveEnd
+		&& !loadedDown
+		&& !_history->unreadBar()) {
 		newScrollTop = countAutomaticScrollTop();
 	} else {
 		newScrollTop = std::min(
@@ -10638,25 +10679,6 @@ void HistoryWidget::processReply() {
 			_processingReplyTo.messageId.msg,
 			processContinue());
 		return;
-#if 0 // Now we can "reply" to old legacy group messages.
-	} else if (_processingReplyItem->history() == _migrated) {
-		if (_processingReplyItem->isService()) {
-			controller()->showToast(tr::lng_reply_cant(tr::now));
-		} else {
-			const auto itemId = _processingReplyItem->fullId();
-			controller()->show(
-				Ui::MakeConfirmBox({
-					.text = tr::lng_reply_cant_forward(),
-					.confirmed = crl::guard(this, [=] {
-						controller()->content()->setForwardDraft(
-							_history,
-							{ .ids = { 1, itemId } });
-					}),
-					.confirmText = tr::lng_selected_forward(),
-				}));
-		}
-		return processCancel();
-#endif
 	} else if (!_processingReplyItem->isRegular()
 		&& !CanReplyToEphemeral(_processingReplyItem)) {
 		return processCancel();

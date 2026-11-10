@@ -13,15 +13,15 @@ Windows, macOS and Linux.
 > servers, and cannot be used to access Telegram accounts.
 
 [![License: GPLv3](https://img.shields.io/badge/License-GPLv3%20%2B%20OpenSSL-blue.svg)](LICENSE)
-[![Upstream](https://img.shields.io/badge/forked%20from-tdesktop%207.2.8-orange.svg)](https://github.com/telegramdesktop/tdesktop)
+[![Upstream](https://img.shields.io/badge/forked%20from-tdesktop%207.4.1-orange.svg)](https://github.com/telegramdesktop/tdesktop)
 
 ---
 
 ## What this is
 
 Ansible Desktop is the desktop client for the Ansible messenger, built on
-the Telegram Desktop codebase under GPL v3. Current version **0.3.0**,
-rebased onto upstream **7.2.8** (API layer 229).
+the Telegram Desktop codebase under GPL v3. Current version **0.4.2**,
+rebased onto upstream **7.4.1** (API layer 233).
 
 What differs from upstream:
 
@@ -83,10 +83,9 @@ Builds are published as GitHub Actions artifacts on this repository.
 See [`docs/upgrading.md`](docs/upgrading.md) for how to move from an
 earlier build and what is preserved.
 
-🚨 **In-app auto-update does not work yet.** The client checks
-`https://ansible.su/ad/current2`, and nothing is published there at the
-moment — the request 404s and the app stays on its current version
-without telling you. Update by downloading a new build.
+Stable Windows x64 and macOS builds use authenticated update packages from
+`https://ansible.su/ad/`. Release workflows publish the package before its version
+manifest. macOS signing details accompany each release.
 
 ## Building from source
 
@@ -102,7 +101,7 @@ Build instructions are inherited from upstream and kept current:
 | branch | what runs on push |
 |---|---|
 | `master` | the full matrix — Windows, Linux, macOS, macOS Packaged, Snap |
-| `dev` | one fast Windows x64 build (`sccache`, minutes on a warm cache) |
+| `dev` | one Windows x64 Debug build with a compiler cache |
 
 Day-to-day work happens on `dev`; `master` receives it by pull request.
 The workflow files are identical on both branches — each build is bound
@@ -120,6 +119,13 @@ OpenSSL linking exception, as published by the Free Software Foundation.
 
 By contributing to this repository, you agree that your contributions
 will be licensed under the same terms.
+
+## Native widget dependencies
+
+- [twidget](https://github.com/TelegramMessenger/twidget): BSD 3-Clause
+- [litehtml](https://github.com/litehtml/litehtml): BSD 3-Clause
+- [Gumbo](https://github.com/google/gumbo-parser): Apache 2.0
+- [QuickJS-ng](https://github.com/quickjs-ng/quickjs): MIT
 
 ## Trademarks
 

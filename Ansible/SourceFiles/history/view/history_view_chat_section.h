@@ -328,6 +328,7 @@ private:
 	void onScroll();
 	void scrollToCurrentVoiceMessage(FullMsgId fromId, FullMsgId toId);
 	void closeCurrent();
+	void topicDestroyed();
 	void sublistDestroyed();
 	void unreadCountUpdated();
 	void updateInnerVisibleArea();
@@ -407,6 +408,8 @@ private:
 	[[nodiscard]] MsgId resolveTopicRootId(const FullReplyTo &replyTo) const;
 	[[nodiscard]] MsgId resolvedTopicRootId() const;
 	[[nodiscard]] Data::ForumTopic *resolvedTopic();
+	[[nodiscard]] bool monoforumReplyMissing() const;
+	[[nodiscard]] bool monoforumReplyRequired() const;
 	void refreshCanSendMessages();
 	void refreshResolvedTopicRootState();
 	void setKeyboardReplyTo(HistoryItem *item);
@@ -543,7 +546,7 @@ private:
 	MsgId _repliesKeyboardHiddenId = 0;
 	HistoryItem *_repliesRoot = nullptr;
 	Data::ForumTopic *_topic = nullptr;
-	mutable Data::ForumTopic *_creatingBotTopic = nullptr;
+	mutable base::weak_ptr<Data::ForumTopic> _creatingBotTopic;
 	mutable bool _newTopicDiscarded = false;
 	std::shared_ptr<Data::RepliesList> _replies;
 	rpl::lifetime _repliesLifetime;

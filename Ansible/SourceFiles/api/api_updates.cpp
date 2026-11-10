@@ -1366,11 +1366,20 @@ void Updates::applyUpdateNoPtsCheck(const MTPUpdate &update) {
 		const auto &d = update.c_updateReadHistoryInbox();
 		const auto peer = peerFromMTP(d.vpeer());
 		if (const auto history = _session->data().historyLoaded(peer)) {
-			const auto folderId = d.vfolder_id().value_or_empty();
-			history->applyInboxReadUpdate(
-				folderId,
-				d.vmax_id().v,
-				d.vstill_unread_count().v);
+			const auto rootId = d.vtop_msg_id().value_or_empty();
+			if (history->peer->forumTopicFor(rootId)) {
+				session().data().updateRepliesReadTill({
+					{ peer, rootId },
+					d.vmax_id().v,
+					false,
+				});
+			} else {
+				const auto folderId = d.vfolder_id().value_or_empty();
+				history->applyInboxReadUpdate(
+					folderId,
+					d.vmax_id().v,
+					d.vstill_unread_count().v);
+			}
 		}
 	} break;
 
@@ -2658,6 +2667,27 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 				}();
 				if (!done) {
 					forum->reloadTopics();
+				}
+			}
+		}
+	} break;
+
+	case mtpc_updateEditForumTopic: {
+		const auto &d = update.c_updateEditForumTopic();
+		const auto peerId = peerFromMTP(d.vpeer());
+		if (const auto peer = session().data().peerLoaded(peerId)) {
+			if (const auto topic = peer->forumTopicFor(d.vtopic_id().v)) {
+				if (const auto &title = d.vtitle()) {
+					topic->applyTitle(qs(*title));
+				}
+				if (const auto icon = d.vicon_emoji_id()) {
+					topic->applyIconId(icon->v);
+				}
+				if (const auto closed = d.vclosed()) {
+					topic->setClosed(mtpIsTrue(*closed));
+				}
+				if (const auto hidden = d.vhidden()) {
+					topic->setHidden(mtpIsTrue(*hidden));
 				}
 			}
 		}

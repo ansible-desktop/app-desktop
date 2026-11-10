@@ -11,7 +11,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "dialogs/ui/dialogs_message_view.h"
 #include "history/view/media/history_view_html_widget.h"
 #include "ui/effects/ripple_animation.h"
-#include "history/view/media/history_view_unsupported_notice.h"
+#include "history/view/media/history_view_unsupported_widget.h"
 #include "history/view/history_view_item_preview.h"
 #include "history/history.h"
 #include "history/history_item.h"
@@ -246,7 +246,7 @@ std::unique_ptr<HistoryView::Media> WidgetMedia::createView(
 			context(),
 			replacing);
 	}
-	return std::make_unique<HistoryView::UnsupportedNotice>(message);
+	return std::make_unique<HistoryView::UnsupportedWidget>(message);
 }
 
 } // namespace Tgw

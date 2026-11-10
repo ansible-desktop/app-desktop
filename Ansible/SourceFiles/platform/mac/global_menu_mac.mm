@@ -13,6 +13,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "window/window_session_controller.h"
 #include "window/main_window.h"
 #include "main/main_session.h"
+#include "history/admin_log/history_admin_log_inner.h"
+#include "history/view/history_view_list_widget.h"
 #include "history/history_inner_widget.h"
 #include "boxes/peer_list_controllers.h"
 #include "boxes/about_box.h"
@@ -141,10 +143,14 @@ void SendKeySequence(
 		Qt::Key key,
 		Qt::KeyboardModifiers modifiers = Qt::NoModifier) {
 	const auto focused = QApplication::focusWidget();
+	const auto copy = (key == Qt::Key_C)
+		&& (modifiers == Qt::ControlModifier);
 	if (qobject_cast<QLineEdit*>(focused)
 		|| qobject_cast<QTextEdit*>(focused)
 		|| qobject_cast<QLabel*>(focused)
-		|| dynamic_cast<HistoryInner*>(focused)) {
+		|| dynamic_cast<HistoryInner*>(focused)
+		|| (copy && dynamic_cast<HistoryView::ListWidget*>(focused))
+		|| (copy && dynamic_cast<AdminLog::InnerWidget*>(focused))) {
 		QApplication::postEvent(
 			focused,
 			new QKeyEvent(QEvent::KeyPress, key, modifiers));

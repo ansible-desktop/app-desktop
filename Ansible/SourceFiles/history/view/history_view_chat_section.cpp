@@ -83,6 +83,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "window/window_session_controller.h"
 #include "window/window_peer_menu.h"
 #include "base/call_delayed.h"
+#include "base/event_filter.h"
 #include "base/qt/qt_key_modifiers.h"
 #include "core/application.h"
 #include "core/shortcuts.h"
@@ -484,6 +485,10 @@ ChatWidget::ChatWidget(
 	setupRoot();
 
 	_peer->updateFull();
+	const auto settingsPeer = _peer->migrateToOrMe();
+	if (!settingsPeer->barSettings()) {
+		session().api().requestPeerSettings(settingsPeer);
+	}
 	if (const auto channel = _peer->asMegagroup()) {
 		if (!channel->mgInfo->adminsLoaded) {
 			session().api().chatParticipants().requestAdmins(channel);
@@ -693,6 +698,9 @@ ChatWidget::ChatWidget(
 	) | rpl::on_next([=](const Data::MessageUpdate &update) {
 		if (update.item == _repliesRoot) {
 			_repliesRoot = nullptr;
+			if (_topControls) {
+				_topControls->repliesRootDestroyed();
+			}
 			updatePinnedVisibility();
 			if (!_topic) {
 				controller->showBackFromStack();
@@ -722,15 +730,16 @@ ChatWidget::ChatWidget(
 
 	session().api().sendActions(
 	) | rpl::filter([=](const Api::SendAction &action) {
-		if (_creatingBotTopic
-			&& action.history == _creatingBotTopic->owningHistory()
-			&& action.replyTo.topicRootId == _creatingBotTopic->rootId()) {
+		const auto creating = _creatingBotTopic.get();
+		if (creating
+			&& action.history == creating->owningHistory()
+			&& action.replyTo.topicRootId == creating->rootId()) {
 			// Guard 'this' (the call reads _creatingBotTopic) and re-check
 			// the topic: it may be gone or already handled by another call.
-			const auto weak = base::make_weak(_creatingBotTopic);
+			const auto weak = _creatingBotTopic;
 			Ui::PostponeCall(this, [=] {
 				using namespace HistoryView;
-				const auto topic = base::take(_creatingBotTopic);
+				const auto topic = base::take(_creatingBotTopic).get();
 				if (!topic || topic != weak.get()) {
 					return;
 				}
@@ -930,6 +939,13 @@ ChatWidget::ChatWidget(
 		updateControlsVisibility();
 	}, lifetime());
 
+	session().changes().peerUpdates(
+		_peer,
+		PeerUpdateFlag::BarSettings
+	) | rpl::on_next([=] {
+		_inner->update();
+	}, lifetime());
+
 	session().data().historyAccessLost(
 	) | rpl::filter([=](not_null<History*> history) {
 		return (history == _history);
@@ -1079,7 +1095,7 @@ ChatWidget::~ChatWidget() {
 		_inner->saveState(&state);
 		saveHistoryScrollState(state);
 	}
-	if (const auto reserved = base::take(_creatingBotTopic)) {
+	if (const auto reserved = base::take(_creatingBotTopic).get()) {
 		if (reserved->creating()) {
 			reserved->discard();
 		}
@@ -1266,7 +1282,7 @@ void ChatWidget::subscribeToTopic() {
 
 	_topic->destroyed(
 	) | rpl::on_next([=] {
-		closeCurrent();
+		topicDestroyed();
 	}, _topicLifetime);
 
 	if (!_topic->creating()) {
@@ -1289,6 +1305,32 @@ void ChatWidget::closeCurrent() {
 			anim::type::normal,
 			anim::activation::background));
 	}
+}
+
+void ChatWidget::topicDestroyed() {
+	const auto id = controller()->windowId();
+	if (id.chat() == _topic) {
+		closeCurrent();
+		return;
+	} else if (!id.hasChatsList()) {
+		// Show the owning group here before the topic is freed.
+		showHistoryAfterThreadDestroyed(_history);
+		return;
+	}
+	const auto showing = Core::App().windowForShowingHistory(_peer);
+	if (_history->peer->useSubsectionTabs()
+		&& (!showing || showing == &controller()->window())
+		&& controller()->activeChatCurrent().thread() == _topic) {
+		auto params = Window::SectionShow(
+			Window::SectionShow::Way::ClearStack,
+			anim::type::instant,
+			anim::activation::background);
+		params.preferCurrentWindow = true;
+
+		controller()->showThread(_history, ShowAtUnreadMsgId, params);
+		return;
+	}
+	closeCurrent();
 }
 
 void ChatWidget::sublistDestroyed() {
@@ -1423,6 +1465,7 @@ Data::ForumTopic *ChatWidget::resolvedTopic() {
 void ChatWidget::refreshCanSendMessages() {
 	_canSendMessagesLifetime.destroy();
 	const auto apply = [=](bool can) {
+		can = can && !monoforumReplyRequired();
 		const auto changed = (_canSendMessages != can);
 		_canSendMessages = can;
 		_bottom->setCanSendMessages(can);
@@ -1496,9 +1539,11 @@ void ChatWidget::setupComposeControls() {
 			Data::PeerUpdate::Flag::Rights),
 		Data::CanSendAnythingValue(_peer),
 		std::move(replyThreadChanges),
-		std::move(topicClosedChanges)
+		std::move(topicClosedChanges),
+		_composeControls->editMsgIdValue()
 	) | rpl::map([=](
 			const Main::FreezeInfo &info,
+			auto,
 			auto,
 			auto,
 			auto,
@@ -1511,23 +1556,18 @@ void ChatWidget::setupComposeControls() {
 				.type = Controls::WriteRestrictionType::Frozen,
 			};
 		}
+		if (monoforumReplyRequired()) {
+			return Controls::WriteRestriction{
+				.text = tr::lng_monoforum_choose_to_reply(tr::now),
+				.type = Controls::WriteRestrictionType::Rights,
+			};
+		}
 		const auto allWithoutPolls = Data::AllSendRestrictions()
 			& ~ChatRestriction::SendPolls;
 		const auto topic = resolvedTopic();
 		const auto canSendAnything = topic
 			? Data::CanSendAnyOf(topic, allWithoutPolls)
 			: Data::CanSendAnyOf(_peer, allWithoutPolls);
-		const auto channel = _peer->asChannel();
-		if ((mode() == Mode::History)
-			&& !canSendAnything
-			&& _peer->amMonoforumAdmin()
-			&& channel
-			&& !channel->monoforumDisabled()) {
-			return Controls::WriteRestriction{
-				.text = tr::lng_monoforum_choose_to_reply(tr::now),
-				.type = Controls::WriteRestrictionType::Rights,
-			};
-		}
 		auto topicRestriction = (!resolvedTopicRootId()
 			|| !topic
 			|| topic->canToggleClosed()
@@ -1588,6 +1628,12 @@ void ChatWidget::setupComposeControls() {
 		listCancelRequest();
 	}, lifetime());
 
+	_composeControls->focusedValue(
+	) | rpl::skip(1) | rpl::filter(rpl::mappers::_1) | rpl::on_next([=] {
+		_inner->clearTextSelection();
+		_inner->hideElementOverlay();
+	}, lifetime());
+
 	_composeControls->replyingToMessageValue(
 	) | rpl::skip(1) | rpl::on_next([=](FullReplyTo) {
 		refreshCanSendMessages();
@@ -1596,6 +1642,7 @@ void ChatWidget::setupComposeControls() {
 
 	_composeControls->editMsgIdValue(
 	) | rpl::skip(1) | rpl::on_next([=](FullMsgId) {
+		refreshCanSendMessages();
 		updateBotKeyboard();
 	}, lifetime());
 
@@ -1967,6 +2014,9 @@ void ChatWidget::setupSwipeReplyAndBack() {
 void ChatWidget::chooseAttach(
 		std::optional<bool> overrideSendImagesAsPhotos) {
 	_choosingAttach = false;
+	if (monoforumReplyRequired()) {
+		return;
+	}
 	if (!session().ephemeralMessages().isEphemeralBotReply(
 			replyTo().messageId)) {
 		if (const auto error = Data::AnyFileRestrictionError(_peer)) {
@@ -2261,6 +2311,9 @@ void ChatWidget::checkReplyReturns() {
 void ChatWidget::uploadFile(
 		const QByteArray &fileContent,
 		SendMediaType type) {
+	if (monoforumReplyMissing()) {
+		return;
+	}
 	session().api().sendFile(fileContent, type, prepareSendAction({}));
 }
 
@@ -2311,18 +2364,22 @@ Api::SendAction ChatWidget::prepareSendAction(
 				if (readyRootId) {
 					result.replyTo.topicRootId = readyRootId;
 				} else {
-					if (!_creatingBotTopic) {
-						_creatingBotTopic = forum->reserveNewBotTopic();
+					const auto existing = _creatingBotTopic.get();
+					const auto topic = existing
+						? existing
+						: forum->reserveNewBotTopic();
+					const auto rootId = topic->rootId();
+					if (!existing) {
+						_creatingBotTopic = topic;
 						auto draft = _history->forwardDraft(MsgId(0), PeerId());
 						if (!draft.ids.empty()) {
 							_history->setForwardDraft(MsgId(0), PeerId(), {});
 							_history->setForwardDraft(
-								_creatingBotTopic->rootId(),
+								rootId,
 								PeerId(),
 								std::move(draft));
 						}
 					}
-					const auto rootId = _creatingBotTopic->rootId();
 					if (!result.replyTo.messageId) {
 						result.replyTo.messageId = FullMsgId(
 							_history->peer->id,
@@ -2382,7 +2439,9 @@ void ChatWidget::sendVoice(const ComposeControls::VoiceToSend &data) {
 }
 
 void ChatWidget::send(Api::SendOptions options) {
-	if (const auto page = _composeControls->shownRichMessage()) {
+	if (monoforumReplyMissing()) {
+		return;
+	} else if (const auto page = _composeControls->shownRichMessage()) {
 		sendRichDraft(page, options);
 		return;
 	}
@@ -3205,6 +3264,9 @@ void ChatWidget::sendExistingPhoto(not_null<PhotoData*> photo) {
 bool ChatWidget::sendExistingPhoto(
 		not_null<PhotoData*> photo,
 		Api::SendOptions options) {
+	if (monoforumReplyMissing()) {
+		return false;
+	}
 	const auto ephemeralReply = session().ephemeralMessages()
 		.isEphemeralBotReply(replyTo().messageId);
 	const auto error = !ephemeralReply
@@ -3267,7 +3329,8 @@ void ChatWidget::sendInlineResult(
 		not_null<UserData*> bot,
 		Api::SendOptions options,
 		std::optional<MsgId> localMessageId) {
-	if (ShowEphemeralReplyTextOnlyError(
+	if (monoforumReplyMissing()
+		|| ShowEphemeralReplyTextOnlyError(
 			controller()->uiShow(),
 			&session(),
 			replyTo().messageId)) {
@@ -3307,7 +3370,7 @@ SendMenu::Details ChatWidget::sendMenuDetails() const {
 	using Type = SendMenu::Type;
 	const auto ephemeralReply = session().ephemeralMessages()
 		.isEphemeralBotReply(replyTo().messageId);
-	const auto type = ephemeralReply
+	const auto type = (monoforumReplyMissing() || ephemeralReply)
 		? Type::Disabled
 		: (mode() != Mode::History)
 		? ((_topic && !_peer->diamondsPerMessageChecked())
@@ -3941,6 +4004,9 @@ QPixmap ChatWidget::grabForShowAnimation(const Window::SectionSlideParams &param
 	if (params.fromBottom && _subsectionTabs) {
 		_subsectionTabs->hide();
 	}
+	if (_supportAutocomplete) {
+		_supportAutocomplete->hide();
+	}
 	auto result = Ui::GrabWidget(this);
 	if (hideTopBarShadow) {
 		_topBarShadow->show();
@@ -3965,6 +4031,7 @@ void ChatWidget::doSetInnerFocus() {
 		_chooseTheme->setFocus();
 	} else if (!_inner->getSelectedText().rich.text.isEmpty()
 		|| !_inner->getSelectedItems().empty()
+		|| _inner->wasSelectedText()
 		|| !_composeControls->focus()) {
 		_inner->setFocus();
 	}
@@ -4101,12 +4168,12 @@ bool ChatWidget::notify_switchInlineBotButtonReceived(
 		return true;
 	} else if (const auto bot = _peer->asUser()) {
 		const auto to = bot->isBot()
-			? bot->botInfo->inlineReturnTo
+			? bot->botInfo->inlineReturnTo()
 			: Dialogs::EntryState();
 		if (!to.key.owningHistory()) {
 			return false;
 		}
-		bot->botInfo->inlineReturnTo = Dialogs::EntryState();
+		bot->botInfo->setInlineReturnTo(Dialogs::EntryState());
 		controller()->switchInlineQuery(to, bot, query);
 		return true;
 	}
@@ -4530,7 +4597,15 @@ void ChatWidget::updateControlsGeometry() {
 		if (wasAtBottom) {
 			_scroll->scrollToY(_scroll->scrollTopMax());
 		} else if (newScrollDelta && _scroll->scrollTop()) {
-			_scroll->scrollToY(_scroll->scrollTop() + *newScrollDelta);
+			const auto requested = _scroll->scrollTop() + *newScrollDelta;
+			const auto target = _scroll->computeScrollToY(requested);
+			const auto now = _scroll->scrollTop();
+			// Past an edge ElasticScroll may not apply the computed target.
+			if (now >= 0 && now <= _scroll->scrollTopMax()) {
+				// Scrolling can re-enter layout and re-pin the collapse.
+				_inner->shiftScrollBaseline(target - now);
+			}
+			_scroll->scrollToY(requested);
 		}
 		updateInnerVisibleArea();
 	}
@@ -4802,7 +4877,9 @@ void ChatWidget::listCancelRequest() {
 		toggleChooseChatTheme(_peer, false);
 		return;
 	}
-	if (_inner && !_inner->getSelectedItems().empty()) {
+	if (_inner
+		&& (!_inner->getSelectedItems().empty()
+			|| !_inner->getSelectedText().rich.text.isEmpty())) {
 		clearSelected();
 		return;
 	} else if (_composeControls->handleCancelRequest()) {
@@ -6134,7 +6211,9 @@ void ChatWidget::clearSelected() {
 
 void ChatWidget::setupDragArea() {
 	const auto filter = [=](const auto &d) {
-		if (!_history || _composeControls->isRecording()) {
+		if (!_history
+			|| _composeControls->isRecording()
+			|| monoforumReplyRequired()) {
 			return false;
 		}
 		return CanSendResolved(

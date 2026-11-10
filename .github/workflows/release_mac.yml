@@ -68,6 +68,8 @@ jobs:
             Libraries
             ThirdParty
           key: mac-release-v1-${{ env.TOOLCHAIN_KEY }}-${{ hashFiles('app-desktop/Ansible/build/prepare/**', 'app-desktop/Ansible/build/qt_version.py') }}
+          restore-keys: |
+            mac-release-v1-${{ env.TOOLCHAIN_KEY }}-
       - name: Release dependencies.
         run: ./app-desktop/Ansible/build/prepare/mac.sh silent
       - name: Remove dependency build intermediates.

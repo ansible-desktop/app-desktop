@@ -126,6 +126,15 @@ std::unique_ptr<Data::Forum> BotInfo::takeForumData() {
 	return nullptr;
 }
 
+void BotInfo::setInlineReturnTo(Dialogs::EntryState state) {
+	_inlineReturnThread = state.key.thread();
+	_inlineReturnTo = std::move(state);
+}
+
+Dialogs::EntryState BotInfo::inlineReturnTo() const {
+	return _inlineReturnThread ? _inlineReturnTo : Dialogs::EntryState();
+}
+
 Data::LastseenStatus LastseenFromMTP(
 		const MTPUserStatus &status,
 		Data::LastseenStatus currentStatus) {
@@ -619,10 +628,6 @@ bool UserData::isPremium() const {
 	return flags() & UserDataFlag::Premium;
 }
 
-bool UserData::isBotInlineGeo() const {
-	return flags() & UserDataFlag::BotInlineGeo;
-}
-
 bool UserData::isBot() const {
 	return botInfo != nullptr;
 }
@@ -739,19 +744,6 @@ const std::vector<QString> &UserData::usernames() const {
 
 bool UserData::isUsernameEditable(QString username) const {
 	return _username.isEditable(username);
-}
-
-bool UserData::isOldWalletBot() const {
-	if (!isBot()) {
-		return false;
-	}
-	const auto configured = session().appConfig().oldWalletBotUsername();
-	if (configured.isEmpty()) {
-		return false;
-	}
-	return ranges::any_of(usernames(), [&](const QString &username) {
-		return !username.compare(configured, Qt::CaseInsensitive);
-	});
 }
 
 void UserData::setBotVerifyDetails(Ui::BotVerifyDetails details) {

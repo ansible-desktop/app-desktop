@@ -61,6 +61,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "settings/settings_privacy_controllers.h"
 #include "settings/sections/settings_premium.h"
 #include "storage/storage_account.h"
+#include "storage/storage_shared_media.h"
 #include "mainwidget.h"
 #include "main/main_account.h"
 #include "main/main_app_config.h"
@@ -370,7 +371,11 @@ bool ShareUrl(
 		match->captured(1),
 		qthelp::UrlParamNameTransform::ToLower);
 	const auto url = params.value(u"url"_q);
-	if (url.isEmpty() || url.trimmed().startsWith('@')) {
+	const auto start = ranges::find_if(url, [](QChar ch) {
+		return !ch.isSpace()
+			&& (ch != QChar::ObjectReplacementCharacter);
+	});
+	if (url.isEmpty() || (start != url.cend() && *start == '@')) {
 		// Don't allow to insert an inline bot query by share url link.
 		return false;
 	}
@@ -566,6 +571,41 @@ bool ShowWallPaper(
 	return result;
 }
 
+std::optional<Storage::SharedMediaType> ParseSharedMediaType(
+		const QString &value) {
+	using Type = Storage::SharedMediaType;
+	const auto lowered = value.toLower();
+	if (lowered == u"media"_q) {
+		return Type::PhotoVideo;
+	} else if (lowered == u"photos"_q) {
+		return Type::Photo;
+	} else if (lowered == u"videos"_q) {
+		return Type::Video;
+	} else if (lowered == u"gifs"_q) {
+		return Type::GIF;
+	} else if (lowered == u"files"_q) {
+		return Type::File;
+	} else if (lowered == u"music"_q) {
+		return Type::MusicFile;
+	} else if (lowered == u"links"_q) {
+		return Type::Link;
+	} else if (lowered == u"voice"_q) {
+		return Type::RoundVoiceFile;
+	} else if (lowered == u"polls"_q) {
+		return Type::Poll;
+	}
+	return std::nullopt;
+}
+
+bool SidebarRequested(const QMap<QString, QString> &params) {
+	const auto value = params.value(u"sidebar"_q);
+	if (value.isEmpty()) {
+		return params.contains(u"sidebar"_q);
+	}
+	return value.compare(u"false"_q, Qt::CaseInsensitive) != 0
+		&& value != u"0"_q;
+}
+
 
 bool ResolveContactToken(
 		Window::SessionController *controller,
@@ -669,6 +709,8 @@ bool ResolveUsernameOrPhone(
 		return false;
 	}
 	using ResolveType = Window::ResolveType;
+	const auto sharedMediaTab = ParseSharedMediaType(
+		params.value(u"tab"_q));
 	auto resolveType = params.contains(u"profile"_q)
 		? ResolveType::Profile
 		: ResolveType::Default;
@@ -742,6 +784,8 @@ bool ResolveUsernameOrPhone(
 		.storyParam = storyParam,
 		.storyAlbumId = storyAlbumId,
 		.giftCollectionId = giftCollectionId,
+		.sharedMediaTab = sharedMediaTab,
+		.sidebar = SidebarRequested(params),
 		.videoTimestamp = (!videot.isEmpty()
 			? ParseVideoTimestamp(videot)
 			: std::optional<TimeId>()),
@@ -821,6 +865,8 @@ bool ResolvePrivatePost(
 		.usernameOrId = channelId,
 		.messageId = msgId,
 		.pollOption = pollOption,
+		.sharedMediaTab = ParseSharedMediaType(params.value(u"tab"_q)),
+		.sidebar = SidebarRequested(params),
 		.repliesInfo = commentId
 			? Window::RepliesByLinkInfo{
 				Window::CommentId{ commentId }
@@ -925,15 +971,6 @@ bool ShowInviteLink(
 		.iconLottieSize = st::toastLottieIconSize,
 	});
 	return true;
-}
-
-bool OpenExternalLink(
-		Window::SessionController *controller,
-		const Match &match,
-		const QVariant &context) {
-	return Ui::Integration::Instance().handleUrlClick(
-		match->captured(1),
-		context);
 }
 
 bool CopyPeerId(
@@ -1930,10 +1967,6 @@ const std::vector<LocalUrlHandler> &InternalUrlHandlers() {
 			ShowInviteLink
 		},
 		{
-			u"^url:(.+)$"_q,
-			OpenExternalLink
-		},
-		{
 			u"^copy:(.+)$"_q,
 			CopyPeerId
 		},
@@ -2022,7 +2055,18 @@ QString TryConvertUrlToLocal(QString url) {
 	auto asmeMatch = regex_match(u"^(https?://)?(www\\.)?asme\\.su/(.+)$"_q, url, matchOptions);
 	if (asmeMatch) {
 		const auto query = asmeMatch->capturedView(3);
-		if (const auto phoneMatch = regex_match(u"^\\+([0-9]+)(\\?|$)"_q, query, matchOptions)) {
+		if (const auto contactMatch = regex_match(
+				u"^contact/([^?#]*)(?:\\?([^#]*))?(?:#.*)?$"_q,
+				query,
+				matchOptions)) {
+			const auto token = QUrl::fromPercentEncoding(
+				contactMatch->captured(1).toUtf8());
+			const auto encoded = QString::fromLatin1(
+				QUrl::toPercentEncoding(token, ":"));
+			const auto params = contactMatch->captured(2);
+			return u"as://contact?token="_q + encoded
+				+ (params.isEmpty() ? QString() : '&' + params);
+		} else if (const auto phoneMatch = regex_match(u"^\\+([0-9]+)(\\?|$)"_q, query, matchOptions)) {
 			const auto params = query.mid(phoneMatch->captured(0).size()).toString();
 			return u"as://resolve?phone="_q + phoneMatch->captured(1) + (params.isEmpty() ? QString() : '&' + params);
 		} else if (const auto joinChatMatch = regex_match(u"^(joinchat/|\\+|\\%20)([a-zA-Z0-9\\.\\_\\-]+)(\\?|$)"_q, query, matchOptions)) {
@@ -2196,7 +2240,10 @@ struct InternalLinkCheckResult {
 	if (!urlTrimmed.startsWith(u"as://"_q, Qt::CaseInsensitive)) {
 		return {};
 	}
-	const auto command = base::StringViewMid(urlTrimmed, u"as://"_q.size());
+	const auto command = base::StringViewMid(
+		urlTrimmed,
+		u"as://"_q.size(),
+		8192);
 
 	using namespace qthelp;
 	const auto matchOptions = RegExOption::CaseInsensitive;

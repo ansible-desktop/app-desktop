@@ -1994,8 +1994,8 @@ void History::checkLastMessage() {
 
 void History::addItemsToLists(
 		const std::vector<not_null<HistoryItem*>> &items) {
-	std::deque<not_null<UserData*>> *lastAuthors = nullptr;
-	base::flat_set<not_null<PeerData*>> *markupSenders = nullptr;
+	auto lastAuthors = (std::deque<not_null<UserData*>>*)nullptr;
+	auto markupSenders = (base::flat_set<not_null<PeerData*>>*)nullptr;
 	if (peer->isChat()) {
 		lastAuthors = &peer->asChat()->lastAuthors;
 		markupSenders = &peer->asChat()->markupSenders;
@@ -4636,6 +4636,7 @@ void History::refreshHiddenLinksItems() {
 	for (const auto &id : refresh) {
 		if (const auto item = owner->message(id)) {
 			item->setHasHiddenLinks(false);
+			item->updateDependentServiceText();
 			owner->requestItemViewRefresh(item);
 		}
 	}

@@ -121,7 +121,7 @@ void CheckForSwitchInlineButton(not_null<HistoryItem*> item) {
 		return;
 	}
 	if (const auto user = item->history()->peer->asUser()) {
-		if (!user->isBot() || !user->botInfo->inlineReturnTo.key) {
+		if (!user->isBot() || !user->botInfo->inlineReturnTo().key) {
 			return;
 		}
 		if (const auto markup = item->Get<HistoryMessageReplyMarkup>()) {
@@ -368,6 +368,32 @@ Session::Session(not_null<Main::Session*> session)
 	setupPeerNameViewer();
 	setupUserIsContactViewer();
 
+	session->changes().peerUpdates(
+		PeerUpdate::Flag::VerifyInfo
+	) | rpl::on_next([=](const PeerUpdate &update) {
+		auto affected = std::vector<base::weak_ptr<ViewElement>>();
+		for (const auto &[item, views] : _views) {
+			for (const auto &view : views) {
+				if (view->displayFrom() == update.peer
+					&& view->displayFromName()
+					&& view->hasBubble()) {
+					view->setPendingResize();
+					affected.push_back(base::make_weak(view.get()));
+				}
+			}
+		}
+		for (const auto &weak : affected) {
+			if (const auto view = weak.get()) {
+				requestViewRepaint(view);
+				if (view->pendingResize()) {
+					requestViewResize(view);
+				} else {
+					notifyViewLayoutChange(view);
+				}
+			}
+		}
+	}, _lifetime);
+
 	_chatsList.unreadStateChanges(
 	) | rpl::on_next([=] {
 		notifyUnreadBadgeChanged();
@@ -557,6 +583,9 @@ void Session::clear() {
 	_contactsList.clear();
 	for (const auto &[id, folder] : _folders) {
 		folder->clearChatsList();
+
+		// Folders outlive clear(), don't leave them with dangling rows.
+		removeChatListEntry(folder.get());
 	}
 	_chatsList.clear();
 	_chatsFilters->clear();
@@ -647,7 +676,7 @@ not_null<UserData*> Session::processUser(const MTPUser &data) {
 		return data.vid().v;
 	}));
 	auto minimal = false;
-	const MTPUserStatus *status = nullptr;
+	auto status = (const MTPUserStatus*)nullptr;
 	const MTPUserStatus emptyStatus = MTP_userStatusEmpty();
 
 	using UpdateFlag = PeerUpdate::Flag;
@@ -2147,9 +2176,6 @@ bool Session::queryDocumentVisibility(
 }
 
 void Session::itemVisibilitiesUpdated() {
-	// This could be rewritten in a more generic form, like:
-	// rpl::producer<> itemVisibilitiesUpdates()
-	// if someone else requires those methods, using fast for now.
 	Core::App().downloadManager().itemVisibilitiesUpdated(_session);
 	_itemVisibilitiesUpdates.fire({});
 }
@@ -3902,7 +3928,9 @@ void Session::photoApplyFields(
 			sizes,
 			std::greater<>(),
 			level);
-		return (level(*result) == kInvalidIndex) ? sizes.end() : result;
+		return (result == sizes.end() || level(*result) == kInvalidIndex)
+			? sizes.end()
+			: result;
 	};
 	const auto image = [&](const QByteArray &levels) {
 		const auto i = find(levels);
@@ -3918,7 +3946,9 @@ void Session::photoApplyFields(
 		}
 		const auto area = [](const MTPVideoSize &size) {
 			return size.match([](const MTPDvideoSize &data) {
-				return data.vsize().v ? (data.vw().v * data.vh().v) : 0;
+				return (data.vsize().v > 0)
+					? (data.vw().v * data.vh().v)
+					: 0;
 			}, [](const MTPDvideoSizeEmojiMarkup &) {
 				return 0;
 			}, [](const MTPDvideoSizeStickerMarkup &) {
@@ -4253,22 +4283,6 @@ void Session::documentApplyFields(
 	if (dc != 0 && access != 0) {
 		document->setRemoteLocation(dc, access, fileReference);
 	}
-}
-
-not_null<DocumentData*> Session::venueIconDocument(const QString &icon) {
-	const auto i = _venueIcons.find(icon);
-	if (i != end(_venueIcons)) {
-		return i->second;
-	}
-	const auto result = documentFromWeb(MTP_webDocumentNoProxy(
-		MTP_string(u"https://ss3.4sqi.net/img/categories_v2/"_q
-			+ icon
-			+ u"_64.png"_q),
-		MTP_int(0),
-		MTP_string("image/png"),
-		MTP_vector<MTPDocumentAttribute>()), {}, {});
-	_venueIcons.emplace(icon, result);
-	return result;
 }
 
 not_null<WebPageData*> Session::webpage(WebPageId id) {
@@ -4913,15 +4927,9 @@ not_null<PollData*> Session::processPoll(const MTPDmessageMediaPoll &data) {
 				media.document = processDocument(*document);
 			}
 		}, [&](const MTPDmessageMediaGeo &data) {
-			data.vgeo().match([&](const MTPDgeoPoint &point) {
-				media.geo = LocationPoint(point);
-			}, [](const MTPDgeoPointEmpty &) {
-			});
+			media.geo = LocationPoint::FromMTP(data.vgeo());
 		}, [&](const MTPDmessageMediaVenue &data) {
-			data.vgeo().match([&](const MTPDgeoPoint &point) {
-				media.geo = LocationPoint(point);
-			}, [](const MTPDgeoPointEmpty &) {
-			});
+			media.geo = LocationPoint::FromMTP(data.vgeo());
 		}, [](const auto &) {
 		});
 	}
@@ -6020,7 +6028,13 @@ auto Session::joinChatWebViewDecision() const
 }
 
 rpl::producer<not_null<PeerData*>> Session::peerDecorationsUpdated() const {
-	return _peerDecorationsUpdated.events();
+	return rpl::merge(
+		_peerDecorationsUpdated.events(),
+		session().changes().peerUpdates(
+			PeerUpdate::Flag::BarSettings
+		) | rpl::map([](const PeerUpdate &update) {
+			return update.peer;
+		}));
 }
 
 void Session::viewTagsChanged(

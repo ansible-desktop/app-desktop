@@ -27,6 +27,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "ui/toast/toast.h"
 #include "ui/emoji_config.h"
 #include "chat_helpers/emoji_sets_manager.h"
+#include "window/window_columns.h"
 #include "window/window_session_controller.h"
 #include "window/themes/window_theme_editor.h"
 #include "ui/boxes/confirm_box.h"
@@ -111,7 +112,8 @@ Controller::Controller(CreateArgs &&args)
 : _id(args.id)
 , _isActiveTimer([=] { updateIsActive(); })
 , _widget(this)
-, _adaptive(std::make_unique<Adaptive>()) {
+, _adaptive(std::make_unique<Adaptive>())
+, _columns(std::make_unique<Columns>(this)) {
 	_widget.init();
 }
 
@@ -162,6 +164,10 @@ void Controller::showAccount(
 	_accountLifetime.destroy();
 	_id.account = account;
 	Core::App().checkWindowId(this);
+
+	if (!prevAccount && Core::App().isWindowInSettings(this)) {
+		_columns->seedFirstWindow();
+	}
 
 	if (!isPrimary()) {
 		_id.account->sessionChanges(
@@ -615,6 +621,10 @@ void Controller::showPasscodeClearFailed(Fn<bool()> retry) {
 
 Window::Adaptive &Controller::adaptive() const {
 	return *_adaptive;
+}
+
+Window::Columns &Controller::columns() const {
+	return *_columns;
 }
 
 void Controller::openInMediaView(Media::View::OpenRequest &&request) {

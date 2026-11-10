@@ -39,6 +39,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/view/history_view_element_overlay.h"
 #include "data/data_poll.h"
 #include "history/view/history_view_top_peers_selector.h"
+#include "history/view/history_view_touch_speed.h"
 #include "history/view/history_view_quick_action.h"
 #include "chat_helpers/message_field.h"
 #include "chat_helpers/stickers_emoji_pack.h"
@@ -734,7 +735,8 @@ ListWidget::ListWidget(
 	}
 
 	_session->data().itemVisibilityQueries(
-	) | rpl::filter([=](const Data::Session::ItemVisibilityQuery &query) {
+	) | rpl::filter([=](
+			const Data::Session::ItemVisibilityQuery &query) {
 		return !query.view || isVisible();
 	}) | rpl::on_next([=](
 			const Data::Session::ItemVisibilityQuery &query) {
@@ -1574,11 +1576,14 @@ void ListWidget::saveScrollState() {
 void ListWidget::restoreScrollState() {
 	if (_items.empty()) {
 		return;
-	} else if (_overrideInitialScroll
-		&& base::take(_overrideInitialScroll)()) {
-		_scrollTopState = ScrollTopState();
-		_scrollInited = true;
-		return;
+	} else if (_overrideInitialScroll) {
+		// an animated jump starts from the old viewport, not its stale offset
+		applyScrollTopState();
+		if (base::take(_overrideInitialScroll)()) {
+			_scrollTopState = ScrollTopState();
+			_scrollInited = true;
+			return;
+		}
 	}
 	if (!_scrollTopState.item) {
 		if (!_bar.element || _bar.hidden || !_bar.focus || _scrollInited) {
@@ -1590,6 +1595,14 @@ void ListWidget::restoreScrollState() {
 			+ st::historyUnreadBarMargin
 			+ _bar.element->displayedDateHeight();
 	}
+	applyScrollTopState();
+	_scrollTopState = ScrollTopState();
+}
+
+void ListWidget::applyScrollTopState() {
+	if (!_scrollTopState.item) {
+		return;
+	}
 	const auto index = findNearestItem(_scrollTopState.item);
 	if (index >= 0) {
 		const auto view = _items[index];
@@ -1598,7 +1611,6 @@ void ListWidget::restoreScrollState() {
 			_delegate->listScrollTo(newVisibleTop);
 		}
 	}
-	_scrollTopState = ScrollTopState();
 }
 
 Element *ListWidget::viewForItem(FullMsgId itemId) const {
@@ -1907,6 +1919,10 @@ bool ListWidget::hasSelectedItems() const {
 	return !_selected.empty();
 }
 
+bool ListWidget::wasSelectedText() const {
+	return _wasSelectedText;
+}
+
 SelectionModeResult ListWidget::inSelectionMode() const {
 	const auto now = hasSelectedItems()
 		|| !_dragSelected.empty()
@@ -2124,8 +2140,12 @@ bool ListWidget::isPressInSelectedText(
 }
 
 void ListWidget::cancelSelection() {
+	const auto hadSelectedText = (_selectedTextItem != nullptr);
 	clearSelected();
 	clearTextSelection();
+	if (hadSelectedText) {
+		_delegate->listTextSelectionUpdated();
+	}
 }
 
 void ListWidget::setChooseReportReason(Data::ReportInput reportInput) {
@@ -2599,6 +2619,8 @@ void ListWidget::checkMoveToOtherViewer() {
 		if (goodIndex >= 0) {
 			preloadAroundMessage(goodIndex);
 		}
+	} else if (preloadBottom) {
+		keepRoomAtTheEnd(preloadIdsLimit);
 	}
 }
 
@@ -3585,7 +3607,9 @@ void ListWidget::paintEvent(QPaintEvent *e) {
 			} else if (item->isUnreadMention()
 				&& !item->isUnreadMedia()) {
 				readContents.insert(item);
-				_highlighter.enqueue({ item });
+				if (markingContentRead) {
+					_highlighter.enqueue({ item });
+				}
 			}
 			if (item->hasUnreadPollVote()) {
 				readContents.insert(item);
@@ -3982,9 +4006,6 @@ void ListWidget::copySelectedText(bool withImageText) {
 		.blocks = getSelectedRichBlocks(),
 		.withImageText = withImageText,
 	});
-	if (hasSelectedItems()) {
-		clearSelected();
-	}
 }
 
 MessageIdsList ListWidget::getSelectedIds() const {
@@ -4093,7 +4114,7 @@ void ListWidget::keyPressEvent(QKeyEvent *e) {
 			const auto elements = accessibleElements();
 			const auto barIndex
 				= accessibilityUnreadBarIndex();
-			if (accessibilityItemAtIndex(
+			if (AccessibilityItemAtIndex(
 					_accessibilityFocusedIndex,
 					elements,
 					barIndex) != _accessibilityFocusedItem) {
@@ -4196,7 +4217,7 @@ void ListWidget::keyPressEvent(QKeyEvent *e) {
 			const auto elements = accessibleElements();
 			const auto barIndex
 				= accessibilityUnreadBarIndex();
-			const auto item = accessibilityItemAtIndex(
+			const auto item = AccessibilityItemAtIndex(
 				newIndex,
 				elements,
 				barIndex);
@@ -5486,6 +5507,7 @@ void ListWidget::mouseActionFinish(
 	_mouseSelectType = TextSelectType::Letters;
 	_mouseTextAnchor = TextState();
 	_selectScroll.cancel();
+	_delegate->listTextSelectionUpdated();
 
 	if (QGuiApplication::clipboard()->supportsSelection()
 		&& _selectedTextItem
@@ -5604,7 +5626,7 @@ void ListWidget::mouseActionUpdate() {
 	}
 
 	TextState dragState;
-	ClickHandlerHost *lnkhost = nullptr;
+	auto lnkhost = (ClickHandlerHost*)nullptr;
 	auto inTextSelection = (_overState.pointState != PointState::Outside)
 		&& (_overState.itemId == _pressState.itemId)
 		&& hasSelectedText();
@@ -5809,15 +5831,8 @@ void ListWidget::mouseActionUpdate() {
 		}
 	}
 
-	// Voice message seek support.
-	if (_pressState.pointState != PointState::Outside
-		&& ClickHandler::getPressed()) {
-		if (const auto item = session().data().message(_pressState.itemId)) {
-			if (const auto view = viewForItem(item)) {
-				auto adjustedPoint = mapPointToItem(point, view);
-				view->updatePressed(adjustedPoint);
-			}
-		}
+	if (view && !ClickHandler::getPressed()) {
+		view->updatePressed(itemPoint);
 	}
 
 	if (_mouseAction == MouseAction::Selecting) {
@@ -5831,7 +5846,9 @@ void ListWidget::mouseActionUpdate() {
 }
 
 style::cursor ListWidget::computeMouseCursor() const {
-	if (ClickHandler::getPressed() || ClickHandler::getActive()) {
+	if (ClickHandler::getPressed()
+		|| (ClickHandler::getActive()
+			&& _mouseCursorState != CursorState::Default)) {
 		return style::cur_pointer;
 	} else if (!hasSelectedItems()
 		&& (_mouseCursorState == CursorState::Text)) {
@@ -6278,6 +6295,7 @@ void ListWidget::viewReplaced(not_null<const Element*> was, Element *now) {
 	if (_overlayHost) {
 		_overlayHost->viewGone(was);
 	}
+	_emojiInteractions->viewRemoved(was);
 	if (_visibleTopItem == was) _visibleTopItem = now;
 	if (_scrollDateLastItem == was) _scrollDateLastItem = now;
 	if (_overElement == was) _overElement = now;
@@ -6565,24 +6583,6 @@ int ListWidget::accessibilityUnreadBarIndex() const {
 	return -1;
 }
 
-HistoryItem *ListWidget::accessibilityItemAtIndex(
-		int index,
-		const std::vector<Element*> &elements,
-		int barIndex) const {
-	// The unread bar row maps to no item: a focused bar is cached as
-	// a null item with a nonnegative index, so it can never be
-	// mistaken for the message it is anchored to when rows shift.
-	if (index < 0 || (barIndex >= 0 && index == barIndex)) {
-		return nullptr;
-	}
-	const auto elementIndex = (barIndex >= 0 && index > barIndex)
-		? (index - 1)
-		: index;
-	return (elementIndex < int(elements.size()))
-		? elements[elementIndex]->data().get()
-		: nullptr;
-}
-
 auto ListWidget::computeActiveColumns(int row) const
 -> const std::vector<HistoryView::MessageSubItem> & {
 	const auto barIndex = accessibilityUnreadBarIndex();
@@ -6693,7 +6693,7 @@ void ListWidget::extendAccessibilitySelection(
 	const auto elements = accessibleElements();
 	const auto barIndex = accessibilityUnreadBarIndex();
 	const auto itemAt = [&](int index) {
-		return accessibilityItemAtIndex(index, elements, barIndex);
+		return AccessibilityItemAtIndex(index, elements, barIndex);
 	};
 	if (oldIndex < 0) {
 		_accessibilitySelectionAnchor = itemAt(newIndex);
@@ -6740,7 +6740,7 @@ void ListWidget::extendAccessibilitySelection(
 
 void ListWidget::playPauseFocusedMedia() {
 	const auto elements = accessibleElements();
-	const auto item = accessibilityItemAtIndex(
+	const auto item = AccessibilityItemAtIndex(
 		_accessibilityFocusedIndex,
 		elements,
 		accessibilityUnreadBarIndex());
@@ -7000,7 +7000,7 @@ void ListWidget::announceAccessibilityFocusedChild() {
 		? (barIndex + 1)
 		: accessibilityNewestIndex(count);
 	const auto elements = accessibleElements();
-	const auto item = accessibilityItemAtIndex(
+	const auto item = AccessibilityItemAtIndex(
 		index,
 		elements,
 		barIndex);
@@ -7107,7 +7107,7 @@ void ListWidget::applyAccessibilityFocus(
 		bool announceAlways) {
 	const auto elements = accessibleElements();
 	const auto barIndex = accessibilityUnreadBarIndex();
-	const auto item = accessibilityItemAtIndex(index, elements, barIndex);
+	const auto item = AccessibilityItemAtIndex(index, elements, barIndex);
 	const auto changed = (_accessibilityFocusedIndex != index)
 		|| (_accessibilityFocusedItem != item);
 	_accessibilitySelectionAnchor = nullptr;

@@ -19,7 +19,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "boxes/peers/replace_boost_box.h" // BoostsForGift.
 #include "boxes/premium_preview_box.h" // ShowPremiumPreviewBox.
 #include "boxes/star_gift_box.h" // ShowDiamondGiftBox.
-#include "boxes/star_gift_preview_box.h" // StarGiftPreviewBox.
+#include "boxes/star_gift_preview_box.h" // DiamondGiftPreviewBox.
 #include "core/ui_integration.h"
 #include "data/components/gift_auctions.h"
 #include "data/data_boosts.h"
@@ -1299,9 +1299,7 @@ void GiveawayInfoBox(
 					tr::bold(channel->name()),
 					tr::rich));
 		} else if (info.tooEarlyDate) {
-			const auto channel = controller->session().data().channel(
-				info.adminChannelId);
-			text.append("\n\n").append((channel->isMegagroup()
+			text.append("\n\n").append((group
 				? tr::lng_prizes_how_no_joined_group
 				: tr::lng_prizes_how_no_joined)(
 					tr::now,

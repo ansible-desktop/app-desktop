@@ -328,6 +328,9 @@ private:
 	void jumpToMessageInLog(
 		not_null<HistoryItem*> item,
 		MessageHighlightId highlight);
+	[[nodiscard]] int jumpTarget(
+		not_null<Element*> view,
+		const MessageHighlightId &highlight) const;
 	OwnedItem createGroupSummaryItem(
 		const DeleteGroup &group,
 		bool expanded);

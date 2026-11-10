@@ -89,9 +89,11 @@ Data::SendError SendRichMessage::getErrorOnSend(
 }
 
 QString SendRichMessage::getLayoutDescription(const Result *owner) const {
-	return _summary.text.isEmpty()
-		? SendData::getLayoutDescription(owner)
-		: _summary.text;
+	auto result = SendData::getLayoutDescription(owner);
+	if (result.isEmpty()) {
+		return _summary.text;
+	}
+	return result;
 }
 
 SendDataCommon::SentMessageFields SendGeo::getSentMessageFields() const {
@@ -102,17 +104,17 @@ SendDataCommon::SentMessageFields SendGeo::getSentMessageFields() const {
 				| (_proximityNotificationRadius
 					? Flag::f_proximity_notification_radius
 					: Flag(0))),
-			_location.toMTP(),
+			_location->toMTP(),
 			MTP_int(_heading.value_or(0)),
 			MTP_int(*_period),
 			MTP_int(_proximityNotificationRadius.value_or(0))) };
 	}
-	return { .media = MTP_messageMediaGeo(_location.toMTP()) };
+	return { .media = MTP_messageMediaGeo(_location->toMTP()) };
 }
 
 SendDataCommon::SentMessageFields SendVenue::getSentMessageFields() const {
 	return { .media = MTP_messageMediaVenue(
-		_location.toMTP(),
+		_location->toMTP(),
 		MTP_string(_title),
 		MTP_string(_address),
 		MTP_string(_provider),
