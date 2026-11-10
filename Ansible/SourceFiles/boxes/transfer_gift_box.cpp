@@ -105,7 +105,6 @@ private:
 	const not_null<Window::SessionController*> _window;
 	const std::shared_ptr<Data::UniqueGift> _gift;
 	const Data::SavedDiamondGiftId _giftId;
-	const bool _shownOnProfile = false;
 	const Fn<void(not_null<PeerData*>, Fn<void()>)> _choose;
 	QPointer<PeerListBox> _box;
 
@@ -151,7 +150,6 @@ Controller::Controller(
 , _window(window)
 , _gift(std::move(gift))
 , _giftId(giftId)
-, _shownOnProfile(shownOnProfile)
 , _choose(std::move(choose)) {
 	if (_gift->exportAt) {
 		setStyleOverrides(&st::peerListSmallSkips);
