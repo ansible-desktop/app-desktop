@@ -19,6 +19,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/admin_log/history_admin_log_filter.h"
 #include "history/view/history_view_context_menu.h"
 #include "history/view/history_view_message.h"
+#include "history/view/history_view_touch_speed.h"
 #include "history/view/history_view_reply.h"
 #include "history/view/history_view_service_message.h"
 #include "history/view/history_view_cursor_state.h"

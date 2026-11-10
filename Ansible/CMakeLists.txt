@@ -2130,41 +2130,6 @@ PRIVATE
     test/test_web_cache.h
     test/test_wheel.cpp
     test/test_wheel.h
-    test/test_widget_attacks.cpp
-    test/test_widget_attacks.h
-    test/test_widget_bot.cpp
-    test/test_widget_bot.h
-    test/test_widget_conformance.cpp
-    test/test_widget_conformance.h
-    test/test_widget_conformance_actions.cpp
-    test/test_widget_conformance_actions.h
-    test/test_widget_conformance_bridge.cpp
-    test/test_widget_conformance_bridge.h
-    test/test_widget_conformance_context.cpp
-    test/test_widget_conformance_context.h
-    test/test_widget_conformance_hosts.cpp
-    test/test_widget_conformance_hosts.h
-    test/test_widget_conformance_input.cpp
-    test/test_widget_conformance_input.h
-    test/test_widget_conformance_paint_policy.cpp
-    test/test_widget_conformance_paint_policy.h
-    test/test_widget_conformance_pictures.cpp
-    test/test_widget_conformance_pictures.h
-    test/test_widget_conformance_state.h
-    test/test_widget_conformance_stop.cpp
-    test/test_widget_conformance_stop.h
-    test/test_widget_fixture.cpp
-    test/test_widget_fixture.h
-    test/test_widget_host.cpp
-    test/test_widget_host.h
-    test/test_widget_ops.cpp
-    test/test_widget_ops.h
-    test/test_widget_paint_policy.cpp
-    test/test_widget_paint_policy.h
-    test/test_widget_stress.cpp
-    test/test_widget_stress.h
-    test/test_widget_stress_internal.h
-    test/test_widget_stress_live.cpp
     test/test_widgets.cpp
     test/test_widgets.h
     test/test_window_exposure.cpp
