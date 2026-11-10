@@ -1823,7 +1823,9 @@ struct Poll::Options : public Poll::Part {
 	void checkSendingAnimation() const;
 	void unloadHeavyPart() override;
 
-	[[nodiscard]] int countAnswerContentWidth(int innerWidth) const;
+	[[nodiscard]] int countAnswerContentWidth(
+		const Answer &answer,
+		int innerWidth) const;
 	[[nodiscard]] int countVotesExtraHeight(
 		const Answer &answer,
 		int textWidth) const;

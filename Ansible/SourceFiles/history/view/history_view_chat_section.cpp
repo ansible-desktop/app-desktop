@@ -7,6 +7,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 */
 #include "history/view/history_view_chat_section.h"
 
+#include "base/event_filter.h"
+
 #include "history/admin_log/history_admin_log_section.h"
 #include "history/view/controls/history_view_top_controls.h"
 #include "history/view/controls/history_view_bottom_controls.h"
@@ -3651,6 +3653,18 @@ void ChatWidget::refreshSuggestFromDraft() {
 	}
 }
 
+bool ChatWidget::monoforumReplyMissing() const {
+	const auto channel = _peer->asChannel();
+	if (mode() != Mode::History
+		|| !channel
+		|| !channel->amMonoforumAdmin()
+		|| channel->monoforumDisabled()) {
+		return false;
+	}
+	const auto reply = _composeControls->replyingToMessage();
+	return !reply.messageId || (reply.messageId.peer != _peer->id);
+}
+
 ChatWidget::Mode ChatWidget::mode() const {
 	if (_sublist) {
 		return Mode::Sublist;
@@ -5232,6 +5246,14 @@ void ChatWidget::listSelectionChanged(SelectedItems &&items) {
 		_composeSearch->hideAnimated();
 	}
 	if (!_inner->hasFocus() || !Ui::ScreenReaderModeActive()) {
+		doSetInnerFocus();
+	}
+}
+
+void ChatWidget::listTextSelectionUpdated() {
+	if (controller()->isLayerShown() || Core::App().passcodeLocked()) {
+		return;
+	} else if (!_inner->hasFocus() || !Ui::ScreenReaderModeActive()) {
 		doSetInnerFocus();
 	}
 }

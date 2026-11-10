@@ -2694,7 +2694,7 @@ void HistoryInner::mouseActionFinish(
 	_mouseSelectType = TextSelectType::Letters;
 	_mouseTextAnchor = TextState();
 	_selectScroll.cancel();
-	_widget->updateTopBarSelection();
+	_widget->updateTopBarSelection(keepFocus);
 
 	if (QGuiApplication::clipboard()->supportsSelection()
 		&& hasSelectedText()

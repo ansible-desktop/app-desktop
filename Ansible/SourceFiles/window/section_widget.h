@@ -210,6 +210,9 @@ public:
 		return false;
 	}
 
+	virtual void insertTextAtCursor(const QString &text) {
+	}
+
 	virtual bool notify_switchInlineBotButtonReceived(
 			const QString &query,
 			UserData *samePeerBot,

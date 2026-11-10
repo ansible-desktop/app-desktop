@@ -2238,6 +2238,21 @@ bool HistoryItem::hideLinks() const {
 	return !out() && history()->peer->hideLinks();
 }
 
+bool HistoryItem::hideInlineKeyboard() const {
+	using Flag = ReplyMarkupFlag;
+	const auto markup = inlineReplyMarkup();
+	// Only the client sets these flags, for its own Accept / Decline rows.
+	const auto clientControls = Flag::SuggestionAccept
+		| Flag::SuggestionDecline;
+	if (!markup || (markup->data.flags & clientControls) || !hideLinks()) {
+		return false;
+	}
+	if (const auto user = history()->peer->asUser()) {
+		return !user->isBot() && !user->isContact();
+	}
+	return true;
+}
+
 bool HistoryItem::isHistoryEntry() const {
 	return (_flags & MessageFlag::HistoryEntry);
 }

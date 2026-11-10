@@ -22,6 +22,7 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/view/history_view_reply.h"
 #include "history/view/history_view_service_message.h"
 #include "history/view/history_view_cursor_state.h"
+#include "history/view/history_view_touch_speed.h"
 #include "chat_helpers/message_field.h"
 #include "boxes/sticker_set_box.h"
 #include "boxes/translate_box.h"
