@@ -68,17 +68,21 @@ def main():
                    choices=sorted(PACK), help="можно указывать несколько раз")
     p.add_argument("--channel", default="stable",
                    choices=sorted(SUFFIX))
+    p.add_argument("--base", help="Existing release manifest; preserve other platforms and channels")
     a = p.parse_args()
 
     version = app_version(a.version)
     out = {}
+    if a.base:
+        with open(a.base, encoding="utf-8") as source:
+            out = json.load(source)
+        if not isinstance(out, dict) or any(not isinstance(value, dict) for value in out.values()):
+            p.error("base manifest must contain platform maps")
     for plat in a.platform:
-        out[plat] = {
-            a.channel: {
-                "released": version,
-                "link": "/%s/ansible-update-%s-%s-%d%s" % (
+        out.setdefault(plat, {})[a.channel] = {
+            "released": version,
+            "link": "/%s/ansible-update-%s-%s-%d%s" % (
                 plat, PACK[plat][0], PACK[plat][1], version, SUFFIX[a.channel]),
-            }
         }
     json.dump(out, sys.stdout, ensure_ascii=False, indent=1, sort_keys=True)
     sys.stdout.write("\n")
