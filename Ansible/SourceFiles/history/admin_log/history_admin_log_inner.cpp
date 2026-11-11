@@ -1034,24 +1034,6 @@ void InnerWidget::jumpToMessageInLog(
 		anim::easeOutCubic);
 }
 
-int InnerWidget::jumpTarget(
-		not_null<Element*> view,
-		const MessageHighlightId &highlight) const {
-	const auto top = itemTop(view);
-	const auto height = view->height();
-	const auto viewport = _visibleBottom - _visibleTop;
-	const auto range = (highlight.richQuote && (height > viewport))
-		? HistoryView::FindHighlightYRange(
-			view,
-			_highlighter.state(view->data()))
-		: HistoryView::HighlightYRange();
-	return std::clamp(
-		(range
-			? HistoryView::AdjustScrollForRange(top, viewport, range)
-			: (top - std::max(0, (viewport - height) / 2))),
-		0,
-		std::max(0, this->height() - viewport));
-}
 
 void InnerWidget::expandGroupContaining(not_null<HistoryItem*> item) {
 	auto index = -1;

@@ -298,7 +298,7 @@ void SetupMenuBots(
 		wrap->clear();
 		for (const auto &bot : bots->attachBots()) {
 			const auto user = bot.user;
-			if (!bot.inMainMenu || !bot.media || user->isOldWalletBot()) {
+			if (!bot.inMainMenu || !bot.media) {
 				continue;
 			} else if (const auto media = bot.media; !media->loaded()) {
 				if (!*iconLoadLifetime) {

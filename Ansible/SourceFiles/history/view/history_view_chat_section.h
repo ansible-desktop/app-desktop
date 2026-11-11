@@ -274,7 +274,6 @@ private:
 		Replies,
 		History,
 	};
-	[[nodiscard]] bool monoforumReplyMissing() const;
 	[[nodiscard]] Mode mode() const;
 	[[nodiscard]] bool unreadMessagesBelowBottom() const;
 

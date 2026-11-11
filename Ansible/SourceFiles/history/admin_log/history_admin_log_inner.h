@@ -321,9 +321,6 @@ private:
 		DisplayPointerScope pointerScope) const;
 	void toggleDeleteGroup(uint64 groupEventId);
 	void expandGroupContaining(not_null<HistoryItem*> item);
-	[[nodiscard]] int jumpTarget(
-		not_null<Element*> view,
-		const MessageHighlightId &highlight) const;
 
 	void jumpToMessageInLog(
 		not_null<HistoryItem*> item,

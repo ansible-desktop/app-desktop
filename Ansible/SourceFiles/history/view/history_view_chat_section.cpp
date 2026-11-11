@@ -3716,18 +3716,6 @@ void ChatWidget::refreshSuggestFromDraft() {
 	}
 }
 
-bool ChatWidget::monoforumReplyMissing() const {
-	const auto channel = _peer->asChannel();
-	if (mode() != Mode::History
-		|| !channel
-		|| !channel->amMonoforumAdmin()
-		|| channel->monoforumDisabled()) {
-		return false;
-	}
-	const auto reply = _composeControls->replyingToMessage();
-	return !reply.messageId || (reply.messageId.peer != _peer->id);
-}
-
 ChatWidget::Mode ChatWidget::mode() const {
 	if (_sublist) {
 		return Mode::Sublist;

@@ -601,7 +601,7 @@ void RequestUrl(
 				url,
 				domain,
 				[=, weak = base::make_weak(box)](QString code) {
-					return (weak && !state->lost)
+					return weak
 						? MakeMatchCodeImage(resolveSession(), code)
 						: nullptr;
 				},
