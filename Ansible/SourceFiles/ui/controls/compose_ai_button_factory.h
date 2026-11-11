@@ -27,7 +27,7 @@ namespace Ui {
 
 struct PreparedList;
 
-extern const char kOptionHideAiButton[];
+[[nodiscard]] bool BuiltInAiEnabled();
 
 [[nodiscard]] bool HasEnoughLinesForAi(
 	not_null<Main::Session*> session,

@@ -113,7 +113,6 @@ struct Labeled {
 		{ C::SendSilentMessage, tr::lng_shortcuts_silent_send() },
 		{ C::ScheduleMessage, tr::lng_shortcuts_schedule() },
 		separator,
-		{ C::ComposeAiApplyInPlace, tr::lng_shortcuts_ai_compose_apply() },
 		{ C::ShowRichEditor, tr::lng_shortcuts_rich_editor() },
 		{ C::ToggleWebPagePreview, tr::lng_shortcuts_toggle_link_preview() },
 		{ C::StashMessage, tr::lng_shortcuts_stash_message() },
@@ -851,13 +850,8 @@ Type ShortcutsId() {
 	return Shortcuts::Id();
 }
 
-QString ShortcutsHighlightId(::Shortcuts::Command command) {
-	switch (command) {
-	case ::Shortcuts::Command::ComposeAiApplyInPlace:
-		return u"shortcuts/ai_compose_apply"_q;
-	default:
-		return {};
-	}
+QString ShortcutsHighlightId(::Shortcuts::Command) {
+	return {};
 }
 
 namespace Builder {

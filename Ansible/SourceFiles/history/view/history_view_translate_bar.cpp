@@ -8,7 +8,6 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "history/view/history_view_translate_bar.h"
 
 #include "boxes/translate_box.h"
-#include "ui/boxes/about_cocoon_box.h"
 #include "chat_helpers/stickers_lottie.h"
 #include "core/application.h"
 #include "core/core_settings.h"
@@ -484,36 +483,6 @@ void TranslateBar::showMenu(base::unique_qptr<Ui::PopupMenu> menu) {
 		tr::lng_translate_menu_hide(tr::now),
 		hideBar,
 		&st::menuIconCancel);
-	_menu->addSeparator();
-
-	const auto cocoon = ChatHelpers::GenerateLocalAssSticker(
-		&_history->session(),
-		u"cocoon"_q,
-		true);
-	auto item = base::make_unique_q<Ui::Menu::MultilineAction>(
-		_menu->menu(),
-		st::defaultMenu,
-		st::historyTranslateCocoonLabel,
-		QPoint(
-			st::defaultMenu.itemPadding.left(),
-			st::defaultMenu.itemPadding.top()),
-		tr::lng_translate_cocoon_menu(
-			tr::now,
-			lt_emoji,
-			Data::SingleCustomEmoji(cocoon),
-			lt_link,
-			tr::link(tr::lng_translate_cocoon_link(tr::now, tr::bold)),
-			tr::rich),
-		Core::TextContext({
-			.session = &_history->session(),
-			.customEmojiLoopLimit = -1,
-		}));
-	item->clicks(
-	) | rpl::on_next([controller = _controller] {
-		controller->show(Box(Ui::AboutCocoonBox));
-	}, item->lifetime());
-	_menu->addAction(std::move(item));
-
 	_menu->popup(_wrap.mapToGlobal(
 		QPoint(_wrap.width(), 0) + st::historyTranslateMenuPosition));
 }

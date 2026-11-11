@@ -237,57 +237,7 @@ void Transcribes::load(not_null<HistoryItem*> item) {
 }
 
 void Transcribes::summarize(not_null<HistoryItem*> item) {
-	if (!item->isHistoryEntry() || item->isLocal()) {
-		return;
-	}
-
-	const auto id = item->fullId();
-	const auto translatedTo = item->history()->translatedTo();
-	const auto langCode = translatedTo
-		? translatedTo.twoLetterCode()
-		: QString();
-	const auto requestId = _api.request(MTPmessages_SummarizeText(
-		langCode.isEmpty()
-			? MTP_flags(0)
-			: MTP_flags(MTPmessages_summarizeText::Flag::f_to_lang),
-		item->history()->peer->input(),
-		MTP_int(item->id),
-		langCode.isEmpty() ? MTPstring() : MTP_string(langCode),
-		MTPstring() // tone
-	)).done([=](const MTPTextWithEntities &result) {
-		const auto &data = result.data();
-		auto &entry = _summaries[id];
-		entry.requestId = 0;
-		entry.loading = false;
-		entry.premiumRequired = false;
-		entry.languageId = translatedTo;
-		entry.result = TextWithEntities(
-			qs(data.vtext()),
-			Api::EntitiesFromMTP(_session, data.ventities().v));
-		if (const auto item = _session->data().message(id)) {
-			_session->data().requestItemTextRefresh(item);
-			_session->data().requestItemShowHighlight(item);
-		}
-	}).fail([=](const MTP::Error &error) {
-		auto &entry = _summaries[id];
-		if (error.type() == u"SUMMARY_FLOOD_PREMIUM"_q) {
-			entry.premiumRequired = true;
-		}
-		entry.requestId = 0;
-		entry.shown = false;
-		entry.loading = false;
-		if (const auto item = _session->data().message(id)) {
-			_session->data().requestItemTextRefresh(item);
-		}
-	}).send();
-
-	auto &entry = _summaries.emplace(id).first->second;
-	entry.requestId = requestId;
-	entry.shown = true;
-	entry.loading = true;
-
-	item->setHasSummaryEntry();
-	_session->data().requestItemResize(item);
+	// Voice transcription is independent of retired AI text summaries.
 }
 
 void Transcribes::checkSummaryToTranslate(FullMsgId id) {

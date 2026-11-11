@@ -13,48 +13,21 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 #include "main/main_session.h"
 
 namespace Data {
-namespace {
-
-constexpr auto kRefreshInterval = 3600 * crl::time(1000);
-
-} // namespace
 
 AiComposeTones::AiComposeTones(not_null<Main::Session*> session)
 : _session(session)
 , _refreshTimer([=] { refresh(); }) {
-	refresh();
-	_refreshTimer.callEach(kRefreshInterval);
+	// No background catalog requests for retired AI tools.
 }
 
 void AiComposeTones::refresh() {
-	refreshWithHash(_hash);
+	_list.clear();
+	_hash = 0;
 }
 
 void AiComposeTones::refreshWithHash(uint64 hash) {
-	if (_refreshRequestId) {
-		if (hash == 0) {
-			_pendingRefresh = PendingRefresh::Full;
-		} else if (_pendingRefresh == PendingRefresh::None) {
-			_pendingRefresh = PendingRefresh::Incremental;
-		}
-		return;
-	}
-	_refreshRequestId = _session->api().request(MTPaicompose_GetTones(
-		MTP_long(hash)
-	)).done([=](const MTPaicompose_Tones &result) {
-		_refreshRequestId = 0;
-		result.match([&](const MTPDaicompose_tones &data) {
-			_session->data().processUsers(data.vusers());
-			_hash = data.vhash().v;
-			parseTones(data.vtones().v);
-			_updates.fire({});
-		}, [](const MTPDaicompose_tonesNotModified &) {
-		});
-		finishRefresh();
-	}).fail([=] {
-		_refreshRequestId = 0;
-		finishRefresh();
-	}).send();
+	_list.clear();
+	_hash = 0;
 }
 
 void AiComposeTones::parseTones(const QVector<MTPAiComposeTone> &list) {
@@ -108,30 +81,11 @@ void AiComposeTones::create(
 		bool displayAuthor,
 		Fn<void(AiComposeTone)> done,
 		Fn<void(const MTP::Error &)> fail) {
-	using Flag = MTPaicompose_CreateTone::Flag;
-	auto flags = MTPaicompose_CreateTone::Flags(0);
-	if (displayAuthor) {
-		flags |= Flag::f_display_author;
+	if (fail) {
+		crl::on_main(_session, [fail = std::move(fail)] {
+			fail(MTP::Error::Local("AI_DISABLED", "Built-in AI is disabled."));
+		});
 	}
-	_session->api().request(MTPaicompose_CreateTone(
-		MTP_flags(flags),
-		MTP_long(emojiId),
-		MTP_string(title),
-		MTP_string(prompt)
-	)).done([=](const MTPAiComposeTone &result) {
-		auto parsed = parseTone(result);
-		promoteCustomTone(parsed);
-		_hash = 0;
-		_updates.fire({});
-		if (done) {
-			done(parsed);
-		}
-		refresh();
-	}).fail([=](const MTP::Error &error) {
-		if (fail) {
-			fail(error);
-		}
-	}).send();
 }
 
 void AiComposeTones::update(
@@ -142,43 +96,11 @@ void AiComposeTones::update(
 		std::optional<bool> displayAuthor,
 		Fn<void(AiComposeTone)> done,
 		Fn<void(const MTP::Error &)> fail) {
-	using Flag = MTPaicompose_UpdateTone::Flag;
-	auto flags = MTPaicompose_UpdateTone::Flags(0);
-	if (displayAuthor) {
-		flags |= Flag::f_display_author;
+	if (fail) {
+		crl::on_main(_session, [fail = std::move(fail)] {
+			fail(MTP::Error::Local("AI_DISABLED", "Built-in AI is disabled."));
+		});
 	}
-	if (emojiId) {
-		flags |= Flag::f_emoji_id;
-	}
-	if (title) {
-		flags |= Flag::f_title;
-	}
-	if (prompt) {
-		flags |= Flag::f_prompt;
-	}
-	_session->api().request(MTPaicompose_UpdateTone(
-		MTP_flags(flags),
-		toneToMTP(tone),
-		displayAuthor
-			? (*displayAuthor ? MTP_boolTrue() : MTP_boolFalse())
-			: MTPBool(),
-		MTP_long(emojiId.value_or(0)),
-		MTP_string(title.value_or(QString())),
-		MTP_string(prompt.value_or(QString()))
-	)).done([=](const MTPAiComposeTone &result) {
-		auto parsed = parseTone(result);
-		promoteCustomTone(parsed);
-		_hash = 0;
-		_updates.fire({});
-		if (done) {
-			done(parsed);
-		}
-		refresh();
-	}).fail([=](const MTP::Error &error) {
-		if (fail) {
-			fail(error);
-		}
-	}).send();
 }
 
 void AiComposeTones::save(
@@ -186,81 +108,29 @@ void AiComposeTones::save(
 		bool unsave,
 		Fn<void()> done,
 		Fn<void(const MTP::Error &)> fail) {
-	_session->api().request(MTPaicompose_SaveTone(
-		toneToMTP(tone),
-		unsave ? MTP_boolTrue() : MTP_boolFalse()
-	)).done([=] {
-		if (unsave) {
-			removeCustomTone(tone.id);
-			forgetRecentCustomTone(tone.id);
-		} else {
-			promoteCustomTone(tone);
-		}
-		_hash = 0;
-		_updates.fire({});
-		if (done) {
-			done();
-		}
-		refresh();
-	}).fail([=](const MTP::Error &error) {
-		if (fail) {
-			fail(error);
-		}
-	}).send();
+	if (fail) {
+		crl::on_main(_session, [fail = std::move(fail)] {
+			fail(MTP::Error::Local("AI_DISABLED", "Built-in AI is disabled."));
+		});
+	}
 }
 
 void AiComposeTones::remove(
 		const AiComposeTone &tone,
 		Fn<void()> done) {
-	const auto toneCopy = tone;
-	_session->api().request(MTPaicompose_DeleteTone(
-		toneToMTP(tone)
-	)).done([=] {
-		if (!toneCopy.isDefault) {
-			removeCustomTone(toneCopy.id);
-			forgetRecentCustomTone(toneCopy.id);
-		}
-		_hash = 0;
-		_updates.fire({});
-		if (done) {
-			done();
-		}
-		refresh();
-	}).fail([=] {
-	}).send();
+	_list.clear();
+	_hash = 0;
 }
 
 void AiComposeTones::resolve(
 		const QString &slug,
 		Fn<void(AiComposeTone)> done,
 		Fn<void(const MTP::Error &)> fail) {
-	_session->api().request(MTPaicompose_GetTone(
-		MTP_inputAiComposeToneSlug(MTP_string(slug))
-	)).done([=](const MTPaicompose_Tones &result) {
-		result.match([&](const MTPDaicompose_tones &data) {
-			_session->data().processUsers(data.vusers());
-			const auto &tones = data.vtones().v;
-			if (!tones.isEmpty()) {
-				if (done) {
-					done(parseTone(tones.front()));
-				}
-			} else if (fail) {
-				fail(MTP::Error::Local(
-					"TONE_NOT_FOUND",
-					"Tone not found."));
-			}
-		}, [&](const MTPDaicompose_tonesNotModified &) {
-			if (fail) {
-				fail(MTP::Error::Local(
-					"TONE_NOT_MODIFIED",
-					"Tone not modified."));
-			}
+	if (fail) {
+		crl::on_main(_session, [fail = std::move(fail)] {
+			fail(MTP::Error::Local("AI_DISABLED", "Built-in AI is disabled."));
 		});
-	}).fail([=](const MTP::Error &error) {
-		if (fail) {
-			fail(error);
-		}
-	}).send();
+	}
 }
 
 void AiComposeTones::getToneExample(
@@ -268,27 +138,16 @@ void AiComposeTones::getToneExample(
 		int num,
 		Fn<void(AiComposeToneExample)> done,
 		Fn<void(const MTP::Error &)> fail) {
-	_session->api().request(MTPaicompose_GetToneExample(
-		toneToMTP(tone),
-		MTP_int(num)
-	)).done([=](const MTPAiComposeToneExample &result) {
-		result.match([&](const MTPDaiComposeToneExample &data) {
-			if (done) {
-				done(AiComposeToneExample{
-					.from = Api::ParseTextWithEntities(_session, data.vfrom()),
-					.to = Api::ParseTextWithEntities(_session, data.vto()),
-				});
-			}
+	if (fail) {
+		crl::on_main(_session, [fail = std::move(fail)] {
+			fail(MTP::Error::Local("AI_DISABLED", "Built-in AI is disabled."));
 		});
-	}).fail([=](const MTP::Error &error) {
-		if (fail) {
-			fail(error);
-		}
-	}).send();
+	}
 }
 
 void AiComposeTones::applyUpdate() {
-	refresh();
+	_list.clear();
+	_hash = 0;
 }
 
 void AiComposeTones::finishRefresh() {

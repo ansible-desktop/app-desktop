@@ -5593,46 +5593,7 @@ void HistoryWidget::setupSendMenu(
 }
 
 void HistoryWidget::showAiComposeBox() {
-	const auto text = prepareTextForEditMsg();
-	if (text.text.isEmpty()) {
-		return;
-	}
-	auto send = Fn<void(TextWithEntities &&, Api::SendOptions, Fn<void()>)>(
-		nullptr);
-	auto setupMenu = Fn<void(
-		not_null<Ui::RpWidget*>,
-		Fn<void(Api::SendOptions)>)>(nullptr);
-	if (_list && canSendAiComposeDirect()) {
-		send = crl::guard(_list, [=](
-				TextWithEntities result,
-				Api::SendOptions options,
-				Fn<void()> done) {
-			sendWithTextOverride(std::move(result), options, std::move(done));
-		});
-		setupMenu = crl::guard(_list, [=](
-				not_null<Ui::RpWidget*> button,
-				Fn<void(Api::SendOptions)> sendCallback) {
-			setupSendMenu(
-				button,
-				SendMenu::DefaultCallback(
-					controller()->uiShow(),
-					sendCallback));
-		});
-	}
-	HistoryView::Controls::ShowComposeAiBox(controller()->uiShow(), {
-		.session = &session(),
-		.text = text,
-		.chatStyle = _fieldChatStyle,
-		.apply = crl::guard(this, [=](const TextWithEntities &result) {
-			const auto action = Ui::InputField::HistoryAction::NewEntry;
-			setFieldText({
-				result.text,
-				TextUtilities::ConvertEntitiesToTextTags(result.entities),
-			}, TextUpdateEvent::SaveDraft, action);
-		}),
-		.send = std::move(send),
-		.setupMenu = std::move(setupMenu),
-	});
+	// Built-in AI has no client entry point.
 }
 
 void HistoryWidget::triggerAiApplyInPlace() {

@@ -7,6 +7,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 */
 #include "boxes/compose_ai_box.h"
 
+#include "ui/controls/compose_ai_button_factory.h"
+
 #include "api/api_compose_with_ai.h"
 #include "apiwrap.h"
 #include "boxes/create_ai_tone_box.h"
@@ -2609,6 +2611,9 @@ void ComposeAiBox(not_null<Ui::GenericBox*> box, ComposeAiBoxArgs &&args) {
 void ShowComposeAiBox(
 		std::shared_ptr<Ui::Show> show,
 		ComposeAiBoxArgs &&args) {
+	if (!Ui::BuiltInAiEnabled()) {
+		return;
+	}
 	show->show(Box(ComposeAiBox, std::move(args)));
 }
 

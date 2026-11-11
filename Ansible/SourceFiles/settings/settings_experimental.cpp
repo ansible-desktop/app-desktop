@@ -401,7 +401,6 @@ void SetupExperimental(
 				Ui::kOptionUseSmallMsgBubbleRadius,
 				HistoryView::kOptionUnlimitedMessageWidth,
 				HistoryView::Controls::kOptionMacCmdReplyImmediately,
-				Ui::kOptionHideAiButton,
 				kForceComposeSearchOneColumn,
 			}
 		},

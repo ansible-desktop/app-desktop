@@ -7,6 +7,8 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 */
 #include "boxes/create_ai_box.h"
 
+#include "ui/controls/compose_ai_button_factory.h"
+
 #include "base/object_ptr.h"
 #include "base/weak_ptr.h"
 #include "boxes/create_ai_tone_box.h"
@@ -658,6 +660,9 @@ void CreateAiBox(not_null<Ui::GenericBox*> box, CreateAiBoxArgs &&args) {
 void ShowCreateAiBox(
 		std::shared_ptr<ChatHelpers::Show> show,
 		CreateAiBoxArgs &&args) {
+	if (!Ui::BuiltInAiEnabled()) {
+		return;
+	}
 	show->show(Box(CreateAiBox, std::move(args)));
 }
 

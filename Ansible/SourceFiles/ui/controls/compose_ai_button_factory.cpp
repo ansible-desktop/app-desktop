@@ -25,41 +25,13 @@ https://github.com/ansible-desktop/app-desktop/blob/master/LEGAL
 
 namespace Ui {
 
-const char kOptionHideAiButton[] = "hide-ai-button";
-
-base::options::toggle HideAiButtonOption({
-	.id = kOptionHideAiButton,
-	.name = "Hide AI button",
-	.description = "Hide the AI Tools button in message compose fields.",
-});
+bool BuiltInAiEnabled() {
+	return false;
+}
 
 bool HasEnoughLinesForAi(
 		not_null<Main::Session*> session,
 		not_null<Ui::InputField*> field) {
-	if (HideAiButtonOption.value()
-		|| session->data().aiComposeTones().list().empty()) {
-		return false;
-	}
-	const auto &style = field->st().style;
-	const auto lineHeight = style.lineHeight
-		? style.lineHeight
-		: style.font->height;
-	const auto margins = field->fullTextMargins();
-	const auto contentHeight = field->height()
-		- margins.top()
-		- margins.bottom();
-	if (contentHeight < (3 * lineHeight)) {
-		return false;
-	}
-	const auto &text = field->getLastText();
-	if (text.size() > Data::PremiumLimits(session).messageLengthCurrent()) {
-		return false;
-	}
-	for (const auto &ch : text) {
-		if (!Text::IsTrimmed(ch) && !Text::IsReplacedBySpace(ch)) {
-			return true;
-		}
-	}
 	return false;
 }
 

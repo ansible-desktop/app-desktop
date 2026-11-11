@@ -369,7 +369,7 @@ public:
 		return _flags & MessageFlag::ShowSimilarChannels;
 	}
 	[[nodiscard]] bool canBeSummarized() const {
-		return _flags & MessageFlag::CanBeSummarized;
+		return false;
 	}
 	[[nodiscard]] bool textAppearing() const {
 		return _flags & MessageFlag::TextAppearing;

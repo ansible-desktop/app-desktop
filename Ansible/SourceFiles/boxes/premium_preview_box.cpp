@@ -1406,6 +1406,9 @@ void DecorateListPromoBox(
 void Show(
 		std::shared_ptr<ChatHelpers::Show> show,
 		Descriptor &&descriptor) {
+	if (descriptor.section == PremiumFeature::AiCompose) {
+		return;
+	}
 	if (!show->session().premiumPossible()) {
 		auto box = Box(PremiumUnavailableBox);
 		const auto raw = box.data();

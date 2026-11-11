@@ -5413,41 +5413,7 @@ bool ComposeControls::updateLikeShown() {
 }
 
 void ComposeControls::showAiComposeBox() {
-	const auto text = prepareTextForEditMsg();
-	if (text.text.isEmpty()) {
-		return;
-	}
-	auto send = Fn<void(TextWithEntities, Api::SendOptions, Fn<void()>)>();
-	auto setupMenu = Fn<void(
-		not_null<Ui::RpWidget*>,
-		Fn<void(Api::SendOptions)>)>();
-	if (canSendAiComposeDirect() && _sendWithText) {
-		send = crl::guard(_wrap.get(), [=](
-				TextWithEntities result,
-				Api::SendOptions options,
-				Fn<void()> done) {
-			_sendWithText(std::move(result), options, std::move(done));
-		});
-		setupMenu = crl::guard(_wrap.get(), [=](
-				not_null<Ui::RpWidget*> button,
-				Fn<void(Api::SendOptions)> sendCallback) {
-			setupSendMenu(button, sendCallback);
-		});
-	}
-	Controls::ShowComposeAiBox(_show, {
-		.session = _session,
-		.text = text,
-		.chatStyle = _chatStyle,
-		.apply = crl::guard(_wrap.get(), [=](TextWithEntities result) {
-			const auto action = Ui::InputField::HistoryAction::NewEntry;
-			setFieldText({
-				result.text,
-				TextUtilities::ConvertEntitiesToTextTags(result.entities),
-			}, TextUpdateEvent::SaveDraft, action);
-		}),
-		.send = std::move(send),
-		.setupMenu = std::move(setupMenu),
-	});
+	// Built-in AI has no client entry point.
 }
 
 void ComposeControls::triggerAiApplyInPlace() {
