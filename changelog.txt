@@ -1,7 +1,9 @@
-0.4.2 (10.11.26)
+0.4.2 (11.11.26)
 
-- Update the client base to upstream Telegram Desktop 7.4.1.
+- Update the client base to upstream Telegram Desktop 7.4.2.
 - Show interactive widgets sent by bots in private chats.
+- Use widget sandbox 0.6.3 with the matching QuickJS engine and bytecode.
+- Include upstream Qt HTTP response limits, chat preview typing and topic/export fixes.
 - Add smooth text flights and bubble reveal animations when sending messages.
 - Update dissolving message removal and keep the scroll position stable.
 - Support shared widget data, live updates and interactive bot responses.

@@ -13,7 +13,7 @@ Windows, macOS and Linux.
 > servers, and cannot be used to access Telegram accounts.
 
 [![License: GPLv3](https://img.shields.io/badge/License-GPLv3%20%2B%20OpenSSL-blue.svg)](LICENSE)
-[![Upstream](https://img.shields.io/badge/forked%20from-tdesktop%207.4.1-orange.svg)](https://github.com/telegramdesktop/tdesktop)
+[![Upstream](https://img.shields.io/badge/forked%20from-tdesktop%207.4.2-orange.svg)](https://github.com/telegramdesktop/tdesktop)
 
 ---
 
@@ -21,7 +21,7 @@ Windows, macOS and Linux.
 
 Ansible Desktop is the desktop client for the Ansible messenger, built on
 the Telegram Desktop codebase under GPL v3. Current version **0.4.2**,
-rebased onto upstream **7.4.1** (API layer 233).
+rebased onto upstream **7.4.2** (API layer 233).
 
 What differs from upstream:
 
