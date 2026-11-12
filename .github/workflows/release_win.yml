@@ -57,6 +57,16 @@ on:
         description: 'Reviewed build workflow SHA when different from the application source SHA.'
         required: false
         type: string
+      rollback_windows:
+        description: 'Restore the previous Windows feed from verified publication evidence.'
+        type: boolean
+        default: false
+      rollback_publication_run:
+        description: 'Successful publication run whose Windows feed is being withdrawn.'
+        type: string
+      rollback_evidence_sha256:
+        description: 'Reviewed SHA-256 of the publication evidence ZIP.'
+        type: string
   push:
     tags:
       - 'v*'
@@ -384,15 +394,33 @@ jobs:
             incoming/windows-provenance.json
           if-no-files-found: error
       - name: Publish the exact qualified package and release.
-        if: inputs.publish
+        if: ${{ inputs.publish && !inputs.rollback_windows }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.TIMEWEB_S3_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TIMEWEB_S3_SECRET }}
         run: |
           python3 promotion/deploy/updates/publish_windows_artifact.py \
             --source-sha "$SOURCE_SHA" --run-id "$BUILD_RUN" --directory incoming
+      - name: Restore the previous Windows feed only.
+        if: inputs.rollback_windows
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.TIMEWEB_S3_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TIMEWEB_S3_SECRET }}
+          PUBLICATION_RUN: ${{ inputs.rollback_publication_run }}
+          EVIDENCE_SHA256: ${{ inputs.rollback_evidence_sha256 }}
+        run: |
+          python3 promotion/deploy/updates/rollback_windows_feed.py \
+            --publication-run "$PUBLICATION_RUN" --evidence-sha256 "$EVIDENCE_SHA256" \
+            --source-sha "$SOURCE_SHA" --directory incoming --apply
+      - name: Preserve Windows rollback evidence.
+        if: ${{ always() && inputs.rollback_windows }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-rollback-evidence-0.4.2
+          path: incoming/rollback-*.json
+          if-no-files-found: warn
       - name: Preserve publication evidence and previous feeds.
-        if: ${{ always() && inputs.publish }}
+        if: ${{ always() && inputs.publish && !inputs.rollback_windows }}
         uses: actions/upload-artifact@v7
         with:
           name: windows-publication-evidence-0.4.2
