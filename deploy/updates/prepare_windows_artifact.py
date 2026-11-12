@@ -183,7 +183,7 @@ def main():
     require(checkout == args.source_sha, 'Trust source checkout mismatch')
     version = (args.source / 'Ansible/build/version').read_text()
     require(re.search(r'^AppVersion\s+3004003$', version, re.M)
-            and re.search(r'^AppVersionStr\s+0\.4\.2$', version, re.M), 'Source version mismatch')
+            and re.search(r'^AppVersionStr\s+0\.4\.3$', version, re.M), 'Source version mismatch')
     listing = gh_json(f'repos/{repository}/actions/runs/{args.run_id}/artifacts?per_page=100')
     artifacts = [a for a in listing['artifacts'] if a['name'] == 'Ansible-release-x64-0.4.3' and not a['expired']]
     require(len(artifacts) == 1, 'Expected one private release artifact')
