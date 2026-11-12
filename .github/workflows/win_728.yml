@@ -101,7 +101,7 @@ jobs:
           sdk: ${{ env.SDK }}
 
       - name: Set up sccache.
-        uses: mozilla-actions/sccache-action@v0.0.6
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       # Persist sccache's LOCAL disk cache via the new Actions Cache API (proven
       # working here), instead of sccache's broken legacy GHA backend. Unique key
