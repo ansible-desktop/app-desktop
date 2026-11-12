@@ -83,7 +83,7 @@ def verify_package(data, directory, trust):
 
     require(take(4) == b'TDUP' and number('<I') == 2, 'Expected TDUP v2')
     require(take(3) == bytes([0, 0, 1]), 'Expected stable Windows x64')
-    require(number('<Q') == 3004002 << 32, 'Expected release 0.4.2, counter zero')
+    require(number('<Q') == 3004003 << 32, 'Expected release 0.4.3, counter zero')
     created = number('<Q')
     require(-300 <= time.time() - created < 86400, 'Release package is stale or from the future')
     manifest = chunk(256 * 1024)
@@ -143,7 +143,7 @@ def verify_package(data, directory, trust):
     def be32():
         return struct.unpack('>I', read(4))[0]
 
-    require(be32() == 3004002 and be32() == 2, 'Unexpected updater version or file count')
+    require(be32() == 3004003 and be32() == 2, 'Unexpected updater version or file count')
     files = {}
     for _ in range(2):
         name_size = be32()
@@ -182,26 +182,26 @@ def main():
     checkout = subprocess.check_output(['git', '-C', str(args.source), 'rev-parse', 'HEAD'], text=True).strip()
     require(checkout == args.source_sha, 'Trust source checkout mismatch')
     version = (args.source / 'Ansible/build/version').read_text()
-    require(re.search(r'^AppVersion\s+3004002$', version, re.M)
+    require(re.search(r'^AppVersion\s+3004003$', version, re.M)
             and re.search(r'^AppVersionStr\s+0\.4\.2$', version, re.M), 'Source version mismatch')
     listing = gh_json(f'repos/{repository}/actions/runs/{args.run_id}/artifacts?per_page=100')
-    artifacts = [a for a in listing['artifacts'] if a['name'] == 'Ansible-release-x64-0.4.2' and not a['expired']]
+    artifacts = [a for a in listing['artifacts'] if a['name'] == 'Ansible-release-x64-0.4.3' and not a['expired']]
     require(len(artifacts) == 1, 'Expected one private release artifact')
     artifact = artifacts[0]
     require(artifact['digest'] == 'sha256:' + args.artifact_sha256, 'Artifact API digest mismatch')
     archive = subprocess.check_output(['gh', 'api', f'repos/{repository}/actions/artifacts/{artifact["id"]}/zip'])
     require(len(archive) == artifact['size_in_bytes'] and hashlib.sha256(archive).hexdigest() == args.artifact_sha256,
             'Downloaded artifact digest mismatch')
-    expected = {'Ansible.exe', 'Updater.exe', 'ansible-update-win-x64-3004002'}
+    expected = {'Ansible.exe', 'Updater.exe', 'ansible-update-win-x64-3004003'}
     args.output.mkdir()
     with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
         require(set(bundle.namelist()) == expected and len(bundle.infolist()) == 3, 'Unexpected artifact contents')
         require(sum(item.file_size for item in bundle.infolist()) < 1024 ** 3, 'Artifact exceeds extraction budget')
         for name in expected:
             (args.output / name).write_bytes(bundle.read(name))
-    package = args.output / 'ansible-update-win-x64-3004002'
+    package = args.output / 'ansible-update-win-x64-3004003'
     files = verify_package(package.read_bytes(), args.output, args.source / 'Ansible/Resources/update')
-    portable = args.output / 'ansible-portable-win-x64-0.4.2.zip'
+    portable = args.output / 'ansible-portable-win-x64-0.4.3.zip'
     with zipfile.ZipFile(portable, 'x', compression=zipfile.ZIP_DEFLATED) as bundle:
         for name in sorted(files):
             bundle.write(args.output / name, name)

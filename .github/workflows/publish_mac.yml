@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       build_run:
-        description: 'Successful Release macOS run containing version 0.4.2.'
+        description: 'Successful Release macOS run containing version 0.4.3.'
         required: true
         type: string
       source_sha:
@@ -81,7 +81,7 @@ jobs:
           expected = os.environ['EXPECTED_SOURCE_SHA']
           assert re.fullmatch('[0-9a-f]{40}', expected) and run['head_sha'] == expected
           if os.environ['PUBLISH_RELEASE'] == 'true':
-              tag = json.loads(subprocess.check_output(['gh', 'api', 'repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/ref/tags/v0.4.2']))
+              tag = json.loads(subprocess.check_output(['gh', 'api', 'repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/ref/tags/v0.4.3']))
               assert tag['object']['type'] == 'commit' and tag['object']['sha'] == expected
           with open(os.environ['GITHUB_ENV'], 'a') as output:
               output.write('SOURCE_SHA=' + run['head_sha'] + '\n')
@@ -92,10 +92,10 @@ jobs:
           path: source
       - name: Download the verified build.
         run: |
-          gh run download "$BUILD_RUN" --repo "$GITHUB_REPOSITORY" --name ansible-mac-release-0.4.2 --dir incoming
+          gh run download "$BUILD_RUN" --repo "$GITHUB_REPOSITORY" --name ansible-mac-release-0.4.3 --dir incoming
           cd incoming
           shasum -a 256 -c SHA256SUMS
-          tar -xf ansible-mac-release-0.4.2.tar
+          tar -xf ansible-mac-release-0.4.3.tar
           test "$(cat source-sha.txt)" = "$SOURCE_SHA"
           for BINARY in MacOS/Ansible Frameworks/Updater Helpers/crashpad_handler; do
             lipo "Ansible.app/Contents/$BINARY" -verify_arch x86_64 arm64
@@ -185,7 +185,7 @@ jobs:
         run: |
           cd incoming
           mkdir public
-          ditto -c -k --keepParent Ansible.app public/ansible-mac-0.4.2.zip
+          ditto -c -k --keepParent Ansible.app public/ansible-mac-0.4.3.zip
           mkdir installer
           ditto Ansible.app installer/Ansible.app
           ln -s /Applications installer/Applications
@@ -193,23 +193,23 @@ jobs:
             cp macOS-SIGNING-NOTICE.txt installer/
             cp macOS-SIGNING-NOTICE.txt public/
           fi
-          hdiutil create -volname Ansible -srcfolder installer -ov -format UDZO public/ansible-setup-mac-0.4.2.dmg
+          hdiutil create -volname Ansible -srcfolder installer -ov -format UDZO public/ansible-setup-mac-0.4.3.dmg
           umask 077
           printf '%s\n' "$UPDATE_KEY" > "$RUNNER_TEMP/channel-key.pem"
           trap 'rm -f "$RUNNER_TEMP/channel-key.pem"' EXIT
           for ARCH in x86_64 arm64; do
-            ./Packer -path Ansible.app -arch "$ARCH" -version 3004002 -channel stable \
+            ./Packer -path Ansible.app -arch "$ARCH" -version 3004003 -channel stable \
               -keys-loc ../source/Ansible/Resources/update \
               -local-key "$RUNNER_TEMP/channel-key.pem" -local-key-id as-stable-2026a
           done
-          mv ansible-update-mac-x64-3004002 ansible-update-mac-arm-3004002 public/
+          mv ansible-update-mac-x64-3004003 ansible-update-mac-arm-3004003 public/
           cp source-sha.txt toolchain.txt public/
           if [ -f notary.json ]; then cp notary.json public/; fi
           cd public
           shasum -a 256 *.zip *.dmg ansible-update-* > mac-SHA256SUMS
       - uses: actions/upload-artifact@v7
         with:
-          name: ansible-mac-packaged-0.4.2
+          name: ansible-mac-packaged-0.4.3
           path: incoming/public
           if-no-files-found: error
       - name: Publish packages before the update feed.
@@ -220,7 +220,7 @@ jobs:
         run: |
           brew install awscli
           cd incoming/public
-          gh release view v0.4.2 --repo "$GITHUB_REPOSITORY" --json assets > release.json
+          gh release view v0.4.3 --repo "$GITHUB_REPOSITORY" --json assets > release.json
           python3 - <<'PY'
           import json, pathlib
           names = {asset['name'] for asset in json.load(open('release.json'))['assets']}
@@ -233,16 +233,16 @@ jobs:
           previous = json.load(open('previous2.json'))
           assert previous == json.load(open('previous6.json'))
           for platform, arch in (('mac', 'x64'), ('armac', 'arm')):
-              assert previous.get(platform, {}).get('stable', {}).get('released', 0) < 3004002
+              assert previous.get(platform, {}).get('stable', {}).get('released', 0) < 3004003
               previous.setdefault(platform, {})['stable'] = {
-                  'released': 3004002, 'link': f'/{platform}/ansible-update-mac-{arch}-3004002'}
+                  'released': 3004003, 'link': f'/{platform}/ansible-update-mac-{arch}-3004003'}
           with open('current.json', 'w') as output:
               json.dump(previous, output, indent=1, sort_keys=True)
           PY
           for PLATFORM in mac armac; do
             ARCH=x64
             if [ "$PLATFORM" = armac ]; then ARCH=arm; fi
-            FILE="ansible-update-mac-$ARCH-3004002"
+            FILE="ansible-update-mac-$ARCH-3004003"
             aws s3 cp "$FILE" "s3://$S3_BUCKET/$PLATFORM/$FILE" --endpoint-url "$S3_ENDPOINT" \
               --cache-control 'public, max-age=31536000, immutable'
             curl --fail --silent --show-error "https://ansible.su/ad/$PLATFORM/$FILE" -o "$RUNNER_TEMP/$FILE"
@@ -252,24 +252,24 @@ jobs:
             grep -qi '^content-range: bytes 0-31/' "$RUNNER_TEMP/range.headers"
             test "$(wc -c < "$RUNNER_TEMP/range.bin" | tr -d ' ')" = 32
           done
-          gh release upload v0.4.2 --repo "$GITHUB_REPOSITORY" \
-            ansible-mac-0.4.2.zip ansible-setup-mac-0.4.2.dmg \
-            ansible-update-mac-x64-3004002 ansible-update-mac-arm-3004002 mac-SHA256SUMS
+          gh release upload v0.4.3 --repo "$GITHUB_REPOSITORY" \
+            ansible-mac-0.4.3.zip ansible-setup-mac-0.4.3.dmg \
+            ansible-update-mac-x64-3004003 ansible-update-mac-arm-3004003 mac-SHA256SUMS
           if [ -f macOS-SIGNING-NOTICE.txt ]; then
-            gh release upload v0.4.2 --repo "$GITHUB_REPOSITORY" macOS-SIGNING-NOTICE.txt
+            gh release upload v0.4.3 --repo "$GITHUB_REPOSITORY" macOS-SIGNING-NOTICE.txt
           fi
-          gh release view v0.4.2 --repo "$GITHUB_REPOSITORY" --json body > notes.json
+          gh release view v0.4.3 --repo "$GITHUB_REPOSITORY" --json body > notes.json
           python3 - <<'PY'
           import json, os, pathlib
           body = json.load(open('notes.json'))['body']
-          body += '\n\nmacOS 0.4.2 for Intel and Apple Silicon. Source: `' + os.environ['SOURCE_SHA'] + '`.'
+          body += '\n\nmacOS 0.4.3 for Intel and Apple Silicon. Source: `' + os.environ['SOURCE_SHA'] + '`.'
           body += '\n\nRelease build: https://github.com/' + os.environ['GITHUB_REPOSITORY'] + '/actions/runs/' + os.environ['BUILD_RUN']
           notice = pathlib.Path('macOS-SIGNING-NOTICE.txt')
           if notice.exists():
               body += '\n\n**macOS signing limitation:** ' + notice.read_text()
           pathlib.Path('notes.md').write_text(body)
           PY
-          gh release edit v0.4.2 --repo "$GITHUB_REPOSITORY" --notes-file notes.md
+          gh release edit v0.4.3 --repo "$GITHUB_REPOSITORY" --notes-file notes.md
           # Check nobody changed the feed while the large packages uploaded.
           curl --fail --silent --show-error https://ansible.su/ad/current2 -o latest.json
           python3 -c "import json; assert json.load(open('latest.json')) == json.load(open('previous2.json'))"
@@ -293,8 +293,8 @@ jobs:
               assert expected[platform]['stable']['released'] > 3004000
           assert expected['win64'] == json.load(open('previous2.json'))['win64']
           PY
-          for FILE in ansible-mac-0.4.2.zip ansible-setup-mac-0.4.2.dmg; do
+          for FILE in ansible-mac-0.4.3.zip ansible-setup-mac-0.4.3.dmg; do
             curl --fail --location --silent --show-error \
-              "https://github.com/$GITHUB_REPOSITORY/releases/download/v0.4.2/$FILE" -o "$RUNNER_TEMP/$FILE"
+              "https://github.com/$GITHUB_REPOSITORY/releases/download/v0.4.3/$FILE" -o "$RUNNER_TEMP/$FILE"
             cmp "$FILE" "$RUNNER_TEMP/$FILE"
           done

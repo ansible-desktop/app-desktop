@@ -51,10 +51,10 @@ jobs:
           import pathlib, re
           version = (pathlib.Path('app-desktop/Ansible/build/version')).read_text(encoding='utf-8')
           code = (pathlib.Path('app-desktop/Ansible/SourceFiles/core/version.h')).read_text(encoding='utf-8')
-          assert re.search(r'^AppVersion\s+3004002$', version, re.M)
+          assert re.search(r'^AppVersion\s+3004003$', version, re.M)
           assert re.search(r'^AppVersionStr\s+0\.4\.2$', version, re.M)
-          assert 'AppVersion = 3004002' in code
-          assert 'AppVersionStr = "0.4.2"' in code
+          assert 'AppVersion = 3004003' in code
+          assert 'AppVersionStr = "0.4.3"' in code
           PY
       - name: Build tools.
         run: |
@@ -107,14 +107,14 @@ jobs:
           /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Ansible.app/Contents/Info.plist
           cp ../../../source-sha.txt ../../../toolchain.txt .
           # tar preserves bundle symlinks and executable permissions.
-          tar -cf ../../../ansible-mac-release-0.4.2.tar Ansible.app Packer source-sha.txt toolchain.txt
+          tar -cf ../../../ansible-mac-release-0.4.3.tar Ansible.app Packer source-sha.txt toolchain.txt
           cd ../../..
-          shasum -a 256 ansible-mac-release-0.4.2.tar > SHA256SUMS
+          shasum -a 256 ansible-mac-release-0.4.3.tar > SHA256SUMS
       - uses: actions/upload-artifact@v7
         with:
-          name: ansible-mac-release-0.4.2
+          name: ansible-mac-release-0.4.3
           path: |
-            ansible-mac-release-0.4.2.tar
+            ansible-mac-release-0.4.3.tar
             SHA256SUMS
           if-no-files-found: error
           retention-days: 30

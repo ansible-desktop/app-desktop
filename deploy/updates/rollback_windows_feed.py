@@ -35,7 +35,7 @@ def main():
     assert run['path'] == '.github/workflows/release_win.yml'
     assert run['head_repository']['full_name'] == repo
     artifacts = gh(f'repos/{repo}/actions/runs/{args.publication_run}/artifacts')['artifacts']
-    selected = [a for a in artifacts if a['name'] == 'windows-publication-evidence-0.4.2' and not a['expired']]
+    selected = [a for a in artifacts if a['name'] == 'windows-publication-evidence-0.4.3' and not a['expired']]
     assert len(selected) == 1
     artifact = selected[0]
     assert artifact['size_in_bytes'] < 1024 * 1024
@@ -49,9 +49,9 @@ def main():
         previous = json.loads(archive.read('previous-current.json'))
         intended = json.loads(archive.read('intended-current.json'))
     assert proof['source'] == args.source_sha
-    assert intended['win64']['stable'] == {'released': 3004002, 'link': '/win64/ansible-update-win-x64-3004002'}
-    assert previous['win64']['stable']['released'] < 3004002
-    tag = gh(f'repos/{repo}/git/ref/tags/v0.4.2')
+    assert intended['win64']['stable'] == {'released': 3004003, 'link': '/win64/ansible-update-win-x64-3004003'}
+    assert previous['win64']['stable']['released'] < 3004003
+    tag = gh(f'repos/{repo}/git/ref/tags/v0.4.3')
     assert tag['object']['type'] == 'commit' and tag['object']['sha'] == args.source_sha
     feeds = [read_feed(name) for name in ('current2', 'current6')]
     # An interrupted rollback may have restored one feed. No unrelated edit is
@@ -83,7 +83,7 @@ def main():
             time.sleep(10)
         # Keep the immutable tag and downloadable evidence; remove it from the
         # stable-release listing while the corrected version is being prepared.
-        subprocess.run(['gh', 'release', 'edit', 'v0.4.2', '--repo', repo, '--prerelease'], check=True)
+        subprocess.run(['gh', 'release', 'edit', 'v0.4.3', '--repo', repo, '--prerelease'], check=True)
         evidence['applied'] = True
     (args.directory / 'rollback-proof.json').write_text(json.dumps(evidence, indent=2))
     print(json.dumps(evidence))

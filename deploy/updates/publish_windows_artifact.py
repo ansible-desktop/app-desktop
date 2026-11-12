@@ -42,7 +42,7 @@ def main():
     proof = json.loads((directory / 'windows-provenance.json').read_text())
     if proof['source'] != args.source_sha or proof['run'] != args.run_id:
         raise ValueError('Prepared artifact source mismatch')
-    package_name = 'ansible-update-win-x64-3004002'
+    package_name = 'ansible-update-win-x64-3004003'
     package = directory / package_name
     if hashlib.sha256(package.read_bytes()).hexdigest() != proof['packageSha256']:
         raise ValueError('Prepared package changed')
@@ -51,20 +51,20 @@ def main():
             raise ValueError('Required publication credential or destination is unavailable: ' + name)
     repository = os.environ['GITHUB_REPOSITORY']
     api_root = 'repos/' + repository
-    release_path = api_root + '/releases/tags/v0.4.2'
+    release_path = api_root + '/releases/tags/v0.4.3'
     if api_optional(release_path) is not None:
-        raise ValueError('Release 0.4.2 already exists; review its state before replacing anything')
-    tag = api_optional(api_root + '/git/ref/tags/v0.4.2')
+        raise ValueError('Release 0.4.3 already exists; review its state before replacing anything')
+    tag = api_optional(api_root + '/git/ref/tags/v0.4.3')
     if tag is not None and (tag['object']['sha'] != args.source_sha or tag['object']['type'] != 'commit'):
         raise ValueError('Release tag does not point to the qualified source commit')
     previous_bytes, _ = fetch('current6')
     previous = json.loads(previous_bytes)
     if json.loads(fetch('current2')[0]) != previous:
         raise ValueError('Existing platform feeds disagree')
-    if previous.get('win64', {}).get('stable', {}).get('released', 0) >= 3004002:
+    if previous.get('win64', {}).get('stable', {}).get('released', 0) >= 3004003:
         raise ValueError('Refusing to replace an advertised release')
     intended = copy.deepcopy(previous)
-    intended.setdefault('win64', {})['stable'] = {'released': 3004002, 'link': '/win64/' + package_name}
+    intended.setdefault('win64', {})['stable'] = {'released': 3004003, 'link': '/win64/' + package_name}
     (directory / 'previous-current.json').write_bytes(previous_bytes)
     current = directory / 'intended-current.json'
     current.write_text(json.dumps(intended, indent=1, sort_keys=True) + '\n')
@@ -85,19 +85,20 @@ def main():
         if response.status != 206 or response.headers.get('Content-Range') != f'bytes 0-31/{package.stat().st_size}' or response.read() != package.read_bytes()[:32]:
             raise ValueError('Public package range request failed; feed remains unchanged')
     if tag is None:
-        command(['gh', 'api', '--method', 'POST', api_root + '/git/refs', '-f', 'ref=refs/tags/v0.4.2', '-f', 'sha=' + args.source_sha])
+        command(['gh', 'api', '--method', 'POST', api_root + '/git/refs', '-f', 'ref=refs/tags/v0.4.3', '-f', 'sha=' + args.source_sha])
     notes = directory / 'windows-release-notes.md'
-    notes.write_text('Ansible Desktop 0.4.2 for Windows x64.\n\n'
-        'Updated upstream, rich messages and widgets, message sending and dissolution animations. '
+    notes.write_text('Ansible Desktop 0.4.3 for Windows x64.\n\n'
+        'Updates the widget engine and fixes unsafe script compilation and excessive nesting. '
+        'Includes rich messages and widgets, message sending and dissolution animations. '
         'Ansible design, translation, voice transcription and bots are preserved.\n\n'
         f'Source: `{args.source_sha}`. Release build: https://github.com/{repository}/actions/runs/{args.run_id}\n')
-    command(['gh', 'release', 'create', 'v0.4.2', '--repo', repository, '--verify-tag', '--draft',
-             '--title', 'Ansible Desktop 0.4.2', '--notes-file', str(notes)])
-    command(['gh', 'release', 'upload', 'v0.4.2', '--repo', repository,
-             str(directory / 'ansible-portable-win-x64-0.4.2.zip'), str(package), str(directory / 'windows-provenance.json')])
+    command(['gh', 'release', 'create', 'v0.4.3', '--repo', repository, '--verify-tag', '--draft',
+             '--title', 'Ansible Desktop 0.4.3', '--notes-file', str(notes)])
+    command(['gh', 'release', 'upload', 'v0.4.3', '--repo', repository,
+             str(directory / 'ansible-portable-win-x64-0.4.3.zip'), str(package), str(directory / 'windows-provenance.json')])
     if any(json.loads(fetch(name)[0]) != previous for name in ('current2', 'current6')):
         raise ValueError('Another publisher changed the feed; release remains a draft')
-    command(['gh', 'release', 'edit', 'v0.4.2', '--repo', repository, '--draft=false'])
+    command(['gh', 'release', 'edit', 'v0.4.3', '--repo', repository, '--draft=false'])
     for name in ('current2', 'current6'):
         command(['aws', 's3', 'cp', str(current), f's3://{bucket}/{name}', '--endpoint-url', endpoint,
                  '--content-type', 'application/json', '--cache-control', 'public, max-age=60', '--only-show-errors'])
