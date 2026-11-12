@@ -123,10 +123,14 @@ def verify_package(data, directory, trust):
     dictionary, original_size = struct.unpack('<II', payload[1:9])
     require(lc <= 8 and lp <= 4 and pb <= 4 and dictionary <= 128 * 1024 * 1024, 'Invalid LZMA settings')
     require(0 < original_size < 1024 ** 3, 'Payload exceeds updater budget')
-    decoder = lzma.LZMADecompressor(format=lzma.FORMAT_RAW, filters=[{
-        'id': lzma.FILTER_LZMA1, 'dict_size': dictionary, 'lc': lc, 'lp': lp, 'pb': pb}])
-    plain = decoder.decompress(payload[9:], max_length=original_size + 1)
-    require(len(plain) == original_size, 'Unpacked payload size mismatch')
+    # LzmaCompress omits the end marker. Supply its authenticated output size
+    # using the LZMA-alone header; raw decoding beyond that size can interpret
+    # range-coder padding as another symbol. Require complete input consumption.
+    decoder = lzma.LZMADecompressor(format=lzma.FORMAT_ALONE, memlimit=192 * 1024 * 1024)
+    stream = payload[:5] + struct.pack('<Q', original_size) + payload[9:]
+    plain = decoder.decompress(stream, max_length=original_size + 1)
+    require(len(plain) == original_size and decoder.eof and not decoder.unused_data,
+            'Unpacked payload size or stream boundary mismatch')
     cursor = 0
 
     def read(size):
