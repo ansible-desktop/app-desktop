@@ -1,3 +1,9 @@
+0.4.3 (12.11.26)
+
+- Fix a memory-safety issue when compiling widget scripts.
+- Update widget sandbox to 0.6.5 with the combined QuickJS security fixes.
+- Bound deeply nested widget content before rendering.
+
 0.4.2 (11.11.26)
 
 - Update the client base to upstream Telegram Desktop 7.4.2.
