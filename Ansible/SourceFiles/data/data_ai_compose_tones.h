@@ -106,7 +106,6 @@ private:
 
 	const not_null<Main::Session*> _session;
 	uint64 _hash = 0;
-	mtpRequestId _refreshRequestId = 0;
 	std::vector<AiComposeTone> _list;
 	std::vector<uint64> _recentCustomToneIds;
 	rpl::event_stream<> _updates;
