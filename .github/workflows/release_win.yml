@@ -45,17 +45,30 @@ on:
         required: false
         default: false
         type: boolean
+      reuse_run_id:
+        description: 'Promote this successful private Release run without rebuilding (ref must be its exact SHA).'
+        required: false
+        type: string
+      reuse_artifact_sha256:
+        description: 'Independently verified SHA-256 of the private artifact ZIP.'
+        required: false
+        type: string
+      reuse_workflow_sha:
+        description: 'Reviewed build workflow SHA when different from the application source SHA.'
+        required: false
+        type: string
   push:
     tags:
       - 'v*'
 
 concurrency:
-  group: ansible-release-win
+  group: ${{ inputs.reuse_run_id && 'ansible-release-publication' || 'ansible-release-win' }}
   cancel-in-progress: false
 
 jobs:
 
   release-windows:
+    if: ${{ !inputs.reuse_run_id }}
     name: Release Windows x64
     runs-on: windows-2022
 
@@ -157,13 +170,14 @@ jobs:
       # 🚨 Свой ключ кеша: здесь лежат РЕЛИЗНЫЕ варианты библиотек, и мешать
       # их с отладочными из win.yml/win_728.yml нельзя.
       - name: Libraries cache (release).
-        uses: actions/cache@v5
+        id: release-libraries
+        uses: actions/cache/restore@v6
         with:
-          path: |
-            ${{ env.LibrariesPath }}\*
-            !${{ env.LibrariesPath }}\cache_keys
-          key: ${{ runner.OS }}-x64-libs-release-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-libs-release-
+          path: ${{ env.LibrariesPath }}
+          key: ${{ runner.OS }}-x64-libs-release-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.OS }}-x64-libs-release-v2-${{ env.CACHE_KEY }}-
+            ${{ runner.OS }}-x64-libs-release-${{ env.CACHE_KEY }}
 
       - name: Libraries.
         env:
@@ -171,6 +185,12 @@ jobs:
           GYP_MSVS_VERSION: 2022
         run: |
           %TBUILD%\%REPO_NAME%\Ansible\build\prepare\win.bat silent qt6
+
+      - name: Save complete release dependencies before compiling the app.
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ env.LibrariesPath }}
+          key: ${{ steps.release-libraries.outputs.cache-primary-key }}
 
       - name: Build and pack.
         run: |
@@ -322,3 +342,62 @@ jobs:
           echo "  curl -s https://ansible.su/ad/current6   # windows"
           echo "  curl -s https://ansible.su/ad/current2   # mac, linux"
           echo "  curl -sI https://ansible.su/ad/win64/ansible-update-win-x64-$APP_VERSION"
+
+  promote-windows:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.reuse_run_id != '' }}
+    name: Qualify and promote existing Windows release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BUILD_RUN: ${{ inputs.reuse_run_id }}
+      SOURCE_SHA: ${{ inputs.ref }}
+      ARTIFACT_SHA256: ${{ inputs.reuse_artifact_sha256 }}
+      WORKFLOW_SHA: ${{ inputs.reuse_workflow_sha || inputs.ref }}
+      S3_ENDPOINT: https://s3.twcstorage.ru
+      S3_BUCKET: ansible-desktop-updates
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: promotion
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          path: source
+          persist-credentials: false
+      - name: Verify provenance, archive digest, signatures and unpacked binaries.
+        run: |
+          python3 promotion/deploy/updates/prepare_windows_artifact.py \
+            --run-id "$BUILD_RUN" --source-sha "$SOURCE_SHA" \
+            --workflow-sha "$WORKFLOW_SHA" --artifact-sha256 "$ARTIFACT_SHA256" \
+            --source source --output incoming
+      - uses: actions/upload-artifact@v7
+        with:
+          name: verified-windows-release-0.4.2
+          path: |
+            incoming/ansible-portable-win-x64-0.4.2.zip
+            incoming/ansible-update-win-x64-3004002
+            incoming/windows-provenance.json
+          if-no-files-found: error
+      - name: Publish the exact qualified package and release.
+        if: inputs.publish
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.TIMEWEB_S3_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TIMEWEB_S3_SECRET }}
+        run: |
+          python3 promotion/deploy/updates/publish_windows_artifact.py \
+            --source-sha "$SOURCE_SHA" --run-id "$BUILD_RUN" --directory incoming
+      - name: Preserve publication evidence and previous feeds.
+        if: ${{ always() && inputs.publish }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-publication-evidence-0.4.2
+          path: |
+            incoming/windows-provenance.json
+            incoming/previous-current.json
+            incoming/intended-current.json
+          if-no-files-found: warn
