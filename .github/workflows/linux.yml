@@ -103,7 +103,7 @@ jobs:
 
       - name: Libraries cache.
         id: cache-libs
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: |
             ${{ runner.temp }}/.buildx-cache
@@ -133,6 +133,15 @@ jobs:
           rm -rf ${{ runner.temp }}/.buildx-cache
           mv ${{ runner.temp }}/.buildx-cache{-new,}
 
+      - name: Preserve qualified libraries cache.
+        if: steps.cache-libs.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            ${{ runner.temp }}/.buildx-cache
+            ${{ runner.temp }}/.mount-cache
+          key: ${{ steps.cache-libs.outputs.cache-primary-key }}
+
       - name: Restore Ansible cache.
         id: cache-tdesktop
         if: env.ONLY_CACHE == 'false'
@@ -143,6 +152,7 @@ jobs:
           restore-keys: ${{ runner.OS }}-tdesktop-${{ matrix.defines || 'null' }}-
 
       - name: Ansible build.
+        id: app-build
         if: env.ONLY_CACHE == 'false'
         run: |
           DEFINE=""
@@ -161,6 +171,7 @@ jobs:
           -v $PWD:/usr/src/tdesktop \
           -v ${{ env.CCACHE_DIR }}:/var/cache/ccache \
           -e CONFIG=Debug \
+          -e KEEP_GOING=1 \
           -e CCACHE_SLOPPINESS=pch_defines,time_macros \
           $IMAGE_TAG \
           env -u CCACHE_DISABLE /usr/src/tdesktop/Ansible/build/docker/centos_env/build.sh \
@@ -175,7 +186,7 @@ jobs:
 
       - name: Count ccache misses.
         id: ccache-stats
-        if: env.ONLY_CACHE == 'false'
+        if: always() && (steps.app-build.outcome == 'success' || steps.app-build.outcome == 'failure') && env.ONLY_CACHE == 'false'
         run: |
           MISSES=$(ccache --print-stats | sed -n 's/^cache_miss\t//p' | head -1)
           case "$MISSES" in (*[!0-9]*|'') MISSES=0;; esac
@@ -191,8 +202,8 @@ jobs:
 
       - name: Save Ansible cache.
         if: >
-          env.ONLY_CACHE == 'false'
-            && github.ref_name == github.event.repository.default_branch
+          always() && steps.ccache-stats.outcome == 'success' && env.ONLY_CACHE == 'false'
+            && (github.ref_name == github.event.repository.default_branch || github.ref_name == 'feat/bot-api104-desktop-042')
             && fromJSON(steps.ccache-stats.outputs.misses) > 300
         uses: actions/cache/save@v6
         with:
