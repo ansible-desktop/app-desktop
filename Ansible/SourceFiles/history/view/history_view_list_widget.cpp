@@ -2908,6 +2908,7 @@ void ListWidget::restoreState(not_null<ListMemento*> memento) {
 }
 
 void ListWidget::updateItemsGeometry() {
+	invalidateAccessibleElements();
 	const auto count = int(_items.size());
 	const auto showBars = _delegate->listShowForumThreadBars();
 	const auto first = [&] {
@@ -3571,13 +3572,18 @@ void ListWidget::paintEvent(QPaintEvent *e) {
 		const auto yShown = [&](int y) {
 			return (_visibleBottom >= y && _visibleTop <= y);
 		};
+		const auto unreadShown = [&] {
+			return item->history()->peer->isBroadcast()
+				? yShown(top + height * 4 / 5)
+				: (_visibleBottom > top && _visibleTop < top + height);
+		};
 		const auto markShown = (_context != Context::ChatPreview)
 			&& (isSponsored
 				? view->markSponsoredViewed(_visibleBottom - top)
 				: withReaction
 				? yShown(top + context.reactionInfo->position.y())
 				: isUnread
-				? yShown(top + height)
+				? unreadShown()
 				: yShown(top + height / 2));
 		if (markShown) {
 			if (isSponsored) {
@@ -4508,7 +4514,7 @@ void ListWidget::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 	const auto linkPhoneNumber = link
 		? link->property(kPhoneNumberLinkProperty).toString()
 		: QString();
-	const auto linkUserpicPeerId = (link && _overSenderUserpic)
+	const auto linkUserpicPeerId = (link && _overSenderUserpicItemId)
 		? PeerId(link->property(kPeerLinkPeerIdProperty).toULongLong())
 		: PeerId();
 	_whoReactedMenuLifetime.destroy();
@@ -4559,12 +4565,7 @@ void ListWidget::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		if (_menu) {
 			Window::AddSenderUserpicModerateAction(
 				controller(),
-				[&] {
-					const auto contextY = _visibleTop
-						+ mapFromGlobal(e->globalPos()).y();
-					const auto contextView = strictFindItemByY(contextY);
-					return contextView ? contextView->data().get() : overItem;
-				}(),
+				session().data().message(_overSenderUserpicItemId),
 				Ui::Menu::CreateAddActionCallback(_menu.get()));
 			_menu->setForcedOrigin(Ui::PanelAnimation::Origin::BottomLeft);
 			_menu->popup(e->globalPos());
@@ -5630,7 +5631,7 @@ void ListWidget::mouseActionUpdate() {
 	auto inTextSelection = (_overState.pointState != PointState::Outside)
 		&& (_overState.itemId == _pressState.itemId)
 		&& hasSelectedText();
-	auto dragStateUserpic = false;
+	auto dragStateUserpicItemId = FullMsgId();
 	const auto overReplyBtn = replyBtnView && replyBtnState.link;
 	const auto overReaction = reactionView && reactionState.link;
 	if (overReaction) {
@@ -5784,7 +5785,7 @@ void ListWidget::mouseActionUpdate() {
 						if (point.y() >= userpicTop && point.y() < userpicTop + st::msgPhotoSize) {
 							dragState = TextState(nullptr, view->fromPhotoLink());
 							dragState.cursor = CursorState::FromPhoto;
-							dragStateUserpic = true;
+							dragStateUserpicItemId = view->data()->fullId();
 							_overItemExact = nullptr;
 							lnkhost = view;
 							return false;
@@ -5796,7 +5797,7 @@ void ListWidget::mouseActionUpdate() {
 		}
 	}
 	const auto lnkChanged = ClickHandler::setActive(dragState.link, lnkhost);
-	_overSenderUserpic = dragStateUserpic;
+	_overSenderUserpicItemId = dragStateUserpicItemId;
 	if (lnkChanged || dragState.cursor != _mouseCursorState) {
 		Ui::Tooltip::Hide();
 	}
@@ -6288,6 +6289,7 @@ void ListWidget::aboutViewReplaced(const Element *was) {
 }
 
 void ListWidget::viewReplaced(not_null<const Element*> was, Element *now) {
+	invalidateAccessibleElements();
 	if (_activeColumnsView == was.get()) {
 		_activeColumnsView = nullptr;
 		_activeColumns.clear();
@@ -6555,8 +6557,15 @@ ListWidget::~ListWidget() {
 
 // Accessibility.
 
-std::vector<HistoryView::Element*> ListWidget::accessibleElements() const {
-	auto result = std::vector<Element*>();
+auto ListWidget::accessibleElements() const
+-> const std::vector<HistoryView::Element*> & {
+	// Accessibility asks about each row separately, several times per row,
+	// and every answer needs this list, so building it on each call made
+	// reading a long history quadratic. Keep it until the rows change.
+	if (_accessibleElements) {
+		return *_accessibleElements;
+	}
+	auto &result = _accessibleElements.emplace();
 	result.reserve(_items.size());
 	for (const auto &view : _items) {
 		if (!view->isHidden()) {
@@ -6564,6 +6573,11 @@ std::vector<HistoryView::Element*> ListWidget::accessibleElements() const {
 		}
 	}
 	return result;
+}
+
+void ListWidget::invalidateAccessibleElements() {
+	_accessibleElements = std::nullopt;
+	_accessibilityUnreadBar = nullptr;
 }
 
 int ListWidget::accessibilityNewestIndex(int count) const {
@@ -6574,13 +6588,18 @@ int ListWidget::accessibilityUnreadBarIndex() const {
 	if (!_bar.element || _bar.hidden) {
 		return -1;
 	}
-	const auto elements = accessibleElements();
-	for (auto i = 0, count = int(elements.size()); i != count; ++i) {
-		if (elements[i] == _bar.element) {
-			return i;
+	const auto &elements = accessibleElements();
+	if (_accessibilityUnreadBar != _bar.element) {
+		_accessibilityUnreadBar = _bar.element;
+		_accessibilityUnreadBarIndex = -1;
+		for (auto i = 0, count = int(elements.size()); i != count; ++i) {
+			if (elements[i] == _bar.element) {
+				_accessibilityUnreadBarIndex = i;
+				break;
+			}
 		}
 	}
-	return -1;
+	return _accessibilityUnreadBarIndex;
 }
 
 auto ListWidget::computeActiveColumns(int row) const
@@ -6591,7 +6610,7 @@ auto ListWidget::computeActiveColumns(int row) const
 		_activeColumnsView = nullptr;
 		return _activeColumns;
 	}
-	const auto elements = accessibleElements();
+	const auto &elements = accessibleElements();
 	const auto elementIndex = (barIndex >= 0 && row > barIndex)
 		? (row - 1)
 		: row;
@@ -6774,7 +6793,7 @@ QString ListWidget::accessibilityChildName(int index) const {
 			? HistoryView::UnreadBarAccessibilityName(_bar.element)
 			: tr::lng_unread_bar_some(tr::now);
 	}
-	const auto elements = accessibleElements();
+	const auto &elements = accessibleElements();
 	const auto elementIndex = (barIndex >= 0 && index > barIndex)
 		? (index - 1)
 		: index;
@@ -6805,7 +6824,7 @@ QAccessible::State ListWidget::accessibilityChildState(int index) const {
 	const auto barIndex = accessibilityUnreadBarIndex();
 	if (barIndex < 0 || index != barIndex) {
 		state.selectable = true;
-		const auto elements = accessibleElements();
+		const auto &elements = accessibleElements();
 		const auto elementIndex = (barIndex >= 0 && index > barIndex)
 			? (index - 1)
 			: index;
@@ -6853,7 +6872,7 @@ QRect ListWidget::accessibilityChildRect(int index) const {
 		}
 		return QRect();
 	}
-	const auto elements = accessibleElements();
+	const auto &elements = accessibleElements();
 	const auto elementIndex = (barIndex >= 0 && index > barIndex)
 		? (index - 1)
 		: index;
@@ -6914,7 +6933,7 @@ QString ListWidget::accessibilityChildSubItemValue(
 	if (column < 0 || column >= int(active.size())) {
 		return {};
 	}
-	const auto elements = accessibleElements();
+	const auto &elements = accessibleElements();
 	const auto elementIndex = (barIndex >= 0 && row > barIndex)
 		? (row - 1)
 		: row;
@@ -7040,7 +7059,7 @@ quintptr ListWidget::accessibilityChildIdentity(int index) const {
 	if (barIndex >= 0 && index == barIndex) {
 		return 0;
 	}
-	const auto elements = accessibleElements();
+	const auto &elements = accessibleElements();
 	const auto elementIndex = (barIndex >= 0 && index > barIndex)
 		? (index - 1)
 		: index;
@@ -7066,7 +7085,7 @@ int ListWidget::accessibilityChildIndexByIdentity(
 	if (!identity) {
 		return -1;
 	}
-	const auto elements = accessibleElements();
+	const auto &elements = accessibleElements();
 	const auto barIndex = accessibilityUnreadBarIndex();
 	for (auto i = 0, n = int(elements.size()); i != n; ++i) {
 		const auto j = _accessibilityIdentities.find(
