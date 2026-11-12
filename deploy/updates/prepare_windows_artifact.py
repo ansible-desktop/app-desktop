@@ -159,18 +159,21 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run-id', required=True)
     parser.add_argument('--source-sha', required=True)
+    parser.add_argument('--workflow-sha')
     parser.add_argument('--artifact-sha256', required=True)
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     require(re.fullmatch(r'[0-9]+', args.run_id), 'Invalid build run')
     require(re.fullmatch(r'[0-9a-f]{40}', args.source_sha), 'An immutable source SHA is required')
+    workflow_sha = args.workflow_sha or args.source_sha
+    require(re.fullmatch(r'[0-9a-f]{40}', workflow_sha), 'An immutable reviewed workflow SHA is required')
     require(re.fullmatch(r'[0-9a-f]{64}', args.artifact_sha256), 'An independently reviewed artifact digest is required')
     repository = os.environ['GITHUB_REPOSITORY']
     run = gh_json(f'repos/{repository}/actions/runs/{args.run_id}')
     require(run['status'] == 'completed' and run['conclusion'] == 'success', 'Release build is not successful')
     require(run['path'] == '.github/workflows/release_win.yml' and run['event'] == 'workflow_dispatch', 'Unexpected build workflow')
-    require(run['head_repository']['full_name'] == repository and run['head_sha'] == args.source_sha, 'Build source mismatch')
+    require(run['head_repository']['full_name'] == repository and run['head_sha'] == workflow_sha, 'Build workflow source mismatch')
     verify_checkout_log(repository, args.run_id, args.source_sha)
     checkout = subprocess.check_output(['git', '-C', str(args.source), 'rev-parse', 'HEAD'], text=True).strip()
     require(checkout == args.source_sha, 'Trust source checkout mismatch')
@@ -198,7 +201,7 @@ def main():
     with zipfile.ZipFile(portable, 'x', compression=zipfile.ZIP_DEFLATED) as bundle:
         for name in sorted(files):
             bundle.write(args.output / name, name)
-    proof = {'source': args.source_sha, 'run': args.run_id, 'artifact': artifact['id'],
+    proof = {'source': args.source_sha, 'workflowSource': workflow_sha, 'run': args.run_id, 'artifact': artifact['id'],
              'artifactSha256': args.artifact_sha256, 'packageSha256': hashlib.sha256(package.read_bytes()).hexdigest(),
              'actualCheckoutVerified': True, 'rootSignatureValid': True, 'stableSignaturesValid': True, 'payloadFiles': files,
              'guiAnimationsQualified': False, 'published': False}

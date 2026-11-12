@@ -53,6 +53,10 @@ on:
         description: 'Independently verified SHA-256 of the private artifact ZIP.'
         required: false
         type: string
+      reuse_workflow_sha:
+        description: 'Reviewed build workflow SHA when different from the application source SHA.'
+        required: false
+        type: string
   push:
     tags:
       - 'v*'
@@ -166,13 +170,14 @@ jobs:
       # 🚨 Свой ключ кеша: здесь лежат РЕЛИЗНЫЕ варианты библиотек, и мешать
       # их с отладочными из win.yml/win_728.yml нельзя.
       - name: Libraries cache (release).
-        uses: actions/cache@v5
+        id: release-libraries
+        uses: actions/cache/restore@v6
         with:
-          path: |
-            ${{ env.LibrariesPath }}\*
-            !${{ env.LibrariesPath }}\cache_keys
-          key: ${{ runner.OS }}-x64-libs-release-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-libs-release-
+          path: ${{ env.LibrariesPath }}
+          key: ${{ runner.OS }}-x64-libs-release-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.OS }}-x64-libs-release-v2-${{ env.CACHE_KEY }}-
+            ${{ runner.OS }}-x64-libs-release-${{ env.CACHE_KEY }}
 
       - name: Libraries.
         env:
@@ -180,6 +185,12 @@ jobs:
           GYP_MSVS_VERSION: 2022
         run: |
           %TBUILD%\%REPO_NAME%\Ansible\build\prepare\win.bat silent qt6
+
+      - name: Save complete release dependencies before compiling the app.
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ env.LibrariesPath }}
+          key: ${{ steps.release-libraries.outputs.cache-primary-key }}
 
       - name: Build and pack.
         run: |
@@ -345,6 +356,7 @@ jobs:
       BUILD_RUN: ${{ inputs.reuse_run_id }}
       SOURCE_SHA: ${{ inputs.ref }}
       ARTIFACT_SHA256: ${{ inputs.reuse_artifact_sha256 }}
+      WORKFLOW_SHA: ${{ inputs.reuse_workflow_sha || inputs.ref }}
       S3_ENDPOINT: https://s3.twcstorage.ru
       S3_BUCKET: ansible-desktop-updates
     steps:
@@ -361,7 +373,8 @@ jobs:
         run: |
           python3 promotion/deploy/updates/prepare_windows_artifact.py \
             --run-id "$BUILD_RUN" --source-sha "$SOURCE_SHA" \
-            --artifact-sha256 "$ARTIFACT_SHA256" --source source --output incoming
+            --workflow-sha "$WORKFLOW_SHA" --artifact-sha256 "$ARTIFACT_SHA256" \
+            --source source --output incoming
       - uses: actions/upload-artifact@v7
         with:
           name: verified-windows-release-0.4.2
